@@ -118,7 +118,10 @@ defined. Every name, heading and summary says what the thing does.
   ledger in `PADDLING_PLAN.md` current. Every timing names the machine it ran on.
 - **Pull requests for new features**: develop on a branch, open a PR; keep
   `PADDLING_PLAN.md` (results, limits) and `MAINTENANCE_LOG.md` (dated entries,
-  newest first) up to date.
+  newest first) up to date. The owner lets Claude merge pull requests in this
+  repository itself (2026-10-24), once the tests pass and nothing in the pull request
+  is waiting on the owner. This covers this repository only: pull requests in
+  agentic_experiments still wait for the owner.
 
 ## Figures
 
