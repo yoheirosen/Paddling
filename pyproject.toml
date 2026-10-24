@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=64", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "paddling"
+version = "0.1.0"
+description = "Real-time performance sensing for outrigger canoe (OC1) and surf ski paddling, built on the agentic_experiments platform"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "numpy>=1.22",
+    # The agentic_experiments platform (its package is named seizure-agent-control):
+    # agent_lib writes the figure artifacts now and will run the coaching agents
+    # (runtime, gates, tool loop).  The repository is private, so installing needs
+    # read access to it through your git credentials.  Pin a commit instead of main
+    # (...agentic_experiments.git@<sha>) for a reproducible install.
+    "seizure-agent-control @ git+https://github.com/UCSC-S-Tier/agentic_experiments.git@main",
+]
+
+[project.optional-dependencies]
+plot = ["matplotlib>=3.5"]
+test = ["pytest"]
+
+[tool.setuptools]
+packages = ["paddling_expt", "paddling_expt.sim"]
