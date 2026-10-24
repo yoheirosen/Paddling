@@ -170,6 +170,55 @@ these boats.
   (at half that frequency) does not reach. A single-bridge pod on a double-bladed
   kayak paddle is not modelled yet.
 
+## The in-race coach (`race.py`, `coach.py`)
+
+The loop the project exists for: an agent that knows, during a race, whether the
+pace can be held to the finish, whether the paddler is fading, and when to go, and
+says it in a few words. It runs on agentic_experiments' runtime, in three tiers:
+
+1. **Race state** (`race.RaceState`), updated per stroke, never looking ahead:
+   * speed through the water (the push of current and wind fitted online from how
+     speed depends on heading, forgetting over ~10 minutes; unknown, and shrunk to
+     zero, until the course has turned);
+   * power reaching the boat (hull model);
+   * the reserve above critical power, the "W′ balance" from endurance sport.
+     Work above critical power drains it; below critical power it refills in
+     proportion to how far below (Skiba's model). Critical power and the reserve
+     are calibrated in the same units, from a test (an all-out 3 and 12 minutes)
+     or from training best efforts (`race.calibrate`);
+   * for a known race distance, the steady pace that just empties the reserve at
+     the finish, the gap to the pace being paddled, and how far before the finish
+     the reserve runs out at the current power;
+   * **fade**: speed through the water at the stroke rate being paddled against
+     the same rate earlier in the race (held for 45 s after each turn). It needs no
+     calibration.
+2. **Screen** (`coach.RaceScreen`), deterministic, on every stroke. It raises an
+   event only when something may be worth saying:
+   * `over_pace` (early in the race, after the start sprint, the reserve runs out
+     well before the finish);
+   * `fading` (speed at the same rate down 4 % for a minute);
+   * `reserve_conflict` (the reserve reads empty but the speed holds: the
+     calibration is probably low);
+   * `finish_window` (reserve left near the finish, the speed known to hold, no
+     fade in the last five minutes).
+
+   The screen wakes the coach on an event or every five minutes. An unknown
+   reading freezes an event's timers rather than clearing it.
+3. **Coach** (`coach.RaceCoach`), a language model through `run_tool_loop`. It
+   sees the compact race state and the events, can read recent history, and gives
+   at most one cue of at most 12 words through the `cue` tool. Every cue passes an
+   `ActuatorGate`: word limit, quiet start and last metres, a two-minute
+   cooldown, a cap per race.
+
+`coach.replay_race` drives the loop on the platform's scheduler with a virtual
+clock, every model call taking a fixed latency (6 s by default). A replay
+therefore shows what a live coach could have said and when, with the reasoning
+delay of a real model. The cue lands 6 s after the event, which is real time for a
+race. The default coach is a scripted stand-in (`coach.stand_in_coach`, one fixed
+cue per event): it tests the loop, not a model's judgement. With an API key,
+`--provider anthropic` puts a real model in the seat. The race state costs about
+1 ms per stroke on this cloud sandbox.
+
 ## Results so far
 
 **Simulated 37-minute OC1 training session** (`demos/demo_oc1_training.py`,
@@ -257,6 +306,46 @@ current and wind is removed from every stroke before anything is compared.
   to +4.1 cm/s. Rate moved with effort in these unplanned sessions, so this is
   what going up in rate gave, not what rate alone buys.
 
+**In-race coach, simulated** (`demos/demo_race_coach.py`, seeds 3 and 7; a
+5 km race on out-and-back legs in a 0.2 m/s current after a warm-up; critical power
+from the simulated 3/12-minute test; scripted stand-in coach, 6 s per model call):
+
+| | Over-paced race (planted reserve runs out at 23 min) | Evenly paced race (reserve never runs out) |
+|---|---|---|
+| Estimated vs planted reserve, first 5 min | mean error 0.05–0.06 | mean error 0.13–0.15 |
+| "Too hot for the distance" cue | at 1.9 min, and again at 9.2 min (seed 3) | at 1.9 min: **a false alarm** |
+| Fade cue ("drop two beats, lengthen") | 3.1 and 2.2 min before the planted reserve runs out | none |
+| Reserve conflict flagged (calibration low) | at 12.4 min | at 12.5 min |
+| Coach turnaround | 6 s (one model call) | 6 s |
+
+* What works: an over-fast start shows at once, and the fade separates the two
+  races cleanly from mid-race (speed at the same rate falls 5–9 % in the
+  over-paced race and stays at about +2 % in the even one). The coach speaks
+  rarely (2–3 cues in a 28-minute race).
+* What does not, yet: the reserve model goes wrong after the first few minutes.
+  * The simulated 3/12-minute test set critical power about 15 % low, because the
+    paddler's blade efficiency falls during the 12-minute piece. That caused the
+    even race's false alarm.
+  * Later, power reaching the boat falls with fatigue at the same effort. The
+    simulated efficiency drops from 0.72 to 0.45 over a race, as the best stroke
+    rate drifts down while the paddler holds 62. So the model reads a tiring
+    paddler as easing off, and the reserve appears to refill.
+
+  The screen leans on the fade and the conflict flag for these reasons, and the
+  coach is told to trust the speed over the reserve later in a race. The paddle
+  pod's force would measure effort itself.
+
+**In-race coach on the owner's real 15 km session of 3 October** (calibrated from
+the other eight sessions: critical power 93 W, reserve 6.4 kJ; stand-in coach):
+* The projected finish was within 2 minutes of the actual 86.4 minutes from
+  17 minutes in: 84.5, then 88.6, 86.6 and 85.9 minutes.
+* The screen raised a fast start, a reserve conflict, two fades (−11 % and −7 %)
+  and two late over-pace flags. The coach spoke four cues.
+* The current and wind on that course changed by leg (the online estimate reached
+  0.39 m/s). That makes the live speed through the water noisy, so some of the
+  fade and reserve events reflect estimation error rather than the paddler. Not
+  a race and no ground truth: an illustration, not a score.
+
 ## Honesty ledger (planted assumptions and limits)
 
 * The simulator's physiology is **phenomenological, chosen so the questions have
@@ -295,6 +384,13 @@ current and wind is removed from every stroke before anything is compared.
   watts depend on the hull, the total mass and the assumed ama load (all typical
   until measured); comparisons between sessions do not. The rate effect cannot
   separate rate from effort without a force or power measurement.
+* **The race coach's reserve model** works on power reaching the boat, which is
+  effort times blade efficiency. It is right early in a race and drifts as
+  efficiency falls, and a short test can misjudge critical power (see Results).
+  Its live current estimate needs the course to turn, and on a single heading
+  (a point-to-point race) it cannot separate current from speed. A known push (a
+  tide model or the pod's water speed) can be passed in instead. Every cue so far
+  comes from the scripted stand-in; no model has coached a race yet.
 * Light recovery strokes right after hard pieces can be missed (2 % of strokes in
   the training session, none in race paddling).
 * All timings are on this cloud sandbox (4 virtual CPUs, shared).
@@ -343,11 +439,13 @@ connectivity.
    at the same steady effort and in both directions, ideally with a heart-rate
    strap; and one all-out 3-minute and one all-out 12-minute piece to pin down
    critical power. The pod's force measurement would make this direct.
-4. **Coaching loop**: the per-second panel into the platform's tiered agents
-   (agentic_experiments' `agent_lib/runtime/`), with cues to the paddler behind an `ActuatorGate`
-   (at most one cue every few minutes, quiet during starts, turns and runs, a
-   mute the paddler controls), and the shore/escort coach asking questions
-   through `ask_agent`.
+4. **Coaching loop, next**: built and replayed (above). Still to do:
+   * a real model in the coach's seat on the replays, run against the stand-in
+     and against no coach;
+   * effort from the pod (force) so the reserve does not drift;
+   * the current from a tide model when the course does not turn;
+   * the shore or escort coach asking questions through `ask_agent`;
+   * a mute the paddler controls.
 5. **Phone app**: the head unit and pod over Bluetooth to an Android app that runs
    the pipeline, speaks cues and calls the agent when there is signal.
 
@@ -363,6 +461,8 @@ paddling (this repository)
     fusion.py        OC1Engine: both devices -> stroke table + live panel
     analysis.py      performance analyses
     sessions.py      several sessions: best efforts, critical power, best speed at each rate, rate effect
+    race.py          live race state: reserve above critical power, sustainable pace, fade, push
+    coach.py         in-race coach: screen, reasoning coach, cue gate, replay on the agent runtime
     hydro.py         resistance from hull shape (friction, Michell waves, air, side-slip), outrigger statics
     boats.py         typical OC1 and surf ski (replace with measurements)
     boatspeed.py     power to the boat, ama load and its cost, side-slip and wobble costs
@@ -371,7 +471,7 @@ paddling (this repository)
     geo.py           frames, rotations, coordinates
     sim/             water, paddler, hull, sensors, ready-made sessions
   demos/             demo_oc1_training.py, demo_boat_physics.py, speedcoach_report.py,
-                     speedcoach_sessions.py
-  tests/             pytest suite (no network; ~50 s)
+                     speedcoach_sessions.py, demo_race_coach.py
+  tests/             pytest suite (no network; ~55 s)
   artifacts/         four-file figure artifacts (.py + .data.json tracked)
 ```
