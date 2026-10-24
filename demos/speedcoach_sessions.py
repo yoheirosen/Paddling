@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Report across several NK SpeedCoach sessions (CSV exports, or a folder of them).
 
-    python "paddling/demos/speedcoach_sessions.py" FOLDER_OR_FILES... [--boat oc1]
+    python "demos/speedcoach_sessions.py" FOLDER_OR_FILES... [--boat oc1]
         [--total-kg 93] [--ama-kg 5] [--figure NAME]
 
 For each session it removes the push of current and wind (from how speed depends
@@ -12,7 +12,7 @@ hull model.  Across sessions it reports:
 - the best speed seen at each stroke rate, and each session's share of that;
 - whether going up in rate bought speed within sessions.
 
-With ``--figure`` it writes the four-file figure artifact to ``paddling/artifacts``
+With ``--figure`` it writes the four-file figure artifact to ``artifacts/``
 (averages only: no positions).
 
 The raw exports hold the paddler's GPS tracks: keep them out of the repository.
@@ -248,8 +248,7 @@ def main(argv=None) -> int:
     env, best, cp, re = analyse(S, craft, a.total_kg, a.ama_kg)
     report(S, skipped, env, best, cp, re, craft, a.total_kg, a.ama_kg)
     if a.figure:
-        sys.path.insert(0, os.path.abspath(os.path.join(HERE, "..", "..")))
-        from agent_lib.figure_artifacts import emit
+        from agent_lib.figure_artifacts import emit       # agentic_experiments (a dependency)
         paths = emit(a.figure, data=figure_data(S, env, best, cp, re), plot_func=plot_speedcoach_sessions,
                      artifacts_dir=os.path.join(os.path.dirname(HERE), "artifacts"))
         print("\nwrote", ", ".join(os.path.basename(p) for p in paths.values()))

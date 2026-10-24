@@ -1,11 +1,13 @@
-# `paddling/` — outrigger-canoe (OC1) and surf ski performance sensing (standalone sibling project)
+# paddling — outrigger-canoe (OC1) and surf ski performance sensing
 
 Real-time measures for a solo outrigger canoe or a surf ski from two do-it-yourself devices — a
 boat-mounted **head unit** (GNSS + motion sensor) and a **paddle pod** (strain gauge
 + motion sensor) — plus a reader for **NK SpeedCoach** exports. Built and scored on a
-simulator with planted answers; checked on a real SpeedCoach session. It reuses
-nothing from the ephys, cardiac, calcium or ICU trees (`agent_lib` only for figure
-artifacts). Design, results and limits: **`PADDLING_PLAN.md`**.
+simulator with planted answers; checked on real SpeedCoach sessions. Built on the
+**agentic_experiments** platform (`UCSC-S-Tier/agentic_experiments`, installed as a
+dependency): `agent_lib` writes the figure artifacts today and will run the coaching
+agents. Design, results and limits: **`PADDLING_PLAN.md`**; conventions for
+contributors and AI assistants: **`CLAUDE.md`**.
 
 Per stroke: stroke rate, speed, **check** (speed lost between strokes), distance per
 stroke, side, and with the pod the **pull-force profile** (impulse, peak, where the
@@ -24,25 +26,37 @@ your boat is measured). From the head unit's roll it reads **how much weight sit
 the ama** and what that costs in seconds per 500 m; for the surf ski it reads **bow
 wobble** (side-slip, roll and yaw wobble) and its cost (`boatspeed.py`).
 
+## Install
+
+```bash
+# needs read access to the private agentic_experiments repository (your git credentials)
+pip install -e ".[test,plot]"
+
+# or, working on both repositories side by side: your local agentic_experiments checkout,
+# then this package without its dependencies (else pip replaces the checkout with main)
+pip install -e ../agentic_experiments
+pip install -e . --no-deps && pip install pytest matplotlib
+```
+
 ## Run
 
 ```bash
 # simulated 37-min training session through both devices, scored against the truth
-python "paddling/demos/demo_oc1_training.py" --figure oc1_sim_training
+python "demos/demo_oc1_training.py" --figure oc1_sim_training
 
 # hull-shape physics: resistance, ama load from roll and its cost, surf ski wobble
-python "paddling/demos/demo_boat_physics.py" --figure oc1_boat_physics
+python "demos/demo_boat_physics.py" --figure oc1_boat_physics
 
 # report on a real SpeedCoach export (keep the raw file out of git: it holds a GPS track)
-python "paddling/demos/speedcoach_report.py" SESSION.csv --boat oc1 --total-kg 93 \
+python "demos/speedcoach_report.py" SESSION.csv --boat oc1 --total-kg 93 \
     --figure oc1_speedcoach_session
 
 # across several SpeedCoach sessions: best efforts, critical power and predicted race
 # times, best speed at each stroke rate, % of best, what going up in rate gave
-python "paddling/demos/speedcoach_sessions.py" EXPORT_FOLDER --figure oc1_speedcoach_sessions
+python "demos/speedcoach_sessions.py" EXPORT_FOLDER --figure oc1_speedcoach_sessions
 
 # tests (no network, ~50 s)
-python -m pytest -q paddling/tests
+python -m pytest -q tests
 ```
 
 In code:

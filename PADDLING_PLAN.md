@@ -1,7 +1,8 @@
 # Outrigger-canoe (OC1) and surf ski performance sensing — design, status and next steps
 
-A self-contained sibling project (like `icu/` and `cardiac/`): the repository's
-real-time measurement and agent machinery pointed at a solo outrigger canoe or a
+A project built on the agentic_experiments platform (`UCSC-S-Tier/agentic_experiments`,
+installed as a dependency; it lived there as the `paddling/` folder until
+2026-10-24): that platform's real-time measurement and agent machinery pointed at a solo outrigger canoe or a
 surf ski in training, flat-water racing and downwind (ocean swell) racing. Two
 do-it-yourself devices — a boat-mounted **head unit** and a **paddle pod** on the
 shaft — stream records; the pipeline fuses them in real time into per-stroke and
@@ -343,7 +344,7 @@ connectivity.
    strap; and one all-out 3-minute and one all-out 12-minute piece to pin down
    critical power. The pod's force measurement would make this direct.
 4. **Coaching loop**: the per-second panel into the platform's tiered agents
-   (`agent_lib/runtime/`), with cues to the paddler behind an `ActuatorGate`
+   (agentic_experiments' `agent_lib/runtime/`), with cues to the paddler behind an `ActuatorGate`
    (at most one cue every few minutes, quiet during starts, turns and runs, a
    mute the paddler controls), and the shore/escort coach asking questions
    through `ask_agent`.
@@ -353,8 +354,8 @@ connectivity.
 ## Layout
 
 ```
-paddling/
-  PADDLING_PLAN.md   README.md
+paddling (this repository)
+  PADDLING_PLAN.md   README.md   CLAUDE.md   MAINTENANCE_LOG.md   pyproject.toml
   paddling_expt/
     records.py       record schema, validation, JSON lines
     headunit.py      head-unit processing (clock, mount, attitude, strokes, side, speed, check, runs)
@@ -371,6 +372,6 @@ paddling/
     sim/             water, paddler, hull, sensors, ready-made sessions
   demos/             demo_oc1_training.py, demo_boat_physics.py, speedcoach_report.py,
                      speedcoach_sessions.py
-  tests/             pytest suite (no network; ~45 s)
+  tests/             pytest suite (no network; ~50 s)
   artifacts/         four-file figure artifacts (.py + .data.json tracked)
 ```

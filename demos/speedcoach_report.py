@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 """Performance report for a real NK SpeedCoach session export (CSV).
 
-    python "paddling/demos/speedcoach_report.py" SESSION.csv [--figure NAME]
+    python "demos/speedcoach_report.py" SESSION.csv [--figure NAME]
 
 Reads the per-stroke data, works out the direction of travel from the
 positions, splits the session into legs, estimates the push of current and wind
 from how speed depends on direction (once stroke rate is accounted for), and
 reports: legs, splits per kilometre, how speed and distance per stroke change
 with stroke rate (on speed with the push removed), and pacing over the session.
-With ``--figure`` it writes the four-file figure artifact to ``paddling/artifacts``
+With ``--figure`` it writes the four-file figure artifact to ``artifacts/``
 (binned and time-averaged numbers only — no positions).
 
 The raw export holds the paddler's GPS track: keep it out of the repository.
@@ -182,8 +182,7 @@ def main(argv=None) -> int:
     a = ap.parse_args(argv)
     res = report(a.path, a.boat, a.total_kg)
     if a.figure:
-        sys.path.insert(0, os.path.abspath(os.path.join(HERE, "..", "..")))
-        from agent_lib.figure_artifacts import emit
+        from agent_lib.figure_artifacts import emit       # agentic_experiments (a dependency)
         paths = emit(a.figure, data=figure_data(res), plot_func=plot_speedcoach_session,
                      artifacts_dir=os.path.join(os.path.dirname(HERE), "artifacts"))
         print("\nwrote", ", ".join(os.path.basename(p) for p in paths.values()))

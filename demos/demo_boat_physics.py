@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Hull-shape physics: what the ama load and the wobble cost in boat speed.
 
-    python "paddling/demos/demo_boat_physics.py" [--figure NAME]
+    python "demos/demo_boat_physics.py" [--figure NAME]
 
 1. Resistance of the typical OC1 (at several ama loads) and surf ski against
    speed, split into skin friction, wave-making and air.
@@ -139,8 +139,7 @@ def main(argv=None) -> int:
           f"({'conclusive' if w.get('conclusive') else 'not conclusive in one session'})")
 
     if a.figure:
-        sys.path.insert(0, os.path.abspath(os.path.join(HERE, "..", "..")))
-        from agent_lib.figure_artifacts import emit
+        from agent_lib.figure_artifacts import emit       # agentic_experiments (a dependency)
         rt = roll_table(OC1_TYPICAL, 93.0)
         sl = np.polyfit(rt["loads"][2:21], np.degrees(rt["roll"][2:21]), 1)[0]
         t_min = (np.array([x["t"] for x in R]) - R[0]["t"]) / 60.0

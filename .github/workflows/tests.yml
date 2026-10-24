@@ -1,0 +1,41 @@
+# The test suite.  Runs only when started by hand (Actions -> tests -> Run workflow),
+# as agentic_experiments does for now.  To run it on every pull request too, add
+#   pull_request:
+# under `on:`.
+#
+# The agentic_experiments dependency is a private repository, which this workflow's own
+# token cannot read.  Add a repository secret AGENTIC_EXPERIMENTS_TOKEN: a fine-grained
+# personal access token with read-only "Contents" access to
+# UCSC-S-Tier/agentic_experiments.
+name: tests
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: tests-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      MPLBACKEND: Agg
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+      - name: Let pip read the agentic_experiments dependency
+        env:
+          TOKEN: ${{ secrets.AGENTIC_EXPERIMENTS_TOKEN }}
+        run: >
+          git config --global
+          url."https://x-access-token:${TOKEN}@github.com/UCSC-S-Tier/agentic_experiments".insteadOf
+          "https://github.com/UCSC-S-Tier/agentic_experiments"
+      - name: Install
+        run: python -m pip install -e ".[test,plot]"
+      - name: Run the tests
+        run: python -m pytest -q -p no:cacheprovider tests

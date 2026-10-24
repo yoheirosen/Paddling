@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Simulated OC1 training session through both devices, scored against the truth.
 
-    python "paddling/demos/demo_oc1_training.py" [--seed N] [--figure NAME]
+    python "demos/demo_oc1_training.py" [--seed N] [--figure NAME]
 
 Simulates a rate-ladder session (full-effort pieces at interleaved stroke rates,
 a long steady piece, the ladder again tired) on out-and-back legs in a tidal
@@ -174,8 +174,7 @@ def main(argv=None) -> int:
           f"{ph0['ama_cost_s500']:.2f} -> {ph1['ama_cost_s500']:.2f} s per 500 m; "
           f"side-slip {ph0['beta_rms_deg']:.2f} deg ({ph1['yaw_cost_s500']:.3f} s per 500 m)")
     if a.figure:
-        sys.path.insert(0, os.path.abspath(os.path.join(HERE, "..", "..")))
-        from agent_lib.figure_artifacts import emit
+        from agent_lib.figure_artifacts import emit       # agentic_experiments (a dependency)
         paths = emit(a.figure, data=figure_data(S, rows, sess, a.seed), plot_func=plot_oc1_training,
                      artifacts_dir=os.path.join(os.path.dirname(HERE), "artifacts"))
         print("\nwrote", ", ".join(os.path.basename(p) for p in paths.values()))
