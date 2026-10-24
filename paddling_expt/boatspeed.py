@@ -29,9 +29,26 @@ from typing import Any, Dict, List, Optional, Sequence
 import numpy as np
 
 from .hydro import (Craft, air_drag, ama_load_from_roll, resistance_table, roll_table,
-                    speed_for_power, yaw_drag)
+                    speed_for_power, water_resistance, yaw_drag)
 
-__all__ = ["estimate_ama_load", "stroke_physics", "physics_summary", "wobble_cost_from_data"]
+__all__ = ["estimate_ama_load", "stroke_physics", "physics_summary", "wobble_cost_from_data",
+           "power_at_speed", "speed_at_power"]
+
+
+def power_at_speed(craft: Craft, total_kg: float, speed, ama_kg: float = 0.0) -> np.ndarray:
+    """Power reaching the boat (W) at a steady speed through still water and air."""
+    table = resistance_table(craft, round(total_kg, 3))
+    v = np.asarray(speed, float)
+    L = ama_kg if craft.outrigger else 0.0
+    return (water_resistance(table, v, L) + air_drag(v, 0.0, craft.cda_m2)) * v
+
+
+def speed_at_power(craft: Craft, total_kg: float, power_w: float, ama_kg: float = 0.0) -> float:
+    """Steady speed (m/s) through still water and air that ``power_w`` reaching the boat holds."""
+    table = resistance_table(craft, round(total_kg, 3))
+    L = ama_kg if craft.outrigger else 0.0
+    curve = water_resistance(table, table["speeds"], L)
+    return speed_for_power(table["speeds"], curve, power_w, cda_m2=craft.cda_m2)
 
 
 def _speed_key(rows) -> str:

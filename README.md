@@ -13,6 +13,9 @@ peak falls in the drive, front-loading, drive time). Per session: the stroke-rat
 speed curve and best rate, **% of full-effort power at a given rate**, changes in the
 pull-force profile, fatigue and pacing trends, left/right symmetry, splits, legs,
 speed through the water and the current or wind along the course, downwind runs.
+Across sessions: best efforts from 1 to 40 minutes, critical power and predicted race
+times, the best speed seen at each stroke rate and each session's share of it, and
+whether going up in rate bought speed (`sessions.py`).
 
 Where speed and effort interact it uses a **hull-shape model** (`hydro.py`): skin
 friction, wave-making (Michell's thin-ship integral, hull and ama together) and air
@@ -34,7 +37,11 @@ python "paddling/demos/demo_boat_physics.py" --figure oc1_boat_physics
 python "paddling/demos/speedcoach_report.py" SESSION.csv --boat oc1 --total-kg 93 \
     --figure oc1_speedcoach_session
 
-# tests (no network, ~45 s)
+# across several SpeedCoach sessions: best efforts, critical power and predicted race
+# times, best speed at each stroke rate, % of best, what going up in rate gave
+python "paddling/demos/speedcoach_sessions.py" EXPORT_FOLDER --figure oc1_speedcoach_sessions
+
+# tests (no network, ~50 s)
 python -m pytest -q paddling/tests
 ```
 

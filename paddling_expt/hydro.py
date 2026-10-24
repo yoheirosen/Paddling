@@ -341,15 +341,15 @@ def water_resistance(table: Dict[str, np.ndarray], U, ama_load_kg=0.0) -> np.nda
     if len(L) == 1:
         r = np.interp(np.abs(U), s, R[:, 0])
     else:
-        Lc = np.clip(np.asarray(ama_load_kg, float), L[0], L[-1])
+        Ub, Lc = np.broadcast_arrays(np.abs(U), np.clip(np.asarray(ama_load_kg, float), L[0], L[-1]))
         j = np.clip(np.searchsorted(L, Lc) - 1, 0, len(L) - 2)
         w = (Lc - L[j]) / (L[j + 1] - L[j])
-        r0 = np.array([np.interp(abs(u), s, R[:, jj]) for u, jj in
-                       zip(np.atleast_1d(U), np.atleast_1d(j))])
-        r1 = np.array([np.interp(abs(u), s, R[:, jj + 1]) for u, jj in
-                       zip(np.atleast_1d(U), np.atleast_1d(j))])
-        r = (1 - w) * r0 + w * r1
-        r = r.reshape(np.shape(U)) if np.ndim(U) else float(np.atleast_1d(r)[0])
+        # interpolate in speed on every load column, then linearly between columns
+        cols = np.stack([np.interp(Ub.ravel(), s, R[:, k]) for k in range(len(L))], -1)
+        jf, wf = j.ravel(), w.ravel()
+        idx = np.arange(len(jf))
+        r = ((1 - wf) * cols[idx, jf] + wf * cols[idx, jf + 1]).reshape(Ub.shape)
+        r = r if np.ndim(r) else float(r)
     low = np.abs(U) < s[0]
     if np.any(low):
         r = np.where(low, R[0, 0] * (np.abs(U) / s[0]) ** 2, r)

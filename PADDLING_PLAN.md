@@ -221,6 +221,41 @@ no heart rate, power or impeller; `demos/speedcoach_report.py`):
 * Power to the boat from the hull model (typical OC1, 93 kg, 5 kg assumed on the
   ama, on speed with current and wind removed): median 82 W, 76–99 W by leg.
 
+**Nine real SpeedCoach sessions, 30 September – 17 October 2026**
+(`demos/speedcoach_sessions.py`, `sessions.py`; eight on the owner's home water,
+one 15 km session 73 km away on 3 October; GNSS only — no heart rate, impeller or
+power; typical OC1 hull, 93 kg, 5 kg assumed on the ama). Each session's push of
+current and wind is removed from every stroke before anything is compared.
+
+* **Conditions matter as much as fitness.** The push of current and wind ranged
+  from 0.01 to 0.34 m/s between sessions, in every direction; at a typical 2.7 m/s,
+  0.34 m/s into it costs about 27 s per 500 m. Raw GPS pace is not comparable
+  between sessions without this correction.
+* **Best efforts** (continuous paddling, power reaching the boat): 147 W for
+  1 min, 136 W for 2 min, 116 W for 5 min, 107 W for 10 min, 100 W for 20 min and
+  99 W for 40 min (the 20- and 40-minute bests both from the 15 km session).
+* **Critical power** (the standard fit `work = CP x time + W'` to the 2–20 minute
+  bests): **CP 95 W**, reserve above it **W' 5.9 kJ**, r² 0.999. With the hull
+  model this predicts, in still water: 1 km 5:26, 5 km 28:26, 10 km 57:11 (171.6 s
+  per 500 m). The model also says 40 minutes at about 98 W, close to the 99 W
+  actually held for 40 minutes on 3 October. Training best efforts are not
+  all-out, so these are conservative (the 1- and 2-minute bests sit well under the
+  fitted curve).
+* **Best speed at each stroke rate** (top 5 % of one-minute windows): rises
+  steadily from 2.50 m/s at 41 strokes/min to 3.20 m/s at 70, about 2.5 cm/s per
+  stroke/min, with **no peak** inside the rates paddled.
+* **% of best power at the rate paddled** (the goal "% power from speed and rate";
+  100 % = the best speed seen at that rate, hull-model power): session medians 70 %
+  (30 September, an easy session) to 86 %.
+* **Going up in rate within a session** (each session compared with itself,
+  407 one-minute windows): **+2.8 cm/s per extra stroke/min** (95 % interval +2.0
+  to +3.5, from resampling whole sessions); distance per stroke −2.3 cm. Above
+  58 strokes/min the gain was larger (+3.3 cm/s per stroke/min) and the stroke
+  shortened less (−1.1 cm) than below (+1.8 cm/s; −4.1 cm). Every session showed a
+  gain, from +0.8 cm/s (17 October, which is why that session alone looked flat)
+  to +4.1 cm/s. Rate moved with effort in these unplanned sessions, so this is
+  what going up in rate gave, not what rate alone buys.
+
 ## Honesty ledger (planted assumptions and limits)
 
 * The simulator's physiology is **phenomenological, chosen so the questions have
@@ -253,6 +288,12 @@ no heart rate, power or impeller; `demos/speedcoach_report.py`):
 * **Wobble's cost to the paddler** is a planted assumption in the simulator and
   could not be measured within one session; it needs sessions with different
   conditions.
+* **Real-session analyses** use GNSS speed with the push of current and wind
+  fitted per session as a constant (no change within the session beyond a
+  straight-line fade); a wind shift mid-session stays in the numbers. Absolute
+  watts depend on the hull, the total mass and the assumed ama load (all typical
+  until measured); comparisons between sessions do not. The rate effect cannot
+  separate rate from effort without a force or power measurement.
 * Light recovery strokes right after hard pieces can be missed (2 % of strokes in
   the training session, none in race paddling).
 * All timings are on this cloud sandbox (4 virtual CPUs, shared).
@@ -296,9 +337,11 @@ connectivity.
 2. **Real devices**: replace simulated records with the first head-unit and pod
    logs; check the mount calibration, stroke detection, side-from-yaw, the level
    and zero-load roll captures, and pod clock alignment on real data.
-3. **More SpeedCoach sessions**, ideally with planned interleaved rate pieces in
-   both directions (and an impeller or heart-rate strap if available), to test
-   the rate–speed and % power analyses on real paddling.
+3. **A planned rate test** (to separate rate from effort, which unplanned sessions
+   cannot): pieces at fixed rates (e.g. 56, 60, 64, 68, 72) in random order, each
+   at the same steady effort and in both directions, ideally with a heart-rate
+   strap; and one all-out 3-minute and one all-out 12-minute piece to pin down
+   critical power. The pod's force measurement would make this direct.
 4. **Coaching loop**: the per-second panel into the platform's tiered agents
    (`agent_lib/runtime/`), with cues to the paddler behind an `ActuatorGate`
    (at most one cue every few minutes, quiet during starts, turns and runs, a
@@ -318,6 +361,7 @@ paddling/
     pod.py           paddle-pod processing (clock, zero, strokes, force profile, side)
     fusion.py        OC1Engine: both devices -> stroke table + live panel
     analysis.py      performance analyses
+    sessions.py      several sessions: best efforts, critical power, best speed at each rate, rate effect
     hydro.py         resistance from hull shape (friction, Michell waves, air, side-slip), outrigger statics
     boats.py         typical OC1 and surf ski (replace with measurements)
     boatspeed.py     power to the boat, ama load and its cost, side-slip and wobble costs
@@ -325,7 +369,8 @@ paddling/
     scoring.py       scores against the simulator's planted truth
     geo.py           frames, rotations, coordinates
     sim/             water, paddler, hull, sensors, ready-made sessions
-  demos/             demo_oc1_training.py, demo_boat_physics.py, speedcoach_report.py
+  demos/             demo_oc1_training.py, demo_boat_physics.py, speedcoach_report.py,
+                     speedcoach_sessions.py
   tests/             pytest suite (no network; ~45 s)
   artifacts/         four-file figure artifacts (.py + .data.json tracked)
 ```
