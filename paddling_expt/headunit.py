@@ -15,17 +15,23 @@ after the session.  The steps:
    calibration can be supplied instead.
 3. **Attitude**: pitch and roll from a complementary filter (gyro for fast
    changes, gravity for the slow level), used to remove gravity from the surge
-   and to see nose-down surfing.  Wave-slap impacts and saturated samples are
-   left out of the gravity reference and the surge.
+   and to see nose-down surfing.  The gravity reference has the boat's own
+   acceleration taken out (fore-aft from GNSS speed changes, sideways from speed
+   x yaw rate in turns); wave-slap impacts and saturated samples are left out.
+   With a **level reference** (gravity in the box's axes captured with the boat
+   level on shore) roll and pitch are absolute — needed to read the ama's load
+   from the roll, where a kilogram is about a tenth of a degree.
 4. **Strokes**: the fore-aft acceleration, band-passed to 0.35–3 Hz, has one peak
    per stroke; a peak counts when it clears a fraction of the recent peak height
    and is the largest within a refractory window scaled to the recent stroke
    period.  Stroke rate is 60 / the interval between peaks.
 5. **Side**: a one-sided stroke yaws the bow away from the paddle side (a left
    stroke turns the bow right).  The yaw-rate pulse during the drive, relative to
-   the cycle's mean, gives each stroke's raw side; a switch is accepted after two
-   consecutive strokes agree on the new side, and both are relabelled.  This
-   physical sign is a planted assumption until checked on a real hull.
+   the cycle's mean, gives each stroke's raw side.  OC1 (several strokes a side):
+   a switch is accepted after two consecutive strokes agree on the new side, and
+   both are relabelled.  Surf ski (sides alternate every stroke): the alternation
+   is anchored to the majority of the last eight strokes.  This physical sign is a
+   planted assumption until checked on a real hull.
 6. **Speed**: a two-state Kalman filter (fore-aft ground speed, accelerometer
    bias) integrates the IMU at 100 Hz and is corrected by GNSS speed at 5–10 Hz,
    giving the within-stroke speed profile that GNSS alone is too slow and noisy
@@ -36,7 +42,12 @@ after the session.  The steps:
    strokes (maximum minus minimum, in m/s and as a share of the mean; lower is a
    smoother run) and the strongest deceleration; distance per stroke; and the
    within-stroke speed profile.
-8. **Downwind runs**: speed well above the recent paddling baseline together with
+8. **Roll, wobble and side-slip per stroke**: mean (static) roll; roll and yaw
+   wobble — what is left after subtracting each side's running average stroke
+   pattern; and side-slip (drift angle), the high-passed heading with the hull's
+   slender-body time constant ``m / (pi rho U T^2)`` (the track cannot follow
+   heading swings faster than that).
+9. **Downwind runs**: speed well above the recent paddling baseline together with
    forward acceleration and a nose-down pitch (a speed gain alone is often just
    a harder piece starting).
 
@@ -57,6 +68,8 @@ from scipy.signal import butter, sosfilt, sosfilt_zi
 from .geo import G
 
 __all__ = ["HeadConfig", "ClockMap", "MountCalibration", "HeadUnitProcessor", "History"]
+
+_PROFILE_N = 20
 
 
 @dataclass
@@ -81,6 +94,9 @@ class HeadConfig:
     base_window_s: float = 45.0
     base_pct: float = 25.0
     side_confirm: int = 2
+    side_mode: str = "auto"               # "runs" (OC1), "alternate" (surf ski), "auto" = from craft
+    craft: Any = None                     # paddling_expt.hydro.Craft, for the sway time constant
+    total_kg: float = 93.0                # paddler + boat
 
 
 class History:
@@ -154,14 +170,41 @@ class MountCalibration:
         return self.matrix is not None
 
     @staticmethod
-    def estimate(t: np.ndarray, acc: np.ndarray, gnss_t: np.ndarray, gnss_sog: np.ndarray,
-                 fs: float) -> Tuple[np.ndarray, Dict[str, Any]]:
+    def lever_arm(f_fwd: np.ndarray, w_hull: np.ndarray, fs: float) -> float:
+        """The box's sideways offset from the boat's turning point, from how the
+        fore-aft reading follows the yaw angular acceleration:
+        a_x(box) = a_x(boat) - alpha_z * y.  The yaw kick of a stroke changes sign
+        with the side while the surge does not, which separates the two.  (The
+        vertical offset is not estimated: each stroke's small pitch is in step
+        with the surge, so the two cannot be told apart.)"""
         from scipy.signal import sosfiltfilt
-        up = acc.mean(0)
-        up /= np.linalg.norm(up)
+        sos = butter(2, [0.4, 4.0], btype="band", fs=fs, output="sos")
+        alpha_z = np.gradient(sosfiltfilt(sos, w_hull[:, 2]), 1.0 / fs)
+        fb = sosfiltfilt(sos, f_fwd)
+        den = float(alpha_z @ alpha_z)
+        return float(-(alpha_z @ fb) / den) if den > 0 else 0.0
+
+    @staticmethod
+    def estimate(t: np.ndarray, acc: np.ndarray, gnss_t: np.ndarray, gnss_sog: np.ndarray,
+                 fs: float, level_up: Optional[np.ndarray] = None,
+                 gyr: Optional[np.ndarray] = None
+                 ) -> Tuple[np.ndarray, Dict[str, Any]]:
+        from scipy.signal import sosfiltfilt
+        # "up" from the on-shore level reference when there is one (absolute
+        # roll and pitch); otherwise the mean reading while paddling
+        up = np.asarray(level_up, float) if level_up is not None else acc.mean(0)
+        up = up / np.linalg.norm(up)
         h = acc - np.outer(acc @ up, up)
+        # The fore-aft surge repeats at the stroke frequency; sideways motion from
+        # one-sided or alternating strokes sits at half of it (surf ski) or flips
+        # sign with the side (OC1).  Find the stroke frequency, then take the
+        # principal axis in a narrow band around it.
         sos = butter(2, [0.4, 3.0], btype="band", fs=fs, output="sos")
         hb = sosfiltfilt(sos, h, axis=0)
+        f_stroke = _dominant_frequency(np.linalg.norm(hb, axis=1), fs, 0.55, 1.7)
+        if f_stroke:
+            sos_n = butter(2, [0.8 * f_stroke, 1.25 * f_stroke], btype="band", fs=fs, output="sos")
+            hb = sosfiltfilt(sos_n, h, axis=0)
         # two in-plane basis vectors, then the principal axis of the surge
         e1 = np.cross(up, [1.0, 0.0, 0.0])
         if np.linalg.norm(e1) < 0.3:
@@ -185,8 +228,49 @@ class MountCalibration:
             fwd = -fwd
         left = np.cross(up, fwd)
         M = np.stack([fwd, left, up])
+        lever_y = 0.0
+        if gyr is not None and len(gyr) == len(acc):
+            lever_y = MountCalibration.lever_arm(acc @ fwd, gyr @ M.T, fs)
         return M, {"surge_axis_share": float(evals[-1] / max(1e-12, evals.sum())),
-                   "gnss_corr": abs(r)}
+                   "gnss_corr": abs(r), "level_reference": level_up is not None,
+                   "stroke_hz": f_stroke, "lever_y_m": lever_y}
+
+
+def _dominant_frequency(x: np.ndarray, fs: float, lo: float, hi: float) -> Optional[float]:
+    """Frequency (Hz) of the largest spectral peak of ``x`` between ``lo`` and ``hi``."""
+    x = np.asarray(x, float) - np.mean(x)
+    if len(x) < 4 * fs:
+        return None
+    spec = np.abs(np.fft.rfft(x * np.hanning(len(x)))) ** 2
+    f = np.fft.rfftfreq(len(x), 1.0 / fs)
+    m = (f >= lo) & (f <= hi)
+    if not m.any():
+        return None
+    return float(f[m][np.argmax(spec[m])])
+
+
+def _acf_period(y: np.ndarray, fs: float, lo_s: float = 0.55, hi_s: float = 2.5) -> Optional[float]:
+    """Stroke period from the autocorrelation: the first strong local maximum."""
+    y = np.asarray(y, float) - np.mean(y)
+    n = len(y)
+    if n < 4 * fs or not np.any(y):
+        return None
+    F = np.fft.rfft(y, 2 * n)
+    ac = np.fft.irfft(F * np.conj(F))[:n]
+    ac /= ac[0]
+    a, b = int(lo_s * fs), min(n - 2, int(hi_s * fs))
+    best = None
+    for k in range(a + 1, b):
+        if ac[k] > ac[k - 1] and ac[k] >= ac[k + 1] and ac[k] > 0.25:
+            if best is None:
+                best = k
+            # prefer the first peak unless a later one is much stronger (a missed
+            # weak stroke must not be read as half the rate)
+            elif ac[k] > ac[best] + 0.25:
+                best = k
+            if best is not None and k > 1.6 * best:
+                break
+    return best / fs if best else None
 
 
 class HeadUnitProcessor:
@@ -206,13 +290,21 @@ class HeadUnitProcessor:
         self.t_newest = -math.inf
         self.t_proc = -math.inf
         self.hist = History(["t", "a_fwd", "band", "yaw_rate", "roll", "pitch", "v",
-                             "sat"])
+                             "sat", "beta"])
         self.strokes: List[Dict[str, Any]] = []
         self.runs: List[Tuple[float, float]] = []
         self.events: List[Dict[str, Any]] = []
         self.last_fix: Optional[Dict[str, Any]] = None
         self.last_fix_t = -math.inf
         self._gnss_hz = 5.0
+        self.level_up: Optional[np.ndarray] = None
+        self._lever_y = 0.0
+        c = self.cfg
+        kind = getattr(c.craft, "kind", None)
+        self.side_mode = c.side_mode if c.side_mode != "auto" else (
+            "alternate" if kind == "surfski" else "runs")
+        self._draft = (c.craft.hull_draft(c.total_kg, 5.0 if kind == "oc1" else 0.0)
+                       if c.craft is not None else 0.10)
         self._init_filters()
 
     # ── setup ────────────────────────────────────────────────────────────
@@ -221,8 +313,14 @@ class HeadUnitProcessor:
         self._sos = np.vstack([butter(2, c.hp_hz, btype="high", fs=self.fs, output="sos"),
                                butter(4, c.lp_hz, btype="low", fs=self.fs, output="sos")])
         self._zi = None
+        self._sos_alpha = butter(2, 4.0, btype="low", fs=self.fs, output="sos")
+        self._zi_alpha = None
+        self._w_last = None
         self._att = None                      # (pitch, roll)
         self._a_last = 0.0
+        self._psi = self._psi_lp = 0.0
+        self._templates: Dict[Tuple[str, int], np.ndarray] = {}
+        self._alt: List[Tuple[int, int]] = []
         self._gbias = np.zeros(3)
         self._gbias_n = 0
         self._kf = None                       # [v, b], P
@@ -231,6 +329,8 @@ class HeadUnitProcessor:
         self._peak_heights: Deque[float] = deque(maxlen=9)
         self._intervals: Deque[float] = deque(maxlen=7)
         self._last_peak_t = -math.inf
+        self._acf_T: Optional[float] = None
+        self._acf_t = -math.inf
         self._side = 0
         self._side_pending: List[int] = []
         self._run_on: Optional[float] = None
@@ -239,7 +339,19 @@ class HeadUnitProcessor:
 
     @property
     def period(self) -> float:
+        """Current stroke period: the signal's own autocorrelation when it has a
+        clear one (refreshed every 2 s), else the median accepted interval."""
+        if self._acf_T is not None:
+            return self._acf_T
         return float(np.median(self._intervals)) if self._intervals else 1.0
+
+    def _refresh_period(self) -> None:
+        H = self.hist
+        if H.n < 8 * self.fs or self.t_proc - self._acf_t < 2.0:
+            return
+        self._acf_t = self.t_proc
+        T = _acf_period(H["band"][H.n - int(8 * self.fs):], self.fs)
+        self._acf_T = T
 
     # ── ingest ───────────────────────────────────────────────────────────
     def push(self, rec: Dict[str, Any]) -> None:
@@ -251,7 +363,7 @@ class HeadUnitProcessor:
             self._raw.append((t, acc, gyr))
             self.t_newest = max(self.t_newest, float(t[-1]))
             if not self.mount.ready:
-                self._calib.append((t, acc))
+                self._calib.append((t, acc, gyr))
                 self._try_calibrate()
                 # bounded memory while waiting for enough paddling to calibrate
                 while self._calib and self.t_newest - float(self._calib[0][0][-1]) > 180.0:
@@ -279,6 +391,8 @@ class HeadUnitProcessor:
             self._gnss_hz = float(rec.get("gnss_hz", 5.0))
             self.acc_range = float(rec.get("acc_range", self.acc_range))
             self._init_filters()
+        elif s == "level":
+            self.level_up = np.asarray(rec["up"], float)
         elif s in ("house", "button", "link"):
             self.events.append({"t": rec.get("t"), "type": s,
                                 **{k: v for k, v in rec.items()
@@ -289,12 +403,15 @@ class HeadUnitProcessor:
             return
         t = np.concatenate([c[0] for c in self._calib])
         acc = np.concatenate([c[1] for c in self._calib])
+        gyr = np.concatenate([c[2] for c in self._calib])
         gt, gv = self.fixes["t"], self.fixes["v"]
         moving = np.interp(t, gt, gv) > self.cfg.calib_min_speed
         if moving.sum() < self.cfg.calib_moving_s * self.fs * 0.8:
             return
         m = (gt >= t[moving][0]) & (gt <= t[moving][-1])
-        M, info = MountCalibration.estimate(t[moving], acc[moving], gt[m], gv[m], self.fs)
+        M, info = MountCalibration.estimate(t[moving], acc[moving], gt[m], gv[m], self.fs,
+                                            level_up=self.level_up, gyr=gyr[moving])
+        self._lever_y = info.get("lever_y_m", 0.0)
         self.mount.matrix, self.mount.info = M, info
         self._calib.clear()
         self.events.append({"t": float(t[-1]), "type": "mount_calibrated", **info})
@@ -325,12 +442,24 @@ class HeadUnitProcessor:
             a = 1.0 / min(self._gbias_n, int(60 * self.fs))
             self._gbias[:2] += a * (row[:2] - self._gbias[:2])
         w = w - np.array([self._gbias[0], self._gbias[1], 0.0])
+        # angular acceleration (low-passed derivative of the rates) for the
+        # lever-arm correction of the fore-aft reading
+        wprev = self._w_last if self._w_last is not None else w[0]
+        dw = np.diff(np.vstack([wprev, w]), axis=0) / dt
+        self._w_last = w[-1].copy()
+        if self._zi_alpha is None:
+            self._zi_alpha = np.zeros((self._sos_alpha.shape[0], 2, 3))
+        alpha, self._zi_alpha = sosfilt(self._sos_alpha, dw, axis=0, zi=self._zi_alpha)
+        f = f.copy()
+        f[:, 0] += alpha[:, 2] * self._lever_y
         # attitude: complementary filter
         alpha = c.attitude_tau_s / (c.attitude_tau_s + dt)
         # gravity's pitch reference, with the boat's own acceleration (from GNSS
         # speed changes) taken out — otherwise a surf run reads as a nose-up pitch
         pitch_acc = np.arctan2(-(f[:, 0] - self._gnss_accel(t)), np.clip(f[:, 2], 1e-3, None))
-        roll_acc = np.arctan2(f[:, 1], np.clip(f[:, 2], 1e-3, None))
+        # sideways: take out the centripetal acceleration of turning (speed x yaw rate)
+        v_now = float(self._kf[0]) if self._kf is not None else 0.0
+        roll_acc = np.arctan2(f[:, 1] - v_now * w[:, 2], np.clip(f[:, 2], 1e-3, None))
         if self._att is None:
             self._att = (float(pitch_acc[0]), float(roll_acc[0]))
         # Impacts (wave slap, a hand on the box) and range saturation: the
@@ -362,11 +491,27 @@ class HeadUnitProcessor:
             self._zi = sosfilt_zi(self._sos) * 0.0
         band, self._zi = sosfilt(self._sos, a_fwd, zi=self._zi)
         v = self._kalman(t, a_fwd)
+        beta = self._side_slip(w[:, 2], v, dt)
         self.hist.extend(t=t, a_fwd=a_fwd, band=band, yaw_rate=w[:, 2], roll=roll,
-                         pitch=pitch, v=v, sat=sat)
+                         pitch=pitch, v=v, sat=sat, beta=beta)
         self.t_proc = float(t[-1])
+        self._refresh_period()
         self._peaks(t, band)
         self._runs(t)
+
+    def _side_slip(self, r, v, dt) -> np.ndarray:
+        """Drift angle: the heading high-passed with the hull's sway time constant."""
+        from .hydro import sway_time_constant
+        out = np.empty(len(r))
+        psi, lp = self._psi, self._psi_lp
+        for i in range(len(r)):
+            psi += r[i] * dt
+            vi = v[i] if np.isfinite(v[i]) else 0.0
+            tau = sway_time_constant(max(0.3, vi), self.cfg.total_kg, self._draft)
+            lp += (psi - lp) * dt / tau
+            out[i] = -(psi - lp)
+        self._psi, self._psi_lp = psi, lp
+        return out
 
     def _gnss_accel(self, t) -> np.ndarray:
         """Fore-aft acceleration from GNSS speed (difference over ~1 s, so it is
@@ -497,10 +642,36 @@ class HeadUnitProcessor:
             s["roll_feat"] = float(np.mean(ro[dw]) - np.mean(ro[cw]))
             s["side_raw"] = -1 if feat > 0 else 1
             self._side_update(k)
+        # roll, wobble and side-slip over the cycle
+        ro, be = H["roll"][sl], H["beta"][sl]
+        if len(ro) > 5:
+            s["roll_mean_deg"] = math.degrees(float(np.mean(ro)))
+            s["roll_pp_deg"] = math.degrees(float(np.ptp(ro)))
+            s["beta_rms_deg"] = math.degrees(float(np.sqrt(np.mean(be ** 2))))
+            grid = np.linspace(tp, t_end, _PROFILE_N)
+            for name, series in (("roll", H["roll"]), ("yaw", H["yaw_rate"])):
+                prof = np.interp(grid, tt, series[sl])
+                prof = prof - prof.mean()
+                key = (name, s.get("side_raw", 0))
+                tmpl = self._templates.get(key)
+                if tmpl is None:
+                    tmpl = prof.copy()
+                resid = prof - tmpl
+                s[f"{name}_wobble_deg"] = math.degrees(float(np.sqrt(np.mean(resid ** 2))))
+                self._templates[key] = 0.9 * tmpl + 0.1 * prof
         s["final"] = True
 
     def _side_update(self, k: int) -> None:
         r = self.strokes[k]["side_raw"]
+        if self.side_mode == "alternate":
+            # sides alternate every stroke: anchor the alternation on the last 8
+            self._alt.append((k, r))
+            self._alt = self._alt[-8:]
+            score = sum(rr * (1 if (k - kk) % 2 == 0 else -1) for kk, rr in self._alt)
+            anchor = (1 if score > 0 else -1) if score != 0 else r
+            for kk, _ in self._alt:
+                self.strokes[kk]["side"] = anchor * (1 if (k - kk) % 2 == 0 else -1)
+            return
         if self._side == 0:
             self._side = r
         if r == self._side:

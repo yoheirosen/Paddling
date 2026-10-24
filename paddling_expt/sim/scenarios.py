@@ -10,6 +10,10 @@
 * :func:`steady_race` — a flat-water race at a held rate and effort.
 * :func:`downwind_race` — the same with swell from behind (surf runs).
 
+Every session takes ``kind="oc1"`` (several strokes a side, ama, paddle pod) or
+``kind="surfski"`` (alternating double-paddle strokes, no ama, more wobble, no pod —
+a single-bridge pod on a kayak paddle is not modelled).
+
 Each returns a :class:`Session`: the truth, the records both devices would send,
 the sensor truth, and the labelled segments in both true and head-unit time.
 """
@@ -18,6 +22,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any, Dict, List, Optional, Tuple
 
+from ..boats import CRAFT
+from ..hydro import Craft
 from .environment import Course, CurrentField, Swell, WaveTrain
 from .hull import Truth, simulate_truth
 from .paddler import BoatParams, PaddlerParams, Plan, Segment
@@ -33,6 +39,8 @@ class Session:
     sensors: SensorTruth
     segments: List[Tuple[float, float, str]]          # true time
     plan: Plan
+    craft: Craft = None
+    total_kg: float = 0.0
 
     def head_segments(self, kind: Optional[str] = None) -> List[Tuple[float, float, str]]:
         out = []
@@ -44,12 +52,17 @@ class Session:
 
 def _run(plan: Plan, *, seed: int, course: Course, current: CurrentField = None,
          swell: Swell = None, paddler: PaddlerParams = None, head: HeadUnitConfig = None,
-         pod: PodConfig = None) -> Session:
-    tr = simulate_truth(plan, paddler=paddler, current=current, swell=swell, course=course,
-                        seed=seed)
+         pod: PodConfig = None, kind: str = "oc1", craft: Craft = None,
+         boat: BoatParams = None, head_wind: float = 0.0) -> Session:
+    craft = craft or CRAFT[kind]
+    if craft.outrigger is None:
+        boat = boat or BoatParams(wobble_dps=3.0, roll_wobble_deg=1.5)
+        pod = pod or PodConfig(present=False)
+    tr = simulate_truth(plan, paddler=paddler, boat=boat, current=current, swell=swell,
+                        course=course, craft=craft, head_wind=head_wind, seed=seed)
     recs, st = make_records(tr, head=head, pod=pod, seed=seed)
     segs = [(a, b, s.label) for a, b, s in plan.boundaries()]
-    return Session(tr, recs, st, segs, plan)
+    return Session(tr, recs, st, segs, plan, craft, float(tr.params["m_tot"]))
 
 
 def _out_and_back(n_legs: int = 40, leg_m: float = 1000.0) -> Course:
@@ -61,7 +74,8 @@ def training_session(*, seed: int = 0, rates=(62, 54, 70, 58, 66),
                      rest_s: float = 60.0, steady_s: float = 900.0, steady_rate: float = 62.0,
                      steady_effort: float = 1.0, full_effort: float = 1.15,
                      current_mps: float = 0.25, paddler: PaddlerParams = None,
-                     pod: PodConfig = None, head: HeadUnitConfig = None) -> Session:
+                     pod: PodConfig = None, head: HeadUnitConfig = None,
+                     kind: str = "oc1", **kw) -> Session:
     segs = [Segment(5, 0, 0, "rest"), Segment(120, 56, 0.6, "warmup")]
     for tag in ("fresh", "tired"):
         if tag == "tired":
@@ -73,7 +87,7 @@ def training_session(*, seed: int = 0, rates=(62, 54, 70, 58, 66),
     return _run(Plan(segs), seed=seed, course=_out_and_back(),
                 current=CurrentField(peak_mps=current_mps, set_deg=0.0,
                                      t_max_flood_s=1_792_857_600.0),
-                paddler=p, head=head, pod=pod)
+                paddler=p, head=head, pod=pod, kind=kind, **kw)
 
 
 def steady_race(*, seed: int = 0, duration_s: float = 1200.0, rate: float = 62.0,

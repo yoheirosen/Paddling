@@ -28,9 +28,12 @@ counts behind them; nothing is reported without saying how many strokes support 
 * :func:`splits` — per-segment or per-distance summaries (time, distance, pace per
   500 m, rate, distance per stroke, check, impulse, % power).
 * :func:`water_speed_model` / :func:`water_speed` — speed through the water from
-  the pod's force: in steady paddling mean propulsive force balances drag
-  (``F = k v^2``), so ``v_water = sqrt(F / k)`` once ``k`` is fitted on a
-  stretch where the current averages out (equal time on out-and-back legs).  The
+  the pod's force: in steady paddling mean propulsive force balances the hull's
+  resistance (from its shape, :mod:`.hydro`, at the stroke's ama load), so the
+  water speed is where that resistance equals the force, once the one scale
+  between blade force and thrust is fitted on a stretch where the current
+  averages out (equal time on out-and-back legs).  Without a hull model it falls
+  back to ``F = k v^2``.  The
   current along the course is then GNSS speed minus water speed — how much the
   water is helping or costing the paddler, stroke by stroke.
 * :func:`heading_effect` — without the pod: the push of current and wind
@@ -348,28 +351,104 @@ def splits(rows, *, every_m: Optional[float] = None,
 
 
 # ── speed through the water and the current ─────────────────────────────
-def water_speed_model(rows, *, min_n: int = 30) -> Optional[Dict[str, Any]]:
-    """Fit ``mean_force = k * v_water^2`` on rows where the current averages out
-    (out-and-back legs of equal time, or slack water).  Returns ``{"k": ...}``."""
+def water_speed_model(rows, *, craft=None, total_kg: Optional[float] = None,
+                      min_n: int = 30) -> Optional[Dict[str, Any]]:
+    """Speed through the water from the pod's force, fitted on rows where the
+    current averages out (out-and-back legs of equal time, or slack water).
+
+    With a ``craft`` (hull model): mean blade force = ``c`` x the hull's own
+    resistance at that speed (and at that stroke's ama load, when the rows carry
+    ``ama_load_kg``), plus air drag; ``c`` (blade-normal force per unit thrust) is
+    the one number fitted.  Without one: ``mean_force = k v^2``."""
     R = select(rows, require=("mean_force", "v_mean"))
     if len(R) < min_n:
         return None
     f, v = _col(R, "mean_force"), _col(R, "v_mean")
-    # GNSS speed = sqrt(F / k) + current; over out-and-back legs the current
-    # averages out, so regress speed on sqrt(F) through the origin
-    s = np.sqrt(np.clip(f, 0, None))
-    slope = float(np.sum(v * s) / np.sum(s * s))          # 1 / sqrt(k)
-    resid = v - slope * s
-    return {"k": 1.0 / slope ** 2, "n": len(R), "mean_residual": float(np.mean(resid)),
-            "rmse": float(np.std(resid))}
+    if craft is None:
+        # GNSS speed = sqrt(F / k) + current; over out-and-back legs the current
+        # averages out, so regress speed on sqrt(F) through the origin
+        s = np.sqrt(np.clip(f, 0, None))
+        slope = float(np.sum(v * s) / np.sum(s * s))          # 1 / sqrt(k)
+        resid = v - slope * s
+        return {"kind": "k", "k": 1.0 / slope ** 2, "n": len(R),
+                "mean_residual": float(np.mean(resid)), "rmse": float(np.std(resid))}
+    model = {"kind": "hull", "craft": craft, "total_kg": float(total_kg), "c": 1.0}
+    hd = [r.get("heading_deg") for r in R]
+    if all(h is not None for h in hd):
+        # GNSS speed - water speed = the current's component along each stroke's
+        # direction: fit the force scale c and the current vector together
+        # (needs two or more directions; equal time on each is not required)
+        h = np.radians(np.array(hd, float))
+        U = np.stack([np.sin(h), np.cos(h)], -1)
+
+        def sse(c):
+            model["c"] = c
+            res = v - _water_speeds(R, model)
+            ok = np.isfinite(res)
+            cur, *_ = np.linalg.lstsq(U[ok], res[ok], rcond=None)
+            return float(np.sum((res[ok] - U[ok] @ cur) ** 2)), cur
+        lo, hi = 0.5, 2.0
+        g = (math.sqrt(5) - 1) / 2
+        a, b = hi - g * (hi - lo), lo + g * (hi - lo)
+        fa, fb = sse(a)[0], sse(b)[0]
+        for _ in range(40):
+            if fa < fb:
+                hi, b, fb = b, a, fa
+                a = hi - g * (hi - lo)
+                fa = sse(a)[0]
+            else:
+                lo, a, fa = a, b, fb
+                b = lo + g * (hi - lo)
+                fb = sse(b)[0]
+        _, cur = sse(0.5 * (lo + hi))
+        model["current_en"] = (float(cur[0]), float(cur[1]))
+    else:
+        # one direction only: assume the current averages to zero over the rows
+        lo, hi = 0.5, 2.0
+        for _ in range(40):
+            model["c"] = 0.5 * (lo + hi)
+            if np.nanmean(v - _water_speeds(R, model)) < 0:
+                lo = model["c"]
+            else:
+                hi = model["c"]
+    resid = v - _water_speeds(R, model)
+    model.update(n=len(R), mean_residual=float(np.nanmean(resid)), rmse=float(np.nanstd(resid)))
+    return model
+
+
+def _water_speeds(rows, model) -> np.ndarray:
+    from .hydro import air_drag, resistance_table
+    craft, M, c = model["craft"], model["total_kg"], model["c"]
+    tab = resistance_table(craft, round(M, 3))
+    sp, loads, Rt = tab["speeds"], tab["ama_loads"], tab["R"]
+    out = np.full(len(rows), np.nan)
+    for i, r in enumerate(rows):
+        L = r.get("ama_load_kg") or (5.0 if craft.outrigger else 0.0)
+        if len(loads) > 1:
+            j = max(0, min(len(loads) - 2, int(np.searchsorted(loads, L)) - 1))
+            w = min(1.0, max(0.0, (L - loads[j]) / (loads[j + 1] - loads[j])))
+            curve = (1 - w) * Rt[:, j] + w * Rt[:, j + 1]
+        else:
+            curve = Rt[:, 0]
+        thrust = r["mean_force"] / c
+        total = curve + np.array([air_drag(u, 0.0, craft.cda_m2) for u in sp])
+        out[i] = float(np.interp(thrust, total, sp))
+    return out
 
 
 def water_speed(rows, model: Dict[str, Any]) -> List[Dict[str, Any]]:
     """Adds ``water_speed`` and ``current_along`` (GNSS speed minus water speed;
     positive = the water is carrying the boat) to each row with a pod force."""
+    R = [r for r in rows if r.get("mean_force") is not None and r.get("v_mean") is not None]
+    if model.get("kind") == "hull":
+        vw = _water_speeds(R, model)
+        for r, w in zip(R, vw):
+            r["water_speed"] = float(w)
+            r["current_along"] = r["v_mean"] - float(w)
+        return rows
     k = model["k"]
-    for r in rows:
-        if r.get("mean_force") is not None and r.get("v_mean") is not None and k > 0:
+    for r in R:
+        if k > 0:
             r["water_speed"] = math.sqrt(max(0.0, r["mean_force"]) / k)
             r["current_along"] = r["v_mean"] - r["water_speed"]
     return rows

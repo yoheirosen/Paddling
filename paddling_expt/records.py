@@ -22,6 +22,9 @@ head        gnss        t (head clock at the fix), utc (s), fix (0 = none, 2/3),
                         null when fix == 0
 head        house       t, vbat (V), charging, temp_c, state
 head        button      t, button, action
+head        level       t, up[3] — gravity direction in the box's axes captured with
+                        the boat level on shore (a button press); the reference
+                        for absolute roll and pitch
 head        link        t, state ("up" / "down") — the pod's Bluetooth link
 pod         meta        rx (head clock), fs (Hz), fw
 pod         pkt         rx (head clock at receipt), seq (16-bit, wraps), t0 (pod
@@ -48,6 +51,7 @@ REQUIRED: Dict[tuple, tuple] = {
     ("head", "gnss"): ("t", "utc", "fix"),
     ("head", "house"): ("t",),
     ("head", "button"): ("t", "button"),
+    ("head", "level"): ("t", "up"),
     ("head", "link"): ("t", "state"),
     ("pod", "meta"): ("fs",),
     ("pod", "pkt"): ("rx", "seq", "t0", "fs", "strain"),

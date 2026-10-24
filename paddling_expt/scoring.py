@@ -205,9 +205,13 @@ def score_training(session, rows, *, settle: int = 8) -> Dict[str, Any]:
     tsegs = session.segments
     steady = [s for s in segs if s[2] == "steady"][0]
     out: Dict[str, Any] = {}
-    W = an.water_speed_model(an.select(rows, steady[0], steady[1]))
+    if session.craft is not None:
+        from .boatspeed import estimate_ama_load
+        estimate_ama_load(rows, session.craft, session.total_kg)
+    W = an.water_speed_model(an.select(rows, steady[0], steady[1]), craft=session.craft,
+                             total_kg=session.total_kg)
     an.water_speed(rows, W)
-    out["water_k"] = W["k"]
+    out["water_scale"] = W.get("c", W.get("k"))
     # current along the hull's heading
     R = an.select(rows, steady[0], steady[1], require=("current_along",))
     tt = true_time(st, [r["t"] for r in R])

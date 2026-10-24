@@ -100,6 +100,9 @@ class OC1Engine:
                    "v_mean": s.get("v_mean"), "check_mps": s.get("check_mps"),
                    "check_ratio": s.get("check_ratio"), "peak_decel": s.get("peak_decel"),
                    "dps": s.get("dps"), "heading_deg": s.get("heading_deg"),
+                   "roll_mean_deg": s.get("roll_mean_deg"), "roll_pp_deg": s.get("roll_pp_deg"),
+                   "roll_wobble_deg": s.get("roll_wobble_deg"),
+                   "yaw_wobble_deg": s.get("yaw_wobble_deg"), "beta_rms_deg": s.get("beta_rms_deg"),
                    "side": s.get("side"), "side_source": "hull",
                    "profile_speed": s.get("profile")}
             if len(c) and lag is not None:

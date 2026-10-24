@@ -25,7 +25,9 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.dirname(HERE))
 
 from paddling_expt import analysis as an                                 # noqa: E402
+from paddling_expt.boatspeed import physics_summary, stroke_physics      # noqa: E402
 from paddling_expt.fusion import OC1Engine                               # noqa: E402
+from paddling_expt.headunit import HeadConfig                            # noqa: E402
 from paddling_expt.pod import StrainCalibration                          # noqa: E402
 from paddling_expt.scoring import score_head, score_pod, score_training, true_time  # noqa: E402
 from paddling_expt.sim.scenarios import training_session                 # noqa: E402
@@ -88,12 +90,14 @@ def run(seed: int = 1):
     loads = [0, 50, 100, 150, 200]
     cal = StrainCalibration.from_loads(loads, strain_calibration_counts(S.sensors, loads))
     t0 = time.time()
-    E = OC1Engine(calibration=cal).feed_all(S.records)
+    E = OC1Engine(head_cfg=HeadConfig(craft=S.craft, total_kg=S.total_kg),
+                  calibration=cal).feed_all(S.records)
     rows = E.stroke_table()
     proc = time.time() - t0
     head = score_head(E.head, S.truth, S.sensors)
     pod = score_pod(E.pod, S.truth, S.sensors)
     sess = score_training(S, rows)
+    stroke_physics(rows, S.craft, S.total_kg)
     return S, E, rows, head, pod, sess, proc
 
 
@@ -161,6 +165,14 @@ def main(argv=None) -> int:
                         "best_rate_ground_fresh", "best_rate_true_tired", "best_rate_water_tired"]))
     print(" ", f(sess, ["pct_power_true_median", "pct_power_est_median", "pct_power_err_median",
                         "peak_pos_shift_true", "peak_pos_shift_est", "peak_pos_shift_z"]))
+    steady = [x for x in S.head_segments() if x[2] == "steady"][0]
+    mid = 0.5 * (steady[0] + steady[1])
+    ph0, ph1 = physics_summary(rows, steady[0] + 60, mid), physics_summary(rows, mid, steady[1])
+    print("Hull model over the steady piece (first half -> second half):")
+    print(f"  power to the boat {ph0['boat_power_w']:.0f} -> {ph1['boat_power_w']:.0f} W; "
+          f"ama load {ph0['ama_load_kg']:.1f} -> {ph1['ama_load_kg']:.1f} kg, costing "
+          f"{ph0['ama_cost_s500']:.2f} -> {ph1['ama_cost_s500']:.2f} s per 500 m; "
+          f"side-slip {ph0['beta_rms_deg']:.2f} deg ({ph1['yaw_cost_s500']:.3f} s per 500 m)")
     if a.figure:
         sys.path.insert(0, os.path.abspath(os.path.join(HERE, "..", "..")))
         from agent_lib.figure_artifacts import emit

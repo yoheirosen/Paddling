@@ -26,6 +26,8 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.dirname(HERE))
 
 from paddling_expt import analysis as an                       # noqa: E402
+from paddling_expt.boats import CRAFT                           # noqa: E402
+from paddling_expt.boatspeed import stroke_physics              # noqa: E402
 from paddling_expt.speedcoach import add_headings, read_speedcoach   # noqa: E402
 
 
@@ -92,8 +94,10 @@ def build(path: str):
     return d, R, he, he0, L, rs, dv, sp
 
 
-def report(path: str) -> dict:
+def report(path: str, boat: str = "oc1", total_kg: float = 93.0) -> dict:
     d, R, he, he0, L, rs, dv, sp = build(path)
+    craft = CRAFT[boat]
+    stroke_physics(R, craft, total_kg, speed_key="v_corrected", default_ama_kg=5.0)
     info = d["info"]
     last = d["strokes"][-1]
     dur, dist = last["t"], last["distance_m"]
@@ -102,12 +106,20 @@ def report(path: str) -> dict:
           f"average pace {500 * dur / dist:.0f} s per 500 m")
     print(f"  recorded: heart rate {'yes' if d['has']['hr'] else 'no'}, water-speed impeller "
           f"{'yes' if d['has']['water_speed_imp'] else 'no'}, power {'yes' if d['has']['power_w'] else 'no'}")
+    print(f"\nPower to the boat from the hull model ({craft.name}, {total_kg:.0f} kg with "
+          f"paddler{', 5 kg assumed on the ama — no roll in this file' if craft.outrigger else ''}), "
+          "on speed with current and wind removed:")
+    pw = [r["boat_power_w"] for r in R if r.get("boat_power_w") is not None]
+    print(f"  session median {np.median(pw):.0f} W (middle half {np.percentile(pw, 25):.0f}-"
+          f"{np.percentile(pw, 75):.0f} W)")
     print("\nLegs (steady direction):")
     for lg in L:
+        p_leg = [r["boat_power_w"] for r in R if lg["t0"] <= r["t"] <= lg["t1"]
+                 and r.get("boat_power_w") is not None]
         print(f"  {lg['t0'] / 60:5.1f}-{lg['t1'] / 60:5.1f} min  heading {lg['heading_deg']:4.0f} deg  "
               f"{lg['distance_m']:5.0f} m  pace {lg['pace_500m_s']:5.1f} s/500 m  "
               f"rate {lg['rate_spm']:4.1f}  dist/stroke {lg['dps']:.2f} m  "
-              f"push of water+wind {lg['water_effect']:+.2f} m/s")
+              f"push {lg['water_effect']:+.2f} m/s  boat power {np.median(p_leg):4.0f} W")
     print(f"\nCurrent and wind together: {he['push_mps']:.2f} m/s towards {he['push_towards_deg']:.0f} deg "
           f"(assuming no fade over the session).")
     print(f"  Allowing a steady fade: {he0['push_mps']:.2f} m/s towards {he0['push_towards_deg']:.0f} deg "
@@ -165,8 +177,10 @@ def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("path")
     ap.add_argument("--figure", default=None, help="artifact base name to write")
+    ap.add_argument("--boat", choices=sorted(CRAFT), default="oc1")
+    ap.add_argument("--total-kg", type=float, default=93.0, help="paddler + boat (kg)")
     a = ap.parse_args(argv)
-    res = report(a.path)
+    res = report(a.path, a.boat, a.total_kg)
     if a.figure:
         sys.path.insert(0, os.path.abspath(os.path.join(HERE, "..", "..")))
         from agent_lib.figure_artifacts import emit

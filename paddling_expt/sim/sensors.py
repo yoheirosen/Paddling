@@ -66,6 +66,7 @@ class HeadUnitConfig:
     gnss_vel_noise: float = 0.04
     gnss_dropouts_per_h: float = 2.0
     origin_latlon: Tuple[float, float] = (36.9514, -122.0262)   # off Santa Cruz
+    level_error_deg: float = 0.1          # error of the on-shore "boat level" capture
 
 
 @dataclass
@@ -175,6 +176,8 @@ def make_records(tr: Truth, *, head: HeadUnitConfig = None, pod: PodConfig = Non
 
     R, w, a_ref = _hull_kinematics(tr)
     mount = hc.mount if hc.mount is not None else random_rotation(rng)
+    acc_bias = rng.normal(0, hc.acc_bias_sd, 3)
+    gyr_bias = np.radians(rng.normal(0, hc.gyr_bias_sd_dps, 3))
     records: List[Tuple[float, Dict[str, Any]]] = []
 
     # ── head IMU ─────────────────────────────────────────────────────────
@@ -202,8 +205,6 @@ def make_records(tr: Truth, *, head: HeadUnitConfig = None, pod: PodConfig = Non
             f_h[i0:j, 0] += 0.3 * sh[: j - i0]
     f_box = f_h @ mount            # = mount^T f_h per row
     w_box = w @ mount
-    acc_bias = rng.normal(0, hc.acc_bias_sd, 3)
-    gyr_bias = np.radians(rng.normal(0, hc.gyr_bias_sd_dps, 3))
     step = max(1, int(round(1.0 / (hc.imu_hz * dt))))
     m = (n // step) * step
     f_s = f_box[:m].reshape(-1, step, 3).mean(1) + acc_bias \
@@ -220,6 +221,19 @@ def make_records(tr: Truth, *, head: HeadUnitConfig = None, pod: PodConfig = Non
         records.append((float(th[sl][-1]) + 0.002, {
             "dev": "head", "stream": "imu", "t": th[sl].round(6),
             "acc": f_s[sl].astype(np.float32), "gyr": w_s[sl].astype(np.float32)}))
+    # the "boat level" reference captured on shore (button press): what this same
+    # accelerometer reads with the boat level — so its bias is in the reference
+    # and cancels — plus how far from truly level the boat sat (level_error_deg)
+    up_box = mount.T @ np.array([0.0, 0.0, 1.0])
+    ax = np.cross(up_box, rng.normal(size=3))
+    ax /= np.linalg.norm(ax)
+    e = math.radians(hc.level_error_deg)
+    up_tilt = up_box * math.cos(e) + np.cross(ax, up_box) * math.sin(e)
+    up_err = G * up_tilt + acc_bias
+    up_err /= np.linalg.norm(up_err)
+    records.append((float(head_time(0.0)) - 1.0, {
+        "dev": "head", "stream": "level", "t": float(head_time(0.0)) - 1.0,
+        "up": up_err.round(6).tolist()}))
     records.append((float(head_time(0.0)), {
         "dev": "head", "stream": "meta", "t": float(head_time(0.0)),
         "imu_hz": hc.imu_hz, "gnss_hz": hc.gnss_hz, "acc_range": ar, "gyr_range": gr,

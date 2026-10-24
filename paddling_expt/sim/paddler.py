@@ -53,18 +53,27 @@ class PaddlerParams:
     consistency_fatigue_sd: float = 0.05 # extra s.d. at fatigue 1
     rate_jitter: float = 0.012           # stroke-to-stroke period s.d. (fraction)
     rate_wander_spm: float = 0.6         # slow wander of the held rate (s.d.)
+    ama_load_kg: float = 5.0             # weight carried by the ama when fresh (OC1)
+    ama_load_fatigue_kg: float = 10.0    # extra weight leant onto the ama at fatigue 1
+    ama_load_sd_kg: float = 1.0          # stroke-to-stroke scatter of the ama load
+    wobble_power_loss: float = 0.008     # share of power lost to bracing per (deg of roll wobble)^2
 
 
 @dataclass
 class BoatParams:
-    hull_kg: float = 11.0
-    drag_k: float = 4.0                  # N / (m/s)^2, speed through the water
+    """How the boat moves under the paddler (the hull shape and resistance are in
+    :class:`paddling_expt.hydro.Craft`)."""
+
     added_mass_frac: float = 0.06
     yaw_pulse_dps: float = 4.0           # peak yaw rate of one stroke (deg/s)
     roll_pulse_deg: float = 1.2          # roll excursion of one stroke
     body_surge_n: float = 10.0           # internal body-motion force in recovery
     max_turn_dps: float = 15.0
     steer_gain: float = 1.2              # 1/s, heading error to turn rate
+    wobble_dps: float = 0.6              # random yaw-rate wobble (s.d., deg/s) when fresh
+    wobble_fatigue: float = 1.0          # wobble grows by this factor at fatigue 1
+    wobble_tau_s: float = 0.35           # wobble correlation time
+    roll_wobble_deg: float = 0.3         # random roll wobble (s.d., deg)
 
 
 @dataclass
