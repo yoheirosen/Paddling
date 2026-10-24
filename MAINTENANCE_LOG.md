@@ -5,6 +5,42 @@ Dated entries, newest first. Entries before the move refer to paths under
 
 ---
 
+### In-race coach: live race state, screen, reasoning coach and cue gate on the agent runtime (2026-10-24)
+
+The loop the project was set up for. `paddling_expt/race.py` (`RaceState`) keeps, per stroke and
+without look-ahead:
+* speed through the water, with the push of current and wind fitted online from how speed depends on
+  heading;
+* power reaching the boat;
+* the reserve above critical power (Skiba's model), from an `Athlete` calibrated from best efforts or
+  a 3/12-minute test;
+* the pace sustainable to the finish, and where the reserve runs out;
+* fade at the same stroke rate.
+
+`paddling_expt/coach.py`:
+* `RaceScreen` raises over-pace, fading, reserve-conflict and finish-window events;
+* `RaceCoach` (a language model through `run_tool_loop`) gives at most one 12-word cue through a
+  `cue` tool behind an `ActuatorGate` (word limit, quiet start and finish, cooldown, cap);
+* `replay_race` runs it on the runtime scheduler with a virtual clock and a fixed latency per model
+  call;
+* `stand_in_coach` is a scripted stand-in for tests and demos.
+
+Simulator additions: `cp_test` (the 3/12-minute test) and `paced_race` (planted pacing, warm-up,
+current). `sessions.prepare_rows` now takes any stroke rows (head unit or SpeedCoach), and
+`critical_power` accepts two efforts.
+
+Results (`PADDLING_PLAN.md`):
+* An over-fast start is caught at once, and the fade cue comes 2–3 minutes before the planted reserve
+  runs out.
+* The reserve model drifts after the first minutes (power reaching the boat falls with fatigue), and
+  the short test set critical power about 15 % low. That gave one false "too hot" in the evenly
+  paced race, which the conflict flag later caught.
+* On the owner's real 15 km session the projected finish was within 2 minutes from 17 minutes in.
+
+Every cue so far comes from the stand-in: no model has coached a race yet (no API key in this
+environment). New demo `demos/demo_race_coach.py` (figure `oc1_race_coach`); tests
+`tests/test_race.py`, `tests/test_coach.py`.
+
 ### Moved out of agentic_experiments into its own repository (2026-10-24)
 
 At the owner's request the project left `agentic_experiments/paddling/` for this

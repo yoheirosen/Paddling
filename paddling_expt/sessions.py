@@ -38,30 +38,34 @@ from .boatspeed import power_at_speed, speed_at_power, stroke_physics
 from .hydro import Craft
 from .speedcoach import add_headings
 
-__all__ = ["prepare_session", "windows", "best_efforts", "critical_power", "race_prediction",
+__all__ = ["prepare_rows", "prepare_session", "windows", "best_efforts", "critical_power", "race_prediction",
            "rate_envelope", "percent_of_best", "rate_effect", "session_summary", "place_groups",
            "DURATIONS_S"]
 
 DURATIONS_S = (60, 120, 300, 600, 1200, 2400)
 
 
-def prepare_session(data: Dict[str, Any], craft: Craft, total_kg: float, *,
-                    ama_kg: float = 5.0, warmup_s: float = 60.0,
-                    rate_range=(40.0, 75.0)) -> Optional[Dict[str, Any]]:
-    """One session's paddling rows with the push removed and power added.
+def prepare_rows(strokes: List[Dict[str, Any]], craft: Craft, total_kg: float, *,
+                 ama_kg: float = 5.0, warmup_s: float = 60.0, rate_range=(40.0, 75.0),
+                 min_rows: int = 200) -> Optional[Dict[str, Any]]:
+    """Per-stroke rows (``t``, ``rate_spm``, ``v_mean``, ``heading_deg``) with the
+    push of current and wind removed and power added: SpeedCoach strokes (after
+    :func:`.speedcoach.add_headings`) or the head unit's stroke table.
 
-    ``data`` is what :func:`.speedcoach.read_speedcoach` returns.  The push of
-    current and wind is fitted on steady paddling (``rows``: rate inside
-    ``rate_range``, after ``warmup_s``) and then removed from every stroke
-    (``all_rows``), so that a glitch stroke (a missed stroke reads as half the rate,
-    the next as double) or a steering stroke does not cut a continuous effort.
-    ``ama_kg``: the ama load assumed for an OC1 (SpeedCoach records no roll).
-    Returns ``None`` for a session too short to analyse."""
-    S = add_headings(list(data["strokes"]))
+    The push is fitted on steady paddling (``rows``: rate inside ``rate_range``,
+    later than ``warmup_s`` after the first stroke) and then removed from every
+    stroke (``all_rows``), so that a glitch stroke (a missed stroke reads as half the
+    rate, the next as double) or a steering stroke does not cut a continuous effort.
+    ``ama_kg``: the ama load assumed for an OC1 where a row carries no roll.
+    Returns ``None`` when fewer than ``min_rows`` steady strokes are left."""
+    S = list(strokes)
+    if not S:
+        return None
+    t0 = S[0]["t"]
     lo, hi = rate_range
-    R = [r for r in S if r["t"] > warmup_s and r.get("rate_spm") and lo <= r["rate_spm"] <= hi
+    R = [r for r in S if r["t"] - t0 > warmup_s and r.get("rate_spm") and lo <= r["rate_spm"] <= hi
          and r.get("v_mean") and r.get("heading_deg") is not None]
-    if len(R) < 200:
+    if len(R) < min_rows:
         return None
     fade = heading_effect(R, time_trend=True)        # bracket: push with a steady fade
     push = heading_effect(R, time_trend=False)       # leaves the rows corrected
@@ -71,7 +75,7 @@ def prepare_session(data: Dict[str, Any], craft: Craft, total_kg: float, *,
     for r in S:
         if r.get("heading_deg") is not None:
             h = math.radians(r["heading_deg"])
-        if r["t"] <= warmup_s or r.get("v_mean") is None or h is None:
+        if r["t"] - t0 <= warmup_s or r.get("v_mean") is None or h is None:
             continue
         r["water_effect"] = pe * math.sin(h) + pn * math.cos(h)
         r["v_corrected"] = r["v_mean"] - r["water_effect"]
@@ -79,10 +83,22 @@ def prepare_session(data: Dict[str, Any], craft: Craft, total_kg: float, *,
     stroke_physics(A, craft, total_kg, speed_key="v_corrected", default_ama_kg=ama_kg)
     pos = np.array([(r["lat"], r["lon"]) for r in R if r.get("lat") is not None
                     and r.get("lon") is not None], float)
-    return {"start_local": data.get("start_local"), "info": data.get("info", {}),
-            "rows": R, "all_rows": A, "push": push, "push_fade": fade,
-            "centre": tuple(np.median(pos, 0)) if len(pos) else None,
-            "last": data["strokes"][-1]}
+    return {"rows": R, "all_rows": A, "push": push, "push_fade": fade,
+            "centre": tuple(np.median(pos, 0)) if len(pos) else None, "last": S[-1]}
+
+
+def prepare_session(data: Dict[str, Any], craft: Craft, total_kg: float, *,
+                    ama_kg: float = 5.0, warmup_s: float = 60.0,
+                    rate_range=(40.0, 75.0)) -> Optional[Dict[str, Any]]:
+    """:func:`prepare_rows` for one SpeedCoach session (what
+    :func:`.speedcoach.read_speedcoach` returns).  Returns ``None`` for a session too
+    short to analyse."""
+    out = prepare_rows(add_headings(list(data["strokes"])), craft, total_kg, ama_kg=ama_kg,
+                       warmup_s=warmup_s, rate_range=rate_range)
+    if out is not None:
+        out.update(start_local=data.get("start_local"), info=data.get("info", {}),
+                   last=data["strokes"][-1])
+    return out
 
 
 def _blocks(t: np.ndarray, max_gap_s: float) -> List[slice]:
@@ -182,9 +198,11 @@ def critical_power(best: Dict[float, Dict[str, Any]], *, min_s: float = 120.0,
                    max_s: float = 1200.0) -> Optional[Dict[str, Any]]:
     """Two-parameter critical-power fit ``work = CP x time + W'`` to best efforts
     lasting ``min_s`` to ``max_s`` (the usual range: shorter efforts are limited by
-    other things, longer ones by fatigue the model does not include)."""
+    other things, longer ones by fatigue the model does not include).  Two efforts
+    give the exact two-point solution (the 3-minute + 12-minute test protocol);
+    more give a least-squares fit."""
     pts = [(d, b["power"]) for d, b in best.items() if min_s <= d <= max_s]
-    if len(pts) < 3:
+    if len(pts) < 2:
         return None
     t = np.array([d for d, _ in pts], float)
     P = np.array([p for _, p in pts], float)

@@ -18,6 +18,12 @@ speed through the water and the current or wind along the course, downwind runs.
 Across sessions: best efforts from 1 to 40 minutes, critical power and predicted race
 times, the best speed seen at each stroke rate and each session's share of it, and
 whether going up in rate bought speed (`sessions.py`).
+In a race, a **coach** in the paddler's ear (`race.py`, `coach.py`):
+* **The live race state:** the reserve above critical power, the pace that can be held
+  to the finish, and fade at the same stroke rate.
+* **A screen on every stroke** decides when something may be worth saying.
+* **A language model** gives at most one short cue, behind a gate (word limit, quiet
+  start, cooldown), on agentic_experiments' runtime.
 
 Where speed and effort interact it uses a **hull-shape model** (`hydro.py`): skin
 friction, wave-making (Michell's thin-ship integral, hull and ama together) and air
@@ -55,7 +61,13 @@ python "demos/speedcoach_report.py" SESSION.csv --boat oc1 --total-kg 93 \
 # times, best speed at each stroke rate, % of best, what going up in rate gave
 python "demos/speedcoach_sessions.py" EXPORT_FOLDER --figure oc1_speedcoach_sessions
 
-# tests (no network, ~50 s)
+# the in-race coach replayed: a 3/12-minute test, then an over-paced and an even race
+# (scripted stand-in coach; --provider anthropic with ANTHROPIC_API_KEY for a model)
+python "demos/demo_race_coach.py" --figure oc1_race_coach
+# ... or one of your SpeedCoach sessions, calibrated from the others
+python "demos/demo_race_coach.py" --speedcoach SESSION.csv --calibrate-from EXPORT_FOLDER
+
+# tests (no network, ~55 s)
 python -m pytest -q tests
 ```
 

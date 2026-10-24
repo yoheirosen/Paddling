@@ -137,7 +137,7 @@ tracked, the `.png` / `.pdf` git-ignored. To deliver figures, zip one folder per
 
 ```bash
 pip install -e ".[test,plot]"
-python -m pytest -q tests          # ~50 s, no network
+python -m pytest -q tests          # ~55 s, no network
 ```
 
 `.github/workflows/tests.yml` runs the same when started by hand (Actions -> tests ->
@@ -150,9 +150,11 @@ Run workflow); it needs the `AGENTIC_EXPERIMENTS_TOKEN` secret described in the 
 | Feed device records (any uplink) and get strokes + a live panel | `paddling_expt/fusion.py` `OC1Engine` (`feed` in arrival order → `stroke_table()` / `panel()`; `HeadConfig(craft=, total_kg=)`); record schema `records.py` |
 | Change head-unit or pod processing | `headunit.py` (clock, mount calibration, attitude, strokes, side, speed, check, roll / side-slip / wobble, runs) / `pod.py` (clock, strain zero, catch / exit, force profile, side) |
 | Add a session analysis (one session) | `analysis.py` (rate–speed curve, % of full-effort power, profile change, fatigue, symmetry, splits, legs, current and wind) |
-| Add an analysis across sessions | `sessions.py` (`prepare_session`, `best_efforts`, `critical_power` + `race_prediction`, `rate_envelope` + `percent_of_best`, `rate_effect`, `session_summary`) |
+| Add an analysis across sessions | `sessions.py` (`prepare_rows` (any stroke rows) / `prepare_session` (SpeedCoach), `best_efforts`, `critical_power` + `race_prediction`, `rate_envelope` + `percent_of_best`, `rate_effect`, `session_summary`) |
 | Model a hull, an ama, drag or power | `hydro.py` (`HullForm`, Michell wave-making, ITTC friction, air, side-slip, `Outrigger` statics, cached tables), `boats.py` (typical boats), `boatspeed.py` (`stroke_physics`, ama load from roll, `power_at_speed` / `speed_at_power`, wobble cost) |
 | Read NK SpeedCoach exports | `speedcoach.py` (`read_speedcoach`, `add_headings`) |
-| Test against planted answers | `sim/` (water, paddler, hull, sensors; `scenarios.py` ready-made sessions, `kind="oc1"` / `"surfski"`) + `scoring.py` |
-| Run an agent loop (coaching cues, a coach's questions) | the dependency's `agent_lib/runtime/` (scheduler, `runtime.llm.call` / `run_tool_loop`, cues behind an `ActuatorGate`) — never a hand-rolled driver |
-| A report or demo | `demos/` (`demo_oc1_training.py`, `demo_boat_physics.py`, `speedcoach_report.py`, `speedcoach_sessions.py`) |
+| Test against planted answers | `sim/` (water, paddler, hull, sensors; `scenarios.py` ready-made sessions incl. `cp_test` (3/12-minute critical-power test) and `paced_race` (planted pacing, warm-up, current), `kind="oc1"` / `"surfski"`) + `scoring.py` |
+| Track a race live: reserve above critical power, pace sustainable to the finish, fade, push | `race.py` (`RaceState` per stroke, `Athlete` + `calibrate` from best efforts, `sustainable_power`, `w_balance_step`) |
+| Coach during a race (when to speak, what to say, the cue gate, replay with model latency) | `coach.py` (`RaceScreen` events, `RaceCoach` via `run_tool_loop` with `race_history` + `cue` (writes) tools, `make_cue_gate` = `ActuatorGate`, `replay_race` on the runtime scheduler + virtual clock, `stand_in_coach` = scripted stand-in, not evidence) |
+| Run another agent loop (a coach's questions, a new cue source) | the dependency's `agent_lib/runtime/` (scheduler, `runtime.llm.call` / `run_tool_loop`, actions behind an `ActuatorGate`) — never a hand-rolled driver |
+| A report or demo | `demos/` (`demo_oc1_training.py`, `demo_boat_physics.py`, `speedcoach_report.py`, `speedcoach_sessions.py`, `demo_race_coach.py`) |
