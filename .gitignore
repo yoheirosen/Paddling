@@ -1,0 +1,12 @@
+# Rendered figure rasters (regenerate from the .py per repo convention)
+artifacts/*.png
+artifacts/*.pdf
+
+# Session logs and raw device exports (SpeedCoach CSVs hold the paddler's GPS track)
+data/
+*.jsonl
+*.csv
+!tests/**/*.jsonl
+
+__pycache__/
+*.pyc
