@@ -17,8 +17,10 @@ Real (``--speedcoach``): replays a SpeedCoach session as if live, calibrated fro
 the best efforts of the other sessions in ``--calibrate-from``.
 
 The default coach is a scripted stand-in (no network): it shows the loop and the
-timing, not what a model would say.  ``--provider anthropic`` (with
-``ANTHROPIC_API_KEY`` set) puts a real model in the coach's seat.
+timing, not what a model would say.  ``--provider anthropic`` puts a real model
+in the coach's seat; the key is read from ``--api-key-env`` (default
+``ANTHROPIC_API_KEY``; Claude Code cloud sessions withhold that name, so store the
+key under another one there) and sent only to ``--api-base-url``.
 """
 from __future__ import annotations
 
@@ -87,11 +89,21 @@ def plot_oc1_race_coach(data):
     return fig
 
 
-def _provider(name, model):
-    if name == "stand-in":
+def _provider(a):
+    if a.provider == "stand-in":
         return stand_in_coach()
     from agent_lib.providers.factory import make_provider
-    return make_provider(name, model)
+    p = make_provider(a.provider, a.model)
+    if a.provider != "anthropic":
+        return p
+    key = os.environ.get(a.api_key_env)
+    if not key:
+        raise SystemExit(f"--provider anthropic needs the API key in ${a.api_key_env}")
+    # Inside a Claude Code session ANTHROPIC_BASE_URL points at Claude Code's own
+    # connection; pin this process to the API itself so the key goes nowhere else.
+    os.environ["ANTHROPIC_BASE_URL"] = a.api_base_url
+    from agent_lib.providers.anthropic_provider import AnthropicProvider
+    return AnthropicProvider(model=p.model, api_key=key)
 
 
 def _engine_rows(session):
@@ -118,7 +130,7 @@ def simulated(a):
         dist = float(np.sum(np.hypot(np.diff(A["x"][m]), np.diff(A["y"][m]))))
         st = RaceState(S.craft, S.total_kg, ath, distance_m=dist, start_t=S.head_segments("start")[0][0])
         sink = CueSink(st)
-        coach = RaceCoach(_provider(a.provider, a.model), st, make_cue_gate(sink, st))
+        coach = RaceCoach(_provider(a), st, make_cue_gate(sink, st))
         res = replay_race(rows, st, coach, latency_s=a.latency_s)
         H = [h for h in res["history"] if h.get("elapsed_s") is not None]
         el = np.array([h["elapsed_s"] for h in H])
@@ -169,7 +181,7 @@ def real(a):
     dist = a.distance_m or rows[-1]["distance_m"]
     st = RaceState(craft, a.total_kg, ath, distance_m=dist)
     sink = CueSink(st)
-    coach = RaceCoach(_provider(a.provider, a.model), st, make_cue_gate(sink, st))
+    coach = RaceCoach(_provider(a), st, make_cue_gate(sink, st))
     res = replay_race(rows, st, coach, latency_s=a.latency_s)
     for e in res["screen"]:
         print(f"  {e['elapsed_s'] / 60:5.1f} min {e['distance_m'] / 1000:5.2f} km  screen  "
@@ -189,6 +201,10 @@ def main(argv=None) -> int:
     ap.add_argument("--figure", default=None)
     ap.add_argument("--provider", default="stand-in", choices=["stand-in", "anthropic", "openai", "ollama"])
     ap.add_argument("--model", default=None)
+    ap.add_argument("--api-key-env", default="ANTHROPIC_API_KEY",
+                    help="variable holding the Anthropic key (cloud sessions withhold ANTHROPIC_API_KEY)")
+    ap.add_argument("--api-base-url", default="https://api.anthropic.com",
+                    help="where the anthropic coach sends its requests")
     ap.add_argument("--latency-s", type=float, default=6.0, help="race time each model call takes")
     ap.add_argument("--speedcoach", default=None, help="replay this SpeedCoach session instead")
     ap.add_argument("--calibrate-from", default=None, help="folder of other SpeedCoach sessions")

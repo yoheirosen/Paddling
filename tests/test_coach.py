@@ -97,3 +97,23 @@ def test_the_model_sees_the_compact_state_and_the_events():
 
 def test_format_pace():
     assert format_pace(171.6) == "2:52" and format_pace(None) == "?"
+
+
+def test_the_demo_reads_the_named_key_and_pins_the_api_address(monkeypatch):
+    import importlib.util
+    import os
+    import types
+    from pathlib import Path
+    path = Path(__file__).resolve().parents[1] / "demos" / "demo_race_coach.py"
+    spec = importlib.util.spec_from_file_location("demo_race_coach", path)
+    demo = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(demo)
+    a = types.SimpleNamespace(provider="anthropic", model=None, api_key_env="COACH_KEY_FOR_TEST",
+                              api_base_url="https://api.anthropic.com")
+    monkeypatch.delenv("COACH_KEY_FOR_TEST", raising=False)
+    with pytest.raises(SystemExit):
+        demo._provider(a)
+    monkeypatch.setenv("COACH_KEY_FOR_TEST", "sk-test")
+    monkeypatch.setenv("ANTHROPIC_BASE_URL", "http://claude-code-own-connection")
+    p = demo._provider(a)
+    assert p.api_key == "sk-test" and os.environ["ANTHROPIC_BASE_URL"] == "https://api.anthropic.com"

@@ -5,6 +5,15 @@ Dated entries, newest first. Entries before the move refer to paths under
 
 ---
 
+### Coach demo: the model's key from a named variable, sent only to the Anthropic API (2026-10-26)
+
+Claude Code cloud sessions do not pass a variable named `ANTHROPIC_API_KEY` into the session, even
+when the environment's settings hold one (checked in this session and in a fresh one). And inside a
+Claude Code session `ANTHROPIC_BASE_URL` points at Claude Code's own connection, which the Anthropic
+library would otherwise use. `demos/demo_race_coach.py` now reads the key from `--api-key-env`
+(default `ANTHROPIC_API_KEY`) and pins the coach's requests to `--api-base-url` (default the
+Anthropic API). Test: `tests/test_coach.py`.
+
 ### In-race coach: live race state, screen, reasoning coach and cue gate on the agent runtime (2026-10-24)
 
 The loop the project was set up for. `paddling_expt/race.py` (`RaceState`) keeps, per stroke and
