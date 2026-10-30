@@ -317,6 +317,26 @@ evidence that coaching helps real paddlers. The scripted stand-in
 Runner: `experiments/run_coaching_trial.py` (`run`, `summarize`, `selftest`); the
 design in code: `coaching_trial.PREREGISTERED`.
 
+**Results so far (2026-10-30).** Baselines on the 30 evaluation seeds (races of
+31–58 minutes; mean no-coach race 43.5 minutes):
+
+| arm | mean race time vs no coach | time blown up (mean) | cues (followed) |
+|---|---|---|---|
+| perfect-knowledge even pacer (reference) | −31.5 s | — | — |
+| rule autopilot, best setting (fade −3 %; the over-pace margin made no difference) | −8.5 s | 130 s | 5.9 (73 %) |
+| fixed pacing plan, best setting (0.97 x planned pace, every 5 min) | −0.1 s | 101 s | 8.6 (72 %) |
+| fixed pacing plan, typical setting | +7.8 s | 74 s | 18.7 (76 %) |
+| no coach | 0 | 156 s | — |
+
+So a perfectly informed pacer would gain about half a minute per race on this twin;
+the rule autopilot gets about a quarter of that. A fixed plan prevents blow-ups but
+paces too conservatively to gain time. The autopilot loses time on paddlers who were
+already pacing well: the short test reads critical power low, so its over-pace rule
+tells them to ease. The scripted stand-in coach (the autopilot's mapping after a 6-s
+latency; a harness check) gained 3.1 s. The language-model coach has not run yet: it
+waits for the API key and the choice of model. Development seeds (20): reference
+−52 s, autopilot −11.5 s, best fixed plan −0.5 s.
+
 ## Results so far
 
 **Simulated 37-minute OC1 training session** (`demos/demo_oc1_training.py`,
