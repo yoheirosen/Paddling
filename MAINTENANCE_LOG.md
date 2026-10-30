@@ -5,6 +5,23 @@ Dated entries, newest first. Entries before the move refer to paths under
 
 ---
 
+### Closed-loop coaching on a paddler twin, on the platform's streaming panel (2026-10-30)
+
+The coach now runs on agentic_experiments' own streaming-metric machinery and is tested in a
+closed loop. `race_panel.py` streams the race state every second into the platform's
+`MetricService`, run in process on an in-memory stream: every number has a history; the coach
+can define its own metrics (formula, several steps, or a program admitted by the platform's
+latency check; streaming estimators) and standing watch rules; the screen's four events are the
+starting watches. `RaceCoach(panel=...)` gets those tools, a structured cue (`ask` from a fixed
+menu, optional target pace on the display) and its own prompt. `sim/twin.py` is a paddler twin
+stepped stroke by stroke, whose paddler blows up, settles, and follows some cues (all planted).
+`coaching_trial.py` + `experiments/run_coaching_trial.py`: arms (no coach, fixed plan, rule
+autopilot, agent), paired statistics, the pre-registration (`PADDLING_PLAN.md`, closed-loop
+coaching section), decided on development seeds before any evaluation run. Also: the race
+state's sustainable pace uses a cached speed table (2.5x faster, same numbers); the platform's
+`max(a, b)` is a reduction, so rules use `maximum(a, b)`; the gate checks the cue's ask.
+Tests: `tests/test_twin.py`, `tests/test_coaching_trial.py`.
+
 ### Coach demo: the model's key from a named variable, sent only to the Anthropic API (2026-10-26)
 
 Claude Code cloud sessions do not pass a variable named `ANTHROPIC_API_KEY` into the session, even

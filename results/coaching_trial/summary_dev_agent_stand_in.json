@@ -1,0 +1,280 @@
+{
+ "tag": "dev",
+ "agent_arm": "agent_stand_in",
+ "n_seeds": 20,
+ "seeds": [
+  0,
+  1,
+  2,
+  3,
+  4,
+  5,
+  6,
+  7,
+  8,
+  9,
+  10,
+  11,
+  12,
+  13,
+  14,
+  15,
+  16,
+  17,
+  18,
+  19
+ ],
+ "selection": {
+  "fixed_plan": {
+   "best": {
+    "mult": 0.97,
+    "every_s": 120.0
+   },
+   "typical": {
+    "mult": 1.0,
+    "every_s": 120.0
+   },
+   "ranking": [
+    {
+     "setting": {
+      "mult": 0.97,
+      "every_s": 120.0
+     },
+     "mean_race_time_s": 2627.2209243796187
+    },
+    {
+     "setting": {
+      "mult": 0.97,
+      "every_s": 300.0
+     },
+     "mean_race_time_s": 2628.582253832221
+    },
+    {
+     "setting": {
+      "mult": 1.0,
+      "every_s": 120.0
+     },
+     "mean_race_time_s": 2637.0429282149153
+    },
+    {
+     "setting": {
+      "mult": 1.0,
+      "every_s": 300.0
+     },
+     "mean_race_time_s": 2639.898003067222
+    },
+    {
+     "setting": {
+      "mult": 1.03,
+      "every_s": 300.0
+     },
+     "mean_race_time_s": 2655.4060270548753
+    },
+    {
+     "setting": {
+      "mult": 1.03,
+      "every_s": 120.0
+     },
+     "mean_race_time_s": 2663.729085054936
+    }
+   ]
+  },
+  "autopilot": {
+   "best": {
+    "overpace_margin_m": 150.0,
+    "fade_pct": -5.0
+   },
+   "typical": {
+    "overpace_margin_m": 600.0,
+    "fade_pct": -5.0
+   },
+   "ranking": [
+    {
+     "setting": {
+      "overpace_margin_m": 150.0,
+      "fade_pct": -5.0
+     },
+     "mean_race_time_s": 2616.2660973995185
+    },
+    {
+     "setting": {
+      "overpace_margin_m": 300.0,
+      "fade_pct": -5.0
+     },
+     "mean_race_time_s": 2616.2660973995185
+    },
+    {
+     "setting": {
+      "overpace_margin_m": 600.0,
+      "fade_pct": -5.0
+     },
+     "mean_race_time_s": 2616.2660973995185
+    },
+    {
+     "setting": {
+      "overpace_margin_m": 150.0,
+      "fade_pct": -3.0
+     },
+     "mean_race_time_s": 2618.74070581995
+    },
+    {
+     "setting": {
+      "overpace_margin_m": 300.0,
+      "fade_pct": -3.0
+     },
+     "mean_race_time_s": 2618.74070581995
+    },
+    {
+     "setting": {
+      "overpace_margin_m": 600.0,
+      "fade_pct": -3.0
+     },
+     "mean_race_time_s": 2618.74070581995
+    }
+   ]
+  }
+ },
+ "comparisons": {
+  "no_coach": {
+   "n": 20,
+   "mean_d": -10.16626889851766,
+   "median_d": -9.030508019865238,
+   "n_a_faster": 15,
+   "n_b_faster": 5,
+   "ci95": [
+    -18.00372418021583,
+    -2.569589418419274
+   ],
+   "wilcoxon_p": 0.03623390197753906
+  },
+  "fixed_plan_best": {
+   "n": 20,
+   "mean_d": -9.665471323261613,
+   "median_d": -11.657246513500013,
+   "n_a_faster": 15,
+   "n_b_faster": 5,
+   "ci95": [
+    -23.257532293242342,
+    8.431731595688282
+   ],
+   "wilcoxon_p": 0.01531219482421875
+  },
+  "fixed_plan_typical": {
+   "n": 20,
+   "mean_d": -19.4874751585588,
+   "median_d": -21.802007082815635,
+   "n_a_faster": 18,
+   "n_b_faster": 2,
+   "ci95": [
+    -38.083244517832874,
+    5.802348247520807
+   ],
+   "wilcoxon_p": 0.000850677490234375
+  },
+  "autopilot_best": {
+   "n": 20,
+   "mean_d": 1.2893556568386884,
+   "median_d": 0.3275649322533809,
+   "n_a_faster": 10,
+   "n_b_faster": 10,
+   "ci95": [
+    -2.646488669687626,
+    6.259850009654146
+   ],
+   "wilcoxon_p": 0.6476554870605469
+  },
+  "autopilot_typical": {
+   "n": 20,
+   "mean_d": 1.2893556568386884,
+   "median_d": 0.3275649322533809,
+   "n_a_faster": 10,
+   "n_b_faster": 10,
+   "ci95": [
+    -2.646488669687626,
+    6.259850009654146
+   ],
+   "wilcoxon_p": 0.6476554870605469
+  },
+  "reference": {
+   "n": 20,
+   "mean_d": 41.43251086120188,
+   "median_d": 23.81051221437474,
+   "n_a_faster": 0,
+   "n_b_faster": 20,
+   "ci95": [
+    22.798235314735244,
+    66.24982720097579
+   ],
+   "wilcoxon_p": 1.9073486328125e-06
+  }
+ },
+ "honesty": "provider=stand-in: a scripted coach that maps each alert to a fixed cue, after a model latency. HARNESS VALIDATION ONLY, not evidence for the claim.",
+ "holm_primary": {
+  "no_coach": 0.07246780395507812,
+  "fixed_plan_best": 0.04593658447265625,
+  "autopilot_best": 0.6476554870605469
+ },
+ "arms": {
+  "agent_stand_in": {
+   "mean_race_time_s": 2617.5554530563577,
+   "mean_vs_no_coach_s": -10.16626889851766,
+   "mean_blown_s": 127.52567365789568,
+   "mean_reserve_left": 0.22687689983924947,
+   "mean_cues": 4.95,
+   "followed_share": 0.7777777777777778,
+   "median_gap_closed": 0.26591781350153276,
+   "n_gap": 17
+  },
+  "no_coach": {
+   "mean_race_time_s": 2627.7217219548743,
+   "mean_vs_no_coach_s": 0.0,
+   "mean_blown_s": 172.3170464642274,
+   "mean_reserve_left": 0.22794396749694762,
+   "mean_cues": 0.0,
+   "followed_share": 0.0,
+   "median_gap_closed": 0.0,
+   "n_gap": 17
+  },
+  "fixed_plan_best": {
+   "mean_race_time_s": 2627.2209243796187,
+   "mean_vs_no_coach_s": -0.500797575256047,
+   "mean_blown_s": 93.58741972027346,
+   "mean_reserve_left": 0.2694432336962457,
+   "mean_cues": 18.0,
+   "followed_share": 0.7444444444444445,
+   "median_gap_closed": 0.09152400758924382,
+   "n_gap": 17
+  },
+  "fixed_plan_typical": {
+   "mean_race_time_s": 2637.0429282149153,
+   "mean_vs_no_coach_s": 9.32120626004114,
+   "mean_blown_s": 240.79062376126558,
+   "mean_reserve_left": 0.19311715465953655,
+   "mean_cues": 17.95,
+   "followed_share": 0.7465181058495822,
+   "median_gap_closed": -0.21316691356486397,
+   "n_gap": 17
+  },
+  "autopilot_best": {
+   "mean_race_time_s": 2616.2660973995185,
+   "mean_vs_no_coach_s": -11.455624555356348,
+   "mean_blown_s": 125.71993512631511,
+   "mean_reserve_left": 0.2421269260081235,
+   "mean_cues": 5.55,
+   "followed_share": 0.7837837837837838,
+   "median_gap_closed": 0.30497590594248913,
+   "n_gap": 17
+  },
+  "autopilot_typical": {
+   "mean_race_time_s": 2616.2660973995185,
+   "mean_vs_no_coach_s": -11.455624555356348,
+   "mean_blown_s": 125.71993512631511,
+   "mean_reserve_left": 0.2421269260081235,
+   "mean_cues": 5.55,
+   "followed_share": 0.7837837837837838,
+   "median_gap_closed": 0.30497590594248913,
+   "n_gap": 17
+  }
+ },
+ "mean_reference_vs_no_coach_s": -51.598779759719534
+}

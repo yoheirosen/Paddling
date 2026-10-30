@@ -88,6 +88,20 @@ def w_balance_step(w_bal: float, power_w: float, dt: float, cp_w: float, w0: flo
     return min(w0, w_bal)
 
 
+_SPEED_TABLES: Dict[tuple, tuple] = {}
+
+
+def _speed_for(craft: Craft, total_kg: float, power_w: float, ama_kg: float) -> float:
+    """Still-water speed at a power reaching the boat, from a cached fine table of the
+    hull model (within 0.1 % of :func:`.boatspeed.speed_at_power`)."""
+    key = (id(craft), round(total_kg, 3), round(ama_kg, 2))
+    tab = _SPEED_TABLES.get(key)
+    if tab is None:
+        v = np.linspace(0.2, 7.5, 3000)
+        tab = _SPEED_TABLES[key] = (np.asarray(power_at_speed(craft, total_kg, v, ama_kg), float), v)
+    return float(np.interp(power_w, tab[0], tab[1]))
+
+
 def sustainable_power(craft: Craft, total_kg: float, cp_w: float, w_bal: float,
                       remaining_m: float, *, ama_kg: float = 0.0, v_guess: float = 3.0,
                       cap: float = 3.0) -> Dict[str, float]:
@@ -99,13 +113,13 @@ def sustainable_power(craft: Craft, total_kg: float, cp_w: float, w_bal: float,
     P = cp_w
     for _ in range(40):
         P = min(cp_w * cap, cp_w + max(0.0, w_bal) / T)
-        v = speed_at_power(craft, total_kg, P, ama_kg)
+        v = _speed_for(craft, total_kg, P, ama_kg)
         T_new = remaining_m / max(0.3, v)
         if abs(T_new - T) < 1e-3 * T:
             T = T_new
             break
         T = T_new
-    v = speed_at_power(craft, total_kg, P, ama_kg)
+    v = _speed_for(craft, total_kg, P, ama_kg)
     return {"power_w": float(P), "speed_mps": float(v), "seconds": float(remaining_m / v)}
 
 
@@ -310,7 +324,9 @@ class RaceState:
         out = {"elapsed_min": r(s.get("elapsed_s", 0) / 60.0, 1),
                "distance_m": r(s.get("distance_m"), 0), "remaining_m": r(s.get("remaining_m"), 0),
                "rate_spm": r(s.get("rate_spm"), 0), "speed_water_mps": r(s.get("speed_water"), 2),
-               "pace_water_s500": r(s.get("pace_water_s500"), 1), "power_w": r(s.get("power_w"), 0),
+               "pace_water_s500": r(s.get("pace_water_s500"), 1),
+               "pace_display_s500": r(500.0 / s["speed_gps"], 1) if (s.get("speed_gps") or 0) > 0.3 else None,
+               "power_w": r(s.get("power_w"), 0),
                "critical_power_w": r(s.get("cp_w"), 0), "reserve_left_pct": r(100 * s.get("w_bal_frac", 0), 0),
                "sustainable_pace_s500": r(s.get("sustainable_pace_s500"), 1),
                "pace_gap_s500": r(s.get("pace_gap_s500"), 1),

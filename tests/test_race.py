@@ -92,4 +92,4 @@ def test_compact_state_is_small_and_rounded():
     for r in _rows(minutes=3):
         st.update(r)
     c = st.compact()
-    assert len(c) <= 16 and "reserve_left_pct" in c and "pace_water_s500" in c
+    assert len(c) <= 17 and "reserve_left_pct" in c and "pace_water_s500" in c
