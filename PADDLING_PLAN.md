@@ -219,6 +219,104 @@ cue per event): it tests the loop, not a model's judgement. With an API key,
 `--provider anthropic` puts a real model in the seat. The race state costs about
 1 ms per stroke on this cloud sandbox.
 
+## Closed-loop coaching on a paddler twin (pre-registered 2026-10-30)
+
+**Question.** Does a reasoning coach in the loop make the boat faster to the line
+than no coach, a fixed pacing plan, or a rule autopilot, when the paddler hears the
+cues and may act on them?
+
+**Why a twin.** A replay of a recorded race (above) shows what a coach would have
+said and when, but nothing said can change the finish. The paddler twin
+(`sim/twin.py`) steps a race stroke by stroke on the coach's clock, and its paddler
+changes what they do when a cue reaches them, so the finish time is the outcome.
+
+**The twin (planted; see the honesty ledger).** It reuses the simulator's
+physiology (the reserve above critical power, slow fatigue, the efficiency hill in
+stroke rate whose best rate falls as the paddler tires) and the hull model, and adds:
+* *blowing up*: once the reserve is spent the paddler holds only 75–90 % of critical
+  power until 10–20 % of the reserve has come back; afterwards their own effort
+  settles to 95–100 % of their even pace;
+* *own pacing*: a start sprint (1.15–1.5 times critical power for 60–120 s); a body
+  effort 0.94–1.08 times their even pace (the highest constant effort that reaches
+  the line without blowing up, at their own rate, ignoring the current); a held
+  habitual rate that drifts down only 0–4 spm as they tire (the best rate falls
+  3–9 spm); slow wander of effort by feel; a kick 250–700 m from the line;
+* *cue response*: a cue is followed with probability 0.55–0.95, after 4–15 s.
+  "Ease" and "push" change effort by 3–6 % of critical power; "rate up" and "rate
+  down" change the rate by 2 spm; a target pace on the display is chased by feel
+  within −15 %/+12 % of the effort of the moment, and given up on blowing up;
+  "hold" keeps the effort; "finish" starts the kick (as a push further than 1.5 km
+  out). A followed change fades back to the paddler's own pacing over 2–7 minutes
+  unless it is repeated;
+* *measurement*: per-stroke GPS speed (s.d. 0.06 m/s), rate (0.4 spm) and
+  heading (4°), as the SpeedCoach or head unit reports them;
+* *the race*: 6, 8 or 10 km on out-and-back legs of 1 or 1.25 km, a current of up
+  to 0.35 m/s along the course, a 5-minute warm-up on a short stretch;
+* *calibration*: an all-out 3- and 12-minute test on the same twin in flat water.
+  It reads critical power 10–25 % low against the paddler at their best, so the
+  reserve figure reads empty early for most paddlers, as a real short test can.
+
+**The panel.** Every second the race state's numbers stream into agentic_experiments'
+own metric service (`race_panel.py`: `agent_lib.streaming_metrics.service.MetricService`,
+in-process on an in-memory stream, as a phone would run it). The four screen events
+are its starting watch rules (`over_pace`, `fading`, `reserve_conflict`,
+`finish_window`), checked every second with no model call.
+
+**Arms.** Every arm races the same paddler in the same race for a given seed, and
+every cue passes the same gate: at most 12 words, none in the first minute or the
+last 100 m, at least 60 s apart, at most 20 per race.
+* `no_coach`: the paddler's own pacing.
+* `fixed_plan`: the usual race plan. Hold a target pace on the display, computed
+  before the race from the calibration (the flat-water pace that spends the reserve
+  at the line) times 0.97, 1.0 or 1.03, cued after 90 s and every 120 or 300 s.
+* `autopilot`: each watch alert mapped to a fixed cue (over-pace → ease to the
+  sustainable pace on the display; fading → rate down; reserve conflict → hold;
+  finish window → finish), with the over-pace margin 150, 300 or 600 m and the fade
+  threshold −3 or −5 %. No model.
+* `agent`: the reasoning coach (`coach.RaceCoach` with the panel). It is woken by
+  any watch alert and every 5 minutes; it can read series, define its own metrics
+  (a formula; several steps; a program admitted after the platform's latency check;
+  streaming estimators) and its own watch rules, and cue. At most 5 tool rounds per
+  wake-up. Each model call takes its measured wall-clock time in race time.
+* reference: the perfect-knowledge even pacer, which knows the paddler and the
+  current and holds the best rate. Not an arm, and not a bound (a coach can pace
+  with the current or time a kick).
+
+**Outcomes.** Primary: race time, start to the line. Secondary: time spent blown
+up; true reserve left at the line; cues spoken, blocked and followed; the share of
+the no-coach-to-reference gap closed (seeds where that gap is at least 10 s).
+
+**Statistics.** Paired per seed, d = agent − comparator. Wilcoxon signed-rank
+(two-sided) and a bootstrap 95 % interval of the mean d (10 000 resamples). Holm
+correction over the primary family: race time against no coach, the best fixed plan
+and the best autopilot. For the two baseline families, "best" is the setting with
+the lowest mean race time on the evaluation seeds themselves (optimistic for the
+baselines) and "typical" the median-ranked one.
+
+**Seeds.** Development 0–19 (design checks, the scripted stand-in); evaluation
+1000–1029 (the real model, and the baselines' setting selection). Nothing may be
+tuned on the evaluation seeds.
+
+**Fixed before registration, on development seeds only.** The first twin let an
+over-paced paddler hold critical power once the reserve was spent (pacing barely
+mattered; the perfect-knowledge pacer sprinted from the gun), so blowing up was
+added, with settling after a blow-up. The drawn rate hill was too steep (a tired
+paddler at their habit rate lost half their efficiency), so its ranges were
+narrowed to the ones above. Pace chasing escalated without limit while blown up,
+so it was bounded. The fade reading is held through turns on the panel, as the
+screen did. The platform's expression language reads `max(a, b)` numpy-style (a
+reduction), so the over-pace rule uses `maximum(a, b)`; the coach's prompt says so.
+
+**What a result can say.** What in-the-loop coaching is worth *if paddlers respond as
+modelled*: whether a model reasoning over the live panel, under sensor noise, a
+miscalibrated reserve, partial compliance and its own latency, gives better cues at
+better moments than the same panel with fixed rules or a pre-race plan. It is not
+evidence that coaching helps real paddlers. The scripted stand-in
+(`coach.stand_in_coach`) only checks the harness.
+
+Runner: `experiments/run_coaching_trial.py` (`run`, `summarize`, `selftest`); the
+design in code: `coaching_trial.PREREGISTERED`.
+
 ## Results so far
 
 **Simulated 37-minute OC1 training session** (`demos/demo_oc1_training.py`,
@@ -348,6 +446,19 @@ the other eight sessions: critical power 93 W, reserve 6.4 kJ; stand-in coach):
 
 ## Honesty ledger (planted assumptions and limits)
 
+* **The paddler twin's coaching answers are planted** (`sim/twin.py`): how much
+  blowing up costs (75–90 % of critical power until 10–20 % of the reserve is back),
+  that a paddler settles after one blow-up, how far below their best rate a tired
+  paddler drifts, and how a paddler responds to a cue (follows 55–95 % of them,
+  after 4–15 s, by a fixed step, fading back over minutes). A coaching result on the
+  twin is a statement about this model of a paddler, not about real paddlers.
+* The twin steps **once per stroke with a steady-state hull model** and a 6-s
+  speed lag, not the full 100-Hz simulator; turns cost 40 % efficiency for 6 s.
+  Measurement noise is drawn per stroke, not produced by the head-unit pipeline.
+* The twin's **critical-power test reads 10–25 % low** against the paddler at their
+  best rate and fresh; this is what the test measures on this model (efficiency
+  falls as the reserve drains inside each piece), and it is left in on purpose.
+
 * The simulator's physiology is **phenomenological, chosen so the questions have
   known answers**: a critical-power fatigue reserve plus a slow fatigue term; a
   Gaussian efficiency-versus-rate curve whose best rate falls with fatigue; a
@@ -439,9 +550,11 @@ connectivity.
    at the same steady effort and in both directions, ideally with a heart-rate
    strap; and one all-out 3-minute and one all-out 12-minute piece to pin down
    critical power. The pod's force measurement would make this direct.
-4. **Coaching loop, next**: built and replayed (above). Still to do:
-   * a real model in the coach's seat on the replays, run against the stand-in
-     and against no coach;
+4. **Coaching loop, next**: built, replayed, and put in a closed loop on the paddler
+   twin (above). Still to do:
+   * the pre-registered evaluation with a real model in the coach's seat (waits
+     for the key and the choice of model);
+   * the replay demo on the race panel's watches instead of the old screen;
    * effort from the pod (force) so the reserve does not drift;
    * the current from a tide model when the course does not turn;
    * the shore or escort coach asking questions through `ask_agent`;
@@ -463,15 +576,19 @@ paddling (this repository)
     sessions.py      several sessions: best efforts, critical power, best speed at each rate, rate effect
     race.py          live race state: reserve above critical power, sustainable pace, fade, push
     coach.py         in-race coach: screen, reasoning coach, cue gate, replay on the agent runtime
+    race_panel.py    the race state as a live panel on the platform's metric service (watches, agent metrics)
+    coaching_trial.py  closed-loop coaching on the paddler twin: arms, episodes, paired statistics
     hydro.py         resistance from hull shape (friction, Michell waves, air, side-slip), outrigger statics
     boats.py         typical OC1 and surf ski (replace with measurements)
     boatspeed.py     power to the boat, ama load and its cost, side-slip and wobble costs
     speedcoach.py    NK SpeedCoach export reader
     scoring.py       scores against the simulator's planted truth
     geo.py           frames, rotations, coordinates
-    sim/             water, paddler, hull, sensors, ready-made sessions
+    sim/             water, paddler, hull, sensors, ready-made sessions; twin.py = the paddler twin
   demos/             demo_oc1_training.py, demo_boat_physics.py, speedcoach_report.py,
                      speedcoach_sessions.py, demo_race_coach.py
+  experiments/       run_coaching_trial.py (closed-loop coaching experiment runner)
+  results/           coaching_trial/: preparations, per-episode tables, summaries
   tests/             pytest suite (no network; ~55 s)
   artifacts/         four-file figure artifacts (.py + .data.json tracked)
 ```

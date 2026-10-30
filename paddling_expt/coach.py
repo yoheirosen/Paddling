@@ -53,8 +53,10 @@ from agent_lib.tool_registry import ToolPolicy, ToolRegistry
 
 from .race import RaceState
 
-__all__ = ["RaceScreen", "CueSink", "make_cue_gate", "RaceCoach", "COACH_SYSTEM",
-           "stand_in_coach", "replay_race", "format_pace"]
+_ASKS = ("ease", "push", "hold", "rate_up", "rate_down", "finish", "none")
+
+__all__ = ["RaceScreen", "CueSink", "make_cue_gate", "RaceCoach", "COACH_SYSTEM", "COACH_PANEL_SYSTEM",
+           "stand_in_coach", "make_coach_provider", "replay_race", "format_pace"]
 
 
 def format_pace(s500: Optional[float]) -> str:
@@ -145,20 +147,26 @@ class RaceScreen:
 
 
 class CueSink:
-    """Where delivered cues go: a log here; text-to-speech on a phone."""
+    """Where delivered cues go: a log here; text-to-speech on a phone; ``act`` (the
+    paddler twin) receives the cue's ask and pace."""
 
-    def __init__(self, state: RaceState, speak: Optional[Callable[[str], Any]] = None) -> None:
-        self.state, self.speak = state, speak
+    def __init__(self, state: RaceState, speak: Optional[Callable[[str], Any]] = None,
+                 act: Optional[Callable[[Dict[str, Any]], Any]] = None) -> None:
+        self.state, self.speak, self.act = state, speak, act
         self.log: List[Dict[str, Any]] = []
 
     def __call__(self, action: Dict[str, Any]) -> str:
         s = self.state.last
         entry = {"t": s.get("t"), "elapsed_s": s.get("elapsed_s"), "distance_m": s.get("distance_m"),
-                 "text": action["text"], "source_events": action.get("events", [])}
+                 "text": action["text"], "ask": action.get("ask", "none"),
+                 "pace_s500": action.get("pace_s500"), "source_events": action.get("events", []),
+                 "source": action.get("source")}
         self.log.append(entry)
         record.emit("cue", **entry)
         if self.speak is not None:
             self.speak(action["text"])
+        if self.act is not None:
+            self.act(action)
         return "spoken"
 
 
@@ -173,6 +181,15 @@ def make_cue_gate(sink: CueSink, state: RaceState, *, max_words: int = 12,
             return "empty cue"
         return None if n <= max_words else f"cue has {n} words; the limit is {max_words}"
 
+    def menu(a):
+        ask = a.get("ask", "none")
+        if ask not in _ASKS:
+            return f"unknown ask {ask!r}; one of {', '.join(_ASKS)}"
+        pace = a.get("pace_s500")
+        if pace is not None and not (60.0 <= float(pace) <= 400.0):
+            return f"pace {pace} s/500 m is not a racing pace"
+        return None
+
     def quiet(a):
         s = state.last
         if s.get("elapsed_s", 0.0) < quiet_start_s:
@@ -182,7 +199,7 @@ def make_cue_gate(sink: CueSink, state: RaceState, *, max_words: int = 12,
             return "quiet in the last metres"
         return None
 
-    return ActuatorGate(sink, [Validate(words, "words"), Validate(quiet, "quiet"),
+    return ActuatorGate(sink, [Validate(words, "words"), Validate(menu, "menu"), Validate(quiet, "quiet"),
                                Cooldown(cooldown_s), MaxCount(max_cues)], name="cue")
 
 
@@ -203,22 +220,82 @@ lower rate with a longer stroke can be faster than forcing the rate.
 "no cue: <reason>" without calling it."""
 
 
+COACH_PANEL_SYSTEM = """You are an outrigger canoe (OC1) race coach speaking into the paddler's ear \
+during a race. Your only aim is the fastest time to the finish.
+
+What you have:
+- A live panel: the boat's numbers stream every second as named metrics (list_available_metrics, \
+get_metric_series, characterize_window_metric, metric_rise_fall).
+- Standing watches: conditions over the panel checked every second with no model call; when \
+one holds for its sustain time it wakes you. You start with four: over_pace, fading, \
+reserve_conflict, finish_window. You may add, replace or remove watches (add_watch, \
+remove_watch, list_watches, get_alerts) and define your own metrics for them or for yourself \
+(define_derived_metric: one formula; define_program_metric: several steps, or a short program \
+admitted after a speed check; define_streaming_estimator: bands, change points). Anything you \
+define keeps computing every second for the rest of the race. In formulas, max and min reduce \
+a series (numpy style): for the larger or smaller of two numbers use maximum(a, b) / minimum(a, b).
+- You are also woken every few minutes to check in.
+
+Speaking: call cue once, with text (at most 12 words, plain, something to do now) and ask, one \
+of: ease (a little less effort), push (a little more), hold (keep this effort), rate_up, \
+rate_down (about two strokes a minute), finish (start the final sprint now), none (no change). \
+With ease, push or hold you may give pace_s500, a target pace per 500 m AS THE PADDLER'S DISPLAY \
+SHOWS IT (over the ground: through-the-water speed plus the push along the heading); they will \
+chase it by feel. The paddler may not follow, and a change takes several seconds. Cues are \
+limited: no cue in the first minute or the last 100 m, at least 60 s apart, and a cap per race.
+
+Know:
+- The reserve figure comes from a model calibrated on a short test; it can be off. Trust it \
+early; later, if it disagrees with the speed at the same stroke rate, trust the speed.
+- Running the reserve empty forces a long slowdown well below critical power. Even pacing to the \
+line, with a finishing sprint, is usually fastest.
+- As paddlers tire their best stroke rate drops; fading speed at the same rate can mean the rate \
+is now too high.
+- Each of your model calls takes several seconds of race time. Silence is often right.
+
+End with one line: the reason for your cue, or "no cue: <reason>"."""
+
+
+_CUE_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "text": {"type": "string", "description": "what the paddler hears, at most 12 words"},
+        "ask": {"type": "string", "enum": ["ease", "push", "hold", "rate_up", "rate_down", "finish", "none"],
+                "description": "the change asked for"},
+        "pace_s500": {"type": "number", "description": "optional target pace, s per 500 m, as the display shows it"},
+    },
+    "required": ["text"],
+}
+
+
 class RaceCoach:
-    """The reasoning tier: one consultation per wake-up, through ``run_tool_loop``."""
+    """The reasoning tier: one consultation per wake-up, through ``run_tool_loop``.
+
+    With ``panel`` (a :class:`~.race_panel.RacePanel`) the coach also gets the
+    panel's tools (series, its own metrics and watch rules) and the panel system
+    prompt."""
 
     def __init__(self, provider: Any, state: RaceState, gate: ActuatorGate, *,
-                 system: str = COACH_SYSTEM, caller: str = "race_coach", max_tokens: int = 400) -> None:
-        self.provider, self.state, self.gate = provider, state, gate
-        self.system, self.caller, self.max_tokens = system, caller, max_tokens
+                 system: Optional[str] = None, caller: str = "race_coach", max_tokens: int = 400,
+                 panel: Any = None, max_iterations: Optional[int] = None) -> None:
+        self.provider, self.state, self.gate, self.panel = provider, state, gate, panel
+        self.system = system or (COACH_PANEL_SYSTEM if panel is not None else COACH_SYSTEM)
+        self.caller, self.max_tokens = caller, max_tokens
         self.consultations: List[Dict[str, Any]] = []
         self._events: List[Dict[str, Any]] = []
         reg = ToolRegistry()
         reg.register(self.race_history, name="race_history",
                      description="Recent race history: 30-second means of speed through the water, "
                                  "power, reserve, stroke rate, fade and the push of current and wind.")
-        reg.register(self.cue, name="cue", writes=True,
+        reg.register(self.cue, name="cue", writes=True, input_schema=_CUE_SCHEMA,
                      description="Speak one short cue (at most 12 words) to the paddler now.")
-        self.policy = ToolPolicy(reg, ["race_history", "cue"], max_iterations=2)
+        allowed = ["race_history", "cue"]
+        if panel is not None:
+            for name, tool in panel.tools().items():
+                reg.register(tool.func, name=name, description=tool.description,
+                             input_schema=tool.input_schema, writes=tool.writes)
+                allowed.append(name)
+        self.policy = ToolPolicy(reg, allowed, max_iterations=max_iterations or (5 if panel is not None else 2))
 
     def race_history(self, minutes: float = 5.0) -> Dict[str, Any]:
         H = [h for h in self.state.history
@@ -234,8 +311,9 @@ class RaceCoach:
             rows.append(_mean_row(bucket))
         return {"every_30s": rows}
 
-    def cue(self, text: str) -> Dict[str, Any]:
-        res = self.gate.deliver({"text": text, "events": [e["kind"] for e in self._events]},
+    def cue(self, text: str, ask: str = "none", pace_s500: Optional[float] = None) -> Dict[str, Any]:
+        res = self.gate.deliver({"text": text, "ask": ask, "pace_s500": pace_s500,
+                                 "events": [e["kind"] for e in self._events], "source": self.caller},
                                 source=self.caller)
         return {"spoken": bool(res.get("delivered")), "blocked": bool(res.get("blocked")),
                 "reason": res.get("reason")}
@@ -271,6 +349,28 @@ def _mean_row(bucket: List[Dict[str, Any]]) -> Dict[str, Any]:
             "push_along_mps": m("push_along_mps")}
 
 
+def make_coach_provider(name: str, model: Optional[str] = None, *,
+                        api_key_env: str = "ANTHROPIC_API_KEY",
+                        api_base_url: str = "https://api.anthropic.com") -> Any:
+    """The coach's model: ``stand-in`` (scripted, no network) or an agentic_experiments
+    provider.  For ``anthropic`` the key is read from ``api_key_env`` (Claude Code cloud
+    sessions withhold ``ANTHROPIC_API_KEY``) and requests go only to ``api_base_url``
+    (inside a Claude Code session ``ANTHROPIC_BASE_URL`` points at its own connection)."""
+    if name == "stand-in":
+        return stand_in_coach()
+    import os
+    from agent_lib.providers.factory import make_provider
+    p = make_provider(name, model)
+    if name != "anthropic":
+        return p
+    key = os.environ.get(api_key_env)
+    if not key:
+        raise SystemExit(f"--provider anthropic needs the API key in ${api_key_env}")
+    os.environ["ANTHROPIC_BASE_URL"] = api_base_url
+    from agent_lib.providers.anthropic_provider import AnthropicProvider
+    return AnthropicProvider(model=p.model, api_key=key)
+
+
 def stand_in_coach() -> FakeProvider:
     """A scripted stand-in for the coach model: maps each event to a fixed cue.
     For tests and demos without a model; not evidence of what a model would say."""
@@ -283,14 +383,19 @@ def stand_in_coach() -> FakeProvider:
         kinds = [e["kind"] for e in msg.get("events", [])]
         st = msg.get("state", {})
         if "over_pace" in kinds:
-            text = f"Too hot for the distance. Settle to {format_pace(st.get('sustainable_pace_s500'))}."
+            sus, push = st.get("sustainable_pace_s500"), st.get("push_along_mps") or 0.0
+            pace = None if not sus else round(500.0 / (500.0 / sus + push), 1)
+            args = {"text": f"Too hot for the distance. Settle to {format_pace(pace or sus)}.",
+                    "ask": "ease"}
+            if pace:
+                args["pace_s500"] = pace
         elif "fading" in kinds:
-            text = "Speed fading at this rate. Drop two beats, lengthen."
+            args = {"text": "Speed fading at this rate. Drop two beats, lengthen.", "ask": "rate_down"}
         elif "finish_window" in kinds:
-            text = "You have reserve left. Go now, lift the rate."
+            args = {"text": "You have reserve left. Go now, lift the rate.", "ask": "finish"}
         else:
             return "no cue: nothing to change"
-        return {"tool_calls": [{"name": "cue", "arguments": {"text": text}}]}
+        return {"tool_calls": [{"name": "cue", "arguments": args}]}
 
     return FakeProvider(answer, model="stand-in-coach")
 

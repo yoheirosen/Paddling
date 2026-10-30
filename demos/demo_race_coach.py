@@ -36,8 +36,8 @@ sys.path.insert(0, os.path.dirname(HERE))
 
 from paddling_expt import sessions as ss                                     # noqa: E402
 from paddling_expt.boats import CRAFT                                         # noqa: E402
-from paddling_expt.coach import (CueSink, RaceCoach, make_cue_gate, replay_race,  # noqa: E402
-                                 stand_in_coach)
+from paddling_expt.coach import (CueSink, RaceCoach, make_coach_provider,  # noqa: E402
+                                 make_cue_gate, replay_race)
 from paddling_expt.fusion import OC1Engine                                    # noqa: E402
 from paddling_expt.headunit import HeadConfig                                 # noqa: E402
 from paddling_expt.race import RaceState, calibrate                           # noqa: E402
@@ -90,20 +90,8 @@ def plot_oc1_race_coach(data):
 
 
 def _provider(a):
-    if a.provider == "stand-in":
-        return stand_in_coach()
-    from agent_lib.providers.factory import make_provider
-    p = make_provider(a.provider, a.model)
-    if a.provider != "anthropic":
-        return p
-    key = os.environ.get(a.api_key_env)
-    if not key:
-        raise SystemExit(f"--provider anthropic needs the API key in ${a.api_key_env}")
-    # Inside a Claude Code session ANTHROPIC_BASE_URL points at Claude Code's own
-    # connection; pin this process to the API itself so the key goes nowhere else.
-    os.environ["ANTHROPIC_BASE_URL"] = a.api_base_url
-    from agent_lib.providers.anthropic_provider import AnthropicProvider
-    return AnthropicProvider(model=p.model, api_key=key)
+    return make_coach_provider(a.provider, a.model, api_key_env=a.api_key_env,
+                               api_base_url=a.api_base_url)
 
 
 def _engine_rows(session):
