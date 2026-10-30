@@ -1,0 +1,290 @@
+{
+ "tag": "eval",
+ "agent_arm": "agent_stand_in",
+ "n_seeds": 30,
+ "seeds": [
+  1000,
+  1001,
+  1002,
+  1003,
+  1004,
+  1005,
+  1006,
+  1007,
+  1008,
+  1009,
+  1010,
+  1011,
+  1012,
+  1013,
+  1014,
+  1015,
+  1016,
+  1017,
+  1018,
+  1019,
+  1020,
+  1021,
+  1022,
+  1023,
+  1024,
+  1025,
+  1026,
+  1027,
+  1028,
+  1029
+ ],
+ "selection": {
+  "fixed_plan": {
+   "best": {
+    "mult": 0.97,
+    "every_s": 300.0
+   },
+   "typical": {
+    "mult": 0.97,
+    "every_s": 120.0
+   },
+   "ranking": [
+    {
+     "setting": {
+      "mult": 0.97,
+      "every_s": 300.0
+     },
+     "mean_race_time_s": 2608.5663528918403
+    },
+    {
+     "setting": {
+      "mult": 1.0,
+      "every_s": 300.0
+     },
+     "mean_race_time_s": 2613.107712428051
+    },
+    {
+     "setting": {
+      "mult": 0.97,
+      "every_s": 120.0
+     },
+     "mean_race_time_s": 2616.4783073747685
+    },
+    {
+     "setting": {
+      "mult": 1.0,
+      "every_s": 120.0
+     },
+     "mean_race_time_s": 2620.201675492685
+    },
+    {
+     "setting": {
+      "mult": 1.03,
+      "every_s": 300.0
+     },
+     "mean_race_time_s": 2624.2911079336304
+    },
+    {
+     "setting": {
+      "mult": 1.03,
+      "every_s": 120.0
+     },
+     "mean_race_time_s": 2635.36510462105
+    }
+   ]
+  },
+  "autopilot": {
+   "best": {
+    "overpace_margin_m": 150.0,
+    "fade_pct": -3.0
+   },
+   "typical": {
+    "overpace_margin_m": 600.0,
+    "fade_pct": -3.0
+   },
+   "ranking": [
+    {
+     "setting": {
+      "overpace_margin_m": 150.0,
+      "fade_pct": -3.0
+     },
+     "mean_race_time_s": 2600.228493495838
+    },
+    {
+     "setting": {
+      "overpace_margin_m": 300.0,
+      "fade_pct": -3.0
+     },
+     "mean_race_time_s": 2600.228493495838
+    },
+    {
+     "setting": {
+      "overpace_margin_m": 600.0,
+      "fade_pct": -3.0
+     },
+     "mean_race_time_s": 2600.228493495838
+    },
+    {
+     "setting": {
+      "overpace_margin_m": 150.0,
+      "fade_pct": -5.0
+     },
+     "mean_race_time_s": 2600.656780595677
+    },
+    {
+     "setting": {
+      "overpace_margin_m": 300.0,
+      "fade_pct": -5.0
+     },
+     "mean_race_time_s": 2600.656780595677
+    },
+    {
+     "setting": {
+      "overpace_margin_m": 600.0,
+      "fade_pct": -5.0
+     },
+     "mean_race_time_s": 2600.656780595677
+    }
+   ]
+  }
+ },
+ "comparisons": {
+  "no_coach": {
+   "n": 30,
+   "mean_d": -3.1479037990946686,
+   "median_d": -6.790682736020244,
+   "n_a_faster": 20,
+   "n_b_faster": 9,
+   "ci95": [
+    -9.35126031076497,
+    3.297561820329625
+   ],
+   "wilcoxon_p": 0.25628396376999896
+  },
+  "fixed_plan_best": {
+   "n": 30,
+   "mean_d": -3.0132789955703325,
+   "median_d": -4.729681967228771,
+   "n_a_faster": 19,
+   "n_b_faster": 11,
+   "ci95": [
+    -10.053920124370062,
+    5.179105699034042
+   ],
+   "wilcoxon_p": 0.1459994912147522
+  },
+  "fixed_plan_typical": {
+   "n": 30,
+   "mean_d": -10.925233478498951,
+   "median_d": -19.294848422429368,
+   "n_a_faster": 20,
+   "n_b_faster": 10,
+   "ci95": [
+    -22.101024647611634,
+    0.9739969639863133
+   ],
+   "wilcoxon_p": 0.047259049490094185
+  },
+  "autopilot_best": {
+   "n": 30,
+   "mean_d": 5.324580400431205,
+   "median_d": 0.027922034135372087,
+   "n_a_faster": 15,
+   "n_b_faster": 15,
+   "ci95": [
+    -0.3922305693559967,
+    15.063490369572184
+   ],
+   "wilcoxon_p": 0.3817984350025654
+  },
+  "autopilot_typical": {
+   "n": 30,
+   "mean_d": 5.324580400431205,
+   "median_d": 0.027922034135372087,
+   "n_a_faster": 15,
+   "n_b_faster": 15,
+   "ci95": [
+    -0.3922305693559967,
+    15.063490369572184
+   ],
+   "wilcoxon_p": 0.3817984350025654
+  },
+  "reference": {
+   "n": 30,
+   "mean_d": 28.307692967422962,
+   "median_d": 22.76236561293399,
+   "n_a_faster": 6,
+   "n_b_faster": 24,
+   "ci95": [
+    14.857401595284221,
+    44.671314519390684
+   ],
+   "wilcoxon_p": 9.90256667137146e-05
+  }
+ },
+ "honesty": "provider=stand-in: a scripted coach that maps each alert to a fixed cue, after a model latency. HARNESS VALIDATION ONLY, not evidence for the claim.",
+ "holm_primary": {
+  "no_coach": 0.5125679275399979,
+  "fixed_plan_best": 0.4379984736442566,
+  "autopilot_best": 0.5125679275399979
+ },
+ "arms": {
+  "agent_stand_in": {
+   "mean_race_time_s": 2605.5530738962702,
+   "mean_vs_no_coach_s": -3.1479037990946686,
+   "mean_blown_s": 133.35339377988217,
+   "mean_reserve_left": 0.20895336597804237,
+   "mean_cues": 4.366666666666666,
+   "followed_share": 0.7480916030534351,
+   "median_gap_closed": 0.190200032291238,
+   "n_gap": 20
+  },
+  "no_coach": {
+   "mean_race_time_s": 2608.700977695364,
+   "mean_vs_no_coach_s": 0.0,
+   "mean_blown_s": 156.24718050056558,
+   "mean_reserve_left": 0.21608810001157636,
+   "mean_cues": 0.0,
+   "followed_share": 0.0,
+   "median_gap_closed": 0.0,
+   "n_gap": 20
+  },
+  "fixed_plan_best": {
+   "mean_race_time_s": 2608.5663528918403,
+   "mean_vs_no_coach_s": -0.13462480352433584,
+   "mean_blown_s": 101.48292927751913,
+   "mean_reserve_left": 0.20078561135050538,
+   "mean_cues": 8.633333333333333,
+   "followed_share": 0.722007722007722,
+   "median_gap_closed": 0.29186686699241926,
+   "n_gap": 20
+  },
+  "fixed_plan_typical": {
+   "mean_race_time_s": 2616.4783073747685,
+   "mean_vs_no_coach_s": 7.777329679404284,
+   "mean_blown_s": 74.09302546643518,
+   "mean_reserve_left": 0.25150086285705125,
+   "mean_cues": 18.7,
+   "followed_share": 0.7557932263814616,
+   "median_gap_closed": 0.3145011507848145,
+   "n_gap": 20
+  },
+  "autopilot_best": {
+   "mean_race_time_s": 2600.228493495838,
+   "mean_vs_no_coach_s": -8.472484199525873,
+   "mean_blown_s": 130.4925921233628,
+   "mean_reserve_left": 0.2028450202837896,
+   "mean_cues": 5.9,
+   "followed_share": 0.7344632768361582,
+   "median_gap_closed": 0.31632982268947185,
+   "n_gap": 20
+  },
+  "autopilot_typical": {
+   "mean_race_time_s": 2600.228493495838,
+   "mean_vs_no_coach_s": -8.472484199525873,
+   "mean_blown_s": 130.4925921233628,
+   "mean_reserve_left": 0.2028450202837896,
+   "mean_cues": 5.9,
+   "followed_share": 0.7344632768361582,
+   "median_gap_closed": 0.31632982268947185,
+   "n_gap": 20
+  }
+ },
+ "mean_reference_vs_no_coach_s": -31.455596766517633
+}
