@@ -53,7 +53,7 @@ from agent_lib.tool_registry import ToolPolicy, ToolRegistry
 
 from .race import RaceState
 
-_ASKS = ("ease", "push", "hold", "rate_up", "rate_down", "finish", "none")
+_ASKS = ("ease", "push", "hold", "rate_up", "rate_down", "finish", "line_in", "line_out", "none")
 
 __all__ = ["RaceScreen", "CueSink", "make_cue_gate", "RaceCoach", "COACH_SYSTEM", "COACH_PANEL_SYSTEM",
            "stand_in_coach", "make_coach_provider", "replay_race", "format_pace"]
@@ -159,7 +159,8 @@ class CueSink:
         s = self.state.last
         entry = {"t": s.get("t"), "elapsed_s": s.get("elapsed_s"), "distance_m": s.get("distance_m"),
                  "text": action["text"], "ask": action.get("ask", "none"),
-                 "pace_s500": action.get("pace_s500"), "source_events": action.get("events", []),
+                 "pace_s500": action.get("pace_s500"), "line_m": action.get("line_m"),
+                 "source_events": action.get("events", []),
                  "source": action.get("source")}
         self.log.append(entry)
         record.emit("cue", **entry)
@@ -188,6 +189,9 @@ def make_cue_gate(sink: CueSink, state: RaceState, *, max_words: int = 12,
         pace = a.get("pace_s500")
         if pace is not None and not (60.0 <= float(pace) <= 400.0):
             return f"pace {pace} s/500 m is not a racing pace"
+        line = a.get("line_m")
+        if line is not None and not (40.0 <= float(line) <= 600.0):
+            return f"line_m {line} is outside 40-600 m from shore"
         return None
 
     def quiet(a):
@@ -256,13 +260,91 @@ is now too high.
 End with one line: the reason for your cue, or "no cue: <reason>"."""
 
 
+COACH_PANEL_SYSTEM_V2 = """You are an outrigger canoe (OC1) race coach speaking into the paddler's ear \
+during a race. Your only aim is the fastest time to the finish. You are judged on the finish \
+time, not on how much you say: a wrong cue costs time, and a paddler who is pacing well is best \
+left alone.
+
+Each update gives you the live state, the last five minutes as one-minute means, and any alert. \
+A live panel streams every number each second; you can read series, define your own metrics \
+(define_derived_metric; define_program_metric for several steps or a short program) and your own \
+watch rules (add_watch, remove_watch). You start with four watches: over_pace, fading, \
+reserve_conflict, finish_window. They are crude; rewrite or remove ones that fire wrongly for this \
+paddler. In formulas max/min reduce a series; for two numbers use maximum(a, b) / minimum(a, b).
+
+What the numbers mean, and how far to trust them:
+- shaft_power_w is the paddler's own effort, measured by the paddle pod. w_bal_pod_frac is the \
+reserve above critical power computed from it; it is the best effort signal you have.
+- w_bal_frac, empties_in_m and sustainable_pace_s500 come from boat speed through the hull model. \
+They mistake tired, less efficient blade work for easing off (late in a race they refill while the \
+paddler is spent) and depend on a short pre-race test. Use them only with care.
+- Both reserves rest on a 3- and 12-minute test, which can be off. Check it against the race: \
+cp_implied_w is the highest steady 10-minute power held while a reserve read nearly empty, with no \
+fade; if it is well above the critical power in use, the calibration is low. You can correct it \
+with set_critical_power (a logged revision); then the reserves recompute from now on.
+- fade_pct (speed through the water at this stroke rate vs early in the race) needs no \
+calibration: a fade of several percent that lasts means real fatigue or a rate that is now too \
+high, since the best rate drops as a paddler tires.
+- push_along_mps is the current and wind along the heading (+ helps); the display shows speed over \
+the ground.
+
+Coaching:
+- Running the reserve empty forces a long slowdown well below critical power: prevent it early, \
+with one clear cue, then let the paddler settle. Even pacing to the line plus a finishing sprint \
+spent from what is left is usually fastest.
+- Do not ease a paddler whose effort is at or below a sustainable level and whose speed holds.
+- Prefer one decisive cue with a target over several small ones. Repeat only if the evidence says \
+the paddler did not respond (the effect takes 10-20 s and may be partial).
+- Each model call costs seconds of race time; when nothing needs saying, say "no cue" at once.
+
+Speaking: call cue once, with text (at most 12 words, plain, something to do now) and ask, one \
+of: ease (a little less effort), push (a little more), hold (keep this effort), rate_up, \
+rate_down (about two strokes a minute), finish (start the final sprint now), none. With ease, \
+push or hold you may give pace_s500, a target pace per 500 m as the display shows it (over the \
+ground); they will chase it by feel. No cue in the first minute or last 100 m, at least 60 s \
+apart, and a cap per race.
+
+End with one line: the reason for your cue, or "no cue: <reason>"."""
+
+
+WATER_SECTION = """
+
+The water (this race): the course runs along a shore, one long leg out and one back. The tidal \
+stream is weaker close to shore and, behind points, eddies run against it inshore; the stream can \
+strengthen, weaken or turn during the race. The race brief has a forecast (also current_forecast); \
+it is local knowledge and can be wrong. line_m is the paddler's distance from shore, along_m the \
+position along the course from the start, heading_deg the heading (0 = north, the first leg). \
+push_local_mps estimates the current along the heading right now from GPS speed against what the \
+pod's shaft power should give (20-s means; it drifts slowly as the blade work tires); compare it \
+with push_along_mps (the race-long fit), over time and across lines, to see where the water is \
+better and whether the forecast holds. Changing line is slow: crossing 100 m takes about two \
+minutes and costs about 12 m of distance, so it pays only if the water differs for long enough. \
+Against the stream the inshore water is usually better; with it, the channel. Cue line_in or \
+line_out (100 m), or give line_m (a target distance from shore, 40-600 m)."""
+
+
+WATER_SECTION_V4 = """
+
+How to use the water: at the start of each leg (you are woken then) make a plan for the leg: \
+compare lines with stream_by_line (the forecast's stream along your heading at a line and \
+position) and choose where to paddle. Against the stream, the inshore water is often worth \
+several seconds per minute; with it, the channel. When a line is clearly better for most of the \
+leg, go there early and in one move: cue line_in or line_out WITH line_m (e.g. 50-80 m from shore \
+against the stream, 300-450 m with it); 100-m steps arrive too late. Eddies (forecast, uncertain) \
+can reverse the inshore water. Once there, check the forecast against push_local_mps; if the \
+water is not what the forecast said (the stream has turned, an eddy is elsewhere), change the \
+plan. Pacing still matters: keep the reserve from running empty."""
+
+
 _CUE_SCHEMA = {
     "type": "object",
     "properties": {
         "text": {"type": "string", "description": "what the paddler hears, at most 12 words"},
-        "ask": {"type": "string", "enum": ["ease", "push", "hold", "rate_up", "rate_down", "finish", "none"],
+        "ask": {"type": "string", "enum": ["ease", "push", "hold", "rate_up", "rate_down", "finish",
+                                           "line_in", "line_out", "none"],
                 "description": "the change asked for"},
         "pace_s500": {"type": "number", "description": "optional target pace, s per 500 m, as the display shows it"},
+        "line_m": {"type": "number", "description": "with line_in / line_out: optional target distance from shore (m, 40-600)"},
     },
     "required": ["text"],
 }
@@ -278,8 +360,13 @@ class RaceCoach:
     def __init__(self, provider: Any, state: RaceState, gate: ActuatorGate, *,
                  system: Optional[str] = None, caller: str = "race_coach", max_tokens: int = 400,
                  panel: Any = None, max_iterations: Optional[int] = None,
-                 cache_system: Optional[bool] = None) -> None:
+                 cache_system: Optional[bool] = None, version: int = 1) -> None:
         self.provider, self.state, self.gate, self.panel = provider, state, gate, panel
+        self.version = int(version)
+        if system is None and panel is not None and self.version >= 2:
+            system = (COACH_PANEL_SYSTEM_V2 + (WATER_SECTION if self.version >= 3 else "")
+                      + (WATER_SECTION_V4 if self.version >= 4 else ""))
+        self.forecast: Optional[Dict[str, Any]] = None
         self.cache_system = (panel is not None) if cache_system is None else bool(cache_system)
         self.system = system or (COACH_PANEL_SYSTEM if panel is not None else COACH_SYSTEM)
         self.caller, self.max_tokens = caller, max_tokens
@@ -297,6 +384,22 @@ class RaceCoach:
                 reg.register(tool.func, name=name, description=tool.description,
                              input_schema=tool.input_schema, writes=tool.writes)
                 allowed.append(name)
+        self.recalibrations: List[Dict[str, Any]] = []
+        if self.version >= 3:
+            reg.register(self.current_forecast, name="current_forecast",
+                         description="The pre-race forecast of the tidal stream, its change during the race, "
+                                     "the inshore weakening and the eddies (local knowledge; can be wrong).")
+            allowed.append("current_forecast")
+        if self.version >= 4:
+            reg.register(self.stream_by_line, name="stream_by_line",
+                         description="The forecast's stream along the current heading (m/s, + helps) at each "
+                                     "given distance from shore, here or at another position along the course.")
+            allowed.append("stream_by_line")
+        if self.version >= 2:
+            reg.register(self.set_critical_power, name="set_critical_power", writes=True,
+                         description="Correct the critical power the reserve models use from now on "
+                                     "(boat power cp_w and/or shaft power cp_shaft_w, in W), with the reason.")
+            allowed.append("set_critical_power")
         self.policy = ToolPolicy(reg, allowed, max_iterations=max_iterations or (5 if panel is not None else 2))
 
     def race_history(self, minutes: float = 5.0) -> Dict[str, Any]:
@@ -313,18 +416,99 @@ class RaceCoach:
             rows.append(_mean_row(bucket))
         return {"every_30s": rows}
 
-    def cue(self, text: str, ask: str = "none", pace_s500: Optional[float] = None) -> Dict[str, Any]:
-        res = self.gate.deliver({"text": text, "ask": ask, "pace_s500": pace_s500,
+    def cue(self, text: str, ask: str = "none", pace_s500: Optional[float] = None,
+            line_m: Optional[float] = None) -> Dict[str, Any]:
+        res = self.gate.deliver({"text": text, "ask": ask, "pace_s500": pace_s500, "line_m": line_m,
                                  "events": [e["kind"] for e in self._events], "source": self.caller},
                                 source=self.caller)
         return {"spoken": bool(res.get("delivered")), "blocked": bool(res.get("blocked")),
                 "reason": res.get("reason")}
+
+    def set_critical_power(self, cp_w: Optional[float] = None, cp_shaft_w: Optional[float] = None,
+                           reason: str = "") -> Dict[str, Any]:
+        st = self.state
+        base_b = st.athlete.cp_w
+        base_s = st.athlete_shaft.cp_w if st.athlete_shaft is not None else None
+        for v, base, nm in ((cp_w, base_b, "cp_w"), (cp_shaft_w, base_s, "cp_shaft_w")):
+            if v is not None and (base is None or not 0.8 * base <= float(v) <= 1.6 * base):
+                return {"ok": False, "error": f"{nm}={v} is outside 0.8-1.6 x the test value ({base})"}
+        if len(self.recalibrations) >= 3:
+            return {"ok": False, "error": "at most 3 recalibrations per race"}
+        out = st.recalibrate(cp_w=cp_w, cp_shaft_w=cp_shaft_w)
+        entry = {"t": st.last.get("t"), "elapsed_s": st.last.get("elapsed_s"), "reason": reason, **out}
+        self.recalibrations.append(entry)
+        record.emit("revision", target="critical_power", **entry)
+        return {"ok": True, **out}
+
+    def stream_by_line(self, lines_m: Optional[List[float]] = None, along_m: Optional[float] = None) -> Dict[str, Any]:
+        from .sim.twin import forecast_stream
+        if not self.forecast:
+            return {"ok": False, "error": "no forecast for this race"}
+        s = self.state.last
+        hd = s.get("heading_deg", 0.0) or 0.0
+        sign = 1.0 if (hd < 90.0 or hd > 270.0) else -1.0
+        pos = float(along_m) if along_m is not None else float(s.get("along_m", 0.0) or 0.0)
+        t = float(s.get("elapsed_s", 0.0) or 0.0)
+        lines = lines_m or [50, 80, 120, 200, 300, 450]
+        return {"ok": True, "heading_deg": round(hd), "along_m": round(pos), "race_s": round(t),
+                "along_heading_mps": {str(int(y)): round(sign * forecast_stream(self.forecast, float(y), pos, t), 3)
+                                      for y in lines}}
+
+    def current_forecast(self) -> Dict[str, Any]:
+        return dict(self.forecast or {"note": "no forecast for this race"})
+
+    def _recent_minutes(self, n: int = 5) -> List[Dict[str, Any]]:
+        H = [h for h in self.state.history if h.get("elapsed_s") is not None]
+        if not H:
+            return []
+        end = H[-1]["elapsed_s"]
+        out = []
+        for k in range(n, 0, -1):
+            b = [h for h in H if end - 60.0 * k < h["elapsed_s"] <= end - 60.0 * (k - 1)]
+            if not b:
+                continue
+            def m(key, d=1):
+                xs = [x[key] for x in b if x.get(key) is not None and math.isfinite(x[key])]
+                return round(sum(xs) / len(xs), d) if xs else None
+            row = {"min_ago": k, "speed_water": m("speed_water", 2), "speed_gps": m("speed_gps", 2),
+                   "rate_spm": m("rate_spm", 0), "boat_power_w": m("power_w", 0),
+                   "shaft_power_w": m("shaft_power_w", 0), "fade_pct": m("fade_pct", 1),
+                   "reserve_pod_pct": None if m("w_bal_pod_frac", 3) is None else round(100 * m("w_bal_pod_frac", 3)),
+                   "reserve_boat_pct": None if m("w_bal_frac", 3) is None else round(100 * m("w_bal_frac", 3)),
+                   "push_along_mps": m("push_along_mps", 2), "push_local_mps": m("push_local_mps", 2),
+                   "line_m": m("line_m", 0), "along_m": m("along_m", 0)}
+            out.append({k2: v for k2, v in row.items() if v is not None})
+        return out
 
     def consult(self, events: List[Dict[str, Any]], *, why: str = "events") -> Dict[str, Any]:
         self._events = list(events)
         s = self.state
         msg = {"update": why, "events": [{"kind": e["kind"], "detail": e["detail"]} for e in events],
                "state": s.compact()}
+        if self.version >= 2:
+            last = s.last
+            extra = {k: last.get(k) for k in ("shaft_power_w", "cp_shaft_w", "w_bal_pod_frac",
+                                              "empties_in_m_pod", "sustainable_shaft_power_w",
+                                              "line_m", "along_m", "heading_deg", "push_local_mps")}
+            msg["state"].update({k: (round(v, 3) if isinstance(v, float) else v) for k, v in extra.items() if v is not None})
+            if self.panel is not None:
+                ev = self.panel.service.buffer
+                for k in ("cp_implied_w", "steady_power_10min_w", "reserve_low_s"):
+                    ser = ev.series(k, 3.0)
+                    if ser:
+                        v = ser[-1][1] if isinstance(ser[-1], (tuple, list)) else ser[-1]
+                        msg["state"][k] = round(float(v), 1)
+            msg["last_5_min"] = self._recent_minutes()
+            if not self.consultations:
+                msg["race"] = {"distance_m": s.distance_m, "course": "out-and-back legs; turns cost a few seconds",
+                               "calibration": ("critical power and reserve from an all-out 3- and 12-minute test: "
+                                               f"boat {s.athlete.cp_w:.0f} W / {s.athlete.w_prime_j / 1000:.1f} kJ" +
+                                               (f"; shaft (pod) {s.athlete_shaft.cp_w:.0f} W / "
+                                                f"{s.athlete_shaft.w_prime_j / 1000:.1f} kJ" if s.athlete_shaft else ""))}
+                if self.version >= 3 and self.forecast:
+                    msg["race"]["forecast"] = self.forecast
+                    msg["race"]["course"] = (f"along a shore: one leg of {s.distance_m / 2:.0f} m north, "
+                                             "then back south to the start")
         t0 = s.last.get("t")
         res = run_tool_loop(self.provider, system=self.system,
                             messages=[Message(role="user", text=json.dumps(msg))],

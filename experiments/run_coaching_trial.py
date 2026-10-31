@@ -72,8 +72,15 @@ def _load_preps() -> Dict[str, Any]:
     return {}
 
 
+COASTAL = False
+
+
+def _prep_one_coastal(seed: int) -> Dict[str, Any]:
+    return ct.draw_preparation(seed, coastal=True).to_dict()
+
+
 def _prep_one(seed: int) -> Dict[str, Any]:
-    return ct.draw_preparation(seed).to_dict()
+    return ct.draw_preparation(seed, coastal=COASTAL).to_dict()
 
 
 def preparations(seeds: List[int], workers: int) -> Dict[int, ct.Preparation]:
@@ -82,12 +89,26 @@ def preparations(seeds: List[int], workers: int) -> Dict[int, ct.Preparation]:
     if todo:
         print(f"preparing {len(todo)} seeds ...", flush=True)
         with ProcessPoolExecutor(max_workers=workers) as ex:
-            for d in ex.map(_prep_one, todo):
+            for d in ex.map(_prep_one_coastal if COASTAL else _prep_one, todo):
                 cache[str(d["seed"])] = d
         os.makedirs(OUT, exist_ok=True)
         with open(PREP_CACHE, "w") as f:
             json.dump(cache, f, indent=1, sort_keys=True)
+    lacking = [s for s in seeds if "athlete_shaft" not in cache[str(s)]]
+    if lacking:
+        print(f"adding the pod calibration to {len(lacking)} cached seeds ...", flush=True)
+        with ProcessPoolExecutor(max_workers=workers) as ex:
+            for s, d in zip(lacking, ex.map(_pod_one, [cache[str(s)] for s in lacking])):
+                cache[str(s)]["athlete_shaft"] = d
+        with open(PREP_CACHE, "w") as f:
+            json.dump(cache, f, indent=1, sort_keys=True)
     return {s: ct.Preparation.from_dict(cache[str(s)]) for s in seeds}
+
+
+def _pod_one(d: Dict[str, Any]) -> Dict[str, Any]:
+    prep = ct.Preparation.from_dict(d)
+    a = ct.shaft_athlete(prep.traits, prep.seed)
+    return {"cp_w": a.cp_w, "w_prime_j": a.w_prime_j, "source": a.source}
 
 
 # ── arms ────────────────────────────────────────────────────────────────────
@@ -103,6 +124,14 @@ def _make_arms(spec: str, a: argparse.Namespace) -> List[Any]:
             arms += ct.baseline_arms()
         elif part == "no_coach":
             arms.append(ct.NoCoach())
+        elif part == "heldout_baselines":
+            arms += [ct.NoCoach(), ct.Autopilot(150.0, -3.0), ct.PodAutopilot(150.0, -3.0), ct.LineRule(60.0)]
+        elif part == "line_rule":
+            arms += [ct.LineRule(60.0), ct.LineRule(120.0)]
+        elif part == "autopilot_pod":
+            pre = ct.PREREGISTERED
+            arms += [ct.PodAutopilot(m, f) for m in pre["autopilot_sweep"]["overpace_margin_m"]
+                     for f in pre["autopilot_sweep"]["fade_pct"]]
         elif part == "stand-in":
             arms.append(("stand-in", None))
         elif part == "agent":
@@ -125,7 +154,8 @@ def _episode(prep_d: Dict[str, Any], arm_spec: Any, opts: Dict[str, Any]) -> Dic
             prov = make_coach_provider(opts["provider"], opts.get("model"),
                                        api_key_env=opts["api_key_env"], api_base_url=opts["api_base_url"])
             counting = ct.CountingProvider(prov)
-            arm = ct.AgentArm(counting, label=opts.get("agent_label") or "agent")
+            arm = ct.AgentArm(counting, label=opts.get("agent_label") or "agent",
+                              coach_version=opts.get("coach_version", 1))
             arm.setting["model"] = getattr(prov, "model", "?")
             latency = None                       # each call takes its measured time
             os.makedirs(os.path.join(OUT, "records"), exist_ok=True)
@@ -141,6 +171,10 @@ def _episode(prep_d: Dict[str, Any], arm_spec: Any, opts: Dict[str, Any]) -> Dic
 
 
 def run(a: argparse.Namespace) -> None:
+    global COASTAL, PREP_CACHE
+    if getattr(a, "coastal", False):
+        COASTAL = True
+        PREP_CACHE = os.path.join(OUT, "preparations_coastal.json")
     seeds = seed_list(a.seeds)
     preps = preparations(seeds, a.workers)
     arms = _make_arms(a.arms, a)
@@ -151,7 +185,8 @@ def run(a: argparse.Namespace) -> None:
             for line in f:
                 done.add(_arm_key(json.loads(line)))
     opts = {"provider": a.provider, "model": a.model, "api_key_env": a.api_key_env,
-            "api_base_url": a.api_base_url, "tag": a.tag, "agent_label": a.agent_label}
+            "api_base_url": a.api_base_url, "tag": a.tag, "agent_label": a.agent_label,
+            "coach_version": a.coach_version}
     jobs = []
     for s in seeds:
         for arm in arms:
@@ -249,13 +284,14 @@ def summarize(tag: str, agent_arm: str = "agent", figure: Optional[str] = None) 
     ag = _by(rows, agent_arm)
     nc = _by(rows, "no_coach")
     seeds = sorted(s for s in ag if s in nc)
-    sel = {fam: _select(rows, fam, seeds) for fam in ("fixed_plan", "autopilot")}
+    fams = [f for f in ("fixed_plan", "autopilot", "autopilot_pod", "line_rule") if any(r["arm"] == f for r in rows)]
+    sel = {fam: _select(rows, fam, seeds) for fam in fams}
     comps = {"no_coach": nc}
-    for fam in ("fixed_plan", "autopilot"):
+    for fam in fams:
         for which in ("best", "typical"):
             if sel[fam]:
                 comps[f"{fam}_{which}"] = _by(rows, fam, sel[fam][which])
-    for other in ("agent", "agent_haiku", "agent_stand_in"):
+    for other in ("agent", "agent_haiku", "agent_stand_in", "agent_v2", "agent_v3"):
         if other != agent_arm and _by(rows, other):
             comps[other] = _by(rows, other)
     t = lambda d: [d[s]["race_time_s"] for s in seeds]                           # noqa: E731
@@ -470,7 +506,8 @@ def selftest() -> None:
     PREP_CACHE = os.path.join(OUT, "preparations.json")
     a = argparse.Namespace(seeds="0-2", arms="no_coach,stand-in", tag="selftest", workers=3,
                            provider="stand-in", model=None, api_key_env="ANTHROPIC_API_KEY",
-                           api_base_url="https://api.anthropic.com", agent_label="agent", max_usd=None)
+                           api_base_url="https://api.anthropic.com", agent_label="agent", max_usd=None,
+                           coach_version=1)
     run(a)
     rows = load("selftest")
     assert len(rows) == 6, len(rows)
@@ -493,17 +530,23 @@ def main(argv=None) -> int:
     r.add_argument("--api-key-env", default="ANTHROPIC_API_KEY")
     r.add_argument("--api-base-url", default="https://api.anthropic.com")
     r.add_argument("--agent-label", default="agent", help="arm name for this model (agent = primary)")
+    r.add_argument("--coach-version", type=int, default=1, help="1 = registered coach; 2+ = later rounds")
+    r.add_argument("--coastal", action="store_true", help="water that varies across the course (round 2)")
     r.add_argument("--max-usd", type=float, default=None,
                    help="stop scheduling new episodes once the agent arm's estimated spend passes this")
     s = sub.add_parser("summarize")
     s.add_argument("--tag", default="dev")
     s.add_argument("--agent-arm", default="agent")
     s.add_argument("--figure", default=None)
+    s.add_argument("--coastal", action="store_true")
     sub.add_parser("selftest")
     a = ap.parse_args(argv)
     if a.cmd == "run":
         run(a)
     elif a.cmd == "summarize":
+        global PREP_CACHE
+        if a.coastal:
+            PREP_CACHE = os.path.join(OUT, "preparations_coastal.json")
         summarize(a.tag, a.agent_arm, a.figure)
     else:
         selftest()

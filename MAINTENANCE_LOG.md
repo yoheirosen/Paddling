@@ -5,6 +5,24 @@ Dated entries, newest first. Entries before the move refer to paths under
 
 ---
 
+### Coaching: the registered result, three improvement rounds, a held-out confirmation (2026-10-31 to 11-01)
+
+Registered evaluation (30 seeds): the Opus 5.5 coach was 2.3 s faster than no coach and 6.1 s
+slower than the best rule autopilot (not significant); the Haiku 5.5 coach 0.8 s faster than no
+coach and 7.7 s slower than the autopilot. Cause, from the coach's stated reasons: it trusted the
+boat-speed reserve, which misreads in both directions. Exploratory rounds on development seeds:
+(1) the paddle pod's shaft power on the twin's rows and a reserve from it (`RaceState(athlete_shaft=)`,
+`coaching_trial.shaft_athlete`), calibration evidence on the panel (`cp_implied_w`, steady powers,
+time near empty), `RaceCoach(version=2)` with `set_critical_power`, the last five minutes in each
+update and a revised prompt, `PodAutopilot`; (2) coastal water (`CoastalWater`, `draw_setup(seed,
+coastal=True)`, `water_forecast`), line cues (`line_in` / `line_out` with `line_m`), GPS line and
+course position, `push_local_mps`, coach version 3 with the forecast, `LineRule`; (3) coach version
+4 with `stream_by_line` and a plan per leg. New random streams keep every registered race exactly
+reproducible. Held-out confirmation on 10 fresh coastal seeds, written down before the run
+(`HELDOUT_ROUND3`): the version-4 coach beat no coach in all 10 races (−24.2 s, Holm p 0.004) and
+did not differ from the forecast line rule (+7.2 s, p 0.49). Model spend for all of it about
+USD 17 (registered arms ~USD 7.5, rounds and confirmation ~USD 9.5). Tests: 66.
+
 ### Closed-loop coaching on a paddler twin, on the platform's streaming panel (2026-10-30)
 
 The coach now runs on agentic_experiments' own streaming-metric machinery and is tested in a

@@ -85,3 +85,36 @@ def test_paired_statistics_and_holm():
     assert p["ci95"][1] < 0
     h = holm({"a": 0.01, "b": 0.04, "c": 0.03})
     assert h["a"] == pytest.approx(0.03) and h["c"] == pytest.approx(0.06) and h["b"] == pytest.approx(0.06)
+
+
+def test_the_pod_reserve_and_the_recalibration_tool(prep):
+    from paddling_expt.coach import CueSink, RaceCoach, make_cue_gate
+    st = RaceState(CRAFT, KG, Athlete(150.0, 8000.0), distance_m=20_000.0, push=(0.0, 0.0),
+                   athlete_shaft=Athlete(220.0, 15000.0))
+    for r in _rows(minutes=5):
+        r["shaft_power_w"] = 240.0
+        st.update(r)
+    assert 0.0 < st.last["w_bal_pod_frac"] < 1.0 and st.last["shaft_power_w"] == pytest.approx(240.0)
+    coach = RaceCoach(FakeProvider("no cue"), st, make_cue_gate(CueSink(st), st), panel=RacePanel(st), version=2)
+    assert not coach.set_critical_power(cp_w=500.0)["ok"]                 # outside 0.8-1.6 x the test
+    assert coach.set_critical_power(cp_w=170.0, reason="race says so")["ok"] and st.cp_w == 170.0
+
+
+def test_coastal_arms_and_the_version_4_coach_run(prep):
+    from paddling_expt.coaching_trial import LineRule, PodAutopilot
+    cprep = draw_preparation(9, coastal=True)
+    assert cprep.forecast and "inshore_profile" in cprep.forecast
+    for arm in (PodAutopilot(), LineRule(60.0)):
+        r = run_episode(cprep, arm)
+        assert r["race_time_s"]
+    seen = []
+
+    def ans(system, messages, tools):
+        names = {t["name"] for t in tools}
+        if not seen:
+            seen.append(names)
+            return {"tool_calls": [{"name": "stream_by_line", "arguments": {"lines_m": [60, 300]}}]}
+        return "no cue: probe"
+    r = run_episode(cprep, AgentArm(FakeProvider(ans), label="probe", coach_version=4))
+    assert {"stream_by_line", "current_forecast", "set_critical_power", "cue"} <= seen[0]
+    assert r["consultations"] > 0

@@ -32,7 +32,8 @@ lists them):
   change fades back to the paddler's own pacing with time constant ``adherence_s``
   unless it is repeated.
 * **measurement**: rows carry the noise of a per-stroke GPS speed, stroke rate and
-  heading, as a SpeedCoach or the head unit reports them.
+  heading, as a SpeedCoach or the head unit reports them, and (OC1) the paddle pod's
+  shaft power with 5 % noise per stroke.
 
 So the answers a coach could find are planted: what over- or under-pacing costs, how
 much a lower rate helps a tired paddler, how far a paddler follows a cue.  A result
@@ -52,10 +53,79 @@ from ..boatspeed import power_at_speed
 from ..hydro import Craft
 from .paddler import PaddlerParams, best_rate, efficiency
 
-__all__ = ["Traits", "RaceSetup", "PaddlerTwin", "ASKS", "draw_traits", "draw_setup",
+__all__ = ["Traits", "RaceSetup", "PaddlerTwin", "ASKS", "CoastalWater", "water_forecast", "forecast_stream", "draw_traits", "draw_setup",
            "even_effort", "oracle_effort", "twin_cp_test"]
 
-ASKS = ("ease", "push", "hold", "rate_up", "rate_down", "finish", "none")
+ASKS = ("ease", "push", "hold", "rate_up", "rate_down", "finish", "line_in", "line_out", "none")
+
+
+@dataclass
+class CoastalWater:
+    """A tidal stream along a shore that varies across and along the course (planted).
+
+    The stream in the channel is ``c0`` at the start and changes by ``c1`` over
+    ``trend_s`` (it can turn).  Inshore it is weaker: the share of the channel stream at
+    distance ``y`` from shore is ``inshore_floor + (1 - inshore_floor)(1 - exp(-y /
+    inshore_scale_m))``.  Behind each point (``eddies``: along-shore position, half
+    length, width from shore, strength) the inshore water runs against the stream."""
+
+    c0: float = 0.3
+    c1: float = 0.0
+    trend_s: float = 3000.0
+    inshore_floor: float = 0.25
+    inshore_scale_m: float = 150.0
+    eddies: List[Tuple[float, float, float, float]] = field(default_factory=list)
+
+    def stream(self, t: float) -> float:
+        return self.c0 + self.c1 * min(1.0, max(0.0, t / self.trend_s))
+
+    def at(self, y: float, s: float, t: float) -> float:
+        """Along-shore water velocity (m/s, + north) at ``y`` m from shore, ``s`` m along."""
+        c = self.stream(t)
+        g = self.inshore_floor + (1.0 - self.inshore_floor) * (1.0 - math.exp(-max(0.0, y) / self.inshore_scale_m))
+        v = c * g
+        for s0, half, width, k in self.eddies:
+            if abs(s - s0) <= half and y <= width:
+                v -= 2.0 * k * c * (1.0 - abs(s - s0) / half) * (1.0 - y / width)
+        return v
+
+
+def water_forecast(water: CoastalWater, seed: int) -> Dict[str, Any]:
+    """The pre-race forecast a paddler would have (tide table plus local knowledge), with
+    errors: the stream and its trend misjudged, eddies misplaced, one missing, one false."""
+    rng = np.random.default_rng([seed, 37])
+    eddies = []
+    for s0, half, width, k in water.eddies:
+        if rng.random() < 0.7:
+            eddies.append({"along_m": round(float(s0 + rng.normal(0.0, 120.0))), "length_m": round(2 * half),
+                           "within_m_of_shore": round(width)})
+    if rng.random() < 0.3:
+        eddies.append({"along_m": round(float(rng.uniform(0.1, 0.9) * max(1.0, max([e[0] for e in water.eddies] + [1000.0])))),
+                       "length_m": 300, "within_m_of_shore": 120})
+    out = {"stream_at_start_mps": round(float(water.c0 + rng.normal(0.0, 0.1)), 2),
+           "stream_change_mps": round(float(water.c1 + rng.normal(0.0, 0.15)), 2),
+           "over_s": round(water.trend_s),
+           "inshore": f"the stream is weaker close to shore (roughly half strength within ~{round(water.inshore_scale_m)} m)",
+           "eddies": sorted(eddies, key=lambda e: e["along_m"]),
+           "convention": "stream + flows north (with the first leg); along_m is measured from the start line along the course"}
+    # the inshore profile as local knowledge has it (shape known, its width uncertain)
+    out["inshore_profile"] = {"share_at_shore": water.inshore_floor,
+                              "scale_m": round(float(water.inshore_scale_m * rng.uniform(0.75, 1.25)))}
+    return out
+
+
+def forecast_stream(fc: Dict[str, Any], line_m: float, along_m: float, race_s: float) -> float:
+    """Along-shore stream (m/s, + north) the forecast expects at a line and position."""
+    f = min(1.0, max(0.0, race_s / max(1.0, float(fc.get("over_s", 3000.0)))))
+    c = float(fc.get("stream_at_start_mps", 0.0)) + f * float(fc.get("stream_change_mps", 0.0))
+    prof = fc.get("inshore_profile") or {"share_at_shore": 0.25, "scale_m": 150.0}
+    a, sc = float(prof["share_at_shore"]), float(prof["scale_m"])
+    v = c * (a + (1.0 - a) * (1.0 - math.exp(-max(0.0, line_m) / sc)))
+    for e in fc.get("eddies", []):
+        half, width = 0.5 * float(e.get("length_m", 300)), float(e.get("within_m_of_shore", 120))
+        if abs(along_m - float(e["along_m"])) <= half and line_m <= width:
+            v -= 1.5 * c * (1.0 - abs(along_m - float(e["along_m"])) / half) * (1.0 - line_m / width)
+    return v
 
 
 @dataclass
@@ -82,6 +152,9 @@ class Traits:
     blowup_effort: float = 0.85         # once the reserve is spent: held to this x critical power ...
     recover_frac: float = 0.15          # ... until this share of the reserve has come back
     settle_frac: float = 0.98           # after a blow-up their own effort settles to this x even pace
+    habit_line_m: float = 250.0         # distance from shore they hold unless cued (water that varies across the course)
+    lateral_mps: float = 0.8            # how fast they move across when changing line
+    line_step_m: float = 100.0          # line in / out moves the line by this
 
 
 @dataclass
@@ -96,6 +169,7 @@ class RaceSetup:
     turn_s: float = 6.0
     craft: str = "oc1"
     plan: Optional[List[Tuple[float, float, float]]] = None   # (seconds, rate, effort): a session, not a race
+    water: Optional[CoastalWater] = None   # water that varies across and along the course (else: current_mps)
 
 
 def draw_traits(seed: int) -> Traits:
@@ -111,14 +185,25 @@ def draw_traits(seed: int) -> Traits:
                   wander_sd=u(0.01, 0.03), compliance=u(0.55, 0.95), response_s=u(4, 15),
                   adherence_s=u(120, 420), effort_step=u(0.03, 0.06),
                   blowup_effort=u(0.75, 0.9), recover_frac=u(0.1, 0.2),
-                  settle_frac=u(0.95, 1.0))
+                  settle_frac=u(0.95, 1.0), habit_line_m=u(120.0, 380.0))
 
 
-def draw_setup(seed: int) -> RaceSetup:
+def draw_setup(seed: int, coastal: bool = False) -> RaceSetup:
     rng = np.random.default_rng([seed, 29])
-    return RaceSetup(distance_m=float(rng.choice([6000.0, 8000.0, 10000.0])),
-                     leg_m=float(rng.choice([1000.0, 1250.0])),
-                     current_mps=float(rng.uniform(-0.35, 0.35)))
+    su = RaceSetup(distance_m=float(rng.choice([6000.0, 8000.0, 10000.0])),
+                   leg_m=float(rng.choice([1000.0, 1250.0])),
+                   current_mps=float(rng.uniform(-0.35, 0.35)))
+    if not coastal:
+        return su
+    rw = np.random.default_rng([seed, 31])
+    su.leg_m = leg = su.distance_m / 2.0          # coastal: one long leg out, one back
+    eddies = [(float(rw.uniform(0.1, 0.9) * leg), float(rw.uniform(100.0, 250.0)),
+               float(rw.uniform(80.0, 160.0)), float(rw.uniform(0.5, 1.0)))
+              for _ in range(int(rw.integers(1, 4)))]
+    su.water = CoastalWater(c0=float(rw.uniform(-0.5, 0.5)), c1=float(rw.uniform(-0.5, 0.5)),
+                            trend_s=su.distance_m / 3.0, eddies=eddies)
+    su.current_mps = 0.0
+    return su
 
 
 class PaddlerTwin:
@@ -141,6 +226,10 @@ class PaddlerTwin:
         self.rng_meas = np.random.default_rng([seed, 1])
         self.rng_feel = np.random.default_rng([seed, 2])
         self.rng_cue = np.random.default_rng([seed, 3])
+        self.rng_pod = np.random.default_rng([seed, 4])    # its own stream: adding the pod moves no other draw
+        self.rng_pos = np.random.default_rng([seed, 5])    # GPS line / course position (varying water only)
+        self.y = float(traits.habit_line_m)
+        self.y_target = self.y
         if body_effort is None and setup.plan is None:
             even = even if even is not None else even_effort(traits, setup)
             body_effort = traits.body_bias * even
@@ -259,19 +348,28 @@ class PaddlerTwin:
         return max(0.3, e), min(85.0, max(40.0, r)), coached
 
     # ── cues ─────────────────────────────────────────────────────────────
-    def cue(self, ask: str, pace_s500: Optional[float] = None) -> Dict[str, Any]:
+    def cue(self, ask: str, pace_s500: Optional[float] = None, line_m: Optional[float] = None) -> Dict[str, Any]:
         """A cue reaches the paddler now.  Returns whether they will follow it (the
         twin's truth, never shown to a coach)."""
         ask = str(ask)
         follow = bool(self.rng_cue.random() < self.tr.compliance)
         entry = {"t": self.t, "ask": ask, "pace_s500": pace_s500, "followed": follow}
+        if line_m is not None:
+            entry["line_m"] = line_m
         self.cues.append(entry)
         if follow and ask in ASKS and ask != "none":
-            self._pending.append((self.t + self.tr.response_s, ask, pace_s500))
+            self._pending.append((self.t + self.tr.response_s, ask, pace_s500, line_m))
         return entry
 
-    def _apply(self, ask: str, pace_s500: Optional[float], e_now: float) -> None:
+    def _apply(self, ask: str, pace_s500: Optional[float], e_now: float, line_m: Optional[float] = None) -> None:
         tr, t = self.tr, self.t
+        if ask in ("line_in", "line_out"):
+            if line_m is not None:
+                self.y_target = min(600.0, max(40.0, float(line_m)))
+            else:
+                step = -tr.line_step_m if ask == "line_in" else tr.line_step_m
+                self.y_target = min(600.0, max(40.0, self.y_target + step))
+            return
         if pace_s500 is not None and pace_s500 > 0 and ask in ("ease", "push", "hold"):
             self._pace = (500.0 / float(pace_s500), e_now, t, e_now)
             self._hold = None
@@ -310,8 +408,8 @@ class PaddlerTwin:
                 T *= 1.0 + 0.012 * float(self.rng_feel.normal())
             if self.t + T > until_t:
                 break
-            for when, ask, pace in [x for x in self._pending if x[0] <= self.t]:
-                self._apply(ask, pace, e_guess)
+            for when, ask, pace, line in [x for x in self._pending if x[0] <= self.t]:
+                self._apply(ask, pace, e_guess, line)
             self._pending = [x for x in self._pending if x[0] > self.t]
             e, r, coached = self._choose(fat, T, commit=True)
             rows.append(self._stroke(e, r, T, fat, coached))
@@ -335,7 +433,17 @@ class PaddlerTwin:
         self.w = max(0.0, self.w)
         self.work += P * dt
 
+    def _along_pos(self) -> float:
+        """Position along the shore (m from the start line)."""
+        if self.su.water is None or self.t < self.start_t:
+            return 0.0
+        into = self.race_m - self._leg_start
+        return into if self.heading < 90.0 or self.heading > 270.0 else self.su.leg_m - into
+
     def _current_along(self) -> float:
+        if self.su.water is not None:
+            v = self.su.water.at(self.y, self._along_pos(), self.t - self.start_t)
+            return v * math.cos(math.radians(self.heading))
         return self.su.current_mps * math.cos(math.radians(self.heading))
 
     def _stroke(self, e: float, rate: float, T: float, fat: float, coached: bool) -> Dict[str, Any]:
@@ -357,7 +465,13 @@ class PaddlerTwin:
         v_target = float(np.interp(eta * P, *_table_at(self._table, ama)))
         self.v += (v_target - self.v) * (1.0 - math.exp(-T / 6.0))
         along = self._current_along()
-        vg = max(0.0, self.v + along)
+        u_lat = 0.0
+        if self.su.water is not None and self.racing and abs(self.y_target - self.y) > 1.0:
+            dy = self.y_target - self.y
+            u_lat = math.copysign(min(self.tr.lateral_mps, abs(dy) / T), dy)
+            self.y += u_lat * T
+        v_fwd = math.sqrt(max(0.0, self.v * self.v - u_lat * u_lat)) if u_lat else self.v
+        vg = max(0.0, v_fwd + along)
         d = vg * T
         self._refill(P, T)
         if self.noise:
@@ -386,6 +500,7 @@ class PaddlerTwin:
         a = 0.15
         self.v_disp = vg if self.v_disp is None else (1 - a) * self.v_disp + a * vg
         lg = self.log
+        lg.setdefault("line_m", []).append(float(self.y))
         for k, v in (("t", t_end), ("race_s", t_end - self.start_t), ("race_m", self.race_m),
                      ("effort", e), ("p_shaft", P), ("p_boat", eta * P), ("eta", eta), ("rate", rate),
                      ("rate_best", best_rate(p, fat)), ("fatigue", fat), ("w_bal", self.w),
@@ -395,8 +510,15 @@ class PaddlerTwin:
         self.t = t_end
         nm = self.rng_meas
         n = (lambda s: float(nm.normal(0.0, s))) if self.noise else (lambda s: 0.0)
-        return {"t": round(t_end, 3), "v_mean": max(0.0, vg + n(0.06)), "rate_spm": rate + n(0.4),
-                "heading_deg": (self.heading + n(4.0)) % 360.0, "distance_m": self.total_m}
+        row = {"t": round(t_end, 3), "v_mean": max(0.0, vg + n(0.06)), "rate_spm": rate + n(0.4),
+               "heading_deg": (self.heading + n(4.0)) % 360.0, "distance_m": self.total_m}
+        if self.craft.outrigger is not None:          # the paddle pod (single-blade paddle)
+            row["shaft_power_w"] = max(0.0, P * (1.0 + (float(self.rng_pod.normal(0.0, 0.05)) if self.noise else 0.0)))
+        if self.su.water is not None:                  # GPS position against the course map
+            q = (lambda sd: float(self.rng_pos.normal(0.0, sd))) if self.noise else (lambda sd: 0.0)
+            row["line_m"] = max(0.0, self.y + q(3.0))
+            row["along_m"] = self._along_pos() + q(3.0)
+        return row
 
     def _turn(self, t: float) -> None:
         self.heading = (self.heading + 180.0) % 360.0
@@ -463,7 +585,7 @@ def even_effort(traits: Traits, setup: RaceSetup) -> float:
     """The paddler's even pace: the highest constant effort (x critical power, no start
     sprint, no kick) that reaches the line without blowing up, at their own rate and
     ignoring the current (which they cannot judge)."""
-    return _highest_unblown(traits, replace(setup, current_mps=0.0), "own")
+    return _highest_unblown(traits, replace(setup, current_mps=0.0, water=None), "own")
 
 
 def oracle_effort(traits: Traits, setup: RaceSetup) -> Dict[str, float]:

@@ -181,8 +181,18 @@ class RaceState:
                  distance_m: Optional[float] = None, ama_kg: float = 5.0,
                  push: Optional[tuple] = None, push_tau_s: float = 600.0,
                  smooth_s: float = 30.0, start_t: Optional[float] = None,
-                 reference_s: float = 300.0, turn_hold_s: float = 45.0) -> None:
+                 reference_s: float = 300.0, turn_hold_s: float = 45.0,
+                 athlete_shaft: Optional[Athlete] = None) -> None:
         self.craft, self.total_kg, self.athlete = craft, float(total_kg), athlete
+        # the paddle pod's own reserve: critical power and W' in shaft power (no
+        # blade-efficiency drift); used when rows carry ``shaft_power_w``
+        self.athlete_shaft = athlete_shaft
+        self.cp_shaft_w = float(athlete_shaft.cp_w) if athlete_shaft else None
+        self.w_bal_shaft = float(athlete_shaft.w_prime_j) if athlete_shaft else None
+        self.recent_shaft: Deque[tuple] = deque()
+        self._local: Deque[tuple] = deque()          # (t, v_gps, shaft power) over 20 s
+        self.eta_est: Optional[float] = None         # boat power / shaft power, slow average
+        self._pos: Dict[str, float] = {}
         self.distance_m = distance_m
         self.ama_kg = ama_kg if craft.outrigger else 0.0
         self.fixed_push = push
@@ -242,6 +252,23 @@ class RaceState:
         P = float(power_at_speed(self.craft, self.total_kg, v_water, ama)) if v_water > 0.3 else 0.0
         a = self.athlete
         self.w_bal = max(0.0, w_balance_step(self.w_bal, P, dt, self.cp_w, a.w_prime_j))
+        Ps = row.get("shaft_power_w")
+        if Ps is not None and self.athlete_shaft is not None:
+            self.w_bal_shaft = max(0.0, w_balance_step(self.w_bal_shaft, float(Ps), dt, self.cp_shaft_w,
+                                                       self.athlete_shaft.w_prime_j))
+            self.recent_shaft.append((t, float(Ps)))
+            while self.recent_shaft and self.recent_shaft[0][0] < t - self.smooth_s:
+                self.recent_shaft.popleft()
+            self._local.append((t, float(v), float(Ps)))
+            while self._local and self._local[0][0] < t - 20.0:
+                self._local.popleft()
+            if racing and self.t0 is not None and pk.get("known") and P > 0 and Ps > 20.0:
+                r_ = min(1.0, max(0.2, P / float(Ps)))
+                k_ = min(1.0, dt / min(600.0, 30.0 + (t - self.t0)))     # quick at first, then slow
+                self.eta_est = r_ if self.eta_est is None else self.eta_est + k_ * (r_ - self.eta_est)
+        for key in ("line_m", "along_m", "heading_deg"):
+            if row.get(key) is not None:
+                self._pos[key] = float(row[key])
         if not racing:
             return self.last
         if row.get("distance_m") is not None:
@@ -264,7 +291,8 @@ class RaceState:
             self.history.append({k: snap.get(k) for k in (
                 "elapsed_s", "distance_m", "rate_spm", "speed_gps", "speed_water", "power_w",
                 "w_bal_frac", "push_along_mps", "sustainable_power_w", "pace_gap_s500",
-                "empties_in_m", "eta_s", "fade_pct")})
+                "empties_in_m", "eta_s", "fade_pct", "shaft_power_w", "w_bal_pod_frac",
+                "line_m", "along_m", "push_local_mps")})
             self._next_hist = t + 5.0
         self.last = snap
         return snap
@@ -292,6 +320,24 @@ class RaceState:
                 if abs(2.0 * b - rate) <= 3.0:
                     ref = self._ref[b][0] / self._ref[b][1]
                     snap["fade_pct"] = 100.0 * (v_w / ref - 1.0)
+        snap.update(self._pos)
+        if self.eta_est is not None and len(self._local) >= 5:
+            vg = sum(x[1] for x in self._local) / len(self._local)
+            ps = sum(x[2] for x in self._local) / len(self._local)
+            snap["eta_est"] = self.eta_est
+            snap["push_local_mps"] = vg - _speed_for(self.craft, self.total_kg, self.eta_est * ps, self.ama_kg)
+        if self.athlete_shaft is not None and self.recent_shaft:
+            Ps = sum(x[1] for x in self.recent_shaft) / len(self.recent_shaft)
+            snap["shaft_power_w"] = Ps
+            snap["cp_shaft_w"] = self.cp_shaft_w
+            snap["w_bal_pod_frac"] = self.w_bal_shaft / self.athlete_shaft.w_prime_j
+            if self.distance_m:
+                if Ps > self.cp_shaft_w and v_w > 0.3:
+                    snap["empties_in_m_pod"] = v_w * self.w_bal_shaft / (Ps - self.cp_shaft_w)
+                rem_pod = max(0.0, self.distance_m - self.travelled)
+                if rem_pod > 0 and v_w > 0.3:
+                    T = rem_pod / v_w
+                    snap["sustainable_shaft_power_w"] = self.cp_shaft_w + self.w_bal_shaft / T
         if a.envelope:
             env = a.envelope
             r = min(max(rate, env["rate_min"] - 2), env["rate_max"] + 2) if math.isfinite(rate) else None
@@ -315,6 +361,17 @@ class RaceState:
                     snap["empties_in_m"] = None
                 snap["eta_s"] = snap["elapsed_s"] + rem / max(0.3, v_gps)
         return snap
+
+    def recalibrate(self, cp_w: Optional[float] = None, cp_shaft_w: Optional[float] = None) -> Dict[str, Any]:
+        """Change the critical power the reserve models use from now on (an agent's
+        revision of the calibration, e.g. when the race shows the test read it low)."""
+        out = {"cp_w_before": self.cp_w, "cp_shaft_w_before": self.cp_shaft_w}
+        if cp_w is not None:
+            self.cp_w = float(cp_w)
+        if cp_shaft_w is not None and self.athlete_shaft is not None:
+            self.cp_shaft_w = float(cp_shaft_w)
+        out.update({"cp_w": self.cp_w, "cp_shaft_w": self.cp_shaft_w})
+        return out
 
     def compact(self) -> Dict[str, Any]:
         """The current state, rounded for a model's context."""

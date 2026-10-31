@@ -333,9 +333,70 @@ the rule autopilot gets about a quarter of that. A fixed plan prevents blow-ups 
 paces too conservatively to gain time. The autopilot loses time on paddlers who were
 already pacing well: the short test reads critical power low, so its over-pace rule
 tells them to ease. The scripted stand-in coach (the autopilot's mapping after a 6-s
-latency; a harness check) gained 3.1 s. The language-model coach has not run yet: it
-waits for the API key and the choice of model. Development seeds (20): reference
-−52 s, autopilot −11.5 s, best fixed plan −0.5 s.
+latency; a harness check) gained 3.1 s. Development seeds (20): reference −52 s,
+autopilot −11.5 s, best fixed plan −0.5 s.
+
+**The registered result: the language-model coach did not beat the rules.** All 30
+evaluation races, no failed model calls:
+
+| coach | vs no coach (mean, 95 % interval) | vs best rule autopilot | model calls |
+|---|---|---|---|
+| Opus 5.5 (primary) | −2.3 s (−11.7 to +6.6) | +6.1 s (−0.3 to +12.7), faster on 9/30 | median 3.6 s each, ~USD 7 for 30 races |
+| Haiku 5.5 (secondary) | −0.8 s (−9.1 to +7.0) | +7.7 s (+3.4 to +12.0), faster on 7/30 | median 1.4–2 s each, ~USD 0.3 |
+
+Holm-adjusted p for the primary family: 1.0 (no coach), 1.0 (fixed plan), 0.23
+(autopilot). Why, from the coach's own stated reasons: the boat-speed reserve is
+wrong in both directions (it reads empty early because the short test reads critical
+power low, and refills late because tired, less efficient blade work looks like
+easing off), and the coach believed it. It told paddlers who were already pacing well
+to ease (182 ease cues; +15.8 s on paddlers who held back, against −16.2 s on
+paddlers who started too hot), spoke more often than the autopilot (9.7 cues a race
+against 5.9), and rarely wrote rules of its own (0.2 a race).
+
+**Exploratory rounds (development seeds only).** Round 1 gave the coach the paddle
+pod's shaft power and a reserve from it, evidence about the calibration and a tool to
+revise it, a prompt that says how far to trust each number, and the last five minutes
+in each update: on 8 development seeds it was 18 s faster than no coach and level
+with the autopilot, no longer cost paddlers who hold back (+2.3 s), and revised the
+calibration 8 times, each time citing a reserve that read empty while power held with
+no fade. Round 2 made the water vary across the course (above): on 6 coastal
+development seeds the coach was 31 s faster than no coach and about 25 s faster than
+both autopilots, but 7 s behind the rule "inside against the forecast stream": it
+moved in 100-m steps, late. Round 3 added a forecast calculator, a plan per leg and
+decisive line targets.
+
+### Held-out confirmation of the improved coach (written down 2026-11-01, before the run)
+
+After the registered result (above), three exploratory rounds on development seeds
+improved the coach: the paddle pod's shaft power and a reserve from it, live
+evidence about the calibration and a tool to revise it, a prompt that says how far to
+trust each number, the last five minutes in each update (round 1); water that varies
+across the course, with eddies, a stream that can turn, a forecast with errors, a
+local current reading, and line cues (round 2); a forecast calculator, a plan per leg
+and decisive line targets (round 3). The confirmation runs on 10 fresh coastal seeds
+(3000–3009) never used before: no coach, the registered autopilot, the same rules on
+the pod's reserve, the pod autopilot plus "inside against the forecast stream", and
+the improved coach (Opus 5.5), every baseline setting fixed in advance. Primary: race
+time, coach minus line rule and coach minus no coach, paired per seed (Wilcoxon,
+bootstrap interval, Holm over the two). Ten seeds detect only a large difference.
+Design in code: `coaching_trial.HELDOUT_ROUND3`.
+
+**Result (10 held-out races, no failed model calls, ~USD 4.2):**
+
+| arm | vs no coach (mean) | improved coach minus this arm (95 % interval) | coach faster in |
+|---|---|---|---|
+| improved coach | −24.2 s | — | — |
+| no coach | 0 | −24.2 s (−36.1 to −12.9); Holm p 0.004 | 10 / 10 |
+| registered rule autopilot | −6.4 s | −17.8 s (−30.8 to −6.7) | 8 / 10 |
+| autopilot on the pod's reserve | −11.8 s | −12.4 s (−29.0 to +3.6) | 5 / 10 |
+| line rule (pod autopilot + inside against the forecast) | −31.4 s | +7.2 s (−10.4 to +23.4); Holm p 0.49 | 5 / 10 |
+| perfect-knowledge even pacer (reference) | −46.0 s | +21.8 s | 4 / 10 |
+
+The improved coach is useful on this twin: faster than no coach in every held-out
+race, and faster than the pacing-only rules. It is not better than a simple rule that
+steers by the forecast; ten races cannot tell them apart. It used two line cues a race
+with direct targets (50–70 m inshore, 300–400 m out). Figure:
+`artifacts/coaching_heldout_coastal`.
 
 ## Results so far
 
@@ -475,6 +536,15 @@ the other eight sessions: critical power 93 W, reserve 6.4 kJ; stand-in coach):
 * The twin steps **once per stroke with a steady-state hull model** and a 6-s
   speed lag, not the full 100-Hz simulator; turns cost 40 % efficiency for 6 s.
   Measurement noise is drawn per stroke, not produced by the head-unit pipeline.
+* The **paddle pod's shaft power** on the twin is the true shaft power with 5 %
+  noise per stroke; a real pod adds calibration and temperature drift.
+* The **coastal water is planted** (`sim/twin.py` `CoastalWater`): the inshore
+  profile (25 % of the channel stream at the shore, rising over ~150 m), eddies that
+  reverse the inshore water behind points, a stream that changes linearly and can
+  turn, crossing at 0.8 m/s sideways. The forecast's errors are drawn too (stream
+  ±0.1 m/s, its change ±0.15 m/s, eddies misplaced by ~120 m, 30 % missing, 30 %
+  chance of a false one, the inshore width ±25 %). How much line choice is worth on
+  the twin follows from these choices.
 * The twin's **critical-power test reads 10–25 % low** against the paddler at their
   best rate and fresh; this is what the test measures on this model (efficiency
   falls as the reserve drains inside each piece), and it is left in on purpose.

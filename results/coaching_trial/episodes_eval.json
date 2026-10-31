@@ -121,6 +121,128 @@
 },
 {
 "seed": 1000,
+"arm": "agent_haiku",
+"setting": {
+"periodic_s": 300.0,
+"model": "claude-haiku-5-5"
+},
+"race_time_s": 3410.686497924402,
+"blown_s": 0.0,
+"reserve_left": 0.3211475593971425,
+"reference_s": 3410.001197620568,
+"cues_spoken": 13,
+"cues_followed": 12,
+"cues_blocked": 11,
+"asks": {
+"ease": 6,
+"push": 4,
+"hold": 3
+},
+"cue_log": [
+{
+"race_s": 114.9,
+"text": "Ease a little. Settle into a steady rhythm you can hold.",
+"ask": "ease",
+"pace_s500": 171
+},
+{
+"race_s": 417.6,
+"text": "Ease a touch. Settle to about 177 on the display, stay smooth.",
+"ask": "ease",
+"pace_s500": 177
+},
+{
+"race_s": 486.4,
+"text": "Ease a little. Settle steady, around 164 on the display.",
+"ask": "ease",
+"pace_s500": 164
+},
+{
+"race_s": 665.9,
+"text": "Ease off a little. Settle around two fifty per 500.",
+"ask": "ease",
+"pace_s500": 170
+},
+{
+"race_s": 966.7,
+"text": "Good rhythm. Add a little push; reserve will last to the line.",
+"ask": "push",
+"pace_s500": 177
+},
+{
+"race_s": 1601.3,
+"text": "Ease a touch. Settle into a steady rhythm, hold this pace.",
+"ask": "ease",
+"pace_s500": 161
+},
+{
+"race_s": 1684.2,
+"text": "Speed is holding at this rate. Hold this effort to the line.",
+"ask": "hold",
+"pace_s500": 159.7
+},
+{
+"race_s": 1985.6,
+"text": "Ease a touch. Settle near three minute pace, steady, relaxed catch.",
+"ask": "ease",
+"pace_s500": 180.5
+},
+{
+"race_s": 2285.5,
+"text": "Steady here. Hold this rate, settle into a smooth rhythm.",
+"ask": "hold",
+"pace_s500": 164.7
+},
+{
+"race_s": 2586.3,
+"text": "Headwind eased pace. Build back to 182, steady rhythm.",
+"ask": "push",
+"pace_s500": 182
+},
+{
+"race_s": 2887.4,
+"text": "Reserve is good. Push a little, aim 177 pace, sprint last 200.",
+"ask": "push",
+"pace_s500": 177
+},
+{
+"race_s": 3185.8,
+"text": "Reserve is there. Lift a little now, hold the new rate.",
+"ask": "push",
+"pace_s500": 160
+},
+{
+"race_s": 3309.9,
+"text": "Hold this effort, reserve lasts to the line. Sprint at 100 metres.",
+"ask": "hold",
+"pace_s500": 159.6
+}
+],
+"alerts": {
+"over_pace": 4,
+"reserve_conflict": 1,
+"fading": 1,
+"final_sprint_ready": 1
+},
+"consultations": 17,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 15,
+"wall_s": 120.41,
+"model_usage": {
+"calls": 50,
+"errors": 0,
+"input_tokens": 5827,
+"output_tokens": 19335,
+"cache_create_tokens": 45464,
+"cache_read_tokens": 175239,
+"latency_median_s": 1.6872740430001159,
+"latency_p90_s": 4.73712855399981
+},
+"model_usd_estimate": 0.0177
+},
+{
+"seed": 1000,
 "arm": "agent_stand_in",
 "setting": {
 "periodic_s": 300.0,
@@ -1538,6 +1660,109 @@
 },
 {
 "seed": 1001,
+"arm": "agent_haiku",
+"setting": {
+"periodic_s": 300.0,
+"model": "claude-haiku-5-5"
+},
+"race_time_s": 3092.6756108570753,
+"blown_s": 168.66388918313393,
+"reserve_left": 0.09291296255377142,
+"reference_s": 3022.0469024097874,
+"cues_spoken": 10,
+"cues_followed": 6,
+"cues_blocked": 8,
+"asks": {
+"ease": 5,
+"hold": 3,
+"push": 2
+},
+"cue_log": [
+{
+"race_s": 70.5,
+"text": "Ease off a little. Settle to about 162 on your display.",
+"ask": "ease",
+"pace_s500": 162
+},
+{
+"race_s": 292.5,
+"text": "Ease off a little. Settle into a relaxed, steady rhythm now.",
+"ask": "ease",
+"pace_s500": 159
+},
+{
+"race_s": 502.6,
+"text": "Speed is holding at this rate. Keep this effort steady, relaxed.",
+"ask": "hold",
+"pace_s500": 143.8
+},
+{
+"race_s": 807.4,
+"text": "Ease a little, settle into a smooth rhythm. Long way to go.",
+"ask": "ease",
+"pace_s500": 155
+},
+{
+"race_s": 1104.0,
+"text": "Ease a touch. Settle to 152 pace, smooth, hold to the line.",
+"ask": "ease",
+"pace_s500": 152
+},
+{
+"race_s": 1450.6,
+"text": "Speed is holding at this rate. Keep this effort to the line.",
+"ask": "hold",
+"pace_s500": 156
+},
+{
+"race_s": 1823.7,
+"text": "Speed is holding at this rate. Keep steady, hold this pace.",
+"ask": "hold",
+"pace_s500": 149.8
+},
+{
+"race_s": 2423.2,
+"text": "Reserve empty. Ease to 156 pace, hold it to the line.",
+"ask": "ease",
+"pace_s500": 156
+},
+{
+"race_s": 2722.7,
+"text": "Good rhythm. Lift the effort a notch, drive through each stroke.",
+"ask": "push",
+"pace_s500": 159
+},
+{
+"race_s": 2967.9,
+"text": "Reserve is there. Drive harder now, full strokes, we finish strong.",
+"ask": "push",
+"pace_s500": 165
+}
+],
+"alerts": {
+"over_pace": 2,
+"reserve_conflict": 4,
+"fading": 1
+},
+"consultations": 14,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 12,
+"wall_s": 92.44,
+"model_usage": {
+"calls": 38,
+"errors": 0,
+"input_tokens": 4894,
+"output_tokens": 15052,
+"cache_create_tokens": 28804,
+"cache_read_tokens": 130863,
+"latency_median_s": 2.052053343999887,
+"latency_p90_s": 4.415727321000077
+},
+"model_usd_estimate": 0.0129
+},
+{
+"seed": 1001,
 "arm": "agent_stand_in",
 "setting": {
 "periodic_s": 300.0,
@@ -2729,6 +2954,101 @@
 },
 {
 "seed": 1002,
+"arm": "agent_haiku",
+"setting": {
+"periodic_s": 300.0,
+"model": "claude-haiku-5-5"
+},
+"race_time_s": 2704.743086056225,
+"blown_s": 165.6871439000755,
+"reserve_left": 0.046350820910084835,
+"reference_s": 2662.3969934544843,
+"cues_spoken": 9,
+"cues_followed": 4,
+"cues_blocked": 2,
+"asks": {
+"ease": 3,
+"push": 6
+},
+"cue_log": [
+{
+"race_s": 65.6,
+"text": "Ease a touch. Settle into a long, relaxed rhythm.",
+"ask": "ease",
+"pace_s500": 168
+},
+{
+"race_s": 404.5,
+"text": "Ease off a little. Settle to about 158 on the display.",
+"ask": "ease",
+"pace_s500": 158
+},
+{
+"race_s": 769.9,
+"text": "Ease off a little. Settle near 178 on the display.",
+"ask": "ease",
+"pace_s500": 178
+},
+{
+"race_s": 1051.9,
+"text": "Power's dropped off. Drive harder through the catch, aim for 175.",
+"ask": "push",
+"pace_s500": 175
+},
+{
+"race_s": 1653.0,
+"text": "Plenty left. Push a little; hold about 176 on the display.",
+"ask": "push",
+"pace_s500": 176
+},
+{
+"race_s": 1841.7,
+"text": "Reserve is plenty. Lift the effort, drive harder through each stroke.",
+"ask": "push",
+"pace_s500": 160
+},
+{
+"race_s": 2143.0,
+"text": "Push a little now. Hold 62 and drive longer through each stroke.",
+"ask": "push",
+"pace_s500": 172
+},
+{
+"race_s": 2301.8,
+"text": "Speed is fading, you have reserve. Drive harder through the catch.",
+"ask": "push",
+"pace_s500": 175
+},
+{
+"race_s": 2602.7,
+"text": "Good work. Build a little now, 342 metres to go.",
+"ask": "push",
+"pace_s500": 153
+}
+],
+"alerts": {
+"over_pace": 3,
+"fading": 3
+},
+"consultations": 12,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 10,
+"wall_s": 74.23,
+"model_usage": {
+"calls": 31,
+"errors": 0,
+"input_tokens": 3985,
+"output_tokens": 12391,
+"cache_create_tokens": 24633,
+"cache_read_tokens": 105876,
+"latency_median_s": 1.8877235989998553,
+"latency_p90_s": 4.683097785999962
+},
+"model_usd_estimate": 0.0107
+},
+{
+"seed": 1002,
 "arm": "agent_stand_in",
 "setting": {
 "periodic_s": 300.0,
@@ -3882,6 +4202,237 @@
 "cue_log": [],
 "alerts": {},
 "wall_s": 1.92
+},
+{
+"seed": 1003,
+"arm": "agent",
+"setting": {
+"periodic_s": 300.0,
+"model": "claude-opus-5-5"
+},
+"race_time_s": 2748.0421472024877,
+"blown_s": 294.94738015819047,
+"reserve_left": 0.058381812085933626,
+"reference_s": 2707.3661546951444,
+"cues_spoken": 12,
+"cues_followed": 6,
+"cues_blocked": 1,
+"asks": {
+"ease": 5,
+"push": 5,
+"finish": 2
+},
+"cue_log": [
+{
+"race_s": 66.3,
+"text": "Too hot. Settle into a long, steady race rhythm.",
+"ask": "ease",
+"pace_s500": 177
+},
+{
+"race_s": 383.5,
+"text": "Ease slightly, settle into a long steady rhythm.",
+"ask": "ease",
+"pace_s500": 164
+},
+{
+"race_s": 670.7,
+"text": "Ease a touch, settle long and smooth",
+"ask": "ease",
+"pace_s500": 162
+},
+{
+"race_s": 814.6,
+"text": "Back to steady race power, settle into this headwind",
+"ask": "push",
+"pace_s500": 184
+},
+{
+"race_s": 903.5,
+"text": "Ease slightly, settle long and smooth, hold this",
+"ask": "ease",
+"pace_s500": 182
+},
+{
+"race_s": 1206.1,
+"text": "Reserve is rebuilding. Lift a touch, hold 2:40.",
+"ask": "push",
+"pace_s500": 160
+},
+{
+"race_s": 1505.8,
+"text": "Settle a touch, hold one seventy-nine, save it for the finish",
+"ask": "ease",
+"pace_s500": 179
+},
+{
+"race_s": 1803.8,
+"text": "Lift a little, settle at one sixty-three",
+"ask": "push",
+"pace_s500": 163
+},
+{
+"race_s": 2103.0,
+"text": "Plenty in reserve. Lift effort now, hold it to the line.",
+"ask": "push",
+"pace_s500": 174
+},
+{
+"race_s": 2403.6,
+"text": "One K left, plenty in the tank. Lift the pressure now.",
+"ask": "push",
+"pace_s500": 174
+},
+{
+"race_s": 2491.4,
+"text": "Seven-fifty to go, plenty left. Build to the finish now!",
+"ask": "finish",
+"pace_s500": null
+},
+{
+"race_s": 2633.3,
+"text": "Final sprint now, empty the tank to the line!",
+"ask": "finish",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 4,
+"fading": 2,
+"finish_window": 1
+},
+"consultations": 13,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 13,
+"wall_s": 107.78,
+"model_usage": {
+"calls": 28,
+"errors": 0,
+"input_tokens": 4455,
+"output_tokens": 8101,
+"cache_create_tokens": 15158,
+"cache_read_tokens": 85769,
+"latency_median_s": 3.680094045000004,
+"latency_p90_s": 4.641609434999992
+},
+"model_usd_estimate": 0.2728
+},
+{
+"seed": 1003,
+"arm": "agent_haiku",
+"setting": {
+"periodic_s": 300.0,
+"model": "claude-haiku-5-5"
+},
+"race_time_s": 2746.918562731038,
+"blown_s": 258.66916694013594,
+"reserve_left": 0.044011634346322874,
+"reference_s": 2707.3661546951444,
+"cues_spoken": 12,
+"cues_followed": 6,
+"cues_blocked": 4,
+"asks": {
+"ease": 3,
+"push": 7,
+"finish": 2
+},
+"cue_log": [
+{
+"race_s": 66.3,
+"text": "Ease a little. Settle near one sixty-nine per five hundred.",
+"ask": "ease",
+"pace_s500": 169.2
+},
+{
+"race_s": 384.4,
+"text": "Ease off a little. Settle near one sixty-three per five hundred.",
+"ask": "ease",
+"pace_s500": 163
+},
+{
+"race_s": 685.3,
+"text": "Little more push, steady rhythm. Aim for 173 on the display.",
+"ask": "push",
+"pace_s500": 173
+},
+{
+"race_s": 801.4,
+"text": "Head current's costing you. You have reserve, so push back to pace.",
+"ask": "push",
+"pace_s500": 188
+},
+{
+"race_s": 902.8,
+"text": "Ease off a touch. Settle to the steady pace shown.",
+"ask": "ease",
+"pace_s500": 181.5
+},
+{
+"race_s": 1203.7,
+"text": "Reserve is healthy. Lift the effort a little, aim for 161.",
+"ask": "push",
+"pace_s500": 161
+},
+{
+"race_s": 1803.4,
+"text": "Reserve is good. Lift a little, settle into 161 pace.",
+"ask": "push",
+"pace_s500": 161
+},
+{
+"race_s": 2103.3,
+"text": "Headwind now, but you have reserve. Lift a little, hold it steady.",
+"ask": "push",
+"pace_s500": 178
+},
+{
+"race_s": 2401.8,
+"text": "Reserve is good. Lift the effort a little, settle near one seventy-five.",
+"ask": "push",
+"pace_s500": 175
+},
+{
+"race_s": 2512.1,
+"text": "Plenty left. Push now, and sprint hard the last 300 metres.",
+"ask": "push",
+"pace_s500": 161
+},
+{
+"race_s": 2614.8,
+"text": "Finish now: empty the tank, long strong strokes to the line!",
+"ask": "finish",
+"pace_s500": null
+},
+{
+"race_s": 2675.6,
+"text": "Reserve is full. Sprint now, empty the tank to the line.",
+"ask": "finish",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 4,
+"fading": 2,
+"finish_window": 1,
+"finish_sprint_ready": 1
+},
+"consultations": 15,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 14,
+"wall_s": 94.46,
+"model_usage": {
+"calls": 43,
+"errors": 0,
+"input_tokens": 5084,
+"output_tokens": 15854,
+"cache_create_tokens": 38570,
+"cache_read_tokens": 152416,
+"latency_median_s": 1.8474984389999918,
+"latency_p90_s": 3.9721998529998928
+},
+"model_usd_estimate": 0.0148
 },
 {
 "seed": 1003,
@@ -5042,6 +5593,226 @@
 },
 {
 "seed": 1004,
+"arm": "agent",
+"setting": {
+"periodic_s": 300.0,
+"model": "claude-opus-5-5"
+},
+"race_time_s": 2637.7053116487155,
+"blown_s": 132.3385847540243,
+"reserve_left": 0.3268300040599747,
+"reference_s": 2619.1411156615613,
+"cues_spoken": 11,
+"cues_followed": 8,
+"cues_blocked": 2,
+"asks": {
+"ease": 5,
+"rate_down": 3,
+"push": 3
+},
+"cue_log": [
+{
+"race_s": 65.6,
+"text": "Too hot. Settle into long, steady strokes now.",
+"ask": "ease",
+"pace_s500": 171
+},
+{
+"race_s": 413.6,
+"text": "Ease slightly, settle and hold 2:49 on display",
+"ask": "ease",
+"pace_s500": 169
+},
+{
+"race_s": 714.5,
+"text": "Ease slightly now, settle at 158 and hold it",
+"ask": "ease",
+"pace_s500": 158
+},
+{
+"race_s": 847.5,
+"text": "Reserve empty. Ease off now, settle to steady pace.",
+"ask": "ease",
+"pace_s500": 176
+},
+{
+"race_s": 924.0,
+"text": "Drop the rate a touch, long strong strokes, stay relaxed",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 1223.6,
+"text": "Ease slightly, settle in, save something for the finish",
+"ask": "ease",
+"pace_s500": 177
+},
+{
+"race_s": 1367.4,
+"text": "Tailwind's helping. Lift the effort a little, same rate.",
+"ask": "push",
+"pace_s500": 159
+},
+{
+"race_s": 1665.4,
+"text": "Current turned against you. Lift back to your earlier pressure.",
+"ask": "push",
+"pace_s500": 168
+},
+{
+"race_s": 2032.6,
+"text": "Drop the rate slightly, longer stronger strokes, same effort.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 2304.1,
+"text": "Settle the rate, longer stronger strokes, same effort",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 2489.9,
+"text": "Under 500 to go, lift it now, build the pressure",
+"ask": "push",
+"pace_s500": 160
+}
+],
+"alerts": {
+"over_pace": 2,
+"fading": 6
+},
+"consultations": 14,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 13,
+"wall_s": 115.9,
+"model_usage": {
+"calls": 30,
+"errors": 0,
+"input_tokens": 4690,
+"output_tokens": 8988,
+"cache_create_tokens": 16407,
+"cache_read_tokens": 91528,
+"latency_median_s": 3.4708266570000035,
+"latency_p90_s": 5.393677844999999
+},
+"model_usd_estimate": 0.2989
+},
+{
+"seed": 1004,
+"arm": "agent_haiku",
+"setting": {
+"periodic_s": 300.0,
+"model": "claude-haiku-5-5"
+},
+"race_time_s": 2637.975220379,
+"blown_s": 132.06175613732026,
+"reserve_left": 0.33440749241695794,
+"reference_s": 2619.1411156615613,
+"cues_spoken": 11,
+"cues_followed": 8,
+"cues_blocked": 7,
+"asks": {
+"ease": 5,
+"push": 5,
+"finish": 1
+},
+"cue_log": [
+{
+"race_s": 114.1,
+"text": "Ease a little. Settle to about 165 per 500, stay smooth.",
+"ask": "ease",
+"pace_s500": 165
+},
+{
+"race_s": 443.1,
+"text": "Ease a little. Settle near one sixty-six per 500, relaxed and long.",
+"ask": "ease",
+"pace_s500": 165.6
+},
+{
+"race_s": 745.9,
+"text": "Ease a little now; settle near 157 pace, keep reserve for finish.",
+"ask": "ease",
+"pace_s500": 157
+},
+{
+"race_s": 851.2,
+"text": "Reserve's empty. Ease off now, settle into a steady rhythm.",
+"ask": "ease",
+"pace_s500": 170
+},
+{
+"race_s": 1085.2,
+"text": "Build back gradually. Settle at target pace, keep reserve above zero.",
+"ask": "push",
+"pace_s500": 172
+},
+{
+"race_s": 1213.2,
+"text": "Ease a touch. Settle into a steady, sustainable stroke now.",
+"ask": "ease",
+"pace_s500": 175.5
+},
+{
+"race_s": 1363.3,
+"text": "Reserve is building. Lift the effort a little, hold a steady rhythm.",
+"ask": "push",
+"pace_s500": 162
+},
+{
+"race_s": 1664.0,
+"text": "Reserve is healthy. Lift a little, settle near 168 per 500.",
+"ask": "push",
+"pace_s500": 168
+},
+{
+"race_s": 2027.3,
+"text": "Reserve is good. Lift the power a little, hold 62 and drive.",
+"ask": "push",
+"pace_s500": 171
+},
+{
+"race_s": 2327.9,
+"text": "Reserve is good for the finish. Push a little, hold it steady.",
+"ask": "push",
+"pace_s500": 157.5
+},
+{
+"race_s": 2513.5,
+"text": "Final sprint now. Empty the tank, reserve lasts to the line.",
+"ask": "finish",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 2,
+"reserve_check": 4,
+"fading": 4,
+"finish_sprint_prep": 1,
+"reserve_empty_before_finish": 1,
+"reserve_empty_guard": 1
+},
+"consultations": 17,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 15,
+"wall_s": 118.05,
+"model_usage": {
+"calls": 53,
+"errors": 0,
+"input_tokens": 5973,
+"output_tokens": 20269,
+"cache_create_tokens": 43693,
+"cache_read_tokens": 213297,
+"latency_median_s": 1.6429486810000071,
+"latency_p90_s": 4.32280480899999
+},
+"model_usd_estimate": 0.0183
+},
+{
+"seed": 1004,
 "arm": "agent_stand_in",
 "setting": {
 "periodic_s": 300.0,
@@ -6156,6 +6927,199 @@
 },
 {
 "seed": 1005,
+"arm": "agent",
+"setting": {
+"periodic_s": 300.0,
+"model": "claude-opus-5-5"
+},
+"race_time_s": 1918.8794046312892,
+"blown_s": 188.42648524285894,
+"reserve_left": 0.05254966138227618,
+"reference_s": 1906.5935537911573,
+"cues_spoken": 7,
+"cues_followed": 7,
+"cues_blocked": 2,
+"asks": {
+"ease": 4,
+"push": 2,
+"hold": 1
+},
+"cue_log": [
+{
+"race_s": 66.7,
+"text": "Settle now, long smooth strokes, ease the effort",
+"ask": "ease",
+"pace_s500": 165
+},
+{
+"race_s": 418.6,
+"text": "Smooth and steady, lift slightly to one-sixty-one",
+"ask": "push",
+"pace_s500": 161
+},
+{
+"race_s": 749.6,
+"text": "Ease slightly, settle long and smooth, save for finish",
+"ask": "ease",
+"pace_s500": 155
+},
+{
+"race_s": 972.4,
+"text": "Ignore the reserve, you're strong. Hold this effort.",
+"ask": "hold",
+"pace_s500": 161
+},
+{
+"race_s": 1270.5,
+"text": "Settle a touch, hold 157 on display, save your sprint.",
+"ask": "ease",
+"pace_s500": 157
+},
+{
+"race_s": 1570.8,
+"text": "Ease slightly, settle and breathe. Save it for the sprint.",
+"ask": "ease",
+"pace_s500": 156
+},
+{
+"race_s": 1747.7,
+"text": "Longer, stronger strokes now \u2014 build toward the finish",
+"ask": "push",
+"pace_s500": 168
+}
+],
+"alerts": {
+"over_pace": 2,
+"reserve_conflict": 1,
+"fading": 1
+},
+"consultations": 9,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 9,
+"wall_s": 87.82,
+"model_usage": {
+"calls": 20,
+"errors": 0,
+"input_tokens": 3041,
+"output_tokens": 6260,
+"cache_create_tokens": 11525,
+"cache_read_tokens": 60638,
+"latency_median_s": 4.064894731999999,
+"latency_p90_s": 6.209999662000001
+},
+"model_usd_estimate": 0.2071
+},
+{
+"seed": 1005,
+"arm": "agent_haiku",
+"setting": {
+"periodic_s": 300.0,
+"model": "claude-haiku-5-5"
+},
+"race_time_s": 1908.822672463884,
+"blown_s": 0.0,
+"reserve_left": 0.1942482634585507,
+"reference_s": 1906.5935537911573,
+"cues_spoken": 11,
+"cues_followed": 10,
+"cues_blocked": 7,
+"asks": {
+"ease": 11
+},
+"cue_log": [
+{
+"race_s": 113.2,
+"text": "Ease off a little. Settle near 160 per 500, and hold it.",
+"ask": "ease",
+"pace_s500": 160
+},
+{
+"race_s": 446.3,
+"text": "Ease a little. Settle into a sustainable rhythm, long way to go.",
+"ask": "ease",
+"pace_s500": 157
+},
+{
+"race_s": 748.9,
+"text": "Ease a touch. Settle around 155 on the display and hold it.",
+"ask": "ease",
+"pace_s500": 155
+},
+{
+"race_s": 897.0,
+"text": "Ease off now. Settle to about 161 pace, long steady strokes.",
+"ask": "ease",
+"pace_s500": 161.3
+},
+{
+"race_s": 1015.2,
+"text": "Ease a little now. Settle into a steady, relaxed rhythm.",
+"ask": "ease",
+"pace_s500": 162
+},
+{
+"race_s": 1136.6,
+"text": "Ease a touch. Steady rhythm, hold it to the line.",
+"ask": "ease",
+"pace_s500": 162
+},
+{
+"race_s": 1256.5,
+"text": "Ease off a touch; settle into a steady, sustainable stroke now.",
+"ask": "ease",
+"pace_s500": 158
+},
+{
+"race_s": 1374.4,
+"text": "Ease a little. Settle near 161 per 500; sprint at the line.",
+"ask": "ease",
+"pace_s500": 161
+},
+{
+"race_s": 1493.1,
+"text": "Reserve is empty. Ease off to about 2:41 per 500, steady.",
+"ask": "ease",
+"pace_s500": 161.3
+},
+{
+"race_s": 1698.6,
+"text": "Ease off a little. Reserve runs out before the line. Keep rhythm.",
+"ask": "ease",
+"pace_s500": 165.5
+},
+{
+"race_s": 1816.5,
+"text": "Ease a little to about 161 pace; save something for the sprint.",
+"ask": "ease",
+"pace_s500": 161
+}
+],
+"alerts": {
+"over_pace": 2,
+"reserve_empty_before_line": 9,
+"reserve_empty_pre_line": 1,
+"reserve_conflict": 1
+},
+"consultations": 16,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 13,
+"wall_s": 95.4,
+"model_usage": {
+"calls": 40,
+"errors": 0,
+"input_tokens": 5949,
+"output_tokens": 16568,
+"cache_create_tokens": 26508,
+"cache_read_tokens": 145348,
+"latency_median_s": 1.761899160999974,
+"latency_p90_s": 4.891808771000115
+},
+"model_usd_estimate": 0.0136
+},
+{
+"seed": 1005,
 "arm": "agent_stand_in",
 "setting": {
 "periodic_s": 300.0,
@@ -7037,6 +8001,212 @@
 "cue_log": [],
 "alerts": {},
 "wall_s": 1.1
+},
+{
+"seed": 1006,
+"arm": "agent",
+"setting": {
+"periodic_s": 300.0,
+"model": "claude-opus-5-5"
+},
+"race_time_s": 2546.61271470257,
+"blown_s": 0.0,
+"reserve_left": 0.1305914314322777,
+"reference_s": 2559.3465848820674,
+"cues_spoken": 10,
+"cues_followed": 10,
+"cues_blocked": 1,
+"asks": {
+"ease": 7,
+"hold": 2,
+"finish": 1
+},
+"cue_log": [
+{
+"race_s": 63.3,
+"text": "Settle in, long race. Ease to 2:41 pace.",
+"ask": "ease",
+"pace_s500": 161
+},
+{
+"race_s": 353.6,
+"text": "Ease off a touch, settle into a long, steady rhythm.",
+"ask": "ease",
+"pace_s500": 162
+},
+{
+"race_s": 551.0,
+"text": "Ease slightly, settle long and smooth, hold 2:40",
+"ask": "ease",
+"pace_s500": 160
+},
+{
+"race_s": 730.4,
+"text": "Ease a touch, settle long and smooth here",
+"ask": "ease",
+"pace_s500": 164
+},
+{
+"race_s": 1030.4,
+"text": "Ease a touch, settle long and smooth",
+"ask": "ease",
+"pace_s500": 163
+},
+{
+"race_s": 1333.1,
+"text": "Ease slightly, settle at one sixty-three, long smooth strokes",
+"ask": "ease",
+"pace_s500": 163
+},
+{
+"race_s": 1633.7,
+"text": "Settle back to steady rhythm, pace one-sixty-two.",
+"ask": "hold",
+"pace_s500": 162
+},
+{
+"race_s": 1935.9,
+"text": "Steady and long, settle back to 2:42 pace",
+"ask": "hold",
+"pace_s500": 162
+},
+{
+"race_s": 2231.3,
+"text": "Settle a touch, hold 2:43, save it for the finish",
+"ask": "ease",
+"pace_s500": 163
+},
+{
+"race_s": 2487.5,
+"text": "200 to go, speed is holding. Sprint all the way in!",
+"ask": "finish",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 4,
+"reserve_conflict": 1
+},
+"consultations": 11,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 11,
+"wall_s": 90.16,
+"model_usage": {
+"calls": 25,
+"errors": 0,
+"input_tokens": 3770,
+"output_tokens": 6840,
+"cache_create_tokens": 10850,
+"cache_read_tokens": 80496,
+"latency_median_s": 3.543946796,
+"latency_p90_s": 4.70276739900001
+},
+"model_usd_estimate": 0.2222
+},
+{
+"seed": 1006,
+"arm": "agent_haiku",
+"setting": {
+"periodic_s": 300.0,
+"model": "claude-haiku-5-5"
+},
+"race_time_s": 2561.663801921658,
+"blown_s": 107.41195126118716,
+"reserve_left": 0.14348361044929722,
+"reference_s": 2559.3465848820674,
+"cues_spoken": 10,
+"cues_followed": 10,
+"cues_blocked": 4,
+"asks": {
+"ease": 7,
+"rate_down": 1,
+"hold": 1,
+"finish": 1
+},
+"cue_log": [
+{
+"race_s": 66.8,
+"text": "Settle down. Ease a little, aim for 156 on the display.",
+"ask": "ease",
+"pace_s500": 156
+},
+{
+"race_s": 167.0,
+"text": "Ease off a little. Settle around two-forty per 500, relaxed.",
+"ask": "ease",
+"pace_s500": 160
+},
+{
+"race_s": 307.6,
+"text": "Ease a little. Settle to about 2:41 per 500, and hold it.",
+"ask": "ease",
+"pace_s500": 161
+},
+{
+"race_s": 498.5,
+"text": "Ease a little. Settle near 2:41 per 500 and hold it.",
+"ask": "ease",
+"pace_s500": 161.5
+},
+{
+"race_s": 686.5,
+"text": "Ease off a little. Settle to about 2:42 per 500.",
+"ask": "ease",
+"pace_s500": 161.8
+},
+{
+"race_s": 991.2,
+"text": "Drop to about 61 strokes. Long, relaxed pull. Save reserve.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 1291.0,
+"text": "Hold this effort. Steady rate, pace about 163. Keep it smooth.",
+"ask": "hold",
+"pace_s500": 163
+},
+{
+"race_s": 1888.4,
+"text": "Ease a touch. Hold steady, save a sprint for the last 100.",
+"ask": "ease",
+"pace_s500": 162
+},
+{
+"race_s": 2191.3,
+"text": "Ease a touch, settle near 162 pace. Save something for the sprint.",
+"ask": "ease",
+"pace_s500": 162.3
+},
+{
+"race_s": 2487.3,
+"text": "Last 200 metres. Empty the tank now, full sprint to the line.",
+"ask": "finish",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 4,
+"reserve_drain": 1,
+"fading": 1
+},
+"consultations": 13,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 11,
+"wall_s": 69.05,
+"model_usage": {
+"calls": 34,
+"errors": 0,
+"input_tokens": 4380,
+"output_tokens": 11392,
+"cache_create_tokens": 21821,
+"cache_read_tokens": 123684,
+"latency_median_s": 1.892598580999902,
+"latency_p90_s": 3.2552972239998326
+},
+"model_usd_estimate": 0.0101
 },
 {
 "seed": 1006,
@@ -8154,6 +9324,224 @@
 },
 {
 "seed": 1007,
+"arm": "agent",
+"setting": {
+"periodic_s": 300.0,
+"model": "claude-opus-5-5"
+},
+"race_time_s": 1808.3900631562215,
+"blown_s": 118.49572946317302,
+"reserve_left": 0.0864310136060778,
+"reference_s": 1783.8744001214636,
+"cues_spoken": 10,
+"cues_followed": 6,
+"cues_blocked": 1,
+"asks": {
+"ease": 5,
+"rate_down": 5
+},
+"cue_log": [
+{
+"race_s": 64.6,
+"text": "Settle now, long smooth strokes, ease to 143 pace",
+"ask": "ease",
+"pace_s500": 143
+},
+{
+"race_s": 133.3,
+"text": "Ease off now, settle long and smooth, hold 2:24",
+"ask": "ease",
+"pace_s500": 144
+},
+{
+"race_s": 427.5,
+"text": "Ease the rate slightly, long strong strokes, recover now",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 508.3,
+"text": "Ease slightly, settle long and smooth, hold 2:44",
+"ask": "ease",
+"pace_s500": 164
+},
+{
+"race_s": 722.6,
+"text": "Lengthen out, drop rate two, same effort",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 1022.9,
+"text": "Ease slightly, long smooth strokes, settle here",
+"ask": "ease",
+"pace_s500": 162
+},
+{
+"race_s": 1106.8,
+"text": "Lengthen out, drop rate slightly, keep the pressure on.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 1332.1,
+"text": "Lengthen out, drop the rate slightly, same power",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 1539.2,
+"text": "Longer stroke, drop rate two, keep the power on",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 1756.4,
+"text": "Settle slightly, long strokes, hold form to the line",
+"ask": "ease",
+"pace_s500": 152
+}
+],
+"alerts": {
+"over_pace": 2,
+"still_hot": 2,
+"fading": 6
+},
+"consultations": 12,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 11,
+"wall_s": 89.89,
+"model_usage": {
+"calls": 25,
+"errors": 0,
+"input_tokens": 4242,
+"output_tokens": 6915,
+"cache_create_tokens": 9490,
+"cache_read_tokens": 78508,
+"latency_median_s": 3.5072054320000063,
+"latency_p90_s": 4.608323599999977
+},
+"model_usd_estimate": 0.2184
+},
+{
+"seed": 1007,
+"arm": "agent_haiku",
+"setting": {
+"periodic_s": 300.0,
+"model": "claude-haiku-5-5"
+},
+"race_time_s": 1823.5969432532193,
+"blown_s": 239.89783943425124,
+"reserve_left": 0.025989931071945582,
+"reference_s": 1783.8744001214636,
+"cues_spoken": 11,
+"cues_followed": 7,
+"cues_blocked": 18,
+"asks": {
+"ease": 5,
+"rate_down": 2,
+"push": 2,
+"hold": 1,
+"finish": 1
+},
+"cue_log": [
+{
+"race_s": 65.5,
+"text": "Too hot. Ease off, settle into a steady rhythm around 150.",
+"ask": "ease",
+"pace_s500": 150
+},
+{
+"race_s": 419.9,
+"text": "Ease a little. Settle to a steady rhythm, about 165 pace.",
+"ask": "ease",
+"pace_s500": 165
+},
+{
+"race_s": 480.9,
+"text": "Ease off a little now. Hold this pace to the line.",
+"ask": "ease",
+"pace_s500": 165
+},
+{
+"race_s": 728.1,
+"text": "Speed is fading at this rate. Drop two strokes, long strong pulls.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 799.2,
+"text": "Reserve is back up. Lift power a little, keep 64 strokes.",
+"ask": "push",
+"pace_s500": null
+},
+{
+"race_s": 912.3,
+"text": "Reserve nearly empty. Ease off now, settle to about 158 pace.",
+"ask": "ease",
+"pace_s500": 158
+},
+{
+"race_s": 1230.7,
+"text": "Drop about two strokes a minute. Long, smooth pulls. Hold that rhythm.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 1545.1,
+"text": "Hold this effort. Headwind is slowing the display, not your engine.",
+"ask": "hold",
+"pace_s500": 160.5
+},
+{
+"race_s": 1624.5,
+"text": "Ease a little. Reserve runs out before the line. Settle near 161.",
+"ask": "ease",
+"pace_s500": 161
+},
+{
+"race_s": 1684.9,
+"text": "Good power under critical. Build a little now, 428 metres left.",
+"ask": "push",
+"pace_s500": 166
+},
+{
+"race_s": 1780.2,
+"text": "Sprint now. Everything you have to the line. Go!",
+"ask": "finish",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 2,
+"reserve_empty_risk": 4,
+"fading": 2,
+"speed_fade_check": 2,
+"reserve_floor": 1,
+"below_cp_hold": 3,
+"fade_at_rate": 1,
+"finish_sprint_ready": 1
+},
+"consultations": 17,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 16,
+"wall_s": 120.27,
+"model_usage": {
+"calls": 53,
+"errors": 0,
+"input_tokens": 6135,
+"output_tokens": 21337,
+"cache_create_tokens": 42870,
+"cache_read_tokens": 207577,
+"latency_median_s": 1.6076453339999262,
+"latency_p90_s": 4.767022312000108
+},
+"model_usd_estimate": 0.0187
+},
+{
+"seed": 1007,
 "arm": "agent_stand_in",
 "setting": {
 "periodic_s": 300.0,
@@ -9030,6 +10418,182 @@
 "cue_log": [],
 "alerts": {},
 "wall_s": 1.21
+},
+{
+"seed": 1008,
+"arm": "agent",
+"setting": {
+"periodic_s": 300.0,
+"model": "claude-opus-5-5"
+},
+"race_time_s": 1987.5025778864251,
+"blown_s": 66.1947035168484,
+"reserve_left": 0.0967460591571621,
+"reference_s": 1964.4254182563686,
+"cues_spoken": 6,
+"cues_followed": 6,
+"cues_blocked": 1,
+"asks": {
+"ease": 5,
+"rate_down": 1
+},
+"cue_log": [
+{
+"race_s": 64.3,
+"text": "Settle down now, long race. Smooth and steady.",
+"ask": "ease",
+"pace_s500": 184
+},
+{
+"race_s": 414.9,
+"text": "Ease off now, settle into steady long-race pace.",
+"ask": "ease",
+"pace_s500": 155
+},
+{
+"race_s": 719.6,
+"text": "Ease slightly into the headwind, smooth and long, settle here",
+"ask": "ease",
+"pace_s500": 184
+},
+{
+"race_s": 1314.2,
+"text": "Ease slightly, settle and breathe. Hold 1:62 to the end.",
+"ask": "ease",
+"pace_s500": 162
+},
+{
+"race_s": 1614.3,
+"text": "Ease slightly, settle and breathe, save it for the sprint",
+"ask": "ease",
+"pace_s500": 190
+},
+{
+"race_s": 1714.4,
+"text": "Lengthen out, drop the rate slightly, same effort",
+"ask": "rate_down",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 1,
+"fading": 2
+},
+"consultations": 8,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 7,
+"wall_s": 66.79,
+"model_usage": {
+"calls": 17,
+"errors": 0,
+"input_tokens": 2518,
+"output_tokens": 5241,
+"cache_create_tokens": 7268,
+"cache_read_tokens": 53047,
+"latency_median_s": 3.938100263000024,
+"latency_p90_s": 5.361460096000002
+},
+"model_usd_estimate": 0.1618
+},
+{
+"seed": 1008,
+"arm": "agent_haiku",
+"setting": {
+"periodic_s": 300.0,
+"model": "claude-haiku-5-5"
+},
+"race_time_s": 2024.0985560978938,
+"blown_s": 245.64493855319134,
+"reserve_left": 0.021961033620710845,
+"reference_s": 1964.4254182563686,
+"cues_spoken": 9,
+"cues_followed": 8,
+"cues_blocked": 18,
+"asks": {
+"ease": 6,
+"rate_down": 1,
+"push": 2
+},
+"cue_log": [
+{
+"race_s": 64.3,
+"text": "Ease a little. Settle near 167 on the display. Long race ahead.",
+"ask": "ease",
+"pace_s500": 167
+},
+{
+"race_s": 151.1,
+"text": "Ease a little. Settle near 167 per 500, relaxed and long.",
+"ask": "ease",
+"pace_s500": 167
+},
+{
+"race_s": 452.5,
+"text": "Ease off now. Settle to about one sixty-six per 500, steady.",
+"ask": "ease",
+"pace_s500": 166
+},
+{
+"race_s": 521.6,
+"text": "Drop your rate two strokes, keep the power smooth and even.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 700.3,
+"text": "Reserve's empty. Ease off now, settle near three-eight per 500.",
+"ask": "ease",
+"pace_s500": 188
+},
+{
+"race_s": 795.4,
+"text": "Reserve is empty. Ease off a little, settle into a steady rhythm.",
+"ask": "ease",
+"pace_s500": 187
+},
+{
+"race_s": 1073.0,
+"text": "Reserve is empty. Ease a touch, settle near 155 per 500.",
+"ask": "ease",
+"pace_s500": 155
+},
+{
+"race_s": 1413.2,
+"text": "Reserve is back up. Lift a little, hold about 184 on display.",
+"ask": "push",
+"pace_s500": 184
+},
+{
+"race_s": 1712.6,
+"text": "Lift the effort now, you have fuel left. Aim for 190 pace.",
+"ask": "push",
+"pace_s500": 190
+}
+],
+"alerts": {
+"reserve_runout": 4,
+"over_pace": 2,
+"reserve_check": 4,
+"fading": 3,
+"reserve_empty_hold": 1
+},
+"consultations": 18,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 16,
+"wall_s": 122.13,
+"model_usage": {
+"calls": 56,
+"errors": 0,
+"input_tokens": 6442,
+"output_tokens": 21128,
+"cache_create_tokens": 46893,
+"cache_read_tokens": 209373,
+"latency_median_s": 1.7596036850000019,
+"latency_p90_s": 4.33451093199983
+},
+"model_usd_estimate": 0.0192
 },
 {
 "seed": 1008,
@@ -9952,6 +11516,175 @@
 "cue_log": [],
 "alerts": {},
 "wall_s": 1.33
+},
+{
+"seed": 1009,
+"arm": "agent",
+"setting": {
+"periodic_s": 300.0,
+"model": "claude-opus-5-5"
+},
+"race_time_s": 2467.528654266413,
+"blown_s": 118.83735635817538,
+"reserve_left": 0.0647249153399491,
+"reference_s": 2467.329277107292,
+"cues_spoken": 6,
+"cues_followed": 6,
+"cues_blocked": 7,
+"asks": {
+"ease": 4,
+"rate_down": 1,
+"push": 1
+},
+"cue_log": [
+{
+"race_s": 63.3,
+"text": "Settle down now, long race. Smooth and steady.",
+"ask": "ease",
+"pace_s500": 161
+},
+{
+"race_s": 298.7,
+"text": "Ease slightly, settle and hold this rhythm long",
+"ask": "ease",
+"pace_s500": 160
+},
+{
+"race_s": 478.5,
+"text": "Ease off a touch, settle into a long, smooth rhythm",
+"ask": "ease",
+"pace_s500": 150
+},
+{
+"race_s": 778.6,
+"text": "Ease a touch, settle and stay long and smooth",
+"ask": "ease",
+"pace_s500": 158
+},
+{
+"race_s": 2057.5,
+"text": "Lengthen the stroke, drop two beats, keep the power on",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 2361.8,
+"text": "Lift now, strong steady strokes, sprint at the last buoy",
+"ask": "push",
+"pace_s500": 161
+}
+],
+"alerts": {
+"over_pace": 3,
+"reserve_conflict": 2,
+"final_sprint": 1
+},
+"consultations": 12,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 8,
+"wall_s": 107.36,
+"model_usage": {
+"calls": 29,
+"errors": 0,
+"input_tokens": 4132,
+"output_tokens": 8251,
+"cache_create_tokens": 14377,
+"cache_read_tokens": 90075,
+"latency_median_s": 3.332482376999991,
+"latency_p90_s": 5.861854515999994
+},
+"model_usd_estimate": 0.2714
+},
+{
+"seed": 1009,
+"arm": "agent_haiku",
+"setting": {
+"periodic_s": 300.0,
+"model": "claude-haiku-5-5"
+},
+"race_time_s": 2473.207824693629,
+"blown_s": 77.1759652196521,
+"reserve_left": 0.08837347810143278,
+"reference_s": 2467.329277107292,
+"cues_spoken": 8,
+"cues_followed": 8,
+"cues_blocked": 6,
+"asks": {
+"ease": 6,
+"hold": 2
+},
+"cue_log": [
+{
+"race_s": 64.2,
+"text": "Ease a little. Settle to about 155 pace and hold it.",
+"ask": "ease",
+"pace_s500": 155
+},
+{
+"race_s": 413.3,
+"text": "Ease a touch. Settle around 155 on the display and hold it.",
+"ask": "ease",
+"pace_s500": 155
+},
+{
+"race_s": 718.1,
+"text": "Ease a touch now. Reserve is draining too fast. Settle near 152.",
+"ask": "ease",
+"pace_s500": 152
+},
+{
+"race_s": 811.6,
+"text": "Ease off now. Reserve is running out. Settle into a steadier rhythm.",
+"ask": "ease",
+"pace_s500": 160
+},
+{
+"race_s": 992.6,
+"text": "Speed is holding. Ignore the empty reserve. Hold this effort.",
+"ask": "hold",
+"pace_s500": 157.5
+},
+{
+"race_s": 1595.6,
+"text": "Ease a touch, settle smooth. Current is against us; don't chase it.",
+"ask": "ease",
+"pace_s500": 162
+},
+{
+"race_s": 1895.3,
+"text": "Hold this rhythm. Steady, relaxed strokes. Keep the pace locked.",
+"ask": "hold",
+"pace_s500": 164
+},
+{
+"race_s": 2195.2,
+"text": "Ease a touch, settle to pace. Save reserve for the final sprint.",
+"ask": "ease",
+"pace_s500": 152
+}
+],
+"alerts": {
+"over_pace": 2,
+"reserve_conflict": 1,
+"fading": 1
+},
+"consultations": 11,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 9,
+"wall_s": 70.73,
+"model_usage": {
+"calls": 30,
+"errors": 0,
+"input_tokens": 3717,
+"output_tokens": 11837,
+"cache_create_tokens": 17617,
+"cache_read_tokens": 108573,
+"latency_median_s": 1.684945217999939,
+"latency_p90_s": 4.63377500300021
+},
+"model_usd_estimate": 0.0096
 },
 {
 "seed": 1009,
@@ -11043,6 +12776,187 @@
 },
 {
 "seed": 1010,
+"arm": "agent",
+"setting": {
+"periodic_s": 300.0,
+"model": "claude-opus-5-5"
+},
+"race_time_s": 2528.49571656899,
+"blown_s": 261.6361115783563,
+"reserve_left": 0.12433232760429229,
+"reference_s": 2469.7157473537413,
+"cues_spoken": 8,
+"cues_followed": 2,
+"cues_blocked": 1,
+"asks": {
+"ease": 4,
+"rate_down": 3,
+"finish": 1
+},
+"cue_log": [
+{
+"race_s": 63.8,
+"text": "Settle now, long smooth strokes, ease to one-fifty-five",
+"ask": "ease",
+"pace_s500": 155
+},
+{
+"race_s": 413.7,
+"text": "Reserve's empty. Ease off now, settle to steady pace.",
+"ask": "ease",
+"pace_s500": 164
+},
+{
+"race_s": 714.4,
+"text": "Ease off a touch, settle long and smooth",
+"ask": "ease",
+"pace_s500": 162
+},
+{
+"race_s": 1013.6,
+"text": "Reserve empty. Ease off now, settle into a steady 2:35.",
+"ask": "ease",
+"pace_s500": 155
+},
+{
+"race_s": 1263.7,
+"text": "Drop the rate a touch, longer stroke, same effort.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 1864.7,
+"text": "Settle the rate a touch, longer strokes, same effort",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 2165.0,
+"text": "Lengthen out, drop rate slightly, same power each stroke",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 2463.0,
+"text": "Final sprint now! Empty the tank to the line!",
+"ask": "finish",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 1,
+"fading": 2
+},
+"consultations": 11,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 9,
+"wall_s": 73.22,
+"model_usage": {
+"calls": 21,
+"errors": 0,
+"input_tokens": 3536,
+"output_tokens": 5640,
+"cache_create_tokens": 7377,
+"cache_read_tokens": 63987,
+"latency_median_s": 3.2382473499999946,
+"latency_p90_s": 4.462150248
+},
+"model_usd_estimate": 0.1766
+},
+{
+"seed": 1010,
+"arm": "agent_haiku",
+"setting": {
+"periodic_s": 300.0,
+"model": "claude-haiku-5-5"
+},
+"race_time_s": 2536.978664207748,
+"blown_s": 342.34873321214803,
+"reserve_left": 0.11388066215707839,
+"reference_s": 2469.7157473537413,
+"cues_spoken": 8,
+"cues_followed": 2,
+"cues_blocked": 2,
+"asks": {
+"ease": 4,
+"push": 3,
+"rate_down": 1
+},
+"cue_log": [
+{
+"race_s": 63.8,
+"text": "Ease off a little. Settle into a steady rhythm, around 155 pace.",
+"ask": "ease",
+"pace_s500": 155
+},
+{
+"race_s": 414.7,
+"text": "Reserve is empty. Ease off to about 2:39 per 500, stay smooth.",
+"ask": "ease",
+"pace_s500": 159
+},
+{
+"race_s": 715.4,
+"text": "Ease a touch, settle around one-sixty per 500. Stay smooth and long.",
+"ask": "ease",
+"pace_s500": 160
+},
+{
+"race_s": 1014.7,
+"text": "Ease off a touch; settle near 2:39 per 500 and hold it.",
+"ask": "ease",
+"pace_s500": 158.7
+},
+{
+"race_s": 1266.9,
+"text": "Settle your rhythm, drive the catch, bring the speed back up.",
+"ask": "push",
+"pace_s500": 172
+},
+{
+"race_s": 1866.6,
+"text": "Reserve is holding. Bring the pace down a touch, steady strokes.",
+"ask": "push",
+"pace_s500": 152
+},
+{
+"race_s": 2162.9,
+"text": "Reserve holds to the line. Lift a little now, steady rhythm.",
+"ask": "push",
+"pace_s500": 160
+},
+{
+"race_s": 2409.2,
+"text": "Rate too high. Drop back to sixty-four, and hold a strong pull.",
+"ask": "rate_down",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 1,
+"fading": 2,
+"rate_fade_check": 2
+},
+"consultations": 12,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 10,
+"wall_s": 70.22,
+"model_usage": {
+"calls": 31,
+"errors": 0,
+"input_tokens": 3902,
+"output_tokens": 11711,
+"cache_create_tokens": 21575,
+"cache_read_tokens": 109128,
+"latency_median_s": 1.7252653709999777,
+"latency_p90_s": 4.045401058999914
+},
+"model_usd_estimate": 0.01
+},
+{
+"seed": 1010,
 "arm": "agent_stand_in",
 "setting": {
 "periodic_s": 300.0,
@@ -12069,6 +13983,217 @@
 "cue_log": [],
 "alerts": {},
 "wall_s": 1.73
+},
+{
+"seed": 1011,
+"arm": "agent",
+"setting": {
+"periodic_s": 300.0,
+"model": "claude-opus-5-5"
+},
+"race_time_s": 2498.477831489759,
+"blown_s": 399.4333330907316,
+"reserve_left": 0.1406803320478767,
+"reference_s": 2466.876546908899,
+"cues_spoken": 11,
+"cues_followed": 9,
+"cues_blocked": 1,
+"asks": {
+"ease": 5,
+"rate_down": 4,
+"push": 1,
+"finish": 1
+},
+"cue_log": [
+{
+"race_s": 63.7,
+"text": "Settle in now, long smooth strokes, ease the power.",
+"ask": "ease",
+"pace_s500": 144
+},
+{
+"race_s": 414.8,
+"text": "Ease slightly, settle into a long steady rhythm",
+"ask": "ease",
+"pace_s500": 167
+},
+{
+"race_s": 562.9,
+"text": "Ease slightly, settle long and smooth, hold this",
+"ask": "ease",
+"pace_s500": 167
+},
+{
+"race_s": 673.6,
+"text": "Lengthen out, drop two strokes, same pressure",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 813.5,
+"text": "Ease slightly, settle long and smooth, save the reserve",
+"ask": "ease",
+"pace_s500": 146
+},
+{
+"race_s": 1113.3,
+"text": "Reserve empty. Ease slightly, settle long and smooth.",
+"ask": "ease",
+"pace_s500": 144
+},
+{
+"race_s": 1328.3,
+"text": "Lengthen out, drop rate two, full power each stroke",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 1671.8,
+"text": "Lengthen out, drop the rate a touch, same effort",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 1971.2,
+"text": "Plenty left. Lift the effort, build steadily to the line.",
+"ask": "push",
+"pace_s500": 172
+},
+{
+"race_s": 2150.9,
+"text": "Lengthen out, drop the rate a touch, same power",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 2450.5,
+"text": "Go now! Sprint all the way to the line!",
+"ask": "finish",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 3,
+"fading": 5
+},
+"consultations": 14,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 12,
+"wall_s": 98.14,
+"model_usage": {
+"calls": 27,
+"errors": 0,
+"input_tokens": 4734,
+"output_tokens": 7572,
+"cache_create_tokens": 9749,
+"cache_read_tokens": 82269,
+"latency_median_s": 3.3464669800000024,
+"latency_p90_s": 4.711686286999964
+},
+"model_usd_estimate": 0.2356
+},
+{
+"seed": 1011,
+"arm": "agent_haiku",
+"setting": {
+"periodic_s": 300.0,
+"model": "claude-haiku-5-5"
+},
+"race_time_s": 2492.258043037785,
+"blown_s": 427.8432374082508,
+"reserve_left": 0.1710362562291356,
+"reference_s": 2466.876546908899,
+"cues_spoken": 10,
+"cues_followed": 8,
+"cues_blocked": 5,
+"asks": {
+"ease": 5,
+"hold": 2,
+"push": 3
+},
+"cue_log": [
+{
+"race_s": 63.7,
+"text": "Ease off a little. Settle into a steadier, sustainable rhythm.",
+"ask": "ease",
+"pace_s500": 146
+},
+{
+"race_s": 415.6,
+"text": "Ease off a little. You're spending reserve too fast. Settle here.",
+"ask": "ease",
+"pace_s500": 167
+},
+{
+"race_s": 565.6,
+"text": "Ease a little. Settle to a steady, sustainable pace now.",
+"ask": "ease",
+"pace_s500": 166
+},
+{
+"race_s": 818.0,
+"text": "Ease a little. Reserve is running out early. Settle near 146.",
+"ask": "ease",
+"pace_s500": 146
+},
+{
+"race_s": 1119.8,
+"text": "Reserve is empty. Ease off a little, settle into a steady rhythm.",
+"ask": "ease",
+"pace_s500": 146
+},
+{
+"race_s": 1419.5,
+"text": "Hold this effort. Aim for 166 on display, steady to the line.",
+"ask": "hold",
+"pace_s500": 166
+},
+{
+"race_s": 1662.8,
+"text": "Hold steady now. Reserve is recovering. Settle at this pace, long strokes.",
+"ask": "hold",
+"pace_s500": 151.6
+},
+{
+"race_s": 1963.7,
+"text": "Headwind is costing us. Small push, keep rate 64, stay smooth.",
+"ask": "push",
+"pace_s500": 171
+},
+{
+"race_s": 2030.9,
+"text": "Reserve is back at 20%. Lift a notch, keep this rate.",
+"ask": "push",
+"pace_s500": 166
+},
+{
+"race_s": 2329.1,
+"text": "Reserve lasts past the finish. Push a little more now, steady stroke.",
+"ask": "push",
+"pace_s500": 160
+}
+],
+"alerts": {
+"over_pace": 3,
+"fading": 4
+},
+"consultations": 13,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 11,
+"wall_s": 87.49,
+"model_usage": {
+"calls": 38,
+"errors": 0,
+"input_tokens": 4450,
+"output_tokens": 15071,
+"cache_create_tokens": 26780,
+"cache_read_tokens": 145693,
+"latency_median_s": 1.9122028429999318,
+"latency_p90_s": 4.9259841139999025
+},
+"model_usd_estimate": 0.0128
 },
 {
 "seed": 1011,
@@ -13222,6 +15347,157 @@
 },
 {
 "seed": 1012,
+"arm": "agent",
+"setting": {
+"periodic_s": 300.0,
+"model": "claude-opus-5-5"
+},
+"race_time_s": 1931.9778062435166,
+"blown_s": 80.21565779380617,
+"reserve_left": 0.03984559752848939,
+"reference_s": 1878.3779517147918,
+"cues_spoken": 5,
+"cues_followed": 4,
+"cues_blocked": 1,
+"asks": {
+"ease": 5
+},
+"cue_log": [
+{
+"race_s": 64.7,
+"text": "Too hot. Settle into long, smooth strokes.",
+"ask": "ease",
+"pace_s500": 161
+},
+{
+"race_s": 414.9,
+"text": "Settle now, long smooth strokes, ease to 2:43",
+"ask": "ease",
+"pace_s500": 163
+},
+{
+"race_s": 536.4,
+"text": "Ease slightly, settle long and smooth, hold 163.",
+"ask": "ease",
+"pace_s500": 163
+},
+{
+"race_s": 836.5,
+"text": "Ease slightly, settle to long smooth strokes",
+"ask": "ease",
+"pace_s500": 164
+},
+{
+"race_s": 1136.9,
+"text": "Ease slightly, settle long and smooth, hold 162",
+"ask": "ease",
+"pace_s500": 162
+}
+],
+"alerts": {
+"over_pace": 2,
+"fading": 1
+},
+"consultations": 9,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 6,
+"wall_s": 63.38,
+"model_usage": {
+"calls": 16,
+"errors": 0,
+"input_tokens": 3028,
+"output_tokens": 4943,
+"cache_create_tokens": 5283,
+"cache_read_tokens": 48752,
+"latency_median_s": 3.5044085719999885,
+"latency_p90_s": 5.679141555000001
+},
+"model_usd_estimate": 0.1471
+},
+{
+"seed": 1012,
+"arm": "agent_haiku",
+"setting": {
+"periodic_s": 300.0,
+"model": "claude-haiku-5-5"
+},
+"race_time_s": 1935.357420315372,
+"blown_s": 148.8742316935099,
+"reserve_left": 0.10267276152984965,
+"reference_s": 1878.3779517147918,
+"cues_spoken": 6,
+"cues_followed": 5,
+"cues_blocked": 3,
+"asks": {
+"ease": 1,
+"hold": 3,
+"push": 1,
+"finish": 1
+},
+"cue_log": [
+{
+"race_s": 113.7,
+"text": "Ease off a little. Settle to about one-six-one per 500.",
+"ask": "ease",
+"pace_s500": 161
+},
+{
+"race_s": 503.5,
+"text": "Speed is holding well. Keep this effort steady, around 2:36 per 500.",
+"ask": "hold",
+"pace_s500": 156.5
+},
+{
+"race_s": 1104.2,
+"text": "Speed is holding well. Keep this rhythm, stay smooth, hold this pace.",
+"ask": "hold",
+"pace_s500": 156
+},
+{
+"race_s": 1491.7,
+"text": "Reserve's empty, so settle here. Hold steady, around 163 on the display.",
+"ask": "hold",
+"pace_s500": 163
+},
+{
+"race_s": 1791.0,
+"text": "Reserve is good, 405 metres left. Lift effort, hold this rhythm.",
+"ask": "push",
+"pace_s500": 172
+},
+{
+"race_s": 1881.6,
+"text": "Sprint now. Empty the tank all the way to the line!",
+"ask": "finish",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 1,
+"reserve_conflict": 3,
+"fading": 1,
+"finish_sprint_ready": 1
+},
+"consultations": 11,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 7,
+"wall_s": 55.77,
+"model_usage": {
+"calls": 25,
+"errors": 0,
+"input_tokens": 3812,
+"output_tokens": 9418,
+"cache_create_tokens": 13279,
+"cache_read_tokens": 83406,
+"latency_median_s": 2.034116642000072,
+"latency_p90_s": 4.125907009000002
+},
+"model_usd_estimate": 0.0076
+},
+{
+"seed": 1012,
 "arm": "agent_stand_in",
 "setting": {
 "periodic_s": 300.0,
@@ -14074,6 +16350,260 @@
 "cue_log": [],
 "alerts": {},
 "wall_s": 1.42
+},
+{
+"seed": 1013,
+"arm": "agent",
+"setting": {
+"periodic_s": 300.0,
+"model": "claude-opus-5-5"
+},
+"race_time_s": 3393.4516162299146,
+"blown_s": 126.77079750539085,
+"reserve_left": 0.16419219665805024,
+"reference_s": 3372.0634385742683,
+"cues_spoken": 17,
+"cues_followed": 14,
+"cues_blocked": 1,
+"asks": {
+"ease": 7,
+"rate_down": 7,
+"push": 2,
+"finish": 1
+},
+"cue_log": [
+{
+"race_s": 64.4,
+"text": "Settle down now, long race. Ease to steady rhythm.",
+"ask": "ease",
+"pace_s500": 155
+},
+{
+"race_s": 415.0,
+"text": "Ease off a touch, long smooth strokes, settle in",
+"ask": "ease",
+"pace_s500": 186
+},
+{
+"race_s": 552.4,
+"text": "Ease slightly, settle and breathe, long smooth strokes",
+"ask": "ease",
+"pace_s500": 185
+},
+{
+"race_s": 734.0,
+"text": "Ease slightly, settle long and smooth, hold 3:06",
+"ask": "ease",
+"pace_s500": 186
+},
+{
+"race_s": 954.6,
+"text": "Settle the rate, longer stroke, same effort",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 1091.9,
+"text": "Ease a touch, settle at 155 on display",
+"ask": "ease",
+"pace_s500": 155
+},
+{
+"race_s": 1391.0,
+"text": "Ease slightly, settle long and smooth, hold this",
+"ask": "ease",
+"pace_s500": 184
+},
+{
+"race_s": 1477.1,
+"text": "Drop the rate a touch, longer stroke, same steady effort",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 1657.7,
+"text": "Lengthen out, drop rate two, same steady pressure.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 1957.7,
+"text": "Ease slightly, settle and hold 155 on display",
+"ask": "ease",
+"pace_s500": 155
+},
+{
+"race_s": 2102.1,
+"text": "Drop the rate a touch, longer stroke, same pressure.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 2329.2,
+"text": "Drop the rate a touch, longer stronger strokes",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 2629.4,
+"text": "Lengthen out, drop rate slightly, same power.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 2718.2,
+"text": "Lengthen out, slightly lower rate, same power each stroke",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 3020.2,
+"text": "Under a kilometre left. Lift the effort, build steadily now.",
+"ask": "push",
+"pace_s500": 182
+},
+{
+"race_s": 3131.8,
+"text": "Lengthen and drive each stroke, build pressure now",
+"ask": "push",
+"pace_s500": 181
+},
+{
+"race_s": 3335.1,
+"text": "Final sprint now, everything to the line!",
+"ask": "finish",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 4,
+"fading": 8
+},
+"consultations": 18,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 18,
+"wall_s": 138.91,
+"model_usage": {
+"calls": 38,
+"errors": 0,
+"input_tokens": 6215,
+"output_tokens": 10552,
+"cache_create_tokens": 14816,
+"cache_read_tokens": 119180,
+"latency_median_s": 3.3598647669999764,
+"latency_p90_s": 5.131062130999965
+},
+"model_usd_estimate": 0.3338
+},
+{
+"seed": 1013,
+"arm": "agent_haiku",
+"setting": {
+"periodic_s": 300.0,
+"model": "claude-haiku-5-5"
+},
+"race_time_s": 3355.5109319679455,
+"blown_s": 0.0,
+"reserve_left": 0.16756735951010704,
+"reference_s": 3372.0634385742683,
+"cues_spoken": 11,
+"cues_followed": 9,
+"cues_blocked": 3,
+"asks": {
+"ease": 4,
+"hold": 4,
+"push": 3
+},
+"cue_log": [
+{
+"race_s": 113.5,
+"text": "Ease off a little. Settle into a steady, relaxed rhythm now.",
+"ask": "ease",
+"pace_s500": 160
+},
+{
+"race_s": 439.3,
+"text": "Ease off a little. Settle into a relaxed, steady rhythm now.",
+"ask": "ease",
+"pace_s500": 183
+},
+{
+"race_s": 891.5,
+"text": "Ease off a little. Settle near two thirty-five per 500.",
+"ask": "ease",
+"pace_s500": 155
+},
+{
+"race_s": 1193.9,
+"text": "Ease a little. Settle to about one fifty-five per 500. Reserve draining.",
+"ask": "ease",
+"pace_s500": 155
+},
+{
+"race_s": 1421.6,
+"text": "Speed is holding at this rate. Keep this effort to the line.",
+"ask": "hold",
+"pace_s500": 181.5
+},
+{
+"race_s": 2019.5,
+"text": "Steady here. Hold this rhythm, same rate, keep it smooth.",
+"ask": "hold",
+"pace_s500": 155
+},
+{
+"race_s": 2233.3,
+"text": "Reserve reading is off; your speed is holding. Keep this effort steady.",
+"ask": "hold",
+"pace_s500": 181.3
+},
+{
+"race_s": 2534.9,
+"text": "Speed is holding steady. Keep this effort, 64 strokes, steady rhythm.",
+"ask": "hold",
+"pace_s500": 159.6
+},
+{
+"race_s": 2836.0,
+"text": "Good rhythm. Lift effort a little, hold it steady to the finish.",
+"ask": "push",
+"pace_s500": 155
+},
+{
+"race_s": 2935.2,
+"text": "Speed has dropped. Lift the effort a little, stay at 64.",
+"ask": "push",
+"pace_s500": 186
+},
+{
+"race_s": 3236.7,
+"text": "Good rhythm. Push a little now, 344 metres to go.",
+"ask": "push",
+"pace_s500": 172
+}
+],
+"alerts": {
+"over_pace": 3,
+"reserve_conflict": 3,
+"speed_fade_same_rate": 1
+},
+"consultations": 15,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 11,
+"wall_s": 89.76,
+"model_usage": {
+"calls": 35,
+"errors": 0,
+"input_tokens": 5053,
+"output_tokens": 14438,
+"cache_create_tokens": 19801,
+"cache_read_tokens": 116442,
+"latency_median_s": 2.247659848000012,
+"latency_p90_s": 4.65487834999999
+},
+"model_usd_estimate": 0.0114
 },
 {
 "seed": 1013,
@@ -15237,6 +17767,208 @@
 },
 {
 "seed": 1014,
+"arm": "agent",
+"setting": {
+"periodic_s": 300.0,
+"model": "claude-opus-5-5"
+},
+"race_time_s": 2732.7213274321,
+"blown_s": 83.12550170148297,
+"reserve_left": 0.11834074999472176,
+"reference_s": 2722.2564001542596,
+"cues_spoken": 10,
+"cues_followed": 6,
+"cues_blocked": 1,
+"asks": {
+"ease": 8,
+"rate_down": 2
+},
+"cue_log": [
+{
+"race_s": 64.6,
+"text": "Too hot. Settle into long, steady strokes now.",
+"ask": "ease",
+"pace_s500": 158
+},
+{
+"race_s": 414.6,
+"text": "Ease off slightly, settle into a steady 3:10 pace",
+"ask": "ease",
+"pace_s500": 190
+},
+{
+"race_s": 714.9,
+"text": "Reserve's empty. Ease off a touch and settle long, smooth strokes.",
+"ask": "ease",
+"pace_s500": 186
+},
+{
+"race_s": 895.0,
+"text": "Settle a touch, smooth and long, hold 163",
+"ask": "ease",
+"pace_s500": 163
+},
+{
+"race_s": 1188.1,
+"text": "Ease slightly, settle long and smooth, hold 2:44",
+"ask": "ease",
+"pace_s500": 164
+},
+{
+"race_s": 1488.4,
+"text": "Ease slightly, settle and breathe, hold 1:87 pace",
+"ask": "ease",
+"pace_s500": 187
+},
+{
+"race_s": 1668.9,
+"text": "Drop the rate a touch, longer stroke, keep it smooth",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 1969.4,
+"text": "Ease slightly, settle and breathe, hold 2:42 to the sprint",
+"ask": "ease",
+"pace_s500": 162
+},
+{
+"race_s": 2268.5,
+"text": "Tank's empty. Ease slightly, hold 187, save sprint for later.",
+"ask": "ease",
+"pace_s500": 187
+},
+{
+"race_s": 2502.6,
+"text": "Lengthen out, drop rate slightly, hold this effort",
+"ask": "rate_down",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 2,
+"fading": 3
+},
+"consultations": 12,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 11,
+"wall_s": 91.44,
+"model_usage": {
+"calls": 24,
+"errors": 0,
+"input_tokens": 4006,
+"output_tokens": 6851,
+"cache_create_tokens": 8604,
+"cache_read_tokens": 74797,
+"latency_median_s": 3.734022309000011,
+"latency_p90_s": 4.682806606999975
+},
+"model_usd_estimate": 0.211
+},
+{
+"seed": 1014,
+"arm": "agent_haiku",
+"setting": {
+"periodic_s": 300.0,
+"model": "claude-haiku-5-5"
+},
+"race_time_s": 2714.49493444724,
+"blown_s": 0.0,
+"reserve_left": 0.33226668131017434,
+"reference_s": 2722.2564001542596,
+"cues_spoken": 10,
+"cues_followed": 6,
+"cues_blocked": 6,
+"asks": {
+"ease": 8,
+"hold": 2
+},
+"cue_log": [
+{
+"race_s": 114.7,
+"text": "Ease off a little. Settle into a steadier, relaxed rhythm.",
+"ask": "ease",
+"pace_s500": 163
+},
+{
+"race_s": 321.0,
+"text": "Ease a touch. Settle into a relaxed rhythm, reserve is draining early.",
+"ask": "ease",
+"pace_s500": 160
+},
+{
+"race_s": 499.1,
+"text": "Ease off a little; the reserve runs out before the finish.",
+"ask": "ease",
+"pace_s500": 185.5
+},
+{
+"race_s": 709.1,
+"text": "Ease off a touch. Settle near 186 on your display.",
+"ask": "ease",
+"pace_s500": 186
+},
+{
+"race_s": 916.1,
+"text": "Ease a touch. Find a steady rhythm to hold to the finish.",
+"ask": "ease",
+"pace_s500": 162
+},
+{
+"race_s": 1214.7,
+"text": "Ease a little. Settle near 2:41 per 500. Save reserve.",
+"ask": "ease",
+"pace_s500": 161.5
+},
+{
+"race_s": 1435.7,
+"text": "Speed is holding steady at this rate. Keep this effort, stay smooth.",
+"ask": "hold",
+"pace_s500": 179
+},
+{
+"race_s": 1736.0,
+"text": "Ease a touch. Settle to a steady, sustainable rhythm now.",
+"ask": "ease",
+"pace_s500": 166
+},
+{
+"race_s": 2338.7,
+"text": "Ease a touch, steady rhythm. Hold this to the line.",
+"ask": "ease",
+"pace_s500": 187
+},
+{
+"race_s": 2605.3,
+"text": "Hold this pace. Sprint from 100 metres to go.",
+"ask": "hold",
+"pace_s500": 149.4
+}
+],
+"alerts": {
+"over_pace": 5,
+"reserve_conflict": 2
+},
+"consultations": 12,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 10,
+"wall_s": 76.64,
+"model_usage": {
+"calls": 31,
+"errors": 0,
+"input_tokens": 4299,
+"output_tokens": 12693,
+"cache_create_tokens": 16594,
+"cache_read_tokens": 106389,
+"latency_median_s": 1.6580339909999111,
+"latency_p90_s": 4.546134878999965
+},
+"model_usd_estimate": 0.0099
+},
+{
+"seed": 1014,
 "arm": "agent_stand_in",
 "setting": {
 "periodic_s": 300.0,
@@ -16334,6 +19066,280 @@
 "cue_log": [],
 "alerts": {},
 "wall_s": 1.65
+},
+{
+"seed": 1015,
+"arm": "agent",
+"setting": {
+"periodic_s": 300.0,
+"model": "claude-opus-5-5"
+},
+"race_time_s": 3229.166144328508,
+"blown_s": 0.0,
+"reserve_left": 0.5882646911541379,
+"reference_s": 3214.1792703110536,
+"cues_spoken": 11,
+"cues_followed": 11,
+"cues_blocked": 1,
+"asks": {
+"ease": 8,
+"hold": 2,
+"push": 1
+},
+"cue_log": [
+{
+"race_s": 62.1,
+"text": "Settle in, long race. Ease to 154 pace.",
+"ask": "ease",
+"pace_s500": 154
+},
+{
+"race_s": 413.9,
+"text": "Ease off a touch, settle into a long smooth rhythm",
+"ask": "ease",
+"pace_s500": 176
+},
+{
+"race_s": 713.4,
+"text": "Ease slightly, settle and breathe. Hold 174 on display.",
+"ask": "ease",
+"pace_s500": 174
+},
+{
+"race_s": 854.2,
+"text": "Ease slightly, settle long and smooth at 155.",
+"ask": "ease",
+"pace_s500": 155
+},
+{
+"race_s": 1159.2,
+"text": "Good rhythm. Settle and hold this pace.",
+"ask": "hold",
+"pace_s500": 151
+},
+{
+"race_s": 1237.5,
+"text": "Strong and steady, keep this effort into the current",
+"ask": "hold",
+"pace_s500": 167
+},
+{
+"race_s": 1534.7,
+"text": "Ease slightly, settle to steady sustainable pace, long smooth strokes.",
+"ask": "ease",
+"pace_s500": 173
+},
+{
+"race_s": 2010.6,
+"text": "Speed's holding well. Lift a touch, settle at 175.",
+"ask": "push",
+"pace_s500": 175
+},
+{
+"race_s": 2309.9,
+"text": "Ease slightly, settle and breathe, save it for the sprint",
+"ask": "ease",
+"pace_s500": 175
+},
+{
+"race_s": 2610.0,
+"text": "Ease slightly, settle and breathe, hold 155 on display",
+"ask": "ease",
+"pace_s500": 155
+},
+{
+"race_s": 2909.7,
+"text": "Ease slightly, settle and hold; save the sprint for later",
+"ask": "ease",
+"pace_s500": 174
+}
+],
+"alerts": {
+"over_pace": 2,
+"reserve_conflict": 2,
+"fading": 1
+},
+"consultations": 15,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 12,
+"wall_s": 105.96,
+"model_usage": {
+"calls": 30,
+"errors": 0,
+"input_tokens": 5015,
+"output_tokens": 8230,
+"cache_create_tokens": 12544,
+"cache_read_tokens": 94747,
+"latency_median_s": 3.4878451210000208,
+"latency_p90_s": 4.537854476000007
+},
+"model_usd_estimate": 0.2663
+},
+{
+"seed": 1015,
+"arm": "agent_haiku",
+"setting": {
+"periodic_s": 300.0,
+"model": "claude-haiku-5-5"
+},
+"race_time_s": 3252.376944177214,
+"blown_s": 0.0,
+"reserve_left": 0.5992546156152851,
+"reference_s": 3214.1792703110536,
+"cues_spoken": 20,
+"cues_followed": 20,
+"cues_blocked": 33,
+"asks": {
+"ease": 17,
+"push": 3
+},
+"cue_log": [
+{
+"race_s": 66.6,
+"text": "Ease off a little. Settle into a steady, relaxed rhythm.",
+"ask": "ease",
+"pace_s500": 154
+},
+{
+"race_s": 417.8,
+"text": "Ease off now. Reserve draining fast. Settle into a steady, relaxed rhythm.",
+"ask": "ease",
+"pace_s500": 170
+},
+{
+"race_s": 714.5,
+"text": "Reserve is empty. Ease a little and settle into a steady rhythm.",
+"ask": "ease",
+"pace_s500": 172
+},
+{
+"race_s": 841.6,
+"text": "Reserve is empty. Ease off now, settle around 172 pace.",
+"ask": "ease",
+"pace_s500": 172
+},
+{
+"race_s": 977.2,
+"text": "Ease a touch now, reserve is empty. Settle into a steady rhythm.",
+"ask": "ease",
+"pace_s500": 158
+},
+{
+"race_s": 1040.0,
+"text": "Ease off now. Settle around one sixty-four per five hundred.",
+"ask": "ease",
+"pace_s500": 164
+},
+{
+"race_s": 1100.1,
+"text": "Reserve's empty. Ease a little, settle near 160, hold it.",
+"ask": "ease",
+"pace_s500": 160
+},
+{
+"race_s": 1394.3,
+"text": "Reserve nearly gone. Ease to 2:53 pace, smooth and steady.",
+"ask": "ease",
+"pace_s500": 173
+},
+{
+"race_s": 1570.7,
+"text": "Ease a touch. Settle at 172 on the display and hold it.",
+"ask": "ease",
+"pace_s500": 172
+},
+{
+"race_s": 1656.8,
+"text": "Reserve is empty. Ease off a little, settle around 156 pace.",
+"ask": "ease",
+"pace_s500": 156
+},
+{
+"race_s": 1717.9,
+"text": "Reserve's empty. Ease a touch, settle smooth and steady.",
+"ask": "ease",
+"pace_s500": 157
+},
+{
+"race_s": 1804.1,
+"text": "Reserve is empty. Ease a touch, settle into a steady, smooth stroke.",
+"ask": "ease",
+"pace_s500": 158
+},
+{
+"race_s": 1865.1,
+"text": "Reserve is empty. Ease a touch, settle around 160 pace, long strokes.",
+"ask": "ease",
+"pace_s500": 160
+},
+{
+"race_s": 2034.7,
+"text": "Steady push now. Keep rate at 62, hold this power.",
+"ask": "push",
+"pace_s500": 180
+},
+{
+"race_s": 2215.8,
+"text": "Power's under threshold, you have room. Push a little, settle near 174.",
+"ask": "push",
+"pace_s500": 174
+},
+{
+"race_s": 2516.7,
+"text": "Ease off a little. Settle near one fifty-four; save reserve for finish.",
+"ask": "ease",
+"pace_s500": 154
+},
+{
+"race_s": 2720.2,
+"text": "Ease a touch now. Steady rhythm, you're at your limit.",
+"ask": "ease",
+"pace_s500": 160
+},
+{
+"race_s": 2854.8,
+"text": "Speed is fading. Lift the effort a little, stay smooth.",
+"ask": "push",
+"pace_s500": 172
+},
+{
+"race_s": 2924.5,
+"text": "Reserve's empty. Ease a touch, settle around 174 on the display.",
+"ask": "ease",
+"pace_s500": 174
+},
+{
+"race_s": 2985.6,
+"text": "Reserve's empty. Ease a touch, settle steady, hold it to the line.",
+"ask": "ease",
+"pace_s500": 174
+}
+],
+"alerts": {
+"over_pace": 3,
+"reserve_empty_hold": 2,
+"reserve_empty_repeat": 18,
+"fading": 4,
+"finish_sprint_ready": 1,
+"finish_sprint_cue": 1
+},
+"consultations": 34,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 32,
+"wall_s": 254.56,
+"model_usage": {
+"calls": 98,
+"errors": 0,
+"input_tokens": 12773,
+"output_tokens": 45082,
+"cache_create_tokens": 81636,
+"cache_read_tokens": 374360,
+"latency_median_s": 1.5689571849998174,
+"latency_p90_s": 5.256656111000211
+},
+"model_usd_estimate": 0.0378
 },
 {
 "seed": 1015,
@@ -17577,6 +20583,156 @@
 },
 {
 "seed": 1016,
+"arm": "agent",
+"setting": {
+"periodic_s": 300.0,
+"model": "claude-opus-5-5"
+},
+"race_time_s": 1815.7054928269667,
+"blown_s": 221.35789546809715,
+"reserve_left": 0.06991306080184122,
+"reference_s": 1780.9683362250307,
+"cues_spoken": 6,
+"cues_followed": 6,
+"cues_blocked": 1,
+"asks": {
+"ease": 5,
+"finish": 1
+},
+"cue_log": [
+{
+"race_s": 63.5,
+"text": "Too hot. Settle into race pace, long smooth strokes.",
+"ask": "ease",
+"pace_s500": 147
+},
+{
+"race_s": 344.2,
+"text": "Ease slightly, settle long and smooth, hold 2:40",
+"ask": "ease",
+"pace_s500": 160
+},
+{
+"race_s": 594.4,
+"text": "Ease a touch, settle long and smooth, hold 158",
+"ask": "ease",
+"pace_s500": 158
+},
+{
+"race_s": 894.4,
+"text": "Ease slightly, settle long and smooth, hold 1:48",
+"ask": "ease",
+"pace_s500": 148
+},
+{
+"race_s": 1496.3,
+"text": "Ease a touch, settle and hold this, save the kick.",
+"ask": "ease",
+"pace_s500": 149
+},
+{
+"race_s": 1716.2,
+"text": "300 to go, start your sprint now, long strong strokes",
+"ask": "finish",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 3,
+"fading": 1
+},
+"consultations": 8,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 7,
+"wall_s": 60.67,
+"model_usage": {
+"calls": 16,
+"errors": 0,
+"input_tokens": 2772,
+"output_tokens": 4845,
+"cache_create_tokens": 6470,
+"cache_read_tokens": 48752,
+"latency_median_s": 3.7175309300000094,
+"latency_p90_s": 5.126076249999983
+},
+"model_usd_estimate": 0.1501
+},
+{
+"seed": 1016,
+"arm": "agent_haiku",
+"setting": {
+"periodic_s": 300.0,
+"model": "claude-haiku-5-5"
+},
+"race_time_s": 1818.1550859841554,
+"blown_s": 183.63722133333306,
+"reserve_left": 0.01689083032655251,
+"reference_s": 1780.9683362250307,
+"cues_spoken": 5,
+"cues_followed": 5,
+"cues_blocked": 3,
+"asks": {
+"ease": 2,
+"hold": 1,
+"push": 2
+},
+"cue_log": [
+{
+"race_s": 113.2,
+"text": "Ease off a little, settle near two forty-eight per five hundred.",
+"ask": "ease",
+"pace_s500": 148
+},
+{
+"race_s": 416.3,
+"text": "Speed holding at this rate. Hold this effort; ignore the empty reserve.",
+"ask": "hold",
+"pace_s500": 152
+},
+{
+"race_s": 715.0,
+"text": "Ease a touch now. Settle near one fifty three, smooth and long.",
+"ask": "ease",
+"pace_s500": 152.5
+},
+{
+"race_s": 1440.4,
+"text": "Speed is fading. Lift the power a little, hold a strong catch.",
+"ask": "push",
+"pace_s500": 152
+},
+{
+"race_s": 1740.0,
+"text": "You have strength left. Push now, drive steadily to the line.",
+"ask": "push",
+"pace_s500": 163
+}
+],
+"alerts": {
+"over_pace": 1,
+"fading": 2,
+"finish_sprint_ready": 1
+},
+"consultations": 10,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 6,
+"wall_s": 61.48,
+"model_usage": {
+"calls": 27,
+"errors": 0,
+"input_tokens": 3305,
+"output_tokens": 10458,
+"cache_create_tokens": 20653,
+"cache_read_tokens": 101592,
+"latency_median_s": 2.1204709869998624,
+"latency_p90_s": 4.064006704999883
+},
+"model_usd_estimate": 0.0092
+},
+{
+"seed": 1016,
 "arm": "agent_stand_in",
 "setting": {
 "periodic_s": 300.0,
@@ -18405,6 +21561,186 @@
 "cue_log": [],
 "alerts": {},
 "wall_s": 1.21
+},
+{
+"seed": 1017,
+"arm": "agent",
+"setting": {
+"periodic_s": 300.0,
+"model": "claude-opus-5-5"
+},
+"race_time_s": 2470.4329136152874,
+"blown_s": 0.0,
+"reserve_left": 0.27144105680141706,
+"reference_s": 2470.4567564538575,
+"cues_spoken": 7,
+"cues_followed": 4,
+"cues_blocked": 1,
+"asks": {
+"ease": 5,
+"hold": 1,
+"finish": 1
+},
+"cue_log": [
+{
+"race_s": 65.8,
+"text": "Too hot. Settle into a long, steady rhythm now.",
+"ask": "ease",
+"pace_s500": 170
+},
+{
+"race_s": 313.9,
+"text": "Ease a touch, settle smooth, hold one-seventy on display",
+"ask": "ease",
+"pace_s500": 170
+},
+{
+"race_s": 555.8,
+"text": "Ease slightly, settle and hold one forty-three",
+"ask": "ease",
+"pace_s500": 143
+},
+{
+"race_s": 756.5,
+"text": "Ease a touch, settle to 142 on the display",
+"ask": "ease",
+"pace_s500": 142
+},
+{
+"race_s": 1057.6,
+"text": "Ease slightly, settle smooth and long, save it for later",
+"ask": "ease",
+"pace_s500": 169
+},
+{
+"race_s": 1490.5,
+"text": "Steady, hold this rhythm. Save the sprint for later.",
+"ask": "hold",
+"pace_s500": 138
+},
+{
+"race_s": 2385.5,
+"text": "250 to go, sprint now, empty the tank!",
+"ask": "finish",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 4,
+"reserve_conflict": 1
+},
+"consultations": 11,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 8,
+"wall_s": 89.89,
+"model_usage": {
+"calls": 21,
+"errors": 0,
+"input_tokens": 3878,
+"output_tokens": 7294,
+"cache_create_tokens": 8642,
+"cache_read_tokens": 65699,
+"latency_median_s": 3.88978804300001,
+"latency_p90_s": 5.681694344999983
+},
+"model_usd_estimate": 0.2177
+},
+{
+"seed": 1017,
+"arm": "agent_haiku",
+"setting": {
+"periodic_s": 300.0,
+"model": "claude-haiku-5-5"
+},
+"race_time_s": 2474.836187443526,
+"blown_s": 0.0,
+"reserve_left": 0.26958439078609064,
+"reference_s": 2470.4567564538575,
+"cues_spoken": 9,
+"cues_followed": 6,
+"cues_blocked": 11,
+"asks": {
+"ease": 5,
+"push": 1,
+"hold": 3
+},
+"cue_log": [
+{
+"race_s": 115.4,
+"text": "Ease off a little. Reserve runs out too early. Settle near 170.",
+"ask": "ease",
+"pace_s500": 170
+},
+{
+"race_s": 315.8,
+"text": "Ease a touch. Settle into a steady rhythm; distance to spare.",
+"ask": "ease",
+"pace_s500": 171
+},
+{
+"race_s": 495.4,
+"text": "Ease a touch. Settle into a relaxed rhythm, save reserve for later.",
+"ask": "ease",
+"pace_s500": 146
+},
+{
+"race_s": 795.5,
+"text": "Reserve is holding well. Ease the pace up a touch, around 157.",
+"ask": "push",
+"pace_s500": 157
+},
+{
+"race_s": 1151.2,
+"text": "Ease a touch. Settle into a smooth rhythm and save your reserve.",
+"ask": "ease",
+"pace_s500": 169.5
+},
+{
+"race_s": 1420.2,
+"text": "Speed's holding at this rate. Keep it steady, don't ease yet.",
+"ask": "hold",
+"pace_s500": 137.8
+},
+{
+"race_s": 1722.9,
+"text": "Hold this effort. Speed is holding. Stay smooth at rate 61.",
+"ask": "hold",
+"pace_s500": 166
+},
+{
+"race_s": 2024.1,
+"text": "Hold this effort, steady at sixty-one. Save the sprint for last 200.",
+"ask": "hold",
+"pace_s500": 139
+},
+{
+"race_s": 2322.0,
+"text": "Ease a little. Steady rhythm now; save it for the sprint.",
+"ask": "ease",
+"pace_s500": 156
+}
+],
+"alerts": {
+"over_pace": 4,
+"reserve_conflict": 1
+},
+"consultations": 11,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 10,
+"wall_s": 77.28,
+"model_usage": {
+"calls": 35,
+"errors": 0,
+"input_tokens": 3816,
+"output_tokens": 13353,
+"cache_create_tokens": 22799,
+"cache_read_tokens": 129608,
+"latency_median_s": 1.377993098000161,
+"latency_p90_s": 4.444843335000087
+},
+"model_usd_estimate": 0.0112
 },
 {
 "seed": 1017,
@@ -19448,6 +22784,204 @@
 },
 {
 "seed": 1018,
+"arm": "agent",
+"setting": {
+"periodic_s": 300.0,
+"model": "claude-opus-5-5"
+},
+"race_time_s": 2475.9269043126833,
+"blown_s": 99.77977512827304,
+"reserve_left": 0.6206369822789976,
+"reference_s": 2439.648141154545,
+"cues_spoken": 9,
+"cues_followed": 8,
+"cues_blocked": 4,
+"asks": {
+"ease": 6,
+"rate_down": 3
+},
+"cue_log": [
+{
+"race_s": 66.0,
+"text": "Settle down now, long race. Smooth, controlled strokes.",
+"ask": "ease",
+"pace_s500": 164
+},
+{
+"race_s": 415.8,
+"text": "Lengthen out, drop rate slightly, keep this steady effort",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 673.9,
+"text": "Ease slightly, settle and breathe, hold this smooth",
+"ask": "ease",
+"pace_s500": 167
+},
+{
+"race_s": 802.9,
+"text": "Settle the rate, longer stroke, stay relaxed",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 1100.2,
+"text": "Settle a touch, long stroke, hold one forty-eight",
+"ask": "ease",
+"pace_s500": 148
+},
+{
+"race_s": 1224.4,
+"text": "Ease slightly, settle in, long stroke, hold 149",
+"ask": "ease",
+"pace_s500": 149
+},
+{
+"race_s": 1439.5,
+"text": "Drop rate two, longer stroke, hold this pace",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 1737.9,
+"text": "Settle a touch, long strokes, hold 148 to the sprint",
+"ask": "ease",
+"pace_s500": 148
+},
+{
+"race_s": 2046.9,
+"text": "Ease slightly, settle and hold 167 till sprint",
+"ask": "ease",
+"pace_s500": 167
+}
+],
+"alerts": {
+"over_pace": 3,
+"fading": 6
+},
+"consultations": 15,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 13,
+"wall_s": 121.57,
+"model_usage": {
+"calls": 29,
+"errors": 0,
+"input_tokens": 5215,
+"output_tokens": 9880,
+"cache_create_tokens": 10778,
+"cache_read_tokens": 89866,
+"latency_median_s": 4.006640275999985,
+"latency_p90_s": 5.394662263999976
+},
+"model_usd_estimate": 0.2903
+},
+{
+"seed": 1018,
+"arm": "agent_haiku",
+"setting": {
+"periodic_s": 300.0,
+"model": "claude-haiku-5-5"
+},
+"race_time_s": 2485.935516429718,
+"blown_s": 100.6623630721755,
+"reserve_left": 0.5739020286810022,
+"reference_s": 2439.648141154545,
+"cues_spoken": 10,
+"cues_followed": 9,
+"cues_blocked": 10,
+"asks": {
+"ease": 6,
+"rate_down": 1,
+"hold": 3
+},
+"cue_log": [
+{
+"race_s": 69.4,
+"text": "Ease off now. Settle near 2:36 per 500.",
+"ask": "ease",
+"pace_s500": 156
+},
+{
+"race_s": 415.1,
+"text": "Ease a little. Settle to about 2:36 per 500, keep it smooth.",
+"ask": "ease",
+"pace_s500": 156
+},
+{
+"race_s": 558.9,
+"text": "Ease a touch, settle around 2:31 pace. Save the reserve for later.",
+"ask": "ease",
+"pace_s500": 151
+},
+{
+"race_s": 898.5,
+"text": "Drop two strokes a minute. Keep the catch long and strong.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 1133.0,
+"text": "Hold this rhythm. Speed is steady, no fade. Stay around 145.",
+"ask": "hold",
+"pace_s500": 145.3
+},
+{
+"race_s": 1269.4,
+"text": "Wind has turned against you, not you fading. Hold this effort steady.",
+"ask": "hold",
+"pace_s500": 170.5
+},
+{
+"race_s": 1500.5,
+"text": "Reserve empty. Ease to 167 pace, stay smooth, save a sprint.",
+"ask": "ease",
+"pace_s500": 167
+},
+{
+"race_s": 1802.1,
+"text": "Ease a touch. Settle near 149. Save reserve for the finish.",
+"ask": "ease",
+"pace_s500": 149
+},
+{
+"race_s": 2100.6,
+"text": "Reserve empty. Ease a touch, settle steady, hold to the line.",
+"ask": "ease",
+"pace_s500": 166
+},
+{
+"race_s": 2401.0,
+"text": "Hold this effort. Sprint everything once the last hundred starts.",
+"ask": "hold",
+"pace_s500": 146.3
+}
+],
+"alerts": {
+"over_pace": 3,
+"fading": 3,
+"reserve_conflict": 1
+},
+"consultations": 13,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 13,
+"wall_s": 91.67,
+"model_usage": {
+"calls": 39,
+"errors": 0,
+"input_tokens": 4548,
+"output_tokens": 15327,
+"cache_create_tokens": 26809,
+"cache_read_tokens": 137031,
+"latency_median_s": 1.6164524710000023,
+"latency_p90_s": 4.9833554940000795
+},
+"model_usd_estimate": 0.0128
+},
+{
+"seed": 1018,
 "arm": "agent_stand_in",
 "setting": {
 "periodic_s": 300.0,
@@ -20450,6 +23984,202 @@
 },
 {
 "seed": 1019,
+"arm": "agent",
+"setting": {
+"periodic_s": 300.0,
+"model": "claude-opus-5-5"
+},
+"race_time_s": 1955.0419092864922,
+"blown_s": 93.44996263865738,
+"reserve_left": 0.045654188089074295,
+"reference_s": 1945.561403976048,
+"cues_spoken": 9,
+"cues_followed": 9,
+"cues_blocked": 1,
+"asks": {
+"ease": 5,
+"rate_down": 2,
+"push": 1,
+"finish": 1
+},
+"cue_log": [
+{
+"race_s": 64.7,
+"text": "Too hot. Settle into a long, even rhythm.",
+"ask": "ease",
+"pace_s500": 156
+},
+{
+"race_s": 415.5,
+"text": "Ease off now, settle long and smooth, save it for later",
+"ask": "ease",
+"pace_s500": 175
+},
+{
+"race_s": 610.9,
+"text": "Reserve's empty. Ease off a touch and settle at 176.",
+"ask": "ease",
+"pace_s500": 176
+},
+{
+"race_s": 911.2,
+"text": "Settle to critical power, long smooth strokes, save the sprint",
+"ask": "ease",
+"pace_s500": 158
+},
+{
+"race_s": 1210.7,
+"text": "Reserve's empty. Settle a touch, long strokes, hold 177.",
+"ask": "ease",
+"pace_s500": 177
+},
+{
+"race_s": 1329.1,
+"text": "Drop rate two, longer stroke, stay smooth",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 1628.6,
+"text": "Steady and long, settle to 178, save sprint for later",
+"ask": "push",
+"pace_s500": 178
+},
+{
+"race_s": 1724.1,
+"text": "Lengthen out, drop rate slightly, keep the pressure steady",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 1912.1,
+"text": "Sprint now! Everything to the line!",
+"ask": "finish",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 1,
+"fading": 4
+},
+"consultations": 10,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 10,
+"wall_s": 83.6,
+"model_usage": {
+"calls": 20,
+"errors": 0,
+"input_tokens": 3341,
+"output_tokens": 6344,
+"cache_create_tokens": 7355,
+"cache_read_tokens": 60940,
+"latency_median_s": 3.9264410870000575,
+"latency_p90_s": 5.373973446000036
+},
+"model_usd_estimate": 0.1892
+},
+{
+"seed": 1019,
+"arm": "agent_haiku",
+"setting": {
+"periodic_s": 300.0,
+"model": "claude-haiku-5-5"
+},
+"race_time_s": 1971.4544215055262,
+"blown_s": 279.9042581418228,
+"reserve_left": 0.03403155528508319,
+"reference_s": 1945.561403976048,
+"cues_spoken": 9,
+"cues_followed": 9,
+"cues_blocked": 5,
+"asks": {
+"ease": 4,
+"hold": 1,
+"rate_down": 2,
+"push": 1,
+"finish": 1
+},
+"cue_log": [
+{
+"race_s": 115.4,
+"text": "Ease off a little; reserve drains fast. Settle near 2:38 per 500.",
+"ask": "ease",
+"pace_s500": 158
+},
+{
+"race_s": 418.3,
+"text": "Ease off now; reserve is draining fast. Settle near 2:47 pace.",
+"ask": "ease",
+"pace_s500": 167
+},
+{
+"race_s": 822.1,
+"text": "Ignore the reserve readout; your speed is holding. Keep this effort steady.",
+"ask": "hold",
+"pace_s500": 149
+},
+{
+"race_s": 1122.2,
+"text": "Ease a little. Steady rhythm now, save something for the sprint.",
+"ask": "ease",
+"pace_s500": 176
+},
+{
+"race_s": 1192.6,
+"text": "Drop to about 61 strokes, long and strong, power through the catch.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 1374.5,
+"text": "Ease a touch. Settle near 2:37 pace, saving reserve for the finish.",
+"ask": "ease",
+"pace_s500": 157
+},
+{
+"race_s": 1553.8,
+"text": "Drop two strokes a minute. Long smooth strokes. Hold to the line.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 1733.7,
+"text": "Headwind's slowing you. Add a little power, hold rate, settle near 186.",
+"ask": "push",
+"pace_s500": 186
+},
+{
+"race_s": 1926.3,
+"text": "Start your finish now. Empty the tank to the line. Go!",
+"ask": "finish",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 1,
+"reserve_conflict": 1,
+"fading": 5
+},
+"consultations": 11,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 9,
+"wall_s": 77.97,
+"model_usage": {
+"calls": 35,
+"errors": 0,
+"input_tokens": 3835,
+"output_tokens": 13188,
+"cache_create_tokens": 21199,
+"cache_read_tokens": 134310,
+"latency_median_s": 1.6709559789999275,
+"latency_p90_s": 4.732209657000112
+},
+"model_usd_estimate": 0.011
+},
+{
+"seed": 1019,
 "arm": "agent_stand_in",
 "setting": {
 "periodic_s": 300.0,
@@ -21393,6 +25123,183 @@
 "cue_log": [],
 "alerts": {},
 "wall_s": 1.48
+},
+{
+"seed": 1020,
+"arm": "agent",
+"setting": {
+"periodic_s": 300.0,
+"model": "claude-opus-5-5"
+},
+"race_time_s": 3287.128728355265,
+"blown_s": 0.0,
+"reserve_left": 0.43000039190497213,
+"reference_s": 3301.4838964584733,
+"cues_spoken": 6,
+"cues_followed": 2,
+"cues_blocked": 1,
+"asks": {
+"ease": 5,
+"hold": 1
+},
+"cue_log": [
+{
+"race_s": 64.4,
+"text": "Settle in, ease off, long race ahead",
+"ask": "ease",
+"pace_s500": 172
+},
+{
+"race_s": 414.2,
+"text": "Ease slightly, settle into a long, steady rhythm",
+"ask": "ease",
+"pace_s500": 162
+},
+{
+"race_s": 695.3,
+"text": "Reserve's empty. Ease off now, settle into a steady rhythm.",
+"ask": "ease",
+"pace_s500": 175
+},
+{
+"race_s": 919.2,
+"text": "Strong and steady. Hold this effort, ignore the reserve.",
+"ask": "hold",
+"pace_s500": 167
+},
+{
+"race_s": 1346.7,
+"text": "Ease slightly, settle long and smooth, hold 1:56",
+"ask": "ease",
+"pace_s500": 176
+},
+{
+"race_s": 2792.4,
+"text": "Ease a touch, settle at 173, save it for sprint",
+"ask": "ease",
+"pace_s500": 173
+}
+],
+"alerts": {
+"over_pace": 3,
+"reserve_conflict": 4
+},
+"consultations": 15,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 7,
+"wall_s": 115.24,
+"model_usage": {
+"calls": 27,
+"errors": 0,
+"input_tokens": 5209,
+"output_tokens": 9211,
+"cache_create_tokens": 12638,
+"cache_read_tokens": 84135,
+"latency_median_s": 4.082834899999966,
+"latency_p90_s": 5.817650652999987
+},
+"model_usd_estimate": 0.2851
+},
+{
+"seed": 1020,
+"arm": "agent_haiku",
+"setting": {
+"periodic_s": 300.0,
+"model": "claude-haiku-5-5"
+},
+"race_time_s": 3282.420911782233,
+"blown_s": 0.0,
+"reserve_left": 0.3318675668482947,
+"reference_s": 3301.4838964584733,
+"cues_spoken": 10,
+"cues_followed": 5,
+"cues_blocked": 9,
+"asks": {
+"ease": 5,
+"hold": 5
+},
+"cue_log": [
+{
+"race_s": 67.8,
+"text": "Ease off a little. Settle into a steadier rhythm for the distance.",
+"ask": "ease",
+"pace_s500": 167
+},
+{
+"race_s": 366.8,
+"text": "Ease a touch. Settle near 166 and hold it steady.",
+"ask": "ease",
+"pace_s500": 166.5
+},
+{
+"race_s": 617.4,
+"text": "Speed is holding steady. Keep this rate and this effort.",
+"ask": "hold",
+"pace_s500": 158.2
+},
+{
+"race_s": 918.3,
+"text": "Speed is holding at this rate. Keep this effort, steady on pace.",
+"ask": "hold",
+"pace_s500": 167
+},
+{
+"race_s": 1218.3,
+"text": "Reserve is empty. Ease to about 167 pace and hold it steady.",
+"ask": "ease",
+"pace_s500": 167
+},
+{
+"race_s": 1819.9,
+"text": "Ease a touch. Reserve is empty, settle to about 2:43 per 500.",
+"ask": "ease",
+"pace_s500": 163
+},
+{
+"race_s": 2118.7,
+"text": "Speed is holding steady. Keep this rhythm, same rate, relaxed catch.",
+"ask": "hold",
+"pace_s500": 167.7
+},
+{
+"race_s": 2491.4,
+"text": "Speed is holding at this rate. Keep this effort to the line.",
+"ask": "hold",
+"pace_s500": 159.2
+},
+{
+"race_s": 2794.8,
+"text": "Reserve says empty, speed holds. Hold this pace to the line.",
+"ask": "hold",
+"pace_s500": 169.5
+},
+{
+"race_s": 3113.9,
+"text": "Ease a touch. Steady rhythm to the line, don't empty the tank.",
+"ask": "ease",
+"pace_s500": 166
+}
+],
+"alerts": {
+"reserve_conflict": 5
+},
+"consultations": 14,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 12,
+"wall_s": 89.43,
+"model_usage": {
+"calls": 40,
+"errors": 0,
+"input_tokens": 4831,
+"output_tokens": 15120,
+"cache_create_tokens": 26437,
+"cache_read_tokens": 143103,
+"latency_median_s": 1.9619118369998887,
+"latency_p90_s": 4.052728969999862
+},
+"model_usd_estimate": 0.0128
 },
 {
 "seed": 1020,
@@ -22556,6 +26463,214 @@
 },
 {
 "seed": 1021,
+"arm": "agent",
+"setting": {
+"periodic_s": 300.0,
+"model": "claude-opus-5-5"
+},
+"race_time_s": 3072.8312271377963,
+"blown_s": 0.0,
+"reserve_left": 0.5594894959826501,
+"reference_s": 3056.9397437918556,
+"cues_spoken": 11,
+"cues_followed": 7,
+"cues_blocked": 1,
+"asks": {
+"ease": 8,
+"rate_down": 1,
+"push": 2
+},
+"cue_log": [
+{
+"race_s": 65.6,
+"text": "Too hot. Settle into long race rhythm, ease off.",
+"ask": "ease",
+"pace_s500": 156
+},
+{
+"race_s": 361.5,
+"text": "Ease slightly, settle long and smooth, hold 1:52",
+"ask": "ease",
+"pace_s500": 152
+},
+{
+"race_s": 542.1,
+"text": "Ease slightly, settle long and smooth, hold 2:32",
+"ask": "ease",
+"pace_s500": 152
+},
+{
+"race_s": 722.3,
+"text": "Ease slightly, settle to 2:37 on display, long smooth strokes",
+"ask": "ease",
+"pace_s500": 157
+},
+{
+"race_s": 981.7,
+"text": "Ease slightly, settle long and smooth, hold 152",
+"ask": "ease",
+"pace_s500": 152
+},
+{
+"race_s": 1282.0,
+"text": "Ease slightly, settle at one fifty-seven, long smooth strokes",
+"ask": "ease",
+"pace_s500": 157
+},
+{
+"race_s": 1580.1,
+"text": "Ease slightly, settle into steady rhythm, hold 152",
+"ask": "ease",
+"pace_s500": 152.5
+},
+{
+"race_s": 1880.5,
+"text": "Ease a touch, settle and hold this rhythm",
+"ask": "ease",
+"pace_s500": 158.5
+},
+{
+"race_s": 2183.8,
+"text": "Lengthen out, drop rate slightly, keep the power on.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 2481.0,
+"text": "Lift a touch now, settle at 2:36, sprint later.",
+"ask": "push",
+"pace_s500": 156
+},
+{
+"race_s": 2781.3,
+"text": "One K left, lift the pressure, hold it there",
+"ask": "push",
+"pace_s500": 155
+}
+],
+"alerts": {
+"over_pace": 5
+},
+"consultations": 12,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 12,
+"wall_s": 93.33,
+"model_usage": {
+"calls": 26,
+"errors": 0,
+"input_tokens": 4022,
+"output_tokens": 7089,
+"cache_create_tokens": 10400,
+"cache_read_tokens": 82178,
+"latency_median_s": 3.50943994499994,
+"latency_p90_s": 4.237238684999966
+},
+"model_usd_estimate": 0.2263
+},
+{
+"seed": 1021,
+"arm": "agent_haiku",
+"setting": {
+"periodic_s": 300.0,
+"model": "claude-haiku-5-5"
+},
+"race_time_s": 3061.643909969992,
+"blown_s": 0.0,
+"reserve_left": 0.5249682727445754,
+"reference_s": 3056.9397437918556,
+"cues_spoken": 10,
+"cues_followed": 6,
+"cues_blocked": 7,
+"asks": {
+"ease": 9,
+"finish": 1
+},
+"cue_log": [
+{
+"race_s": 113.7,
+"text": "Ease a little. Settle to about 154 per 500, and hold it.",
+"ask": "ease",
+"pace_s500": 154
+},
+{
+"race_s": 360.5,
+"text": "Ease off a touch; settle near 153 on the display.",
+"ask": "ease",
+"pace_s500": 153
+},
+{
+"race_s": 664.9,
+"text": "Settle a touch. Ease to about 156 on the display, stay relaxed.",
+"ask": "ease",
+"pace_s500": 156
+},
+{
+"race_s": 971.9,
+"text": "Ease off now. Settle to about 155 pace. Reserve is draining fast.",
+"ask": "ease",
+"pace_s500": 155
+},
+{
+"race_s": 1498.7,
+"text": "Ease a touch. Hold steady so the reserve lasts to the line.",
+"ask": "ease",
+"pace_s500": 156.5
+},
+{
+"race_s": 1799.9,
+"text": "Ease off a little. Settle into a steady, relaxed rhythm now.",
+"ask": "ease",
+"pace_s500": 155
+},
+{
+"race_s": 2101.2,
+"text": "Ease a little. Settle to about one fifty seven, keep it smooth.",
+"ask": "ease",
+"pace_s500": 157.0
+},
+{
+"race_s": 2401.2,
+"text": "Ease a touch. Reserve is empty. Settle here, save for the sprint.",
+"ask": "ease",
+"pace_s500": 154.5
+},
+{
+"race_s": 2700.7,
+"text": "Reserve is empty. Ease off a touch, settle into a steady rhythm.",
+"ask": "ease",
+"pace_s500": 157.5
+},
+{
+"race_s": 2998.5,
+"text": "234 metres left. Empty the tank. Sprint through the line.",
+"ask": "finish",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 4,
+"reserve_runout": 1
+},
+"consultations": 14,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 12,
+"wall_s": 92.42,
+"model_usage": {
+"calls": 40,
+"errors": 0,
+"input_tokens": 4730,
+"output_tokens": 15931,
+"cache_create_tokens": 26354,
+"cache_read_tokens": 147421,
+"latency_median_s": 2.068402175000074,
+"latency_p90_s": 5.058540385000015
+},
+"model_usd_estimate": 0.0132
+},
+{
+"seed": 1021,
 "arm": "agent_stand_in",
 "setting": {
 "periodic_s": 300.0,
@@ -23673,6 +27788,196 @@
 },
 {
 "seed": 1022,
+"arm": "agent",
+"setting": {
+"periodic_s": 300.0,
+"model": "claude-opus-5-5"
+},
+"race_time_s": 2509.030856328299,
+"blown_s": 134.3640503209761,
+"reserve_left": 0.02966476175326975,
+"reference_s": 2457.6174613715416,
+"cues_spoken": 8,
+"cues_followed": 7,
+"cues_blocked": 2,
+"asks": {
+"ease": 6,
+"push": 2
+},
+"cue_log": [
+{
+"race_s": 63.2,
+"text": "Too hot. Settle into long race rhythm, ease off.",
+"ask": "ease",
+"pace_s500": 160
+},
+{
+"race_s": 416.9,
+"text": "Recovered well. Build smoothly to steady race pace, no surging.",
+"ask": "push",
+"pace_s500": 159
+},
+{
+"race_s": 591.7,
+"text": "Ease slightly, settle long and smooth, hold 152",
+"ask": "ease",
+"pace_s500": 152
+},
+{
+"race_s": 839.3,
+"text": "Ease off slightly, settle long and smooth",
+"ask": "ease",
+"pace_s500": 162
+},
+{
+"race_s": 1139.9,
+"text": "Ease slightly, settle long and smooth, hold 2:43",
+"ask": "ease",
+"pace_s500": 163
+},
+{
+"race_s": 1739.7,
+"text": "Lift a touch, settle at 1:59.5, long strokes",
+"ask": "push",
+"pace_s500": 159.5
+},
+{
+"race_s": 2041.5,
+"text": "Ease slightly, settle long and smooth, save for sprint",
+"ask": "ease",
+"pace_s500": 153
+},
+{
+"race_s": 2340.6,
+"text": "Ease a touch, long smooth strokes, save it for the sprint",
+"ask": "ease",
+"pace_s500": 153.5
+}
+],
+"alerts": {
+"over_pace": 3,
+"fading": 2
+},
+"consultations": 12,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 10,
+"wall_s": 88.44,
+"model_usage": {
+"calls": 24,
+"errors": 0,
+"input_tokens": 4006,
+"output_tokens": 7042,
+"cache_create_tokens": 9438,
+"cache_read_tokens": 76257,
+"latency_median_s": 3.48236934199997,
+"latency_p90_s": 5.421293483999989
+},
+"model_usd_estimate": 0.2193
+},
+{
+"seed": 1022,
+"arm": "agent_haiku",
+"setting": {
+"periodic_s": 300.0,
+"model": "claude-haiku-5-5"
+},
+"race_time_s": 2497.6230389950747,
+"blown_s": 0.0,
+"reserve_left": 0.07271203104164238,
+"reference_s": 2457.6174613715416,
+"cues_spoken": 10,
+"cues_followed": 9,
+"cues_blocked": 4,
+"asks": {
+"ease": 10
+},
+"cue_log": [
+{
+"race_s": 113.9,
+"text": "Ease a little. Settle at about 157 for the long haul.",
+"ask": "ease",
+"pace_s500": 157
+},
+{
+"race_s": 435.2,
+"text": "Reserve is empty. Ease off to about 157 pace, steady strokes.",
+"ask": "ease",
+"pace_s500": 157
+},
+{
+"race_s": 619.7,
+"text": "Ease a little. Settle to about two-thirds of this effort, relaxed.",
+"ask": "ease",
+"pace_s500": 157
+},
+{
+"race_s": 841.6,
+"text": "Ease off a little. Reserve runs out before the line. Settle smoother.",
+"ask": "ease",
+"pace_s500": 160
+},
+{
+"race_s": 1143.6,
+"text": "Ease a touch. Steady rhythm. Hold this pace to the line.",
+"ask": "ease",
+"pace_s500": 161
+},
+{
+"race_s": 1447.7,
+"text": "Ease a touch. Find a steady rhythm, save something for the sprint.",
+"ask": "ease",
+"pace_s500": 155
+},
+{
+"race_s": 1742.3,
+"text": "Ease a touch. Hold steady, keep some reserve for the finish.",
+"ask": "ease",
+"pace_s500": 159.5
+},
+{
+"race_s": 2042.4,
+"text": "Ease off a little, settle near 157 on the display.",
+"ask": "ease",
+"pace_s500": 157
+},
+{
+"race_s": 2343.9,
+"text": "Ease a touch; hold steady to the line, sprint last hundred metres.",
+"ask": "ease",
+"pace_s500": 153
+},
+{
+"race_s": 2404.7,
+"text": "Reserve's empty. Ease to 156, then sprint all-out the last 100 metres.",
+"ask": "ease",
+"pace_s500": 156
+}
+],
+"alerts": {
+"over_pace": 4,
+"fading": 1,
+"finish_sprint_ready": 1
+},
+"consultations": 13,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 10,
+"wall_s": 86.14,
+"model_usage": {
+"calls": 34,
+"errors": 0,
+"input_tokens": 4473,
+"output_tokens": 15572,
+"cache_create_tokens": 25088,
+"cache_read_tokens": 128426,
+"latency_median_s": 2.1091535699999895,
+"latency_p90_s": 4.7315689560000465
+},
+"model_usd_estimate": 0.0127
+},
+{
+"seed": 1022,
 "arm": "agent_stand_in",
 "setting": {
 "periodic_s": 300.0,
@@ -24758,6 +29063,218 @@
 "cue_log": [],
 "alerts": {},
 "wall_s": 1.66
+},
+{
+"seed": 1023,
+"arm": "agent",
+"setting": {
+"periodic_s": 300.0,
+"model": "claude-opus-5-5"
+},
+"race_time_s": 2669.321203129285,
+"blown_s": 196.32157554574954,
+"reserve_left": 0.13716505977414628,
+"reference_s": 2585.0231404309916,
+"cues_spoken": 10,
+"cues_followed": 3,
+"cues_blocked": 2,
+"asks": {
+"ease": 5,
+"rate_down": 3,
+"push": 1,
+"finish": 1
+},
+"cue_log": [
+{
+"race_s": 64.6,
+"text": "Settle a touch, long race. Hold 2:55 on display.",
+"ask": "ease",
+"pace_s500": 175
+},
+{
+"race_s": 416.0,
+"text": "Ease off now, settle long and smooth, reserve nearly empty",
+"ask": "ease",
+"pace_s500": 171
+},
+{
+"race_s": 714.2,
+"text": "Ease slightly, settle and breathe, hold 2:36",
+"ask": "ease",
+"pace_s500": 156
+},
+{
+"race_s": 863.4,
+"text": "Ease slightly, settle at steady power, long smooth strokes",
+"ask": "ease",
+"pace_s500": 177
+},
+{
+"race_s": 1171.5,
+"text": "Reserve empty. Ease a touch, settle at 177.",
+"ask": "ease",
+"pace_s500": 177
+},
+{
+"race_s": 1287.9,
+"text": "Lengthen out, drop the rate a touch, same power.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 1469.5,
+"text": "Drop the rate a touch, longer stroke, stay smooth.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 2072.7,
+"text": "Lift a touch now, steady to the sprint",
+"ask": "push",
+"pace_s500": 174
+},
+{
+"race_s": 2324.0,
+"text": "Drop the rate a touch, longer stronger strokes",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 2610.9,
+"text": "Last 150 metres, sprint to the line now!",
+"ask": "finish",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 2,
+"fading": 5
+},
+"consultations": 13,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 12,
+"wall_s": 111.25,
+"model_usage": {
+"calls": 29,
+"errors": 0,
+"input_tokens": 4369,
+"output_tokens": 8539,
+"cache_create_tokens": 14418,
+"cache_read_tokens": 93534,
+"latency_median_s": 3.587746874000004,
+"latency_p90_s": 5.90083193199996
+},
+"model_usd_estimate": 0.2791
+},
+{
+"seed": 1023,
+"arm": "agent_haiku",
+"setting": {
+"periodic_s": 300.0,
+"model": "claude-haiku-5-5"
+},
+"race_time_s": 2663.3016685870193,
+"blown_s": 152.5088368090891,
+"reserve_left": 0.080838132676686,
+"reference_s": 2585.0231404309916,
+"cues_spoken": 11,
+"cues_followed": 4,
+"cues_blocked": 5,
+"asks": {
+"ease": 5,
+"hold": 3,
+"push": 3
+},
+"cue_log": [
+{
+"race_s": 115.7,
+"text": "Ease off a little. Settle into a relaxed, controlled rhythm now.",
+"ask": "ease",
+"pace_s500": 170
+},
+{
+"race_s": 420.0,
+"text": "Ease a little now; reserve is draining fast. Settle, relaxed, steady stroke.",
+"ask": "ease",
+"pace_s500": 167
+},
+{
+"race_s": 591.7,
+"text": "Hold this effort. Speed is steady at this rate. Keep it smooth.",
+"ask": "hold",
+"pace_s500": 150.2
+},
+{
+"race_s": 893.2,
+"text": "Hold this effort and rate. Speed is steady; trust your legs.",
+"ask": "hold",
+"pace_s500": 171.6
+},
+{
+"race_s": 1005.8,
+"text": "Hold this rate. Speed is steady, trust it over the gauge.",
+"ask": "hold",
+"pace_s500": 171.3
+},
+{
+"race_s": 1303.5,
+"text": "Reserve nearly empty. Ease off a little, settle near one fifty-six.",
+"ask": "ease",
+"pace_s500": 156.2
+},
+{
+"race_s": 1607.2,
+"text": "Ease a touch, settle near 158 pace. Save reserve for the finish.",
+"ask": "ease",
+"pace_s500": 158
+},
+{
+"race_s": 1681.8,
+"text": "Ease a touch. Settle near 176 on the display and hold.",
+"ask": "ease",
+"pace_s500": 176
+},
+{
+"race_s": 1860.7,
+"text": "Settle in and build back gradually. You have reserve; push steadily.",
+"ask": "push",
+"pace_s500": 185
+},
+{
+"race_s": 2065.7,
+"text": "Reserve is good. Lift a little, settle into a stronger rhythm.",
+"ask": "push",
+"pace_s500": 176
+},
+{
+"race_s": 2366.8,
+"text": "Reserve is good. Lift a little, settle at this new pace.",
+"ask": "push",
+"pace_s500": 158
+}
+],
+"alerts": {
+"over_pace": 1,
+"reserve_conflict": 2,
+"fading": 4
+},
+"consultations": 13,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 11,
+"wall_s": 87.7,
+"model_usage": {
+"calls": 39,
+"errors": 0,
+"input_tokens": 4461,
+"output_tokens": 14951,
+"cache_create_tokens": 26854,
+"cache_read_tokens": 153264,
+"latency_median_s": 1.5438159210000322,
+"latency_p90_s": 4.8726689600000554
+},
+"model_usd_estimate": 0.0128
 },
 {
 "seed": 1023,
@@ -25863,6 +30380,181 @@
 },
 {
 "seed": 1024,
+"arm": "agent",
+"setting": {
+"periodic_s": 300.0,
+"model": "claude-opus-5-5"
+},
+"race_time_s": 1916.1288915381574,
+"blown_s": 213.68736651436734,
+"reserve_left": 0.05370306950124908,
+"reference_s": 1873.6521031362017,
+"cues_spoken": 7,
+"cues_followed": 5,
+"cues_blocked": 2,
+"asks": {
+"ease": 2,
+"rate_down": 3,
+"push": 1,
+"finish": 1
+},
+"cue_log": [
+{
+"race_s": 64.5,
+"text": "Too hot. Settle into long, steady strokes now.",
+"ask": "ease",
+"pace_s500": 168
+},
+{
+"race_s": 414.2,
+"text": "Ease slightly, settle long and smooth, hold 149",
+"ask": "ease",
+"pace_s500": 149
+},
+{
+"race_s": 834.0,
+"text": "Settle, lengthen out, slightly lower rate. Recover, then build.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 1016.6,
+"text": "Drop the rate a touch, longer stronger strokes",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 1216.0,
+"text": "Lengthen out, drop the rate a touch, steady and strong.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 1512.1,
+"text": "Lift a touch now, long strong strokes into the wind",
+"ask": "push",
+"pace_s500": 169
+},
+{
+"race_s": 1825.9,
+"text": "Three hundred to go, sprint now, empty the tank!",
+"ask": "finish",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 1,
+"fading": 4
+},
+"consultations": 10,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 9,
+"wall_s": 89.79,
+"model_usage": {
+"calls": 23,
+"errors": 0,
+"input_tokens": 3299,
+"output_tokens": 7019,
+"cache_create_tokens": 11666,
+"cache_read_tokens": 74873,
+"latency_median_s": 3.649026013000025,
+"latency_p90_s": 5.599013895999974
+},
+"model_usd_estimate": 0.2269
+},
+{
+"seed": 1024,
+"arm": "agent_haiku",
+"setting": {
+"periodic_s": 300.0,
+"model": "claude-haiku-5-5"
+},
+"race_time_s": 1922.8637306413666,
+"blown_s": 191.9228232839979,
+"reserve_left": 0.023225911313932573,
+"reference_s": 1873.6521031362017,
+"cues_spoken": 8,
+"cues_followed": 6,
+"cues_blocked": 13,
+"asks": {
+"ease": 5,
+"push": 3
+},
+"cue_log": [
+{
+"race_s": 65.4,
+"text": "Ease off a little. Settle to about one fifty-eight, stay relaxed.",
+"ask": "ease",
+"pace_s500": 158
+},
+{
+"race_s": 417.1,
+"text": "Ease off now, reserve is empty. Settle around two thirty-five per 500.",
+"ask": "ease",
+"pace_s500": 155
+},
+{
+"race_s": 536.5,
+"text": "Ease a touch. Reserve is empty. Settle into a sustainable rhythm now.",
+"ask": "ease",
+"pace_s500": 152
+},
+{
+"race_s": 683.7,
+"text": "Ease off now: reserve is empty. Settle to a steady, sustainable effort.",
+"ask": "ease",
+"pace_s500": 172
+},
+{
+"race_s": 831.9,
+"text": "Ease a touch. Reserve nearly gone. Settle here and hold.",
+"ask": "ease",
+"pace_s500": 172.5
+},
+{
+"race_s": 1014.5,
+"text": "Speed has faded at this rate. Lift power back up, drive steady.",
+"ask": "push",
+"pace_s500": 158
+},
+{
+"race_s": 1305.8,
+"text": "Power dropped out. Rate 61 is fine. Build back up steadily now.",
+"ask": "push",
+"pace_s500": 188
+},
+{
+"race_s": 1605.9,
+"text": "Reserve is back, you have room. Build gently to 170 pace now.",
+"ask": "push",
+"pace_s500": 170
+}
+],
+"alerts": {
+"over_pace": 2,
+"reserve_empty": 2,
+"fading": 3
+},
+"consultations": 11,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 10,
+"wall_s": 87.73,
+"model_usage": {
+"calls": 44,
+"errors": 0,
+"input_tokens": 3819,
+"output_tokens": 14797,
+"cache_create_tokens": 37070,
+"cache_read_tokens": 180041,
+"latency_median_s": 1.2891878279999673,
+"latency_p90_s": 4.48648133100005
+},
+"model_usd_estimate": 0.0142
+},
+{
+"seed": 1024,
 "arm": "agent_stand_in",
 "setting": {
 "periodic_s": 300.0,
@@ -26781,6 +31473,214 @@
 "cue_log": [],
 "alerts": {},
 "wall_s": 1.27
+},
+{
+"seed": 1025,
+"arm": "agent",
+"setting": {
+"periodic_s": 300.0,
+"model": "claude-opus-5-5"
+},
+"race_time_s": 2569.5681162076494,
+"blown_s": 178.59170608056516,
+"reserve_left": 0.11963351453165734,
+"reference_s": 2534.174461870617,
+"cues_spoken": 8,
+"cues_followed": 7,
+"cues_blocked": 1,
+"asks": {
+"ease": 5,
+"rate_down": 1,
+"push": 2
+},
+"cue_log": [
+{
+"race_s": 63.5,
+"text": "Too hot. Settle into long, relaxed strokes now.",
+"ask": "ease",
+"pace_s500": 161
+},
+{
+"race_s": 355.7,
+"text": "Ease off a touch, settle at one-forty... hold 2:41 pace",
+"ask": "ease",
+"pace_s500": 161
+},
+{
+"race_s": 565.1,
+"text": "Ease slightly, settle long and smooth, hold this",
+"ask": "ease",
+"pace_s500": 158.5
+},
+{
+"race_s": 746.4,
+"text": "Settle a touch, long smooth strokes, hold 2:42",
+"ask": "ease",
+"pace_s500": 162
+},
+{
+"race_s": 1232.2,
+"text": "Settle a touch, smooth and long. Hold 159.",
+"ask": "ease",
+"pace_s500": 159
+},
+{
+"race_s": 1403.0,
+"text": "Lengthen out, drop the rate two, settle and recover.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 1705.7,
+"text": "Reserve's back. Lift a little, hold it to the finish.",
+"ask": "push",
+"pace_s500": 157
+},
+{
+"race_s": 2300.8,
+"text": "Plenty left in the tank. Lift the pace now.",
+"ask": "push",
+"pace_s500": 155
+}
+],
+"alerts": {
+"over_pace": 4,
+"reserve_conflict": 1,
+"fading": 2
+},
+"consultations": 12,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 9,
+"wall_s": 84.97,
+"model_usage": {
+"calls": 23,
+"errors": 0,
+"input_tokens": 4175,
+"output_tokens": 6473,
+"cache_create_tokens": 8418,
+"cache_read_tokens": 73111,
+"latency_median_s": 3.6164046139999755,
+"latency_p90_s": 4.823670031000006
+},
+"model_usd_estimate": 0.2029
+},
+{
+"seed": 1025,
+"arm": "agent_haiku",
+"setting": {
+"periodic_s": 300.0,
+"model": "claude-haiku-5-5"
+},
+"race_time_s": 2571.945697066918,
+"blown_s": 181.18208801757063,
+"reserve_left": 0.05998450830087784,
+"reference_s": 2534.174461870617,
+"cues_spoken": 12,
+"cues_followed": 10,
+"cues_blocked": 12,
+"asks": {
+"ease": 6,
+"hold": 2,
+"push": 3,
+"finish": 1
+},
+"cue_log": [
+{
+"race_s": 65.9,
+"text": "Ease off a little. Settle into a rhythm, around 155 pace.",
+"ask": "ease",
+"pace_s500": 155
+},
+{
+"race_s": 353.9,
+"text": "Ease off a little. Settle to about 2:40 per 500.",
+"ask": "ease",
+"pace_s500": 160.5
+},
+{
+"race_s": 562.3,
+"text": "Ease a little. Settle to about 2:40 per 500, and hold it.",
+"ask": "ease",
+"pace_s500": 160.5
+},
+{
+"race_s": 743.5,
+"text": "Ease off a touch. Settle near 2:41 per 500 and hold.",
+"ask": "ease",
+"pace_s500": 161
+},
+{
+"race_s": 923.2,
+"text": "Hold this rhythm. Speed is steady at this rate. Keep it smooth.",
+"ask": "hold",
+"pace_s500": 160
+},
+{
+"race_s": 1225.2,
+"text": "Hold this steady. Pace one-sixty. No surges, keep the rate at sixty-five.",
+"ask": "hold",
+"pace_s500": 160
+},
+{
+"race_s": 1523.3,
+"text": "Reserve's empty. Ease a touch, settle, hold to the finish.",
+"ask": "ease",
+"pace_s500": 162.0
+},
+{
+"race_s": 1600.7,
+"text": "Speed is fading at same rate. Ease slightly, find a steady rhythm.",
+"ask": "ease",
+"pace_s500": 174
+},
+{
+"race_s": 1939.7,
+"text": "Reserve is healthy. Lift a little, settle at 162 pace, hold it.",
+"ask": "push",
+"pace_s500": 162
+},
+{
+"race_s": 2153.3,
+"text": "Power has dropped. Bring it back up, aim for 160 and hold.",
+"ask": "push",
+"pace_s500": 160
+},
+{
+"race_s": 2449.0,
+"text": "Reserve is good for the finish. Push a little, aim 154 pace.",
+"ask": "push",
+"pace_s500": 154
+},
+{
+"race_s": 2535.3,
+"text": "Final sprint now. Reserve is there. Drive hard to the line.",
+"ask": "finish",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 4,
+"reserve_conflict": 1,
+"speed_fade_real": 3,
+"fading": 2
+},
+"consultations": 15,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 15,
+"wall_s": 95.23,
+"model_usage": {
+"calls": 47,
+"errors": 0,
+"input_tokens": 5241,
+"output_tokens": 15548,
+"cache_create_tokens": 43697,
+"cache_read_tokens": 175715,
+"latency_median_s": 1.5792167619999873,
+"latency_p90_s": 4.115824777999933
+},
+"model_usd_estimate": 0.0155
 },
 {
 "seed": 1025,
@@ -27891,6 +32791,267 @@
 "cue_log": [],
 "alerts": {},
 "wall_s": 1.77
+},
+{
+"seed": 1026,
+"arm": "agent",
+"setting": {
+"periodic_s": 300.0,
+"model": "claude-opus-5-5"
+},
+"race_time_s": 3261.13957513603,
+"blown_s": 121.52488953026213,
+"reserve_left": 0.5272989867485616,
+"reference_s": 3227.0358418398546,
+"cues_spoken": 14,
+"cues_followed": 10,
+"cues_blocked": 1,
+"asks": {
+"ease": 10,
+"rate_down": 3,
+"hold": 1
+},
+"cue_log": [
+{
+"race_s": 63.6,
+"text": "Settle down now, long race. Ease to steady rhythm.",
+"ask": "ease",
+"pace_s500": 181
+},
+{
+"race_s": 413.6,
+"text": "Ease slightly, settle long race rhythm, hold 150 display.",
+"ask": "ease",
+"pace_s500": 150
+},
+{
+"race_s": 514.5,
+"text": "Lengthen out, drop the rate a touch, recover",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 601.2,
+"text": "Ease slightly, settle long and smooth, hold 151 pace.",
+"ask": "ease",
+"pace_s500": 151
+},
+{
+"race_s": 857.0,
+"text": "Settle a touch, long strokes, hold 3:00 on display",
+"ask": "ease",
+"pace_s500": 180
+},
+{
+"race_s": 1023.0,
+"text": "Drop the rate slightly, longer stroke, keep the power on",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 1088.0,
+"text": "Ease a touch, long smooth strokes, settle at 151.",
+"ask": "ease",
+"pace_s500": 151
+},
+{
+"race_s": 1386.6,
+"text": "Ease slightly, settle at one-eighty, long smooth strokes.",
+"ask": "ease",
+"pace_s500": 180
+},
+{
+"race_s": 1689.2,
+"text": "Tailwind now. Hold this effort, don't chase the faster number.",
+"ask": "hold",
+"pace_s500": 156
+},
+{
+"race_s": 1870.5,
+"text": "Drop the rate a touch, longer stroke, same effort",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 2169.3,
+"text": "Reserve empty. Ease slightly, settle and hold this pace.",
+"ask": "ease",
+"pace_s500": 178
+},
+{
+"race_s": 2470.5,
+"text": "Ease slightly, settle long and smooth, hold 151",
+"ask": "ease",
+"pace_s500": 151
+},
+{
+"race_s": 2770.2,
+"text": "Reserve's empty. Ease slightly, settle and save the sprint.",
+"ask": "ease",
+"pace_s500": 179
+},
+{
+"race_s": 3026.2,
+"text": "Settle slightly, longer stroke, hold 2:31, sprint comes soon",
+"ask": "ease",
+"pace_s500": 151
+}
+],
+"alerts": {
+"over_pace": 4,
+"fading": 4
+},
+"consultations": 15,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 15,
+"wall_s": 122.8,
+"model_usage": {
+"calls": 34,
+"errors": 0,
+"input_tokens": 5167,
+"output_tokens": 10116,
+"cache_create_tokens": 15936,
+"cache_read_tokens": 110147,
+"latency_median_s": 3.578479254000058,
+"latency_p90_s": 4.331952893999983
+},
+"model_usd_estimate": 0.3247
+},
+{
+"seed": 1026,
+"arm": "agent_haiku",
+"setting": {
+"periodic_s": 300.0,
+"model": "claude-haiku-5-5"
+},
+"race_time_s": 3271.754061398034,
+"blown_s": 121.65605335895168,
+"reserve_left": 0.45676029118715833,
+"reference_s": 3227.0358418398546,
+"cues_spoken": 15,
+"cues_followed": 11,
+"cues_blocked": 5,
+"asks": {
+"ease": 6,
+"hold": 5,
+"rate_down": 2,
+"push": 1,
+"finish": 1
+},
+"cue_log": [
+{
+"race_s": 70.7,
+"text": "Ease off now. Settle to about one eight one per 500.",
+"ask": "ease",
+"pace_s500": 181
+},
+{
+"race_s": 416.3,
+"text": "Speed is holding steady at this rate. Keep this effort, 145 pace.",
+"ask": "hold",
+"pace_s500": 145
+},
+{
+"race_s": 505.0,
+"text": "Drop two strokes a minute. Settle into a long, smooth, relaxed rhythm.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 598.0,
+"text": "Ease off a little. Settle to 151 on the display and hold.",
+"ask": "ease",
+"pace_s500": 151
+},
+{
+"race_s": 855.3,
+"text": "Ease a little. Settle into a slightly slower, relaxed rhythm.",
+"ask": "ease",
+"pace_s500": 180
+},
+{
+"race_s": 1037.9,
+"text": "Settle back up. Smooth, steady strokes, about 2:38 per 500.",
+"ask": "push",
+"pace_s500": 158
+},
+{
+"race_s": 1214.8,
+"text": "Drop to 68 strokes a minute, keep the power smooth and long.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 1516.9,
+"text": "Ease a touch. Settle to about 176 on the display, relaxed catch.",
+"ask": "ease",
+"pace_s500": 176
+},
+{
+"race_s": 1814.5,
+"text": "Ease a little. Settle near 152 pace; save reserve for the finish.",
+"ask": "ease",
+"pace_s500": 152
+},
+{
+"race_s": 2115.2,
+"text": "Reserve is empty. Ease a little, settle near 178 on the display.",
+"ask": "ease",
+"pace_s500": 178
+},
+{
+"race_s": 2333.9,
+"text": "Hold this rhythm steady. Stay smooth, save a sprint for the end.",
+"ask": "hold",
+"pace_s500": 174.5
+},
+{
+"race_s": 2631.5,
+"text": "Hold this effort. Stay at 69, steady strokes, speed is holding.",
+"ask": "hold",
+"pace_s500": 157
+},
+{
+"race_s": 2928.1,
+"text": "Settle here. Hold this effort, long smooth strokes. Sprint last 200.",
+"ask": "hold",
+"pace_s500": 179
+},
+{
+"race_s": 3149.6,
+"text": "Hold this rhythm. About 440 metres left. Sprint with 200 to go.",
+"ask": "hold",
+"pace_s500": 151
+},
+{
+"race_s": 3218.5,
+"text": "Sprint now. Everything you have left, all the way to the line.",
+"ask": "finish",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 3,
+"fading": 6,
+"finish_sprint_reminder": 1
+},
+"consultations": 16,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 16,
+"wall_s": 123.28,
+"model_usage": {
+"calls": 50,
+"errors": 0,
+"input_tokens": 5522,
+"output_tokens": 21625,
+"cache_create_tokens": 43155,
+"cache_read_tokens": 197410,
+"latency_median_s": 1.7640710260000105,
+"latency_p90_s": 5.0793034089999765
+},
+"model_usd_estimate": 0.0187
 },
 {
 "seed": 1026,
@@ -29178,6 +34339,305 @@
 },
 {
 "seed": 1027,
+"arm": "agent",
+"setting": {
+"periodic_s": 300.0,
+"model": "claude-opus-5-5"
+},
+"race_time_s": 3104.9600650939965,
+"blown_s": 0.0,
+"reserve_left": 0.7057932291870115,
+"reference_s": 3091.9119089118,
+"cues_spoken": 18,
+"cues_followed": 13,
+"cues_blocked": 12,
+"asks": {
+"ease": 17,
+"finish": 1
+},
+"cue_log": [
+{
+"race_s": 63.9,
+"text": "Too hot. Settle into long race rhythm now.",
+"ask": "ease",
+"pace_s500": 142
+},
+{
+"race_s": 135.0,
+"text": "Ease off a touch, settle into long smooth strokes.",
+"ask": "ease",
+"pace_s500": 141
+},
+{
+"race_s": 320.0,
+"text": "Ease off a touch, settle long and smooth",
+"ask": "ease",
+"pace_s500": 173
+},
+{
+"race_s": 521.9,
+"text": "Ease slightly, settle long and smooth, save the tank",
+"ask": "ease",
+"pace_s500": 174
+},
+{
+"race_s": 658.5,
+"text": "Ease off slightly, settle and hold 142 on display.",
+"ask": "ease",
+"pace_s500": 142
+},
+{
+"race_s": 750.5,
+"text": "Ease slightly, settle here, long smooth strokes",
+"ask": "ease",
+"pace_s500": 142
+},
+{
+"race_s": 824.2,
+"text": "Ease slightly, settle and hold this rhythm",
+"ask": "ease",
+"pace_s500": 142
+},
+{
+"race_s": 939.8,
+"text": "Ease off now, settle smooth, save energy for later",
+"ask": "ease",
+"pace_s500": 172
+},
+{
+"race_s": 1006.9,
+"text": "Ease slightly, settle long and smooth into the headwind",
+"ask": "ease",
+"pace_s500": 172
+},
+{
+"race_s": 1210.8,
+"text": "Reserve empty. Ease slightly, settle at one seventy-three.",
+"ask": "ease",
+"pace_s500": 173
+},
+{
+"race_s": 1389.3,
+"text": "Ease slightly, settle just under threshold, long smooth strokes",
+"ask": "ease",
+"pace_s500": 143
+},
+{
+"race_s": 1583.3,
+"text": "Ease slightly, settle long and smooth, protect the tank",
+"ask": "ease",
+"pace_s500": 173
+},
+{
+"race_s": 1911.7,
+"text": "Ease slightly now, smooth and long, settle here",
+"ask": "ease",
+"pace_s500": 142
+},
+{
+"race_s": 2205.8,
+"text": "Ease slightly, settle to steady pace, save the finish.",
+"ask": "ease",
+"pace_s500": 173
+},
+{
+"race_s": 2349.6,
+"text": "Ease a touch, settle long and smooth, hold 172",
+"ask": "ease",
+"pace_s500": 172
+},
+{
+"race_s": 2537.3,
+"text": "Ease slightly now, settle and hold 142 on display",
+"ask": "ease",
+"pace_s500": 142
+},
+{
+"race_s": 2821.5,
+"text": "Settle to steady effort now, save the kick for 300 out",
+"ask": "ease",
+"pace_s500": 172
+},
+{
+"race_s": 3014.8,
+"text": "Under 300 to go \u2014 empty the tank, sprint home!",
+"ask": "finish",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 5,
+"over_cp_retry": 14,
+"still_over_cp_low_reserve": 10,
+"reserve_conflict": 1
+},
+"consultations": 31,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 29,
+"wall_s": 266.57,
+"model_usage": {
+"calls": 68,
+"errors": 0,
+"input_tokens": 11701,
+"output_tokens": 21631,
+"cache_create_tokens": 28871,
+"cache_read_tokens": 217331,
+"latency_median_s": 3.51994622299992,
+"latency_p90_s": 5.545512244999941
+},
+"model_usd_estimate": 0.6672
+},
+{
+"seed": 1027,
+"arm": "agent_haiku",
+"setting": {
+"periodic_s": 300.0,
+"model": "claude-haiku-5-5"
+},
+"race_time_s": 3111.2990004178196,
+"blown_s": 0.0,
+"reserve_left": 0.5258188097743716,
+"reference_s": 3091.9119089118,
+"cues_spoken": 18,
+"cues_followed": 13,
+"cues_blocked": 11,
+"asks": {
+"ease": 18
+},
+"cue_log": [
+{
+"race_s": 113.2,
+"text": "Ease off a little. Settle around 141 on the display.",
+"ask": "ease",
+"pace_s500": 141
+},
+{
+"race_s": 328.5,
+"text": "Ease off a little. Settle into a steadier, relaxed rhythm now.",
+"ask": "ease",
+"pace_s500": 172.4
+},
+{
+"race_s": 448.8,
+"text": "Ease a little now. Settle into a relaxed, steady stroke.",
+"ask": "ease",
+"pace_s500": 172.5
+},
+{
+"race_s": 510.3,
+"text": "Ease a touch, settle near 173 on the display. Save the reserve.",
+"ask": "ease",
+"pace_s500": 173
+},
+{
+"race_s": 596.7,
+"text": "Ease a little. Settle into a steadier, controlled stroke for now.",
+"ask": "ease",
+"pace_s500": 173
+},
+{
+"race_s": 763.1,
+"text": "Ease a little. Settle into a relaxed, longer stroke. Hold the rhythm.",
+"ask": "ease",
+"pace_s500": 144
+},
+{
+"race_s": 956.1,
+"text": "Ease off now. Reserve runs out before the line. Settle steady.",
+"ask": "ease",
+"pace_s500": 172
+},
+{
+"race_s": 1206.9,
+"text": "Ease a little now. Settle into a relaxed rhythm, keep it long.",
+"ask": "ease",
+"pace_s500": 175
+},
+{
+"race_s": 1446.9,
+"text": "Ease off a little. Settle into a steady rhythm, relax your shoulders.",
+"ask": "ease",
+"pace_s500": 146
+},
+{
+"race_s": 1596.2,
+"text": "Ease off now. Settle to about 171 on the display.",
+"ask": "ease",
+"pace_s500": 171
+},
+{
+"race_s": 1767.6,
+"text": "Ease a little now. Reserve runs out before the finish.",
+"ask": "ease",
+"pace_s500": 172
+},
+{
+"race_s": 1928.4,
+"text": "Ease a touch now. Reserve runs out before the finish line.",
+"ask": "ease",
+"pace_s500": 144
+},
+{
+"race_s": 2064.5,
+"text": "Ease a touch now. Steady rhythm to the line.",
+"ask": "ease",
+"pace_s500": 143
+},
+{
+"race_s": 2236.6,
+"text": "Ease a touch. Settle around one seventy-one on the display.",
+"ask": "ease",
+"pace_s500": 171
+},
+{
+"race_s": 2356.7,
+"text": "Ease off a touch; target 171 on display. Reserve must last.",
+"ask": "ease",
+"pace_s500": 171
+},
+{
+"race_s": 2553.7,
+"text": "Ease off now, relax the stroke. You have enough to finish.",
+"ask": "ease",
+"pace_s500": 144
+},
+{
+"race_s": 2788.4,
+"text": "Ease a little. Settle near 148 on the display. Hold to finish.",
+"ask": "ease",
+"pace_s500": 148
+},
+{
+"race_s": 2907.2,
+"text": "Ease a little now. Steady rhythm for the last 600 metres.",
+"ask": "ease",
+"pace_s500": 167
+}
+],
+"alerts": {
+"over_pace": 5,
+"reserve_check": 17
+},
+"consultations": 20,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 19,
+"wall_s": 116.54,
+"model_usage": {
+"calls": 54,
+"errors": 0,
+"input_tokens": 7714,
+"output_tokens": 19762,
+"cache_create_tokens": 33311,
+"cache_read_tokens": 188809,
+"latency_median_s": 1.4276224709999497,
+"latency_p90_s": 4.318102211999985
+},
+"model_usd_estimate": 0.0167
+},
+{
+"seed": 1027,
 "arm": "agent_stand_in",
 "setting": {
 "periodic_s": 300.0,
@@ -30332,6 +35792,157 @@
 },
 {
 "seed": 1028,
+"arm": "agent",
+"setting": {
+"periodic_s": 300.0,
+"model": "claude-opus-5-5"
+},
+"race_time_s": 1932.8182633668366,
+"blown_s": 0.0,
+"reserve_left": 0.23088746155521234,
+"reference_s": 1932.4953434877552,
+"cues_spoken": 4,
+"cues_followed": 2,
+"cues_blocked": 2,
+"asks": {
+"ease": 2,
+"hold": 1,
+"finish": 1
+},
+"cue_log": [
+{
+"race_s": 64.2,
+"text": "Settle in, ease off, long race ahead",
+"ask": "ease",
+"pace_s500": 174
+},
+{
+"race_s": 414.9,
+"text": "Ease off a little, settle long and smooth",
+"ask": "ease",
+"pace_s500": 159
+},
+{
+"race_s": 1824.3,
+"text": "Strong and steady, hold this; sprint call coming soon.",
+"ask": "hold",
+"pace_s500": 151.6
+},
+{
+"race_s": 1886.3,
+"text": "Go now! Sprint to the line, everything left!",
+"ask": "finish",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 1,
+"reserve_conflict": 1,
+"sprint_200": 1,
+"sprint_retry": 1
+},
+"consultations": 10,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 6,
+"wall_s": 88.63,
+"model_usage": {
+"calls": 22,
+"errors": 0,
+"input_tokens": 3331,
+"output_tokens": 6727,
+"cache_create_tokens": 9922,
+"cache_read_tokens": 70272,
+"latency_median_s": 3.7435864319999155,
+"latency_p90_s": 5.321912787999963
+},
+"model_usd_estimate": 0.2115
+},
+{
+"seed": 1028,
+"arm": "agent_haiku",
+"setting": {
+"periodic_s": 300.0,
+"model": "claude-haiku-5-5"
+},
+"race_time_s": 1953.349309116576,
+"blown_s": 69.24773663265906,
+"reserve_left": 0.09343811350143362,
+"reference_s": 1932.4953434877552,
+"cues_spoken": 7,
+"cues_followed": 5,
+"cues_blocked": 6,
+"asks": {
+"ease": 3,
+"hold": 4
+},
+"cue_log": [
+{
+"race_s": 65.9,
+"text": "Ease a touch. Settle to about 166 on the display. Stay smooth.",
+"ask": "ease",
+"pace_s500": 166
+},
+{
+"race_s": 413.2,
+"text": "Ease off now. Reserve is nearly gone. Settle to steady, controlled strokes.",
+"ask": "ease",
+"pace_s500": 161
+},
+{
+"race_s": 715.6,
+"text": "Hold this effort. Speed is steady, so keep the rate at 64.",
+"ask": "hold",
+"pace_s500": 167.5
+},
+{
+"race_s": 829.3,
+"text": "Hold this effort, steady. Speed is holding at this rate. Stay smooth.",
+"ask": "hold",
+"pace_s500": 168
+},
+{
+"race_s": 1130.9,
+"text": "Holding well. Speed steady, no fade. Keep this effort to the line.",
+"ask": "hold",
+"pace_s500": 152.7
+},
+{
+"race_s": 1192.1,
+"text": "Speed holding at this rate. Keep this effort steady to the finish.",
+"ask": "hold",
+"pace_s500": 153.8
+},
+{
+"race_s": 1791.7,
+"text": "Reserve empty. Ease a touch, settle near 166, sprint at line.",
+"ask": "ease",
+"pace_s500": 166
+}
+],
+"alerts": {
+"over_pace": 1,
+"reserve_conflict": 2
+},
+"consultations": 9,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 8,
+"wall_s": 59.0,
+"model_usage": {
+"calls": 31,
+"errors": 0,
+"input_tokens": 3089,
+"output_tokens": 10302,
+"cache_create_tokens": 18437,
+"cache_read_tokens": 115684,
+"latency_median_s": 1.3295314080000935,
+"latency_p90_s": 3.1311109010000564
+},
+"model_usd_estimate": 0.0089
+},
+{
+"seed": 1028,
 "arm": "agent_stand_in",
 "setting": {
 "periodic_s": 300.0,
@@ -31225,6 +36836,265 @@
 "cue_log": [],
 "alerts": {},
 "wall_s": 1.22
+},
+{
+"seed": 1029,
+"arm": "agent",
+"setting": {
+"periodic_s": 300.0,
+"model": "claude-opus-5-5"
+},
+"race_time_s": 3478.1487662737545,
+"blown_s": 149.8794612123293,
+"reserve_left": 0.061938398779491824,
+"reference_s": 3394.4019357399334,
+"cues_spoken": 14,
+"cues_followed": 7,
+"cues_blocked": 1,
+"asks": {
+"ease": 12,
+"rate_down": 1,
+"push": 1
+},
+"cue_log": [
+{
+"race_s": 64.6,
+"text": "Settle now, long smooth strokes, ease off the start pace",
+"ask": "ease",
+"pace_s500": 168
+},
+{
+"race_s": 416.1,
+"text": "Ease off a touch, settle long and smooth",
+"ask": "ease",
+"pace_s500": 182
+},
+{
+"race_s": 695.3,
+"text": "Drop the rate a touch, long strong strokes, breathe.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 788.0,
+"text": "Ease off a touch, settle long and smooth",
+"ask": "ease",
+"pace_s500": 195
+},
+{
+"race_s": 918.7,
+"text": "Settle in steady, no surges, hold this exact effort",
+"ask": "push",
+"pace_s500": 165
+},
+{
+"race_s": 1179.2,
+"text": "Ease slightly, settle and lengthen, hold 166 on display",
+"ask": "ease",
+"pace_s500": 166
+},
+{
+"race_s": 1478.1,
+"text": "Ease off a touch, long smooth strokes, settle here",
+"ask": "ease",
+"pace_s500": 188
+},
+{
+"race_s": 1575.0,
+"text": "Ease slightly, longer stroke, settle at one-eighty-eight",
+"ask": "ease",
+"pace_s500": 188
+},
+{
+"race_s": 1873.1,
+"text": "Ease slightly, settle and breathe, hold 1:48 steady",
+"ask": "ease",
+"pace_s500": 168
+},
+{
+"race_s": 2173.5,
+"text": "Ease slightly, settle at 178, long smooth strokes",
+"ask": "ease",
+"pace_s500": 178
+},
+{
+"race_s": 2474.8,
+"text": "Reserve empty. Ease off, settle and hold this pace.",
+"ask": "ease",
+"pace_s500": 186
+},
+{
+"race_s": 2773.6,
+"text": "Settle a touch, long strong strokes, save the sprint",
+"ask": "ease",
+"pace_s500": 169
+},
+{
+"race_s": 2909.6,
+"text": "Reserve empty. Ease a touch, settle and stay smooth.",
+"ask": "ease",
+"pace_s500": 169
+},
+{
+"race_s": 3212.2,
+"text": "Settle a touch, long strokes, save it for the sprint",
+"ask": "ease",
+"pace_s500": 182
+}
+],
+"alerts": {
+"over_pace": 3,
+"fading": 5
+},
+"consultations": 16,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 15,
+"wall_s": 135.71,
+"model_usage": {
+"calls": 33,
+"errors": 0,
+"input_tokens": 5477,
+"output_tokens": 10538,
+"cache_create_tokens": 13583,
+"cache_read_tokens": 103845,
+"latency_median_s": 3.7537377910000487,
+"latency_p90_s": 5.20763392799995
+},
+"model_usd_estimate": 0.3214
+},
+{
+"seed": 1029,
+"arm": "agent_haiku",
+"setting": {
+"periodic_s": 300.0,
+"model": "claude-haiku-5-5"
+},
+"race_time_s": 3480.3639045680175,
+"blown_s": 112.49792563360712,
+"reserve_left": 0.14466830002499073,
+"reference_s": 3394.4019357399334,
+"cues_spoken": 15,
+"cues_followed": 7,
+"cues_blocked": 9,
+"asks": {
+"ease": 13,
+"hold": 1,
+"rate_down": 1
+},
+"cue_log": [
+{
+"race_s": 65.5,
+"text": "Ease off now; settle to about 176 on the display.",
+"ask": "ease",
+"pace_s500": 176
+},
+{
+"race_s": 415.2,
+"text": "Reserve is empty. Settle here, steady strokes, hold 177 pace.",
+"ask": "hold",
+"pace_s500": 177
+},
+{
+"race_s": 602.9,
+"text": "Ease off to about 190 pace. Settle in, keep a smooth rhythm.",
+"ask": "ease",
+"pace_s500": 190
+},
+{
+"race_s": 721.2,
+"text": "Ease a little. Settle into a steady rhythm, save reserve for later.",
+"ask": "ease",
+"pace_s500": 183
+},
+{
+"race_s": 965.9,
+"text": "Drop rate about two, to 60. Smooth, steady strokes, no digging.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 1181.4,
+"text": "Ease a little. Settle near 168 on the display.",
+"ask": "ease",
+"pace_s500": 168
+},
+{
+"race_s": 1481.9,
+"text": "Ease a touch now. Settle smooth, keep rate steady, no surges.",
+"ask": "ease",
+"pace_s500": 184
+},
+{
+"race_s": 1542.3,
+"text": "Reserve is empty. Ease off a little; settle near 3:07 per 500.",
+"ask": "ease",
+"pace_s500": 187
+},
+{
+"race_s": 1840.6,
+"text": "Reserve is empty. Ease off a little now, settle near 168 pace.",
+"ask": "ease",
+"pace_s500": 168
+},
+{
+"race_s": 1939.2,
+"text": "Reserve is empty. Ease down to about 3:57 pace and settle there.",
+"ask": "ease",
+"pace_s500": 177
+},
+{
+"race_s": 2243.7,
+"text": "Reserve is empty. Ease to steady, hold this pace to the line.",
+"ask": "ease",
+"pace_s500": 187
+},
+{
+"race_s": 2534.9,
+"text": "Reserve's empty. Ease a touch, settle to about 1:86 per 500.",
+"ask": "ease",
+"pace_s500": 186
+},
+{
+"race_s": 2835.8,
+"text": "Reserve is empty. Ease off a little, settle near 176 pace.",
+"ask": "ease",
+"pace_s500": 176
+},
+{
+"race_s": 3140.5,
+"text": "Ease a touch, hold steady rhythm, sprint in the last 100.",
+"ask": "ease",
+"pace_s500": 182
+},
+{
+"race_s": 3307.9,
+"text": "Ease a little; reserve is empty. Big sprint in the last 100.",
+"ask": "ease",
+"pace_s500": 186
+}
+],
+"alerts": {
+"over_pace": 3,
+"reserve_empty_fade": 2,
+"fading": 6
+},
+"consultations": 18,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 18,
+"wall_s": 126.83,
+"model_usage": {
+"calls": 49,
+"errors": 0,
+"input_tokens": 6313,
+"output_tokens": 22135,
+"cache_create_tokens": 32422,
+"cache_read_tokens": 172660,
+"latency_median_s": 1.5664339249999557,
+"latency_p90_s": 5.228890566000246
+},
+"model_usd_estimate": 0.0175
 },
 {
 "seed": 1029,
