@@ -544,6 +544,1347 @@
    "wander_tau_s": 60.0
   }
  },
+ "3000": {
+  "athlete": {
+   "cp_w": 97.16177043820946,
+   "source": "3- and 12-minute test on the twin",
+   "w_prime_j": 12588.000857152289
+  },
+  "athlete_shaft": {
+   "cp_w": 144.79532112075984,
+   "source": "3- and 12-minute test on the twin, paddle-pod shaft power",
+   "w_prime_j": 19290.698853818416
+  },
+  "calibration": {
+   "best_180_w": 167.09510853349997,
+   "best_720_w": 114.6451049620321,
+   "cp_w": 97.16177043820946,
+   "true_boat_cp_at_best_w": 114.03628670547636,
+   "true_shaft_cp_w": 154.6460440463974,
+   "w_prime_j": 12588.000857152289
+  },
+  "even": 1.04560911655426,
+  "forecast": {
+   "convention": "stream + flows north (with the first leg); along_m is measured from the start line along the course",
+   "eddies": [
+    {
+     "along_m": 1178,
+     "length_m": 300,
+     "within_m_of_shore": 120
+    },
+    {
+     "along_m": 1344,
+     "length_m": 340,
+     "within_m_of_shore": 123
+    }
+   ],
+   "inshore": "the stream is weaker close to shore (roughly half strength within ~150 m)",
+   "inshore_profile": {
+    "scale_m": 166,
+    "share_at_shore": 0.25
+   },
+   "over_s": 2667,
+   "stream_at_start_mps": -0.12,
+   "stream_change_mps": -0.15
+  },
+  "reference": {
+   "effort": 1.0451426506042478,
+   "race_time_s": 2704.743254343335,
+   "reserve_left": 0.009659195667623651
+  },
+  "seed": 3000,
+  "setup": {
+   "craft": "oc1",
+   "current_mps": 0.0,
+   "distance_m": 8000.0,
+   "leg_m": 4000.0,
+   "plan": null,
+   "turn_s": 6.0,
+   "warmup_leg_m": 250.0,
+   "warmup_s": 300.0,
+   "water": {
+    "c0": -0.13849999280346437,
+    "c1": 0.15485342854536044,
+    "eddies": [
+     [
+      1188.9657979805133,
+      169.90059663277367,
+      123.40947575072842,
+      0.6709791056655416
+     ],
+     [
+      1944.4961185060747,
+      148.86176052823413,
+      117.17645100023995,
+      0.8795140484066206
+     ],
+     [
+      2830.013541650472,
+      150.85957692492892,
+      142.93588913224124,
+      0.6799690954050146
+     ]
+    ],
+    "inshore_floor": 0.25,
+    "inshore_scale_m": 150.0,
+    "trend_s": 2666.6666666666665
+   }
+  },
+  "traits": {
+   "adherence_s": 159.95837176498873,
+   "blowup_effort": 0.8050927956283004,
+   "body_bias": 0.9873177505502124,
+   "compliance": 0.6250378927911391,
+   "effort_step": 0.03583203314074359,
+   "habit_line_m": 278.0341775426202,
+   "habit_rate": 63,
+   "kick_effort": 1.2553327678465311,
+   "kick_m": 264.3302019843056,
+   "lateral_mps": 0.8,
+   "line_step_m": 100.0,
+   "max_kick_m": 1500.0,
+   "pace_gain": 0.5,
+   "paddler": {
+    "ama_load_fatigue_kg": 10.0,
+    "ama_load_kg": 5.0,
+    "ama_load_sd_kg": 1.0,
+    "body_kg": 78.0,
+    "consistency_fatigue_sd": 0.05,
+    "consistency_sd": 0.03,
+    "critical_power_w": 154.6460440463974,
+    "duty0": 0.55,
+    "eta_fatigue_loss": 0.1,
+    "eta_max": 0.7374018999882261,
+    "profile_peak_shift": 0.15,
+    "rate_jitter": 0.012,
+    "rate_opt_fresh": 65.28229256254905,
+    "rate_opt_shift": 4.146460278393758,
+    "rate_wander_spm": 0.6,
+    "rate_width": 14.974109319899489,
+    "side_asymmetry": 0.06,
+    "slow_cp_loss": 0.3,
+    "switch_every": [
+     10,
+     20
+    ],
+    "switch_stroke_factor": 0.85,
+    "w_prime_j": 18547.669590772377,
+    "wobble_power_loss": 0.008,
+    "work_capacity_j": 2640378.0632113107
+   },
+   "rate_fatigue_drop": 1.9885401873679966,
+   "rate_step": 2.0,
+   "recover_frac": 0.11473717916987385,
+   "response_s": 8.360137891218653,
+   "settle_frac": 0.974902208584086,
+   "start_effort": 1.272649978412717,
+   "start_s": 114.99611349983206,
+   "wander_sd": 0.025744208331865,
+   "wander_tau_s": 60.0
+  }
+ },
+ "3001": {
+  "athlete": {
+   "cp_w": 128.58672819553186,
+   "source": "3- and 12-minute test on the twin",
+   "w_prime_j": 11281.806216371919
+  },
+  "athlete_shaft": {
+   "cp_w": 182.99761781991648,
+   "source": "3- and 12-minute test on the twin, paddle-pod shaft power",
+   "w_prime_j": 19630.838676693456
+  },
+  "calibration": {
+   "best_180_w": 191.2634293975982,
+   "best_720_w": 144.25590349604843,
+   "cp_w": 128.58672819553186,
+   "true_boat_cp_at_best_w": 152.04469474889484,
+   "true_shaft_cp_w": 197.2513080608295,
+   "w_prime_j": 11281.806216371919
+  },
+  "even": 1.054217195510864,
+  "forecast": {
+   "convention": "stream + flows north (with the first leg); along_m is measured from the start line along the course",
+   "eddies": [
+    {
+     "along_m": 532,
+     "length_m": 300,
+     "within_m_of_shore": 120
+    },
+    {
+     "along_m": 1820,
+     "length_m": 413,
+     "within_m_of_shore": 149
+    },
+    {
+     "along_m": 2421,
+     "length_m": 438,
+     "within_m_of_shore": 95
+    }
+   ],
+   "inshore": "the stream is weaker close to shore (roughly half strength within ~150 m)",
+   "inshore_profile": {
+    "scale_m": 177,
+    "share_at_shore": 0.25
+   },
+   "over_s": 2000,
+   "stream_at_start_mps": -0.02,
+   "stream_change_mps": -0.43
+  },
+  "reference": {
+   "effort": 1.0554675102233884,
+   "race_time_s": 1784.2151354005427,
+   "reserve_left": 0.009484655826149203
+  },
+  "seed": 3001,
+  "setup": {
+   "craft": "oc1",
+   "current_mps": 0.0,
+   "distance_m": 6000.0,
+   "leg_m": 3000.0,
+   "plan": null,
+   "turn_s": 6.0,
+   "warmup_leg_m": 250.0,
+   "warmup_s": 300.0,
+   "water": {
+    "c0": -0.012975103449330505,
+    "c1": -0.39722755489135,
+    "eddies": [
+     [
+      1846.6163029491959,
+      206.52830791558358,
+      148.77142269191864,
+      0.7899939974832009
+     ],
+     [
+      2501.0925690180984,
+      219.01309821160555,
+      95.23953580390261,
+      0.9494805055478927
+     ],
+     [
+      2446.289207363671,
+      115.05479393540085,
+      97.31511298087224,
+      0.5816520905267251
+     ]
+    ],
+    "inshore_floor": 0.25,
+    "inshore_scale_m": 150.0,
+    "trend_s": 2000.0
+   }
+  },
+  "traits": {
+   "adherence_s": 258.33786618892606,
+   "blowup_effort": 0.7963193065254687,
+   "body_bias": 0.9755804000140116,
+   "compliance": 0.7409076064064307,
+   "effort_step": 0.05654659325507559,
+   "habit_line_m": 272.9368736454476,
+   "habit_rate": 66,
+   "kick_effort": 1.191799742787065,
+   "kick_m": 298.4390689977587,
+   "lateral_mps": 0.8,
+   "line_step_m": 100.0,
+   "max_kick_m": 1500.0,
+   "pace_gain": 0.5,
+   "paddler": {
+    "ama_load_fatigue_kg": 10.0,
+    "ama_load_kg": 5.0,
+    "ama_load_sd_kg": 1.0,
+    "body_kg": 78.0,
+    "consistency_fatigue_sd": 0.05,
+    "consistency_sd": 0.03,
+    "critical_power_w": 197.2513080608295,
+    "duty0": 0.55,
+    "eta_fatigue_loss": 0.1,
+    "eta_max": 0.7708171684316862,
+    "profile_peak_shift": 0.15,
+    "rate_jitter": 0.012,
+    "rate_opt_fresh": 66.57996385680477,
+    "rate_opt_shift": 4.606824320778861,
+    "rate_wander_spm": 0.6,
+    "rate_width": 12.946542215689197,
+    "side_asymmetry": 0.06,
+    "slow_cp_loss": 0.3,
+    "switch_every": [
+     10,
+     20
+    ],
+    "switch_stroke_factor": 0.85,
+    "w_prime_j": 19137.974708946233,
+    "wobble_power_loss": 0.008,
+    "work_capacity_j": 2184526.532062415
+   },
+   "rate_fatigue_drop": 1.535556740470465,
+   "rate_step": 2.0,
+   "recover_frac": 0.12187318795687047,
+   "response_s": 7.777061966198534,
+   "settle_frac": 0.9575088737689417,
+   "start_effort": 1.3280320850491407,
+   "start_s": 69.90770043239945,
+   "wander_sd": 0.02854570220913645,
+   "wander_tau_s": 60.0
+  }
+ },
+ "3002": {
+  "athlete": {
+   "cp_w": 134.9899440430579,
+   "source": "3- and 12-minute test on the twin",
+   "w_prime_j": 8097.849098890466
+  },
+  "athlete_shaft": {
+   "cp_w": 202.31660653345037,
+   "source": "3- and 12-minute test on the twin, paddle-pod shaft power",
+   "w_prime_j": 14765.56100422117
+  },
+  "calibration": {
+   "best_180_w": 179.9779945924495,
+   "best_720_w": 146.2369566804058,
+   "cp_w": 134.9899440430579,
+   "true_boat_cp_at_best_w": 163.8954156080914,
+   "true_shaft_cp_w": 212.31167248583768,
+   "w_prime_j": 8097.849098890466
+  },
+  "even": 1.0223679542541504,
+  "forecast": {
+   "convention": "stream + flows north (with the first leg); along_m is measured from the start line along the course",
+   "eddies": [],
+   "inshore": "the stream is weaker close to shore (roughly half strength within ~150 m)",
+   "inshore_profile": {
+    "scale_m": 179,
+    "share_at_shore": 0.25
+   },
+   "over_s": 3333,
+   "stream_at_start_mps": 0.22,
+   "stream_change_mps": 0.28
+  },
+  "reference": {
+   "effort": 1.022411036491394,
+   "race_time_s": 3028.2158190467817,
+   "reserve_left": 0.009672945721985007
+  },
+  "seed": 3002,
+  "setup": {
+   "craft": "oc1",
+   "current_mps": 0.0,
+   "distance_m": 10000.0,
+   "leg_m": 5000.0,
+   "plan": null,
+   "turn_s": 6.0,
+   "warmup_leg_m": 250.0,
+   "warmup_s": 300.0,
+   "water": {
+    "c0": 0.14919906521148452,
+    "c1": 0.10354151596030947,
+    "eddies": [
+     [
+      3451.3394671797155,
+      104.39683651889827,
+      129.54748170158672,
+      0.8627047885286887
+     ]
+    ],
+    "inshore_floor": 0.25,
+    "inshore_scale_m": 150.0,
+    "trend_s": 3333.3333333333335
+   }
+  },
+  "traits": {
+   "adherence_s": 196.60813686315825,
+   "blowup_effort": 0.8466378303347923,
+   "body_bias": 1.0647606940887455,
+   "compliance": 0.6382799355423389,
+   "effort_step": 0.044799537678050026,
+   "habit_line_m": 220.1007512843447,
+   "habit_rate": 64,
+   "kick_effort": 1.2386608443711595,
+   "kick_m": 598.7494660459454,
+   "lateral_mps": 0.8,
+   "line_step_m": 100.0,
+   "max_kick_m": 1500.0,
+   "pace_gain": 0.5,
+   "paddler": {
+    "ama_load_fatigue_kg": 10.0,
+    "ama_load_kg": 5.0,
+    "ama_load_sd_kg": 1.0,
+    "body_kg": 78.0,
+    "consistency_fatigue_sd": 0.05,
+    "consistency_sd": 0.03,
+    "critical_power_w": 212.31167248583768,
+    "duty0": 0.55,
+    "eta_fatigue_loss": 0.1,
+    "eta_max": 0.7719566884341892,
+    "profile_peak_shift": 0.15,
+    "rate_jitter": 0.012,
+    "rate_opt_fresh": 63.712823289820335,
+    "rate_opt_shift": 8.826055733912124,
+    "rate_wander_spm": 0.6,
+    "rate_width": 14.840845161966582,
+    "side_asymmetry": 0.06,
+    "slow_cp_loss": 0.3,
+    "switch_every": [
+     10,
+     20
+    ],
+    "switch_stroke_factor": 0.85,
+    "w_prime_j": 14049.813843937209,
+    "wobble_power_loss": 0.008,
+    "work_capacity_j": 3095568.7091773115
+   },
+   "rate_fatigue_drop": 2.1370102307803416,
+   "rate_step": 2.0,
+   "recover_frac": 0.16170030791015874,
+   "response_s": 13.188837049390829,
+   "settle_frac": 0.9943715302823962,
+   "start_effort": 1.4802328291037519,
+   "start_s": 93.61866342759429,
+   "wander_sd": 0.018832899287820955,
+   "wander_tau_s": 60.0
+  }
+ },
+ "3003": {
+  "athlete": {
+   "cp_w": 130.93977391377788,
+   "source": "3- and 12-minute test on the twin",
+   "w_prime_j": 8979.274401587738
+  },
+  "athlete_shaft": {
+   "cp_w": 193.63496670880468,
+   "source": "3- and 12-minute test on the twin, paddle-pod shaft power",
+   "w_prime_j": 14930.431611631513
+  },
+  "calibration": {
+   "best_180_w": 180.82463170037647,
+   "best_720_w": 143.41098836042752,
+   "cp_w": 130.93977391377788,
+   "true_boat_cp_at_best_w": 151.71251340805756,
+   "true_shaft_cp_w": 206.76838278965516,
+   "w_prime_j": 8979.274401587738
+  },
+  "even": 1.0359627246856689,
+  "forecast": {
+   "convention": "stream + flows north (with the first leg); along_m is measured from the start line along the course",
+   "eddies": [
+    {
+     "along_m": 2777,
+     "length_m": 242,
+     "within_m_of_shore": 146
+    }
+   ],
+   "inshore": "the stream is weaker close to shore (roughly half strength within ~150 m)",
+   "inshore_profile": {
+    "scale_m": 154,
+    "share_at_shore": 0.25
+   },
+   "over_s": 2000,
+   "stream_at_start_mps": 0.49,
+   "stream_change_mps": 0.49
+  },
+  "reference": {
+   "effort": 1.0341511011123659,
+   "race_time_s": 1936.5187951890339,
+   "reserve_left": 0.00949701188571874
+  },
+  "seed": 3003,
+  "setup": {
+   "craft": "oc1",
+   "current_mps": 0.0,
+   "distance_m": 6000.0,
+   "leg_m": 3000.0,
+   "plan": null,
+   "turn_s": 6.0,
+   "warmup_leg_m": 250.0,
+   "warmup_s": 300.0,
+   "water": {
+    "c0": 0.4782041724224464,
+    "c1": 0.4895433527309423,
+    "eddies": [
+     [
+      2695.7950139787704,
+      120.89912022482875,
+      146.16787523257238,
+      0.7529758714102212
+     ],
+     [
+      1303.4447146459258,
+      219.51793828100458,
+      131.3118088168327,
+      0.65932492408429
+     ]
+    ],
+    "inshore_floor": 0.25,
+    "inshore_scale_m": 150.0,
+    "trend_s": 2000.0
+   }
+  },
+  "traits": {
+   "adherence_s": 379.6994653137172,
+   "blowup_effort": 0.8493335830328074,
+   "body_bias": 1.0405807355574639,
+   "compliance": 0.6370275628498155,
+   "effort_step": 0.04181580260209997,
+   "habit_line_m": 140.12936431288034,
+   "habit_rate": 60,
+   "kick_effort": 1.339554290710067,
+   "kick_m": 494.4985866599352,
+   "lateral_mps": 0.8,
+   "line_step_m": 100.0,
+   "max_kick_m": 1500.0,
+   "pace_gain": 0.5,
+   "paddler": {
+    "ama_load_fatigue_kg": 10.0,
+    "ama_load_kg": 5.0,
+    "ama_load_sd_kg": 1.0,
+    "body_kg": 78.0,
+    "consistency_fatigue_sd": 0.05,
+    "consistency_sd": 0.03,
+    "critical_power_w": 206.76838278965516,
+    "duty0": 0.55,
+    "eta_fatigue_loss": 0.1,
+    "eta_max": 0.7337316825773805,
+    "profile_peak_shift": 0.15,
+    "rate_jitter": 0.012,
+    "rate_opt_fresh": 61.65732571672491,
+    "rate_opt_shift": 3.2668066127309254,
+    "rate_wander_spm": 0.6,
+    "rate_width": 12.297674136096886,
+    "side_asymmetry": 0.06,
+    "slow_cp_loss": 0.3,
+    "switch_every": [
+     10,
+     20
+    ],
+    "switch_stroke_factor": 0.85,
+    "w_prime_j": 13392.214758235355,
+    "wobble_power_loss": 0.008,
+    "work_capacity_j": 2336633.0968780727
+   },
+   "rate_fatigue_drop": 1.8667824288280586,
+   "rate_step": 2.0,
+   "recover_frac": 0.18602255453676958,
+   "response_s": 9.081948383725228,
+   "settle_frac": 0.96816392214995,
+   "start_effort": 1.4285452767021503,
+   "start_s": 90.99652680428915,
+   "wander_sd": 0.015067473985686763,
+   "wander_tau_s": 60.0
+  }
+ },
+ "3004": {
+  "athlete": {
+   "cp_w": 116.6279053591683,
+   "source": "3- and 12-minute test on the twin",
+   "w_prime_j": 5632.124919034008
+  },
+  "athlete_shaft": {
+   "cp_w": 191.44822612493272,
+   "source": "3- and 12-minute test on the twin, paddle-pod shaft power",
+   "w_prime_j": 13229.767190008191
+  },
+  "calibration": {
+   "best_180_w": 147.9174882426907,
+   "best_720_w": 124.4503010800489,
+   "cp_w": 116.6279053591683,
+   "true_boat_cp_at_best_w": 143.08323954519867,
+   "true_shaft_cp_w": 200.67579394817034,
+   "w_prime_j": 5632.124919034008
+  },
+  "even": 1.0350796937942504,
+  "forecast": {
+   "convention": "stream + flows north (with the first leg); along_m is measured from the start line along the course",
+   "eddies": [
+    {
+     "along_m": 390,
+     "length_m": 300,
+     "within_m_of_shore": 120
+    },
+    {
+     "along_m": 1875,
+     "length_m": 436,
+     "within_m_of_shore": 124
+    }
+   ],
+   "inshore": "the stream is weaker close to shore (roughly half strength within ~150 m)",
+   "inshore_profile": {
+    "scale_m": 116,
+    "share_at_shore": 0.25
+   },
+   "over_s": 2000,
+   "stream_at_start_mps": -0.45,
+   "stream_change_mps": 0.09
+  },
+  "reference": {
+   "effort": 1.034713339805603,
+   "race_time_s": 1913.0980919512776,
+   "reserve_left": 0.00948249831730931
+  },
+  "seed": 3004,
+  "setup": {
+   "craft": "oc1",
+   "current_mps": 0.0,
+   "distance_m": 6000.0,
+   "leg_m": 3000.0,
+   "plan": null,
+   "turn_s": 6.0,
+   "warmup_leg_m": 250.0,
+   "warmup_s": 300.0,
+   "water": {
+    "c0": -0.4151589936627412,
+    "c1": 0.25089068531491676,
+    "eddies": [
+     [
+      2519.082839171497,
+      135.39904364490084,
+      102.60338425659697,
+      0.8959006123489425
+     ],
+     [
+      1805.0829979193097,
+      217.75254770725869,
+      124.11599356018475,
+      0.9672869980009956
+     ],
+     [
+      628.1683503140193,
+      116.3982310643915,
+      121.72699795903901,
+      0.9006296376399872
+     ]
+    ],
+    "inshore_floor": 0.25,
+    "inshore_scale_m": 150.0,
+    "trend_s": 2000.0
+   }
+  },
+  "traits": {
+   "adherence_s": 241.66676132414437,
+   "blowup_effort": 0.7596519018622586,
+   "body_bias": 1.0483279879576028,
+   "compliance": 0.6477560829007801,
+   "effort_step": 0.032775297397548676,
+   "habit_line_m": 242.53159892530076,
+   "habit_rate": 64,
+   "kick_effort": 1.3263907754265,
+   "kick_m": 523.9510751413709,
+   "lateral_mps": 0.8,
+   "line_step_m": 100.0,
+   "max_kick_m": 1500.0,
+   "pace_gain": 0.5,
+   "paddler": {
+    "ama_load_fatigue_kg": 10.0,
+    "ama_load_kg": 5.0,
+    "ama_load_sd_kg": 1.0,
+    "body_kg": 78.0,
+    "consistency_fatigue_sd": 0.05,
+    "consistency_sd": 0.03,
+    "critical_power_w": 200.67579394817034,
+    "duty0": 0.55,
+    "eta_fatigue_loss": 0.1,
+    "eta_max": 0.7130069687535587,
+    "profile_peak_shift": 0.15,
+    "rate_jitter": 0.012,
+    "rate_opt_fresh": 60.882981947582834,
+    "rate_opt_shift": 3.425411457458969,
+    "rate_wander_spm": 0.6,
+    "rate_width": 14.625771858079471,
+    "side_asymmetry": 0.06,
+    "slow_cp_loss": 0.3,
+    "switch_every": [
+     10,
+     20
+    ],
+    "switch_stroke_factor": 0.85,
+    "w_prime_j": 13085.015078487275,
+    "wobble_power_loss": 0.008,
+    "work_capacity_j": 2476468.2189224893
+   },
+   "rate_fatigue_drop": 2.1115837476742203,
+   "rate_step": 2.0,
+   "recover_frac": 0.12284793956809267,
+   "response_s": 8.87248639772454,
+   "settle_frac": 0.9818185776817115,
+   "start_effort": 1.4411352687463268,
+   "start_s": 82.37521277701907,
+   "wander_sd": 0.025738245138937174,
+   "wander_tau_s": 60.0
+  }
+ },
+ "3005": {
+  "athlete": {
+   "cp_w": 112.92527131700615,
+   "source": "3- and 12-minute test on the twin",
+   "w_prime_j": 5256.0676383687705
+  },
+  "athlete_shaft": {
+   "cp_w": 165.2161527935089,
+   "source": "3- and 12-minute test on the twin, paddle-pod shaft power",
+   "w_prime_j": 12288.117084211328
+  },
+  "calibration": {
+   "best_180_w": 142.12564708572162,
+   "best_720_w": 120.22536525918503,
+   "cp_w": 112.92527131700615,
+   "true_boat_cp_at_best_w": 129.17157775335545,
+   "true_shaft_cp_w": 172.27680142443847,
+   "w_prime_j": 5256.0676383687705
+  },
+  "even": 1.0268745422363277,
+  "forecast": {
+   "convention": "stream + flows north (with the first leg); along_m is measured from the start line along the course",
+   "eddies": [
+    {
+     "along_m": 677,
+     "length_m": 356,
+     "within_m_of_shore": 145
+    },
+    {
+     "along_m": 882,
+     "length_m": 300,
+     "within_m_of_shore": 120
+    }
+   ],
+   "inshore": "the stream is weaker close to shore (roughly half strength within ~150 m)",
+   "inshore_profile": {
+    "scale_m": 138,
+    "share_at_shore": 0.25
+   },
+   "over_s": 2667,
+   "stream_at_start_mps": 0.16,
+   "stream_change_mps": 0.16
+  },
+  "reference": {
+   "effort": 1.0265354633331296,
+   "race_time_s": 2626.7777044152144,
+   "reserve_left": 0.009620359526337701
+  },
+  "seed": 3005,
+  "setup": {
+   "craft": "oc1",
+   "current_mps": 0.0,
+   "distance_m": 8000.0,
+   "leg_m": 4000.0,
+   "plan": null,
+   "turn_s": 6.0,
+   "warmup_leg_m": 250.0,
+   "warmup_s": 300.0,
+   "water": {
+    "c0": 0.14097814965948097,
+    "c1": 0.17240580077428913,
+    "eddies": [
+     [
+      716.8113556288387,
+      177.9045526534619,
+      144.94468635977117,
+      0.957603167871765
+     ]
+    ],
+    "inshore_floor": 0.25,
+    "inshore_scale_m": 150.0,
+    "trend_s": 2666.6666666666665
+   }
+  },
+  "traits": {
+   "adherence_s": 405.1131217615378,
+   "blowup_effort": 0.7531169566809078,
+   "body_bias": 1.0524615614860915,
+   "compliance": 0.8938711515782802,
+   "effort_step": 0.045004670384255,
+   "habit_line_m": 275.82137269122546,
+   "habit_rate": 61,
+   "kick_effort": 1.2570072263187022,
+   "kick_m": 461.1764853820994,
+   "lateral_mps": 0.8,
+   "line_step_m": 100.0,
+   "max_kick_m": 1500.0,
+   "pace_gain": 0.5,
+   "paddler": {
+    "ama_load_fatigue_kg": 10.0,
+    "ama_load_kg": 5.0,
+    "ama_load_sd_kg": 1.0,
+    "body_kg": 78.0,
+    "consistency_fatigue_sd": 0.05,
+    "consistency_sd": 0.03,
+    "critical_power_w": 172.27680142443847,
+    "duty0": 0.55,
+    "eta_fatigue_loss": 0.1,
+    "eta_max": 0.7497908986312982,
+    "profile_peak_shift": 0.15,
+    "rate_jitter": 0.012,
+    "rate_opt_fresh": 60.46937676842797,
+    "rate_opt_shift": 4.4553327452312015,
+    "rate_wander_spm": 0.6,
+    "rate_width": 11.397065499858776,
+    "side_asymmetry": 0.06,
+    "slow_cp_loss": 0.3,
+    "switch_every": [
+     10,
+     20
+    ],
+    "switch_stroke_factor": 0.85,
+    "w_prime_j": 11830.544939885103,
+    "wobble_power_loss": 0.008,
+    "work_capacity_j": 3127933.4964420553
+   },
+   "rate_fatigue_drop": 1.511353841370091,
+   "rate_step": 2.0,
+   "recover_frac": 0.12513397914572377,
+   "response_s": 14.449948924429345,
+   "settle_frac": 0.9584318958606501,
+   "start_effort": 1.3559646648600787,
+   "start_s": 80.54885038571517,
+   "wander_sd": 0.023500483909457644,
+   "wander_tau_s": 60.0
+  }
+ },
+ "3006": {
+  "athlete": {
+   "cp_w": 101.64489790819432,
+   "source": "3- and 12-minute test on the twin",
+   "w_prime_j": 7313.363700906861
+  },
+  "athlete_shaft": {
+   "cp_w": 165.75220862664221,
+   "source": "3- and 12-minute test on the twin, paddle-pod shaft power",
+   "w_prime_j": 13580.98304556641
+  },
+  "calibration": {
+   "best_180_w": 142.2746962465658,
+   "best_720_w": 111.8023474927872,
+   "cp_w": 101.64489790819432,
+   "true_boat_cp_at_best_w": 125.6792900396032,
+   "true_shaft_cp_w": 170.97381325031023,
+   "w_prime_j": 7313.363700906861
+  },
+  "even": 1.0415026664733884,
+  "forecast": {
+   "convention": "stream + flows north (with the first leg); along_m is measured from the start line along the course",
+   "eddies": [
+    {
+     "along_m": 579,
+     "length_m": 300,
+     "within_m_of_shore": 120
+    },
+    {
+     "along_m": 2173,
+     "length_m": 403,
+     "within_m_of_shore": 125
+    }
+   ],
+   "inshore": "the stream is weaker close to shore (roughly half strength within ~150 m)",
+   "inshore_profile": {
+    "scale_m": 164,
+    "share_at_shore": 0.25
+   },
+   "over_s": 2000,
+   "stream_at_start_mps": -0.31,
+   "stream_change_mps": 0.49
+  },
+  "reference": {
+   "effort": 1.0409804105758667,
+   "race_time_s": 1990.0696422254214,
+   "reserve_left": 0.009528900716592759
+  },
+  "seed": 3006,
+  "setup": {
+   "craft": "oc1",
+   "current_mps": 0.0,
+   "distance_m": 6000.0,
+   "leg_m": 3000.0,
+   "plan": null,
+   "turn_s": 6.0,
+   "warmup_leg_m": 250.0,
+   "warmup_s": 300.0,
+   "water": {
+    "c0": -0.38992566242752325,
+    "c1": 0.38490810459425817,
+    "eddies": [
+     [
+      2337.839100676355,
+      201.74170233065993,
+      124.77764437801312,
+      0.7179415510481975
+     ]
+    ],
+    "inshore_floor": 0.25,
+    "inshore_scale_m": 150.0,
+    "trend_s": 2000.0
+   }
+  },
+  "traits": {
+   "adherence_s": 301.697911266323,
+   "blowup_effort": 0.7929011014538172,
+   "body_bias": 1.0443973266865823,
+   "compliance": 0.7157345658584426,
+   "effort_step": 0.05642890560604892,
+   "habit_line_m": 142.7085580340045,
+   "habit_rate": 69,
+   "kick_effort": 1.3434387094481477,
+   "kick_m": 612.7741410871542,
+   "lateral_mps": 0.8,
+   "line_step_m": 100.0,
+   "max_kick_m": 1500.0,
+   "pace_gain": 0.5,
+   "paddler": {
+    "ama_load_fatigue_kg": 10.0,
+    "ama_load_kg": 5.0,
+    "ama_load_sd_kg": 1.0,
+    "body_kg": 78.0,
+    "consistency_fatigue_sd": 0.05,
+    "consistency_sd": 0.03,
+    "critical_power_w": 170.97381325031023,
+    "duty0": 0.55,
+    "eta_fatigue_loss": 0.1,
+    "eta_max": 0.7350791776259056,
+    "profile_peak_shift": 0.15,
+    "rate_jitter": 0.012,
+    "rate_opt_fresh": 67.7908066380914,
+    "rate_opt_shift": 7.659916204599214,
+    "rate_wander_spm": 0.6,
+    "rate_width": 14.204561712089138,
+    "side_asymmetry": 0.06,
+    "slow_cp_loss": 0.3,
+    "switch_every": [
+     10,
+     20
+    ],
+    "switch_stroke_factor": 0.85,
+    "w_prime_j": 13787.956992644424,
+    "wobble_power_loss": 0.008,
+    "work_capacity_j": 2929893.0575536387
+   },
+   "rate_fatigue_drop": 2.078421464407165,
+   "rate_step": 2.0,
+   "recover_frac": 0.13952383379871394,
+   "response_s": 10.251014049385002,
+   "settle_frac": 0.970042619608493,
+   "start_effort": 1.3602900975489005,
+   "start_s": 107.40736082000518,
+   "wander_sd": 0.014864264173222754,
+   "wander_tau_s": 60.0
+  }
+ },
+ "3007": {
+  "athlete": {
+   "cp_w": 137.58255445189613,
+   "source": "3- and 12-minute test on the twin",
+   "w_prime_j": 9975.92163705624
+  },
+  "athlete_shaft": {
+   "cp_w": 203.65761832865354,
+   "source": "3- and 12-minute test on the twin, paddle-pod shaft power",
+   "w_prime_j": 15920.73244218543
+  },
+  "calibration": {
+   "best_180_w": 193.00434132443095,
+   "best_720_w": 151.43800117002985,
+   "cp_w": 137.58255445189613,
+   "true_boat_cp_at_best_w": 163.5446237675781,
+   "true_shaft_cp_w": 212.7455727568276,
+   "w_prime_j": 9975.92163705624
+  },
+  "even": 1.0257478952407835,
+  "forecast": {
+   "convention": "stream + flows north (with the first leg); along_m is measured from the start line along the course",
+   "eddies": [
+    {
+     "along_m": 1873,
+     "length_m": 300,
+     "within_m_of_shore": 120
+    },
+    {
+     "along_m": 4057,
+     "length_m": 213,
+     "within_m_of_shore": 92
+    }
+   ],
+   "inshore": "the stream is weaker close to shore (roughly half strength within ~150 m)",
+   "inshore_profile": {
+    "scale_m": 161,
+    "share_at_shore": 0.25
+   },
+   "over_s": 3333,
+   "stream_at_start_mps": 0.07,
+   "stream_change_mps": -0.25
+  },
+  "reference": {
+   "effort": 1.0259003877639767,
+   "race_time_s": 2995.3805143816544,
+   "reserve_left": 0.009683209865178946
+  },
+  "seed": 3007,
+  "setup": {
+   "craft": "oc1",
+   "current_mps": 0.0,
+   "distance_m": 10000.0,
+   "leg_m": 5000.0,
+   "plan": null,
+   "turn_s": 6.0,
+   "warmup_leg_m": 250.0,
+   "warmup_s": 300.0,
+   "water": {
+    "c0": 0.16948766122560976,
+    "c1": -0.08637379530995737,
+    "eddies": [
+     [
+      4109.879405072132,
+      106.27932800051803,
+      91.88383110899481,
+      0.8620149993107447
+     ],
+     [
+      641.1200523503485,
+      133.58776068643618,
+      140.90134763412175,
+      0.9558242626594957
+     ],
+     [
+      4111.084781214583,
+      148.94063566245626,
+      110.86005009005703,
+      0.6929391273560596
+     ]
+    ],
+    "inshore_floor": 0.25,
+    "inshore_scale_m": 150.0,
+    "trend_s": 3333.3333333333335
+   }
+  },
+  "traits": {
+   "adherence_s": 331.8516263939501,
+   "blowup_effort": 0.8173535326817644,
+   "body_bias": 1.0785573438649965,
+   "compliance": 0.7166592528838289,
+   "effort_step": 0.04205083930772053,
+   "habit_line_m": 338.8394773583787,
+   "habit_rate": 64,
+   "kick_effort": 1.174912210921045,
+   "kick_m": 278.0024093532723,
+   "lateral_mps": 0.8,
+   "line_step_m": 100.0,
+   "max_kick_m": 1500.0,
+   "pace_gain": 0.5,
+   "paddler": {
+    "ama_load_fatigue_kg": 10.0,
+    "ama_load_kg": 5.0,
+    "ama_load_sd_kg": 1.0,
+    "body_kg": 78.0,
+    "consistency_fatigue_sd": 0.05,
+    "consistency_sd": 0.03,
+    "critical_power_w": 212.7455727568276,
+    "duty0": 0.55,
+    "eta_fatigue_loss": 0.1,
+    "eta_max": 0.7687333825485188,
+    "profile_peak_shift": 0.15,
+    "rate_jitter": 0.012,
+    "rate_opt_fresh": 64.97791217793215,
+    "rate_opt_shift": 7.308626641093555,
+    "rate_wander_spm": 0.6,
+    "rate_width": 13.585660637139053,
+    "side_asymmetry": 0.06,
+    "slow_cp_loss": 0.3,
+    "switch_every": [
+     10,
+     20
+    ],
+    "switch_stroke_factor": 0.85,
+    "w_prime_j": 16030.481133817375,
+    "wobble_power_loss": 0.008,
+    "work_capacity_j": 2756382.584473337
+   },
+   "rate_fatigue_drop": 2.6938642154680914,
+   "rate_step": 2.0,
+   "recover_frac": 0.18266385972261398,
+   "response_s": 12.86966948441039,
+   "settle_frac": 0.9984039676665213,
+   "start_effort": 1.31623689459157,
+   "start_s": 103.72921781392412,
+   "wander_sd": 0.021211013142304565,
+   "wander_tau_s": 60.0
+  }
+ },
+ "3008": {
+  "athlete": {
+   "cp_w": 94.74026032246977,
+   "source": "3- and 12-minute test on the twin",
+   "w_prime_j": 8807.86874362268
+  },
+  "athlete_shaft": {
+   "cp_w": 148.365129324136,
+   "source": "3- and 12-minute test on the twin, paddle-pod shaft power",
+   "w_prime_j": 16322.748491890296
+  },
+  "calibration": {
+   "best_180_w": 143.67286445370692,
+   "best_720_w": 106.97341135527907,
+   "cp_w": 94.74026032246977,
+   "true_boat_cp_at_best_w": 110.84485863420873,
+   "true_shaft_cp_w": 154.6956118317421,
+   "w_prime_j": 8807.86874362268
+  },
+  "even": 1.052059984207153,
+  "forecast": {
+   "convention": "stream + flows north (with the first leg); along_m is measured from the start line along the course",
+   "eddies": [
+    {
+     "along_m": 2622,
+     "length_m": 218,
+     "within_m_of_shore": 84
+    },
+    {
+     "along_m": 2650,
+     "length_m": 334,
+     "within_m_of_shore": 134
+    }
+   ],
+   "inshore": "the stream is weaker close to shore (roughly half strength within ~150 m)",
+   "inshore_profile": {
+    "scale_m": 180,
+    "share_at_shore": 0.25
+   },
+   "over_s": 2000,
+   "stream_at_start_mps": 0.41,
+   "stream_change_mps": -0.38
+  },
+  "reference": {
+   "effort": 1.0522422313690183,
+   "race_time_s": 2010.315416266771,
+   "reserve_left": 0.009554336017818662
+  },
+  "seed": 3008,
+  "setup": {
+   "craft": "oc1",
+   "current_mps": 0.0,
+   "distance_m": 6000.0,
+   "leg_m": 3000.0,
+   "plan": null,
+   "turn_s": 6.0,
+   "warmup_leg_m": 250.0,
+   "warmup_s": 300.0,
+   "water": {
+    "c0": 0.4431103431649345,
+    "c1": -0.19533796315068097,
+    "eddies": [
+     [
+      2652.968408297404,
+      166.78954231403208,
+      133.88884071417792,
+      0.8778629719598066
+     ],
+     [
+      2552.2555780531807,
+      109.24724972686649,
+      84.21983409980317,
+      0.6063886944379566
+     ]
+    ],
+    "inshore_floor": 0.25,
+    "inshore_scale_m": 150.0,
+    "trend_s": 2000.0
+   }
+  },
+  "traits": {
+   "adherence_s": 310.191766658339,
+   "blowup_effort": 0.8955755425409733,
+   "body_bias": 0.9403091521311625,
+   "compliance": 0.6903491043417507,
+   "effort_step": 0.041410661757561355,
+   "habit_line_m": 202.89431128675622,
+   "habit_rate": 67,
+   "kick_effort": 1.3707119539731885,
+   "kick_m": 348.64229366209304,
+   "lateral_mps": 0.8,
+   "line_step_m": 100.0,
+   "max_kick_m": 1500.0,
+   "pace_gain": 0.5,
+   "paddler": {
+    "ama_load_fatigue_kg": 10.0,
+    "ama_load_kg": 5.0,
+    "ama_load_sd_kg": 1.0,
+    "body_kg": 78.0,
+    "consistency_fatigue_sd": 0.05,
+    "consistency_sd": 0.03,
+    "critical_power_w": 154.6956118317421,
+    "duty0": 0.55,
+    "eta_fatigue_loss": 0.1,
+    "eta_max": 0.7165352482963218,
+    "profile_peak_shift": 0.15,
+    "rate_jitter": 0.012,
+    "rate_opt_fresh": 66.93587848538982,
+    "rate_opt_shift": 3.018955752550463,
+    "rate_wander_spm": 0.6,
+    "rate_width": 12.95637331998263,
+    "side_asymmetry": 0.06,
+    "slow_cp_loss": 0.3,
+    "switch_every": [
+     10,
+     20
+    ],
+    "switch_stroke_factor": 0.85,
+    "w_prime_j": 16051.952161705869,
+    "wobble_power_loss": 0.008,
+    "work_capacity_j": 2598766.574345794
+   },
+   "rate_fatigue_drop": 2.7238665920755567,
+   "rate_step": 2.0,
+   "recover_frac": 0.16952936854183517,
+   "response_s": 8.794251316387268,
+   "settle_frac": 0.9661895696557398,
+   "start_effort": 1.2403013316091416,
+   "start_s": 113.97294063596149,
+   "wander_sd": 0.025298402645827264,
+   "wander_tau_s": 60.0
+  }
+ },
+ "3009": {
+  "athlete": {
+   "cp_w": 127.66110263374084,
+   "source": "3- and 12-minute test on the twin",
+   "w_prime_j": 11486.64228051856
+  },
+  "athlete_shaft": {
+   "cp_w": 189.50749246301763,
+   "source": "3- and 12-minute test on the twin, paddle-pod shaft power",
+   "w_prime_j": 16230.169148652016
+  },
+  "calibration": {
+   "best_180_w": 191.47578196995514,
+   "best_720_w": 143.6147724677944,
+   "cp_w": 127.66110263374084,
+   "true_boat_cp_at_best_w": 152.41023231813097,
+   "true_shaft_cp_w": 201.12086173356371,
+   "w_prime_j": 11486.64228051856
+  },
+  "even": 1.0303019046783448,
+  "forecast": {
+   "convention": "stream + flows north (with the first leg); along_m is measured from the start line along the course",
+   "eddies": [
+    {
+     "along_m": 669,
+     "length_m": 300,
+     "within_m_of_shore": 120
+    },
+    {
+     "along_m": 755,
+     "length_m": 222,
+     "within_m_of_shore": 86
+    },
+    {
+     "along_m": 1802,
+     "length_m": 292,
+     "within_m_of_shore": 118
+    },
+    {
+     "along_m": 1885,
+     "length_m": 339,
+     "within_m_of_shore": 98
+    }
+   ],
+   "inshore": "the stream is weaker close to shore (roughly half strength within ~150 m)",
+   "inshore_profile": {
+    "scale_m": 146,
+    "share_at_shore": 0.25
+   },
+   "over_s": 2667,
+   "stream_at_start_mps": -0.07,
+   "stream_change_mps": 0.49
+  },
+  "reference": {
+   "effort": 1.0298128128051758,
+   "race_time_s": 2504.6925015892903,
+   "reserve_left": 0.00963266998164993
+  },
+  "seed": 3009,
+  "setup": {
+   "craft": "oc1",
+   "current_mps": 0.0,
+   "distance_m": 8000.0,
+   "leg_m": 4000.0,
+   "plan": null,
+   "turn_s": 6.0,
+   "warmup_leg_m": 250.0,
+   "warmup_s": 300.0,
+   "water": {
+    "c0": 0.008167600495807004,
+    "c1": 0.2890331300953649,
+    "eddies": [
+     [
+      1699.0327875762578,
+      145.83561404579433,
+      118.3287366572263,
+      0.7089904995417411
+     ],
+     [
+      1937.9771816302327,
+      169.2555248670597,
+      98.18725312949188,
+      0.9995829666549623
+     ],
+     [
+      937.2453369296076,
+      111.08978879066606,
+      86.23212214169124,
+      0.9075141021573688
+     ]
+    ],
+    "inshore_floor": 0.25,
+    "inshore_scale_m": 150.0,
+    "trend_s": 2666.6666666666665
+   }
+  },
+  "traits": {
+   "adherence_s": 341.65804819983,
+   "blowup_effort": 0.8762739940240757,
+   "body_bias": 1.0080178051779072,
+   "compliance": 0.6956010839429803,
+   "effort_step": 0.030500227074090006,
+   "habit_line_m": 276.2855120747548,
+   "habit_rate": 64,
+   "kick_effort": 1.2391264757240683,
+   "kick_m": 644.088710557675,
+   "lateral_mps": 0.8,
+   "line_step_m": 100.0,
+   "max_kick_m": 1500.0,
+   "pace_gain": 0.5,
+   "paddler": {
+    "ama_load_fatigue_kg": 10.0,
+    "ama_load_kg": 5.0,
+    "ama_load_sd_kg": 1.0,
+    "body_kg": 78.0,
+    "consistency_fatigue_sd": 0.05,
+    "consistency_sd": 0.03,
+    "critical_power_w": 201.12086173356371,
+    "duty0": 0.55,
+    "eta_fatigue_loss": 0.1,
+    "eta_max": 0.7578041929834086,
+    "profile_peak_shift": 0.15,
+    "rate_jitter": 0.012,
+    "rate_opt_fresh": 67.04969006108313,
+    "rate_opt_shift": 5.29947873879744,
+    "rate_wander_spm": 0.6,
+    "rate_width": 11.933215330266059,
+    "side_asymmetry": 0.06,
+    "slow_cp_loss": 0.3,
+    "switch_every": [
+     10,
+     20
+    ],
+    "switch_stroke_factor": 0.85,
+    "w_prime_j": 14641.557372176774,
+    "wobble_power_loss": 0.008,
+    "work_capacity_j": 2484461.5551490346
+   },
+   "rate_fatigue_drop": 2.7758777309051674,
+   "rate_step": 2.0,
+   "recover_frac": 0.1175710725363777,
+   "response_s": 13.382943230025116,
+   "settle_frac": 0.9730932864603283,
+   "start_effort": 1.1985298146138295,
+   "start_s": 93.46611035879184,
+   "wander_sd": 0.018213994555548105,
+   "wander_tau_s": 60.0
+  }
+ },
  "8": {
   "athlete": {
    "cp_w": 103.73056271661444,

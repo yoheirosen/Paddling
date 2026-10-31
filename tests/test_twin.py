@@ -101,3 +101,42 @@ def test_draws_are_reproducible_and_noise_is_seeded():
     a = PaddlerTwin(tr, su, seed=5, even=e)
     b = PaddlerTwin(tr, su, seed=5, even=e)
     assert a.advance(600.0) == b.advance(600.0)
+
+
+def test_coastal_water_is_weaker_inshore_and_eddies_run_against_it():
+    from paddling_expt.sim.twin import CoastalWater
+    w = CoastalWater(c0=0.4, c1=0.0, eddies=[(500.0, 150.0, 120.0, 0.8)])
+    assert w.at(40.0, 0.0, 0.0) < w.at(400.0, 0.0, 0.0)          # weaker close to shore
+    assert w.at(40.0, 500.0, 0.0) < 0 < w.at(400.0, 500.0, 0.0)   # the eddy reverses the inshore water
+    assert CoastalWater(c0=0.3, c1=-0.6, trend_s=100.0).stream(100.0) == pytest.approx(-0.3)   # it can turn
+
+
+def test_a_line_cue_moves_the_paddler_across_at_a_cost_and_inshore_pays_against_the_stream():
+    from dataclasses import replace
+    from paddling_expt.sim.twin import draw_setup, draw_traits
+    su = draw_setup(9, coastal=True)
+    tr = replace(draw_traits(9), compliance=1.0, wander_sd=0.0)
+    e = even_effort(tr, su)
+
+    def go(cue_at_turn):
+        tw = PaddlerTwin(tr, su, seed=9, even=e)
+        t, leg = 0.0, None
+        while tw.finish_t is None and t < 4 * 3600:
+            t += 1.0
+            tw.advance(t)
+            if cue_at_turn and tw.racing and tw.heading != leg:
+                leg = tw.heading
+                against = su.water.stream(tw.t - tw.start_t) * (1 if leg < 90 else -1) < 0
+                if against:
+                    tw.cue("line_in", line_m=60.0)
+        return tw
+    plain, inside = go(False), go(True)
+    assert min(inside.log["line_m"]) < 70.0 and min(plain.log["line_m"]) == pytest.approx(tr.habit_line_m)
+    assert inside.race_time_s < plain.race_time_s
+
+
+def test_the_forecast_calculator_follows_the_forecast():
+    from paddling_expt.sim.twin import forecast_stream
+    fc = {"stream_at_start_mps": 0.4, "stream_change_mps": 0.0, "over_s": 1000,
+          "inshore_profile": {"share_at_shore": 0.25, "scale_m": 150.0}, "eddies": []}
+    assert forecast_stream(fc, 50.0, 0.0, 0.0) < forecast_stream(fc, 400.0, 0.0, 0.0) <= 0.4
