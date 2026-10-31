@@ -64,6 +64,15 @@ RACE_CATALOG = (
     _m("push_mps", 30.0, "Strength of the fitted push of current and wind (m/s)."),
     _m("push_known", 1.0, "1 once headings cover enough directions to fit the push, else 0."),
     _m("pct_best_at_rate", 30.0, "Power as % of the paddler's best at this rate (needs a rate envelope from past sessions)."),
+    _m("shaft_power_w", 30.0, "The paddler's own power at the paddle shaft from the paddle pod (W, 30-s mean): effort, independent of how efficiently the blade moves the boat.", "effort, fatigue"),
+    _m("cp_shaft_w", 1.0, "Critical power at the shaft from the same pre-race test, measured by the pod (W)."),
+    _m("w_bal_pod_frac", 1.0, "Reserve above critical power left, 0-1, from the pod's shaft power (does not drift when the blade work gets less efficient, unlike w_bal_frac).", "pacing"),
+    _m("empties_in_m_pod", 1.0, "Distance until the pod's reserve runs out at the current shaft power (m); absent at or below critical power.", "pacing"),
+    _m("sustainable_shaft_power_w", 1.0, "Constant shaft power that spends the pod's reserve exactly at the finish at the current speed (W).", "pacing"),
+    _m("power_5min_w", 300.0, "Mean power reaching the boat over the last 5 minutes (W).", "calibration"),
+    _m("steady_power_10min_w", 600.0, "Mean power over the last 10 minutes, present only if the speed at the same rate did not fade (fade_pct >= -2) in that time (W).", "calibration"),
+    _m("cp_implied_w", 600.0, "Evidence about critical power from this race: the highest 10-minute steady power held while the reserve model read below 15 % (a paddler cannot hold power above critical power on an empty reserve without fading, so critical power is at least about this). Absent until such a stretch occurs.", "calibration"),
+    _m("reserve_low_s", 1.0, "Seconds the reserve model has read below 5 % without a break.", "calibration"),
 )
 
 # The four screen events of coach.RaceScreen as standing watches on the panel.
@@ -138,6 +147,10 @@ class RacePanel:
         self.alerts: List[Dict[str, Any]] = []
         self.definitions: List[Dict[str, Any]] = []
         self._held: Dict[str, float] = {}
+        from collections import deque
+        self._hist = deque()                 # (t, power, fade or None, w_bal_frac)
+        self._cp_implied: Optional[float] = None
+        self._low_since: Optional[float] = None
         for p in (SCREEN_PROGRAMS if programs is None else programs):
             self._define(p)
         for w in (SCREEN_WATCHES if watches is None else watches):
@@ -166,9 +179,38 @@ class RacePanel:
                 self._held[k] = vals[k]
             elif k in self._held:
                 vals[k] = self._held[k]
+        vals.update(self._calibration_evidence(float(t), vals))
         out = self.service.step(vals, float(t), publish=False)
         self.alerts.extend(out["alerts"])
         return out["alerts"]
+
+    def _calibration_evidence(self, t: float, vals: Dict[str, float]) -> Dict[str, float]:
+        P, fade, wb = vals.get("power_w"), vals.get("fade_pct"), vals.get("w_bal_frac")
+        out: Dict[str, float] = {}
+        if P is None or wb is None:
+            return out
+        h = self._hist
+        h.append((t, P, fade, wb))
+        while h and h[0][0] < t - 600.0:
+            h.popleft()
+        five = [x[1] for x in h if x[0] >= t - 300.0]
+        out["power_5min_w"] = sum(five) / len(five)
+        span = h[-1][0] - h[0][0]
+        fades = [x[2] for x in h if x[2] is not None]
+        if span >= 590.0 and fades and min(fades) >= -2.0:
+            steady = sum(x[1] for x in h) / len(h)
+            out["steady_power_10min_w"] = steady
+            if max(x[3] for x in h) < 0.15:
+                self._cp_implied = steady if self._cp_implied is None else max(self._cp_implied, steady)
+        if self._cp_implied is not None:
+            out["cp_implied_w"] = self._cp_implied
+        if wb < 0.05:
+            self._low_since = t if self._low_since is None else self._low_since
+            out["reserve_low_s"] = t - self._low_since
+        else:
+            self._low_since = None
+            out["reserve_low_s"] = 0.0
+        return out
 
     def tools(self) -> Dict[str, Any]:
         """The service's tools the coach may use (name → registry Tool)."""

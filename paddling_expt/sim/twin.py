@@ -32,7 +32,8 @@ lists them):
   change fades back to the paddler's own pacing with time constant ``adherence_s``
   unless it is repeated.
 * **measurement**: rows carry the noise of a per-stroke GPS speed, stroke rate and
-  heading, as a SpeedCoach or the head unit reports them.
+  heading, as a SpeedCoach or the head unit reports them, and (OC1) the paddle pod's
+  shaft power with 5 % noise per stroke.
 
 So the answers a coach could find are planted: what over- or under-pacing costs, how
 much a lower rate helps a tired paddler, how far a paddler follows a cue.  A result
@@ -141,6 +142,7 @@ class PaddlerTwin:
         self.rng_meas = np.random.default_rng([seed, 1])
         self.rng_feel = np.random.default_rng([seed, 2])
         self.rng_cue = np.random.default_rng([seed, 3])
+        self.rng_pod = np.random.default_rng([seed, 4])    # its own stream: adding the pod moves no other draw
         if body_effort is None and setup.plan is None:
             even = even if even is not None else even_effort(traits, setup)
             body_effort = traits.body_bias * even
@@ -395,8 +397,11 @@ class PaddlerTwin:
         self.t = t_end
         nm = self.rng_meas
         n = (lambda s: float(nm.normal(0.0, s))) if self.noise else (lambda s: 0.0)
-        return {"t": round(t_end, 3), "v_mean": max(0.0, vg + n(0.06)), "rate_spm": rate + n(0.4),
-                "heading_deg": (self.heading + n(4.0)) % 360.0, "distance_m": self.total_m}
+        row = {"t": round(t_end, 3), "v_mean": max(0.0, vg + n(0.06)), "rate_spm": rate + n(0.4),
+               "heading_deg": (self.heading + n(4.0)) % 360.0, "distance_m": self.total_m}
+        if self.craft.outrigger is not None:          # the paddle pod (single-blade paddle)
+            row["shaft_power_w"] = max(0.0, P * (1.0 + (float(self.rng_pod.normal(0.0, 0.05)) if self.noise else 0.0)))
+        return row
 
     def _turn(self, t: float) -> None:
         self.heading = (self.heading + 180.0) % 360.0

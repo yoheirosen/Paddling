@@ -205,6 +205,18 @@
    ],
    "wilcoxon_p": 0.07672121562063694
   },
+  "agent_haiku": {
+   "n": 30,
+   "mean_d": -1.5802555677483725,
+   "median_d": -2.41358700822866,
+   "n_a_faster": 19,
+   "n_b_faster": 11,
+   "ci95": [
+    -6.6589443710640825,
+    3.738843070364427
+   ],
+   "wilcoxon_p": 0.4521643426269293
+  },
   "agent_stand_in": {
    "n": 30,
    "mean_d": 0.8104091505583862,
@@ -296,6 +308,16 @@
    "median_gap_closed": 0.31632982268947185,
    "n_gap": 20
   },
+  "agent_haiku": {
+   "mean_race_time_s": 2607.943738614577,
+   "mean_vs_no_coach_s": -0.7572390807879098,
+   "mean_blown_s": 123.5832719742021,
+   "mean_reserve_left": 0.20027519550568462,
+   "mean_cues": 10.6,
+   "followed_share": 0.7358490566037735,
+   "median_gap_closed": 0.1532786541940307,
+   "n_gap": 20
+  },
   "agent_stand_in": {
    "mean_race_time_s": 2605.5530738962702,
    "mean_vs_no_coach_s": -3.1479037990946686,
@@ -341,6 +363,20 @@
    "autopilot_typical": {
     "vs_no_coach_over_pacers_s": -14.736950863498699,
     "vs_no_coach_under_pacers_s": -0.2804893312537178
+   },
+   "agent_haiku": {
+    "vs_no_coach_over_pacers_s": -10.749691338199868,
+    "vs_no_coach_under_pacers_s": 12.309813871212345,
+    "own_watches_per_race": 1.6666666666666667,
+    "own_metrics_per_race": 0.16666666666666666,
+    "races_with_own_definitions": 28,
+    "asks": {
+     "ease": 193,
+     "push": 55,
+     "hold": 49,
+     "finish": 10,
+     "rate_down": 11
+    }
    },
    "agent_stand_in": {
     "vs_no_coach_over_pacers_s": -5.8578317467687855,

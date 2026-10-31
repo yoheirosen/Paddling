@@ -5,6 +5,11 @@
    "source": "3- and 12-minute test on the twin",
    "w_prime_j": 8945.029877558165
   },
+  "athlete_shaft": {
+   "cp_w": 168.32586052273336,
+   "source": "3- and 12-minute test on the twin, paddle-pod shaft power",
+   "w_prime_j": 19450.83426854063
+  },
   "calibration": {
    "best_180_w": 151.65390627993577,
    "best_720_w": 114.38294845677677,
@@ -85,6 +90,11 @@
    "cp_w": 129.9029628052485,
    "source": "3- and 12-minute test on the twin",
    "w_prime_j": 6592.456528649257
+  },
+  "athlete_shaft": {
+   "cp_w": 191.2035098717479,
+   "source": "3- and 12-minute test on the twin, paddle-pod shaft power",
+   "w_prime_j": 13617.702078333296
   },
   "calibration": {
    "best_180_w": 166.52772129774445,
@@ -3407,6 +3417,11 @@
    "source": "3- and 12-minute test on the twin",
    "w_prime_j": 13068.690358211721
   },
+  "athlete_shaft": {
+   "cp_w": 188.48957603473514,
+   "source": "3- and 12-minute test on the twin, paddle-pod shaft power",
+   "w_prime_j": 18931.940633495182
+  },
   "calibration": {
    "best_180_w": 197.69665077290406,
    "best_720_w": 143.2437742803552,
@@ -3487,6 +3502,11 @@
    "cp_w": 103.61752392649429,
    "source": "3- and 12-minute test on the twin",
    "w_prime_j": 7061.983422276509
+  },
+  "athlete_shaft": {
+   "cp_w": 157.18311998283667,
+   "source": "3- and 12-minute test on the twin, paddle-pod shaft power",
+   "w_prime_j": 18935.591116255076
   },
   "calibration": {
    "best_180_w": 142.85076516136377,
@@ -3569,6 +3589,11 @@
    "source": "3- and 12-minute test on the twin",
    "w_prime_j": 10917.604494718971
   },
+  "athlete_shaft": {
+   "cp_w": 162.40789561438137,
+   "source": "3- and 12-minute test on the twin, paddle-pod shaft power",
+   "w_prime_j": 17703.666347533042
+  },
   "calibration": {
    "best_180_w": 170.10372407184903,
    "best_720_w": 124.61370534385331,
@@ -3649,6 +3674,11 @@
    "cp_w": 116.60862889113771,
    "source": "3- and 12-minute test on the twin",
    "w_prime_j": 10201.36262257842
+  },
+  "athlete_shaft": {
+   "cp_w": 183.62613986099566,
+   "source": "3- and 12-minute test on the twin, paddle-pod shaft power",
+   "w_prime_j": 15986.573266380361
   },
   "calibration": {
    "best_180_w": 173.28286568324012,
@@ -3731,6 +3761,11 @@
    "source": "3- and 12-minute test on the twin",
    "w_prime_j": 7992.833676349437
   },
+  "athlete_shaft": {
+   "cp_w": 198.86448037305524,
+   "source": "3- and 12-minute test on the twin, paddle-pod shaft power",
+   "w_prime_j": 13653.611892423116
+  },
   "calibration": {
    "best_180_w": 173.20428253760977,
    "best_720_w": 139.9008088861537,
@@ -3811,6 +3846,11 @@
    "cp_w": 112.1781569375202,
    "source": "3- and 12-minute test on the twin",
    "w_prime_j": 5786.922546324246
+  },
+  "athlete_shaft": {
+   "cp_w": 191.22170003746936,
+   "source": "3- and 12-minute test on the twin, paddle-pod shaft power",
+   "w_prime_j": 16388.210450431296
   },
   "calibration": {
    "best_180_w": 144.32772663932164,

@@ -53,7 +53,7 @@ from .sim.twin import (PaddlerTwin, RaceSetup, Traits, draw_setup, draw_traits, 
                        oracle_effort, twin_cp_test)
 
 __all__ = ["PREREGISTERED", "Preparation", "draw_preparation", "Arm", "NoCoach", "FixedPlan",
-           "Autopilot", "AgentArm", "run_episode", "baseline_arms", "paired", "holm",
+           "Autopilot", "PodAutopilot", "AgentArm", "shaft_athlete", "run_episode", "baseline_arms", "paired", "holm",
            "CountingProvider", "HONESTY_STAND_IN"]
 
 HONESTY_STAND_IN = ("provider=stand-in: a scripted coach that maps each alert to a fixed cue, "
@@ -138,6 +138,7 @@ class Preparation:
     reference: Dict[str, float]
     athlete: Athlete
     calibration: Dict[str, Any] = field(default_factory=dict)
+    athlete_shaft: Optional[Athlete] = None
 
     def to_dict(self) -> Dict[str, Any]:
         d = {"seed": self.seed, "traits": asdict(self.traits), "setup": asdict(self.setup),
@@ -145,6 +146,9 @@ class Preparation:
              "athlete": {"cp_w": self.athlete.cp_w, "w_prime_j": self.athlete.w_prime_j,
                          "source": self.athlete.source},
              "calibration": self.calibration}
+        if self.athlete_shaft is not None:
+            d["athlete_shaft"] = {"cp_w": self.athlete_shaft.cp_w, "w_prime_j": self.athlete_shaft.w_prime_j,
+                                  "source": self.athlete_shaft.source}
         return d
 
     @classmethod
@@ -156,7 +160,35 @@ class Preparation:
                    even=float(d["even"]), reference=dict(d["reference"]),
                    athlete=Athlete(cp_w=d["athlete"]["cp_w"], w_prime_j=d["athlete"]["w_prime_j"],
                                    source=d["athlete"].get("source", "")),
-                   calibration=dict(d.get("calibration", {})))
+                   calibration=dict(d.get("calibration", {})),
+                   athlete_shaft=(Athlete(cp_w=d["athlete_shaft"]["cp_w"], w_prime_j=d["athlete_shaft"]["w_prime_j"],
+                                          source=d["athlete_shaft"].get("source", ""))
+                                  if d.get("athlete_shaft") else None))
+
+
+def _best_mean(rows: List[Dict[str, Any]], key: str, seconds: float) -> float:
+    t = np.array([r["t"] for r in rows if r.get(key) is not None], float)
+    v = np.array([r[key] for r in rows if r.get(key) is not None], float)
+    if len(t) < 2:
+        return float("nan")
+    dt = np.diff(t, prepend=t[0])
+    cw, ct = np.concatenate([[0.0], np.cumsum(v * dt)]), np.concatenate([[0.0], np.cumsum(dt)])
+    best, j = float("nan"), 0
+    for i in range(len(t)):
+        while j < len(t) and ct[j + 1] - ct[i] < seconds:
+            j += 1
+        if j >= len(t):
+            break
+        m = (cw[j + 1] - cw[i]) / (ct[j + 1] - ct[i])
+        best = m if not np.isfinite(best) else max(best, m)
+    return best
+
+
+def shaft_athlete(traits: Traits, seed: int) -> Athlete:
+    """Critical power and W' at the shaft, from the pod's power in the same 3/12-minute test."""
+    rows, _ = twin_cp_test(traits, seed=seed)
+    best = {d: {"power": _best_mean(rows, "shaft_power_w", d)} for d in (180, 720)}
+    return calibrate(best, source="3- and 12-minute test on the twin, paddle-pod shaft power")
 
 
 def draw_preparation(seed: int) -> Preparation:
@@ -168,6 +200,7 @@ def draw_preparation(seed: int) -> Preparation:
     true_boat_cp = tr.paddler.critical_power_w * tr.paddler.eta_max
     return Preparation(seed=seed, traits=tr, setup=su, even=even_effort(tr, su),
                        reference=oracle_effort(tr, su), athlete=ath,
+                       athlete_shaft=shaft_athlete(tr, seed),
                        calibration={"best_180_w": best[180]["power"], "best_720_w": best[720]["power"],
                                     "cp_w": ath.cp_w, "w_prime_j": ath.w_prime_j,
                                     "true_shaft_cp_w": tr.paddler.critical_power_w,
@@ -275,17 +308,50 @@ class Autopilot(Arm):
             ep.gate.deliver(act, source=self.name)
 
 
+def _pod_watches(margin_m: float = 300.0, fade_pct: float = -4.0) -> List[Dict[str, Any]]:
+    out = []
+    for w in _screen_watches(margin_m, fade_pct):
+        w = dict(w)
+        w["condition"] = (w["condition"].replace("empties_in_m", "empties_in_m_pod")
+                          .replace("w_bal_frac", "w_bal_pod_frac"))
+        out.append(w)
+    return out
+
+
+class PodAutopilot(Autopilot):
+    """The rule autopilot reading the paddle pod's reserve instead of the boat-power one
+    (exploratory baseline, round 1)."""
+
+    name = "autopilot_pod"
+
+    def watches(self) -> List[Dict[str, Any]]:
+        return _pod_watches(self.margin, self.fade)
+
+    def on_tick(self, ep: "Episode", t: float, alerts: List[Dict[str, Any]]) -> None:
+        for a in alerts:
+            wid = a["watch_id"]
+            act = {"over_pace": {"text": "Too hot for the distance. Ease a little.", "ask": "ease"},
+                   "fading": {"text": "Fading at this rate. Drop two beats, lengthen.", "ask": "rate_down"},
+                   "reserve_conflict": {"text": "Speed is holding. Keep this.", "ask": "hold"},
+                   "finish_window": {"text": "Reserve left. Go now.", "ask": "finish"}}.get(wid)
+            if act:
+                ep.gate.deliver({**act, "source": self.name}, source=self.name)
+
+
 class AgentArm(Arm):
     """The reasoning coach on the panel (``provider``: a model, or the stand-in)."""
 
     name = "agent"
 
     def __init__(self, provider: Any, *, periodic_s: float = 300.0, max_tool_rounds: int = 5,
-                 max_tokens: int = 4000, label: str = "agent") -> None:
+                 max_tokens: int = 4000, label: str = "agent", coach_version: int = 1) -> None:
+        self.coach_version = int(coach_version)
         self.provider, self.periodic_s = provider, float(periodic_s)
         self.max_tool_rounds, self.max_tokens = int(max_tool_rounds), int(max_tokens)
         self.name = label
         self.setting = {"periodic_s": self.periodic_s, "model": getattr(provider, "model", "?")}
+        if self.coach_version != 1:
+            self.setting["coach_version"] = self.coach_version
         self.coach: Optional[RaceCoach] = None
         self._busy, self._pending, self._last_wake = False, [], None
 
@@ -295,7 +361,7 @@ class AgentArm(Arm):
     def setup(self, ep: "Episode") -> None:
         self.coach = RaceCoach(self.provider, ep.state, ep.gate, panel=ep.panel,
                                max_iterations=self.max_tool_rounds, max_tokens=self.max_tokens,
-                               caller="race_coach")
+                               caller="race_coach", version=self.coach_version)
 
     def _wake(self, ep: "Episode", events: List[Dict[str, Any]], why: str) -> None:
         if self._busy:
@@ -365,8 +431,10 @@ def run_episode(prep: Preparation, arm: Arm, *, latency_s: Optional[float] = 6.0
     race time per model call (``None`` = its measured wall-clock time)."""
     g = PREREGISTERED["gate"]
     twin = PaddlerTwin(prep.traits, prep.setup, seed=prep.seed, even=prep.even)
+    if prep.athlete_shaft is None:
+        prep.athlete_shaft = shaft_athlete(prep.traits, prep.seed)
     state = RaceState(twin.craft, twin.total_kg, prep.athlete, distance_m=prep.setup.distance_m,
-                      start_t=twin.start_t)
+                      start_t=twin.start_t, athlete_shaft=prep.athlete_shaft)
     panel = RacePanel(state, watches=arm.watches(), programs=SCREEN_PROGRAMS)
     sink = CueSink(state, act=lambda a: twin.cue(a.get("ask", "none"), a.get("pace_s500")))
     gate = make_cue_gate(sink, state, max_words=g["max_words"], quiet_start_s=g["quiet_start_s"],
