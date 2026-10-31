@@ -49,11 +49,11 @@ from .coach import CueSink, RaceCoach, format_pace, make_cue_gate
 from .race import Athlete, RaceState, calibrate, sustainable_power
 from .race_panel import SCREEN_PROGRAMS, SCREEN_WATCHES, RacePanel
 from .sim.paddler import PaddlerParams
-from .sim.twin import (PaddlerTwin, RaceSetup, Traits, draw_setup, draw_traits, even_effort,
-                       oracle_effort, twin_cp_test)
+from .sim.twin import (CoastalWater, PaddlerTwin, RaceSetup, Traits, draw_setup, draw_traits,
+                       even_effort, oracle_effort, twin_cp_test, water_forecast)
 
 __all__ = ["PREREGISTERED", "Preparation", "draw_preparation", "Arm", "NoCoach", "FixedPlan",
-           "Autopilot", "PodAutopilot", "AgentArm", "shaft_athlete", "run_episode", "baseline_arms", "paired", "holm",
+           "Autopilot", "PodAutopilot", "LineRule", "AgentArm", "shaft_athlete", "run_episode", "baseline_arms", "paired", "holm",
            "CountingProvider", "HONESTY_STAND_IN"]
 
 HONESTY_STAND_IN = ("provider=stand-in: a scripted coach that maps each alert to a fixed cue, "
@@ -139,6 +139,7 @@ class Preparation:
     athlete: Athlete
     calibration: Dict[str, Any] = field(default_factory=dict)
     athlete_shaft: Optional[Athlete] = None
+    forecast: Optional[Dict[str, Any]] = None
 
     def to_dict(self) -> Dict[str, Any]:
         d = {"seed": self.seed, "traits": asdict(self.traits), "setup": asdict(self.setup),
@@ -146,6 +147,8 @@ class Preparation:
              "athlete": {"cp_w": self.athlete.cp_w, "w_prime_j": self.athlete.w_prime_j,
                          "source": self.athlete.source},
              "calibration": self.calibration}
+        if self.forecast is not None:
+            d["forecast"] = self.forecast
         if self.athlete_shaft is not None:
             d["athlete_shaft"] = {"cp_w": self.athlete_shaft.cp_w, "w_prime_j": self.athlete_shaft.w_prime_j,
                                   "source": self.athlete_shaft.source}
@@ -156,7 +159,13 @@ class Preparation:
         tr = dict(d["traits"])
         tr["paddler"] = PaddlerParams(**{k: (tuple(v) if isinstance(v, list) else v)
                                          for k, v in tr["paddler"].items()})
-        return cls(seed=int(d["seed"]), traits=Traits(**tr), setup=RaceSetup(**d["setup"]),
+        su = dict(d["setup"])
+        if su.get("water"):
+            w = dict(su["water"])
+            w["eddies"] = [tuple(e) for e in w.get("eddies", [])]
+            su["water"] = CoastalWater(**w)
+        return cls(seed=int(d["seed"]), traits=Traits(**tr), setup=RaceSetup(**su),
+                   forecast=d.get("forecast"),
                    even=float(d["even"]), reference=dict(d["reference"]),
                    athlete=Athlete(cp_w=d["athlete"]["cp_w"], w_prime_j=d["athlete"]["w_prime_j"],
                                    source=d["athlete"].get("source", "")),
@@ -191,8 +200,8 @@ def shaft_athlete(traits: Traits, seed: int) -> Athlete:
     return calibrate(best, source="3- and 12-minute test on the twin, paddle-pod shaft power")
 
 
-def draw_preparation(seed: int) -> Preparation:
-    tr, su = draw_traits(seed), draw_setup(seed)
+def draw_preparation(seed: int, coastal: bool = False) -> Preparation:
+    tr, su = draw_traits(seed), draw_setup(seed, coastal=coastal)
     rows, tw = twin_cp_test(tr, seed=seed)
     prep = ss.prepare_rows(rows, tw.craft, tw.total_kg)
     best = ss.best_efforts(prep["all_rows"], (180, 720))
@@ -201,6 +210,7 @@ def draw_preparation(seed: int) -> Preparation:
     return Preparation(seed=seed, traits=tr, setup=su, even=even_effort(tr, su),
                        reference=oracle_effort(tr, su), athlete=ath,
                        athlete_shaft=shaft_athlete(tr, seed),
+                       forecast=water_forecast(su.water, seed) if su.water is not None else None,
                        calibration={"best_180_w": best[180]["power"], "best_720_w": best[720]["power"],
                                     "cp_w": ath.cp_w, "w_prime_j": ath.w_prime_j,
                                     "true_shaft_cp_w": tr.paddler.critical_power_w,
@@ -338,6 +348,43 @@ class PodAutopilot(Autopilot):
                 ep.gate.deliver({**act, "source": self.name}, source=self.name)
 
 
+def _forecast_stream(fc: Dict[str, Any], race_s: float) -> float:
+    f = min(1.0, max(0.0, race_s / max(1.0, float(fc.get("over_s", 3000.0)))))
+    return float(fc.get("stream_at_start_mps", 0.0)) + f * float(fc.get("stream_change_mps", 0.0))
+
+
+class LineRule(PodAutopilot):
+    """Pacing by the pod autopilot, plus the rule of thumb "inside against the stream":
+    on each leg, if the forecast stream (at mid-leg) is against the heading, cue the line
+    to ``inside_m`` from shore (exploratory baseline, round 2)."""
+
+    name = "line_rule"
+
+    def __init__(self, inside_m: float = 60.0, overpace_margin_m: float = 150.0, fade_pct: float = -3.0) -> None:
+        super().__init__(overpace_margin_m, fade_pct)
+        self.inside = float(inside_m)
+        self.setting = {"inside_m": self.inside, "overpace_margin_m": self.margin, "fade_pct": self.fade}
+        self._leg_done: Dict[int, bool] = {}
+
+    def on_tick(self, ep: "Episode", t: float, alerts: List[Dict[str, Any]]) -> None:
+        super().on_tick(ep, t, alerts)
+        fc, s = ep.prep.forecast, ep.state.last
+        if not fc or s.get("heading_deg") is None or s.get("elapsed_s") is None:
+            return
+        leg = 0 if (s["heading_deg"] < 90.0 or s["heading_deg"] > 270.0) else 1
+        if self._leg_done.get(leg):
+            return
+        mid = s["elapsed_s"] + 0.5 * (ep.prep.setup.leg_m / max(1.0, s.get("speed_gps", 3.0)))
+        along = _forecast_stream(fc, mid) * (1.0 if leg == 0 else -1.0)
+        if along >= 0:
+            self._leg_done[leg] = True
+            return
+        res = ep.gate.deliver({"text": "Stream against us. Get inside, hug the shore.", "ask": "line_in",
+                               "line_m": self.inside, "source": self.name}, source=self.name)
+        if res.get("delivered"):
+            self._leg_done[leg] = True
+
+
 class AgentArm(Arm):
     """The reasoning coach on the panel (``provider``: a model, or the stand-in)."""
 
@@ -362,6 +409,8 @@ class AgentArm(Arm):
         self.coach = RaceCoach(self.provider, ep.state, ep.gate, panel=ep.panel,
                                max_iterations=self.max_tool_rounds, max_tokens=self.max_tokens,
                                caller="race_coach", version=self.coach_version)
+        self.coach.forecast = ep.prep.forecast
+        self._leg = None
 
     def _wake(self, ep: "Episode", events: List[Dict[str, Any]], why: str) -> None:
         if self._busy:
@@ -381,6 +430,13 @@ class AgentArm(Arm):
 
     def on_tick(self, ep: "Episode", t: float, alerts: List[Dict[str, Any]]) -> None:
         s = ep.state.last
+        if self.coach_version >= 3 and s.get("heading_deg") is not None and s.get("elapsed_s", 0.0) > 60.0:
+            leg = 0 if (s["heading_deg"] < 90.0 or s["heading_deg"] > 270.0) else 1
+            if leg != self._leg:                 # the start of each leg (after the start) is a natural check-in
+                self._leg = leg
+                alerts = list(alerts) + [{"watch_id": "new_leg", "message": f"leg {leg + 1} begins: heading "
+                                          f"{s['heading_deg']:.0f} deg at {s.get('along_m', 0):.0f} m along",
+                                          "values": {}}]
         if alerts:
             self._wake(ep, [{"kind": a["watch_id"], "detail": _alert_detail(a)} for a in alerts], "alerts")
         elif (self.periodic_s and s.get("elapsed_s", 0.0) > 60.0
@@ -436,7 +492,7 @@ def run_episode(prep: Preparation, arm: Arm, *, latency_s: Optional[float] = 6.0
     state = RaceState(twin.craft, twin.total_kg, prep.athlete, distance_m=prep.setup.distance_m,
                       start_t=twin.start_t, athlete_shaft=prep.athlete_shaft)
     panel = RacePanel(state, watches=arm.watches(), programs=SCREEN_PROGRAMS)
-    sink = CueSink(state, act=lambda a: twin.cue(a.get("ask", "none"), a.get("pace_s500")))
+    sink = CueSink(state, act=lambda a: twin.cue(a.get("ask", "none"), a.get("pace_s500"), a.get("line_m")))
     gate = make_cue_gate(sink, state, max_words=g["max_words"], quiet_start_s=g["quiet_start_s"],
                          quiet_finish_m=g["quiet_finish_m"], cooldown_s=g["cooldown_s"],
                          max_cues=g["max_cues"])

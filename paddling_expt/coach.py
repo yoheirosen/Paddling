@@ -53,7 +53,7 @@ from agent_lib.tool_registry import ToolPolicy, ToolRegistry
 
 from .race import RaceState
 
-_ASKS = ("ease", "push", "hold", "rate_up", "rate_down", "finish", "none")
+_ASKS = ("ease", "push", "hold", "rate_up", "rate_down", "finish", "line_in", "line_out", "none")
 
 __all__ = ["RaceScreen", "CueSink", "make_cue_gate", "RaceCoach", "COACH_SYSTEM", "COACH_PANEL_SYSTEM",
            "stand_in_coach", "make_coach_provider", "replay_race", "format_pace"]
@@ -159,7 +159,8 @@ class CueSink:
         s = self.state.last
         entry = {"t": s.get("t"), "elapsed_s": s.get("elapsed_s"), "distance_m": s.get("distance_m"),
                  "text": action["text"], "ask": action.get("ask", "none"),
-                 "pace_s500": action.get("pace_s500"), "source_events": action.get("events", []),
+                 "pace_s500": action.get("pace_s500"), "line_m": action.get("line_m"),
+                 "source_events": action.get("events", []),
                  "source": action.get("source")}
         self.log.append(entry)
         record.emit("cue", **entry)
@@ -188,6 +189,9 @@ def make_cue_gate(sink: CueSink, state: RaceState, *, max_words: int = 12,
         pace = a.get("pace_s500")
         if pace is not None and not (60.0 <= float(pace) <= 400.0):
             return f"pace {pace} s/500 m is not a racing pace"
+        line = a.get("line_m")
+        if line is not None and not (40.0 <= float(line) <= 600.0):
+            return f"line_m {line} is outside 40-600 m from shore"
         return None
 
     def quiet(a):
@@ -303,13 +307,31 @@ apart, and a cap per race.
 End with one line: the reason for your cue, or "no cue: <reason>"."""
 
 
+WATER_SECTION = """
+
+The water (this race): the course runs along a shore, one long leg out and one back. The tidal \
+stream is weaker close to shore and, behind points, eddies run against it inshore; the stream can \
+strengthen, weaken or turn during the race. The race brief has a forecast (also current_forecast); \
+it is local knowledge and can be wrong. line_m is the paddler's distance from shore, along_m the \
+position along the course from the start, heading_deg the heading (0 = north, the first leg). \
+push_local_mps estimates the current along the heading right now from GPS speed against what the \
+pod's shaft power should give (20-s means; it drifts slowly as the blade work tires); compare it \
+with push_along_mps (the race-long fit), over time and across lines, to see where the water is \
+better and whether the forecast holds. Changing line is slow: crossing 100 m takes about two \
+minutes and costs about 12 m of distance, so it pays only if the water differs for long enough. \
+Against the stream the inshore water is usually better; with it, the channel. Cue line_in or \
+line_out (100 m), or give line_m (a target distance from shore, 40-600 m)."""
+
+
 _CUE_SCHEMA = {
     "type": "object",
     "properties": {
         "text": {"type": "string", "description": "what the paddler hears, at most 12 words"},
-        "ask": {"type": "string", "enum": ["ease", "push", "hold", "rate_up", "rate_down", "finish", "none"],
+        "ask": {"type": "string", "enum": ["ease", "push", "hold", "rate_up", "rate_down", "finish",
+                                           "line_in", "line_out", "none"],
                 "description": "the change asked for"},
         "pace_s500": {"type": "number", "description": "optional target pace, s per 500 m, as the display shows it"},
+        "line_m": {"type": "number", "description": "with line_in / line_out: optional target distance from shore (m, 40-600)"},
     },
     "required": ["text"],
 }
@@ -329,7 +351,8 @@ class RaceCoach:
         self.provider, self.state, self.gate, self.panel = provider, state, gate, panel
         self.version = int(version)
         if system is None and panel is not None and self.version >= 2:
-            system = COACH_PANEL_SYSTEM_V2
+            system = COACH_PANEL_SYSTEM_V2 + (WATER_SECTION if self.version >= 3 else "")
+        self.forecast: Optional[Dict[str, Any]] = None
         self.cache_system = (panel is not None) if cache_system is None else bool(cache_system)
         self.system = system or (COACH_PANEL_SYSTEM if panel is not None else COACH_SYSTEM)
         self.caller, self.max_tokens = caller, max_tokens
@@ -348,6 +371,11 @@ class RaceCoach:
                              input_schema=tool.input_schema, writes=tool.writes)
                 allowed.append(name)
         self.recalibrations: List[Dict[str, Any]] = []
+        if self.version >= 3:
+            reg.register(self.current_forecast, name="current_forecast",
+                         description="The pre-race forecast of the tidal stream, its change during the race, "
+                                     "the inshore weakening and the eddies (local knowledge; can be wrong).")
+            allowed.append("current_forecast")
         if self.version >= 2:
             reg.register(self.set_critical_power, name="set_critical_power", writes=True,
                          description="Correct the critical power the reserve models use from now on "
@@ -369,8 +397,9 @@ class RaceCoach:
             rows.append(_mean_row(bucket))
         return {"every_30s": rows}
 
-    def cue(self, text: str, ask: str = "none", pace_s500: Optional[float] = None) -> Dict[str, Any]:
-        res = self.gate.deliver({"text": text, "ask": ask, "pace_s500": pace_s500,
+    def cue(self, text: str, ask: str = "none", pace_s500: Optional[float] = None,
+            line_m: Optional[float] = None) -> Dict[str, Any]:
+        res = self.gate.deliver({"text": text, "ask": ask, "pace_s500": pace_s500, "line_m": line_m,
                                  "events": [e["kind"] for e in self._events], "source": self.caller},
                                 source=self.caller)
         return {"spoken": bool(res.get("delivered")), "blocked": bool(res.get("blocked")),
@@ -392,6 +421,9 @@ class RaceCoach:
         record.emit("revision", target="critical_power", **entry)
         return {"ok": True, **out}
 
+    def current_forecast(self) -> Dict[str, Any]:
+        return dict(self.forecast or {"note": "no forecast for this race"})
+
     def _recent_minutes(self, n: int = 5) -> List[Dict[str, Any]]:
         H = [h for h in self.state.history if h.get("elapsed_s") is not None]
         if not H:
@@ -410,7 +442,8 @@ class RaceCoach:
                    "shaft_power_w": m("shaft_power_w", 0), "fade_pct": m("fade_pct", 1),
                    "reserve_pod_pct": None if m("w_bal_pod_frac", 3) is None else round(100 * m("w_bal_pod_frac", 3)),
                    "reserve_boat_pct": None if m("w_bal_frac", 3) is None else round(100 * m("w_bal_frac", 3)),
-                   "push_along_mps": m("push_along_mps", 2)}
+                   "push_along_mps": m("push_along_mps", 2), "push_local_mps": m("push_local_mps", 2),
+                   "line_m": m("line_m", 0), "along_m": m("along_m", 0)}
             out.append({k2: v for k2, v in row.items() if v is not None})
         return out
 
@@ -422,7 +455,8 @@ class RaceCoach:
         if self.version >= 2:
             last = s.last
             extra = {k: last.get(k) for k in ("shaft_power_w", "cp_shaft_w", "w_bal_pod_frac",
-                                              "empties_in_m_pod", "sustainable_shaft_power_w")}
+                                              "empties_in_m_pod", "sustainable_shaft_power_w",
+                                              "line_m", "along_m", "heading_deg", "push_local_mps")}
             msg["state"].update({k: (round(v, 3) if isinstance(v, float) else v) for k, v in extra.items() if v is not None})
             if self.panel is not None:
                 ev = self.panel.service.buffer
@@ -438,6 +472,10 @@ class RaceCoach:
                                                f"boat {s.athlete.cp_w:.0f} W / {s.athlete.w_prime_j / 1000:.1f} kJ" +
                                                (f"; shaft (pod) {s.athlete_shaft.cp_w:.0f} W / "
                                                 f"{s.athlete_shaft.w_prime_j / 1000:.1f} kJ" if s.athlete_shaft else ""))}
+                if self.version >= 3 and self.forecast:
+                    msg["race"]["forecast"] = self.forecast
+                    msg["race"]["course"] = (f"along a shore: one leg of {s.distance_m / 2:.0f} m north, "
+                                             "then back south to the start")
         t0 = s.last.get("t")
         res = run_tool_loop(self.provider, system=self.system,
                             messages=[Message(role="user", text=json.dumps(msg))],

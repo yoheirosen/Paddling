@@ -1,0 +1,8983 @@
+[
+{
+"seed": 8,
+"arm": "agent_v3",
+"setting": {
+"periodic_s": 300.0,
+"model": "claude-opus-5-5",
+"coach_version": 3
+},
+"race_time_s": 1954.1412221169876,
+"blown_s": 171.58357441255586,
+"reserve_left": 0.01768824446468188,
+"reference_s": 1917.8467079014063,
+"cues_spoken": 6,
+"cues_followed": 5,
+"cues_blocked": 1,
+"asks": {
+"ease": 4,
+"rate_down": 1,
+"push": 1
+},
+"cue_log": [
+{
+"race_s": 67.0,
+"text": "Settle now, ease into race pace, about 2:38",
+"ask": "ease",
+"pace_s500": 158
+},
+{
+"race_s": 415.7,
+"text": "Reserve nearly empty. Ease slightly, settle at 2:47 pace.",
+"ask": "ease",
+"pace_s500": 167
+},
+{
+"race_s": 568.8,
+"text": "Ease a touch, settle at 170 pace, long smooth strokes",
+"ask": "ease",
+"pace_s500": 170
+},
+{
+"race_s": 870.8,
+"text": "Ease a touch, longer stroke, settle at 174 pace",
+"ask": "ease",
+"pace_s500": 174
+},
+{
+"race_s": 995.4,
+"text": "Lengthen out, drop two strokes, same effort.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 1826.5,
+"text": "Longer strokes, build power steadily now to the line",
+"ask": "push",
+"pace_s500": 162
+}
+],
+"alerts": {
+"over_pace": 1,
+"fading": 2,
+"reserve_conflict": 1
+},
+"consultations": 10,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 7,
+"wall_s": 106.87,
+"model_usage": {
+"calls": 20,
+"errors": 0,
+"input_tokens": 11917,
+"output_tokens": 8430,
+"cache_create_tokens": 20144,
+"cache_read_tokens": 77238,
+"latency_median_s": 5.291093828000157,
+"latency_p90_s": 8.21552809800005
+},
+"model_usd_estimate": 0.3324
+},
+{
+"seed": 8,
+"arm": "autopilot",
+"setting": {
+"overpace_margin_m": 150.0,
+"fade_pct": -3.0
+},
+"race_time_s": 1944.2921329405685,
+"blown_s": 148.26135872252718,
+"reserve_left": 0.10101053733625764,
+"reference_s": 1917.8467079014063,
+"cues_spoken": 4,
+"cues_followed": 3,
+"cues_blocked": 0,
+"asks": {
+"ease": 1,
+"rate_down": 1,
+"hold": 2
+},
+"cue_log": [
+{
+"race_s": 110.5,
+"text": "Too hot. Settle to 2:42.",
+"ask": "ease",
+"pace_s500": 162.0
+},
+{
+"race_s": 569.8,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 1471.3,
+"text": "Speed is holding. Keep this.",
+"ask": "hold",
+"pace_s500": null
+},
+{
+"race_s": 1875.5,
+"text": "Speed is holding. Keep this.",
+"ask": "hold",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 1,
+"fading": 1,
+"reserve_conflict": 2
+},
+"wall_s": 1.57
+},
+{
+"seed": 8,
+"arm": "autopilot",
+"setting": {
+"overpace_margin_m": 300.0,
+"fade_pct": -3.0
+},
+"race_time_s": 1944.2921329405685,
+"blown_s": 148.26135872252718,
+"reserve_left": 0.10101053733625764,
+"reference_s": 1917.8467079014063,
+"cues_spoken": 4,
+"cues_followed": 3,
+"cues_blocked": 0,
+"asks": {
+"ease": 1,
+"rate_down": 1,
+"hold": 2
+},
+"cue_log": [
+{
+"race_s": 110.5,
+"text": "Too hot. Settle to 2:42.",
+"ask": "ease",
+"pace_s500": 162.0
+},
+{
+"race_s": 569.8,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 1471.3,
+"text": "Speed is holding. Keep this.",
+"ask": "hold",
+"pace_s500": null
+},
+{
+"race_s": 1875.5,
+"text": "Speed is holding. Keep this.",
+"ask": "hold",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 1,
+"fading": 1,
+"reserve_conflict": 2
+},
+"wall_s": 1.78
+},
+{
+"seed": 8,
+"arm": "autopilot",
+"setting": {
+"overpace_margin_m": 600.0,
+"fade_pct": -3.0
+},
+"race_time_s": 1944.2921329405685,
+"blown_s": 148.26135872252718,
+"reserve_left": 0.10101053733625764,
+"reference_s": 1917.8467079014063,
+"cues_spoken": 4,
+"cues_followed": 3,
+"cues_blocked": 0,
+"asks": {
+"ease": 1,
+"rate_down": 1,
+"hold": 2
+},
+"cue_log": [
+{
+"race_s": 110.5,
+"text": "Too hot. Settle to 2:42.",
+"ask": "ease",
+"pace_s500": 162.0
+},
+{
+"race_s": 569.8,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 1471.3,
+"text": "Speed is holding. Keep this.",
+"ask": "hold",
+"pace_s500": null
+},
+{
+"race_s": 1875.5,
+"text": "Speed is holding. Keep this.",
+"ask": "hold",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 1,
+"fading": 1,
+"reserve_conflict": 2
+},
+"wall_s": 1.63
+},
+{
+"seed": 8,
+"arm": "autopilot",
+"setting": {
+"overpace_margin_m": 150.0,
+"fade_pct": -5.0
+},
+"race_time_s": 1944.9938811524921,
+"blown_s": 160.18561517316732,
+"reserve_left": 0.11608460222235377,
+"reference_s": 1917.8467079014063,
+"cues_spoken": 4,
+"cues_followed": 3,
+"cues_blocked": 0,
+"asks": {
+"ease": 1,
+"rate_down": 1,
+"hold": 2
+},
+"cue_log": [
+{
+"race_s": 110.5,
+"text": "Too hot. Settle to 2:42.",
+"ask": "ease",
+"pace_s500": 162.0
+},
+{
+"race_s": 665.7,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 1505.2,
+"text": "Speed is holding. Keep this.",
+"ask": "hold",
+"pace_s500": null
+},
+{
+"race_s": 1874.3,
+"text": "Speed is holding. Keep this.",
+"ask": "hold",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 1,
+"fading": 1,
+"reserve_conflict": 2
+},
+"wall_s": 1.69
+},
+{
+"seed": 8,
+"arm": "autopilot",
+"setting": {
+"overpace_margin_m": 300.0,
+"fade_pct": -5.0
+},
+"race_time_s": 1944.9938811524921,
+"blown_s": 160.18561517316732,
+"reserve_left": 0.11608460222235377,
+"reference_s": 1917.8467079014063,
+"cues_spoken": 4,
+"cues_followed": 3,
+"cues_blocked": 0,
+"asks": {
+"ease": 1,
+"rate_down": 1,
+"hold": 2
+},
+"cue_log": [
+{
+"race_s": 110.5,
+"text": "Too hot. Settle to 2:42.",
+"ask": "ease",
+"pace_s500": 162.0
+},
+{
+"race_s": 665.7,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 1505.2,
+"text": "Speed is holding. Keep this.",
+"ask": "hold",
+"pace_s500": null
+},
+{
+"race_s": 1874.3,
+"text": "Speed is holding. Keep this.",
+"ask": "hold",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 1,
+"fading": 1,
+"reserve_conflict": 2
+},
+"wall_s": 1.61
+},
+{
+"seed": 8,
+"arm": "autopilot",
+"setting": {
+"overpace_margin_m": 600.0,
+"fade_pct": -5.0
+},
+"race_time_s": 1944.9938811524921,
+"blown_s": 160.18561517316732,
+"reserve_left": 0.11608460222235377,
+"reference_s": 1917.8467079014063,
+"cues_spoken": 4,
+"cues_followed": 3,
+"cues_blocked": 0,
+"asks": {
+"ease": 1,
+"rate_down": 1,
+"hold": 2
+},
+"cue_log": [
+{
+"race_s": 110.5,
+"text": "Too hot. Settle to 2:42.",
+"ask": "ease",
+"pace_s500": 162.0
+},
+{
+"race_s": 665.7,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 1505.2,
+"text": "Speed is holding. Keep this.",
+"ask": "hold",
+"pace_s500": null
+},
+{
+"race_s": 1874.3,
+"text": "Speed is holding. Keep this.",
+"ask": "hold",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 1,
+"fading": 1,
+"reserve_conflict": 2
+},
+"wall_s": 1.79
+},
+{
+"seed": 8,
+"arm": "autopilot_pod",
+"setting": {
+"overpace_margin_m": 150.0,
+"fade_pct": -3.0
+},
+"race_time_s": 1946.6410453264739,
+"blown_s": 168.1190275522732,
+"reserve_left": 0.014878224531100872,
+"reference_s": 1917.8467079014063,
+"cues_spoken": 2,
+"cues_followed": 1,
+"cues_blocked": 1,
+"asks": {
+"ease": 1,
+"rate_down": 1
+},
+"cue_log": [
+{
+"race_s": 110.5,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null
+},
+{
+"race_s": 569.8,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 1,
+"fading": 2
+},
+"wall_s": 1.83
+},
+{
+"seed": 8,
+"arm": "autopilot_pod",
+"setting": {
+"overpace_margin_m": 300.0,
+"fade_pct": -3.0
+},
+"race_time_s": 1946.6410453264739,
+"blown_s": 168.1190275522732,
+"reserve_left": 0.014878224531100872,
+"reference_s": 1917.8467079014063,
+"cues_spoken": 2,
+"cues_followed": 1,
+"cues_blocked": 1,
+"asks": {
+"ease": 1,
+"rate_down": 1
+},
+"cue_log": [
+{
+"race_s": 110.5,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null
+},
+{
+"race_s": 569.8,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 1,
+"fading": 2
+},
+"wall_s": 1.91
+},
+{
+"seed": 8,
+"arm": "autopilot_pod",
+"setting": {
+"overpace_margin_m": 600.0,
+"fade_pct": -3.0
+},
+"race_time_s": 1946.6410453264739,
+"blown_s": 168.1190275522732,
+"reserve_left": 0.014878224531100872,
+"reference_s": 1917.8467079014063,
+"cues_spoken": 2,
+"cues_followed": 1,
+"cues_blocked": 1,
+"asks": {
+"ease": 1,
+"rate_down": 1
+},
+"cue_log": [
+{
+"race_s": 110.5,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null
+},
+{
+"race_s": 569.8,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 1,
+"fading": 2
+},
+"wall_s": 1.81
+},
+{
+"seed": 8,
+"arm": "autopilot_pod",
+"setting": {
+"overpace_margin_m": 150.0,
+"fade_pct": -5.0
+},
+"race_time_s": 1944.7336308580784,
+"blown_s": 159.30574385359586,
+"reserve_left": 0.11425691456654986,
+"reference_s": 1917.8467079014063,
+"cues_spoken": 4,
+"cues_followed": 3,
+"cues_blocked": 0,
+"asks": {
+"ease": 1,
+"rate_down": 1,
+"hold": 2
+},
+"cue_log": [
+{
+"race_s": 110.5,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null
+},
+{
+"race_s": 665.7,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 1507.9,
+"text": "Speed is holding. Keep this.",
+"ask": "hold",
+"pace_s500": null
+},
+{
+"race_s": 1873.4,
+"text": "Speed is holding. Keep this.",
+"ask": "hold",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 1,
+"fading": 1,
+"reserve_conflict": 2
+},
+"wall_s": 1.8
+},
+{
+"seed": 8,
+"arm": "autopilot_pod",
+"setting": {
+"overpace_margin_m": 300.0,
+"fade_pct": -5.0
+},
+"race_time_s": 1944.7336308580784,
+"blown_s": 159.30574385359586,
+"reserve_left": 0.11425691456654986,
+"reference_s": 1917.8467079014063,
+"cues_spoken": 4,
+"cues_followed": 3,
+"cues_blocked": 0,
+"asks": {
+"ease": 1,
+"rate_down": 1,
+"hold": 2
+},
+"cue_log": [
+{
+"race_s": 110.5,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null
+},
+{
+"race_s": 665.7,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 1507.9,
+"text": "Speed is holding. Keep this.",
+"ask": "hold",
+"pace_s500": null
+},
+{
+"race_s": 1873.4,
+"text": "Speed is holding. Keep this.",
+"ask": "hold",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 1,
+"fading": 1,
+"reserve_conflict": 2
+},
+"wall_s": 1.74
+},
+{
+"seed": 8,
+"arm": "autopilot_pod",
+"setting": {
+"overpace_margin_m": 600.0,
+"fade_pct": -5.0
+},
+"race_time_s": 1944.7336308580784,
+"blown_s": 159.30574385359586,
+"reserve_left": 0.11425691456654986,
+"reference_s": 1917.8467079014063,
+"cues_spoken": 4,
+"cues_followed": 3,
+"cues_blocked": 0,
+"asks": {
+"ease": 1,
+"rate_down": 1,
+"hold": 2
+},
+"cue_log": [
+{
+"race_s": 110.5,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null
+},
+{
+"race_s": 665.7,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 1507.9,
+"text": "Speed is holding. Keep this.",
+"ask": "hold",
+"pace_s500": null
+},
+{
+"race_s": 1873.4,
+"text": "Speed is holding. Keep this.",
+"ask": "hold",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 1,
+"fading": 1,
+"reserve_conflict": 2
+},
+"wall_s": 1.68
+},
+{
+"seed": 8,
+"arm": "fixed_plan",
+"setting": {
+"mult": 0.97,
+"every_s": 120.0
+},
+"race_time_s": 1957.5434475161346,
+"blown_s": 15.606467699602875,
+"reserve_left": 0.029711592852009246,
+"reference_s": 1917.8467079014063,
+"cues_spoken": 16,
+"cues_followed": 12,
+"cues_blocked": 0,
+"asks": {
+"hold": 16
+},
+"cue_log": [
+{
+"race_s": 90.7,
+"text": "Hold 2:52.",
+"ask": "hold",
+"pace_s500": 171.7
+},
+{
+"race_s": 211.3,
+"text": "Hold 2:52.",
+"ask": "hold",
+"pace_s500": 171.7
+},
+{
+"race_s": 332.2,
+"text": "Hold 2:52.",
+"ask": "hold",
+"pace_s500": 171.7
+},
+{
+"race_s": 452.9,
+"text": "Hold 2:52.",
+"ask": "hold",
+"pace_s500": 171.7
+},
+{
+"race_s": 574.0,
+"text": "Hold 2:52.",
+"ask": "hold",
+"pace_s500": 171.7
+},
+{
+"race_s": 694.9,
+"text": "Hold 2:52.",
+"ask": "hold",
+"pace_s500": 171.7
+},
+{
+"race_s": 815.6,
+"text": "Hold 2:52.",
+"ask": "hold",
+"pace_s500": 171.7
+},
+{
+"race_s": 936.4,
+"text": "Hold 2:52.",
+"ask": "hold",
+"pace_s500": 171.7
+},
+{
+"race_s": 1056.8,
+"text": "Hold 2:52.",
+"ask": "hold",
+"pace_s500": 171.7
+},
+{
+"race_s": 1178.0,
+"text": "Hold 2:52.",
+"ask": "hold",
+"pace_s500": 171.7
+},
+{
+"race_s": 1298.3,
+"text": "Hold 2:52.",
+"ask": "hold",
+"pace_s500": 171.7
+},
+{
+"race_s": 1418.4,
+"text": "Hold 2:52.",
+"ask": "hold",
+"pace_s500": 171.7
+},
+{
+"race_s": 1538.7,
+"text": "Hold 2:52.",
+"ask": "hold",
+"pace_s500": 171.7
+},
+{
+"race_s": 1658.8,
+"text": "Hold 2:52.",
+"ask": "hold",
+"pace_s500": 171.7
+},
+{
+"race_s": 1778.9,
+"text": "Hold 2:52.",
+"ask": "hold",
+"pace_s500": 171.7
+},
+{
+"race_s": 1899.7,
+"text": "Hold 2:52.",
+"ask": "hold",
+"pace_s500": 171.7
+}
+],
+"alerts": {},
+"wall_s": 1.65
+},
+{
+"seed": 8,
+"arm": "fixed_plan",
+"setting": {
+"mult": 1.03,
+"every_s": 120.0
+},
+"race_time_s": 1959.9760438201733,
+"blown_s": 242.89156210782448,
+"reserve_left": 0.0593305318857257,
+"reference_s": 1917.8467079014063,
+"cues_spoken": 16,
+"cues_followed": 12,
+"cues_blocked": 0,
+"asks": {
+"hold": 16
+},
+"cue_log": [
+{
+"race_s": 90.7,
+"text": "Hold 2:42.",
+"ask": "hold",
+"pace_s500": 161.7
+},
+{
+"race_s": 211.3,
+"text": "Hold 2:42.",
+"ask": "hold",
+"pace_s500": 161.7
+},
+{
+"race_s": 331.4,
+"text": "Hold 2:42.",
+"ask": "hold",
+"pace_s500": 161.7
+},
+{
+"race_s": 452.0,
+"text": "Hold 2:42.",
+"ask": "hold",
+"pace_s500": 161.7
+},
+{
+"race_s": 572.3,
+"text": "Hold 2:42.",
+"ask": "hold",
+"pace_s500": 161.7
+},
+{
+"race_s": 692.7,
+"text": "Hold 2:42.",
+"ask": "hold",
+"pace_s500": 161.7
+},
+{
+"race_s": 813.2,
+"text": "Hold 2:42.",
+"ask": "hold",
+"pace_s500": 161.7
+},
+{
+"race_s": 934.1,
+"text": "Hold 2:42.",
+"ask": "hold",
+"pace_s500": 161.7
+},
+{
+"race_s": 1054.4,
+"text": "Hold 2:42.",
+"ask": "hold",
+"pace_s500": 161.7
+},
+{
+"race_s": 1174.5,
+"text": "Hold 2:42.",
+"ask": "hold",
+"pace_s500": 161.7
+},
+{
+"race_s": 1295.3,
+"text": "Hold 2:42.",
+"ask": "hold",
+"pace_s500": 161.7
+},
+{
+"race_s": 1416.1,
+"text": "Hold 2:42.",
+"ask": "hold",
+"pace_s500": 161.7
+},
+{
+"race_s": 1536.8,
+"text": "Hold 2:42.",
+"ask": "hold",
+"pace_s500": 161.7
+},
+{
+"race_s": 1657.1,
+"text": "Hold 2:42.",
+"ask": "hold",
+"pace_s500": 161.7
+},
+{
+"race_s": 1777.5,
+"text": "Hold 2:42.",
+"ask": "hold",
+"pace_s500": 161.7
+},
+{
+"race_s": 1898.9,
+"text": "Hold 2:42.",
+"ask": "hold",
+"pace_s500": 161.7
+}
+],
+"alerts": {},
+"wall_s": 1.97
+},
+{
+"seed": 8,
+"arm": "fixed_plan",
+"setting": {
+"mult": 1.0,
+"every_s": 120.0
+},
+"race_time_s": 1939.1176940006303,
+"blown_s": 55.43646127254387,
+"reserve_left": 0.08313970258917822,
+"reference_s": 1917.8467079014063,
+"cues_spoken": 16,
+"cues_followed": 12,
+"cues_blocked": 0,
+"asks": {
+"hold": 16
+},
+"cue_log": [
+{
+"race_s": 90.7,
+"text": "Hold 2:47.",
+"ask": "hold",
+"pace_s500": 166.6
+},
+{
+"race_s": 211.3,
+"text": "Hold 2:47.",
+"ask": "hold",
+"pace_s500": 166.6
+},
+{
+"race_s": 331.3,
+"text": "Hold 2:47.",
+"ask": "hold",
+"pace_s500": 166.6
+},
+{
+"race_s": 452.1,
+"text": "Hold 2:47.",
+"ask": "hold",
+"pace_s500": 166.6
+},
+{
+"race_s": 572.5,
+"text": "Hold 2:47.",
+"ask": "hold",
+"pace_s500": 166.6
+},
+{
+"race_s": 692.8,
+"text": "Hold 2:47.",
+"ask": "hold",
+"pace_s500": 166.6
+},
+{
+"race_s": 814.0,
+"text": "Hold 2:47.",
+"ask": "hold",
+"pace_s500": 166.6
+},
+{
+"race_s": 934.4,
+"text": "Hold 2:47.",
+"ask": "hold",
+"pace_s500": 166.6
+},
+{
+"race_s": 1054.6,
+"text": "Hold 2:47.",
+"ask": "hold",
+"pace_s500": 166.6
+},
+{
+"race_s": 1175.9,
+"text": "Hold 2:47.",
+"ask": "hold",
+"pace_s500": 166.6
+},
+{
+"race_s": 1296.3,
+"text": "Hold 2:47.",
+"ask": "hold",
+"pace_s500": 166.6
+},
+{
+"race_s": 1416.8,
+"text": "Hold 2:47.",
+"ask": "hold",
+"pace_s500": 166.6
+},
+{
+"race_s": 1537.7,
+"text": "Hold 2:47.",
+"ask": "hold",
+"pace_s500": 166.6
+},
+{
+"race_s": 1658.2,
+"text": "Hold 2:47.",
+"ask": "hold",
+"pace_s500": 166.6
+},
+{
+"race_s": 1778.3,
+"text": "Hold 2:47.",
+"ask": "hold",
+"pace_s500": 166.6
+},
+{
+"race_s": 1898.3,
+"text": "Hold 2:47.",
+"ask": "hold",
+"pace_s500": 166.6
+}
+],
+"alerts": {},
+"wall_s": 1.79
+},
+{
+"seed": 8,
+"arm": "fixed_plan",
+"setting": {
+"mult": 0.97,
+"every_s": 300.0
+},
+"race_time_s": 1944.9356502745063,
+"blown_s": 41.562512839575646,
+"reserve_left": 0.0670474322151119,
+"reference_s": 1917.8467079014063,
+"cues_spoken": 7,
+"cues_followed": 6,
+"cues_blocked": 0,
+"asks": {
+"hold": 7
+},
+"cue_log": [
+{
+"race_s": 90.7,
+"text": "Hold 2:52.",
+"ask": "hold",
+"pace_s500": 171.7
+},
+{
+"race_s": 391.3,
+"text": "Hold 2:52.",
+"ask": "hold",
+"pace_s500": 171.7
+},
+{
+"race_s": 691.4,
+"text": "Hold 2:52.",
+"ask": "hold",
+"pace_s500": 171.7
+},
+{
+"race_s": 992.3,
+"text": "Hold 2:52.",
+"ask": "hold",
+"pace_s500": 171.7
+},
+{
+"race_s": 1292.8,
+"text": "Hold 2:52.",
+"ask": "hold",
+"pace_s500": 171.7
+},
+{
+"race_s": 1593.9,
+"text": "Hold 2:52.",
+"ask": "hold",
+"pace_s500": 171.7
+},
+{
+"race_s": 1894.6,
+"text": "Hold 2:52.",
+"ask": "hold",
+"pace_s500": 171.7
+}
+],
+"alerts": {},
+"wall_s": 1.89
+},
+{
+"seed": 8,
+"arm": "fixed_plan",
+"setting": {
+"mult": 1.03,
+"every_s": 300.0
+},
+"race_time_s": 1971.86870974682,
+"blown_s": 361.65160518190766,
+"reserve_left": 0.06145810914238188,
+"reference_s": 1917.8467079014063,
+"cues_spoken": 7,
+"cues_followed": 6,
+"cues_blocked": 0,
+"asks": {
+"hold": 7
+},
+"cue_log": [
+{
+"race_s": 90.7,
+"text": "Hold 2:42.",
+"ask": "hold",
+"pace_s500": 161.7
+},
+{
+"race_s": 391.3,
+"text": "Hold 2:42.",
+"ask": "hold",
+"pace_s500": 161.7
+},
+{
+"race_s": 691.9,
+"text": "Hold 2:42.",
+"ask": "hold",
+"pace_s500": 161.7
+},
+{
+"race_s": 992.5,
+"text": "Hold 2:42.",
+"ask": "hold",
+"pace_s500": 161.7
+},
+{
+"race_s": 1293.4,
+"text": "Hold 2:42.",
+"ask": "hold",
+"pace_s500": 161.7
+},
+{
+"race_s": 1594.2,
+"text": "Hold 2:42.",
+"ask": "hold",
+"pace_s500": 161.7
+},
+{
+"race_s": 1894.2,
+"text": "Hold 2:42.",
+"ask": "hold",
+"pace_s500": 161.7
+}
+],
+"alerts": {},
+"wall_s": 1.49
+},
+{
+"seed": 8,
+"arm": "fixed_plan",
+"setting": {
+"mult": 1.0,
+"every_s": 300.0
+},
+"race_time_s": 1959.1452681290089,
+"blown_s": 137.47132128129036,
+"reserve_left": 0.08680983377882678,
+"reference_s": 1917.8467079014063,
+"cues_spoken": 7,
+"cues_followed": 6,
+"cues_blocked": 0,
+"asks": {
+"hold": 7
+},
+"cue_log": [
+{
+"race_s": 90.7,
+"text": "Hold 2:47.",
+"ask": "hold",
+"pace_s500": 166.6
+},
+{
+"race_s": 391.3,
+"text": "Hold 2:47.",
+"ask": "hold",
+"pace_s500": 166.6
+},
+{
+"race_s": 691.5,
+"text": "Hold 2:47.",
+"ask": "hold",
+"pace_s500": 166.6
+},
+{
+"race_s": 992.0,
+"text": "Hold 2:47.",
+"ask": "hold",
+"pace_s500": 166.6
+},
+{
+"race_s": 1292.4,
+"text": "Hold 2:47.",
+"ask": "hold",
+"pace_s500": 166.6
+},
+{
+"race_s": 1592.8,
+"text": "Hold 2:47.",
+"ask": "hold",
+"pace_s500": 166.6
+},
+{
+"race_s": 1893.3,
+"text": "Hold 2:47.",
+"ask": "hold",
+"pace_s500": 166.6
+}
+],
+"alerts": {},
+"wall_s": 1.67
+},
+{
+"seed": 8,
+"arm": "line_rule",
+"setting": {
+"inside_m": 120.0,
+"overpace_margin_m": 150.0,
+"fade_pct": -3.0
+},
+"race_time_s": 1946.6410453264739,
+"blown_s": 168.1190275522732,
+"reserve_left": 0.014878224531100872,
+"reference_s": 1917.8467079014063,
+"cues_spoken": 2,
+"cues_followed": 1,
+"cues_blocked": 1,
+"asks": {
+"ease": 1,
+"rate_down": 1
+},
+"cue_log": [
+{
+"race_s": 110.5,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null
+},
+{
+"race_s": 569.8,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 1,
+"fading": 2
+},
+"wall_s": 1.59
+},
+{
+"seed": 8,
+"arm": "line_rule",
+"setting": {
+"inside_m": 60.0,
+"overpace_margin_m": 150.0,
+"fade_pct": -3.0
+},
+"race_time_s": 1946.6410453264739,
+"blown_s": 168.1190275522732,
+"reserve_left": 0.014878224531100872,
+"reference_s": 1917.8467079014063,
+"cues_spoken": 2,
+"cues_followed": 1,
+"cues_blocked": 1,
+"asks": {
+"ease": 1,
+"rate_down": 1
+},
+"cue_log": [
+{
+"race_s": 110.5,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null
+},
+{
+"race_s": 569.8,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 1,
+"fading": 2
+},
+"wall_s": 1.83
+},
+{
+"seed": 8,
+"arm": "no_coach",
+"setting": {},
+"race_time_s": 1954.8251995795536,
+"blown_s": 190.205956993289,
+"reserve_left": 0.04813032870624285,
+"reference_s": 1917.8467079014063,
+"cues_spoken": 0,
+"cues_followed": 0,
+"cues_blocked": 0,
+"asks": {},
+"cue_log": [],
+"alerts": {},
+"wall_s": 1.65
+},
+{
+"seed": 9,
+"arm": "agent_v3",
+"setting": {
+"periodic_s": 300.0,
+"model": "claude-opus-5-5",
+"coach_version": 3
+},
+"race_time_s": 3396.2542473288117,
+"blown_s": 0.0,
+"reserve_left": 0.48479177652831856,
+"reference_s": 3518.9581390617136,
+"cues_spoken": 9,
+"cues_followed": 7,
+"cues_blocked": 1,
+"asks": {
+"ease": 4,
+"line_in": 2,
+"rate_down": 3
+},
+"cue_log": [
+{
+"race_s": 68.7,
+"text": "Too hot. Settle to steady race effort, about 2:40.",
+"ask": "ease",
+"pace_s500": 160
+},
+{
+"race_s": 417.5,
+"text": "Ease slightly, settle into steady rhythm, pace 156",
+"ask": "ease",
+"pace_s500": 156
+},
+{
+"race_s": 549.4,
+"text": "Ease slightly, longer strokes, settle at 156 pace",
+"ask": "ease",
+"pace_s500": 156
+},
+{
+"race_s": 1509.0,
+"text": "Stream's against us now. Angle in to shore, same effort.",
+"ask": "line_in",
+"pace_s500": null
+},
+{
+"race_s": 1633.5,
+"text": "Head in toward shore, same effort, tide weaker there.",
+"ask": "line_in",
+"pace_s500": null
+},
+{
+"race_s": 2231.7,
+"text": "Ease a touch, settle at 186, save the sprint",
+"ask": "ease",
+"pace_s500": 186
+},
+{
+"race_s": 2531.9,
+"text": "Same effort, lengthen out, drop rate two strokes.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 2717.2,
+"text": "Drop rate two, longer stroke, same effort",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 2897.8,
+"text": "Same effort, lengthen out, drop rate two strokes",
+"ask": "rate_down",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 1,
+"fading": 5,
+"reserve_conflict": 1
+},
+"consultations": 15,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 10,
+"wall_s": 146.47,
+"model_usage": {
+"calls": 28,
+"errors": 0,
+"input_tokens": 18225,
+"output_tokens": 11734,
+"cache_create_tokens": 23401,
+"cache_read_tokens": 110713,
+"latency_median_s": 5.145272640999792,
+"latency_p90_s": 7.6435166470000695
+},
+"model_usd_estimate": 0.4467
+},
+{
+"seed": 9,
+"arm": "autopilot",
+"setting": {
+"overpace_margin_m": 150.0,
+"fade_pct": -3.0
+},
+"race_time_s": 3513.4535349027797,
+"blown_s": 0.0,
+"reserve_left": 0.49939562820663164,
+"reference_s": 3518.9581390617136,
+"cues_spoken": 3,
+"cues_followed": 3,
+"cues_blocked": 0,
+"asks": {
+"ease": 1,
+"hold": 1,
+"rate_down": 1
+},
+"cue_log": [
+{
+"race_s": 111.6,
+"text": "Too hot. Settle to 2:39.",
+"ask": "ease",
+"pace_s500": 158.9
+},
+{
+"race_s": 501.2,
+"text": "Speed is holding. Keep this.",
+"ask": "hold",
+"pace_s500": null
+},
+{
+"race_s": 2367.6,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 1,
+"reserve_conflict": 1,
+"fading": 1
+},
+"wall_s": 3.6
+},
+{
+"seed": 9,
+"arm": "autopilot",
+"setting": {
+"overpace_margin_m": 300.0,
+"fade_pct": -3.0
+},
+"race_time_s": 3513.4535349027797,
+"blown_s": 0.0,
+"reserve_left": 0.49939562820663164,
+"reference_s": 3518.9581390617136,
+"cues_spoken": 3,
+"cues_followed": 3,
+"cues_blocked": 0,
+"asks": {
+"ease": 1,
+"hold": 1,
+"rate_down": 1
+},
+"cue_log": [
+{
+"race_s": 111.6,
+"text": "Too hot. Settle to 2:39.",
+"ask": "ease",
+"pace_s500": 158.9
+},
+{
+"race_s": 501.2,
+"text": "Speed is holding. Keep this.",
+"ask": "hold",
+"pace_s500": null
+},
+{
+"race_s": 2367.6,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 1,
+"reserve_conflict": 1,
+"fading": 1
+},
+"wall_s": 3.27
+},
+{
+"seed": 9,
+"arm": "autopilot",
+"setting": {
+"overpace_margin_m": 600.0,
+"fade_pct": -3.0
+},
+"race_time_s": 3513.4535349027797,
+"blown_s": 0.0,
+"reserve_left": 0.49939562820663164,
+"reference_s": 3518.9581390617136,
+"cues_spoken": 3,
+"cues_followed": 3,
+"cues_blocked": 0,
+"asks": {
+"ease": 1,
+"hold": 1,
+"rate_down": 1
+},
+"cue_log": [
+{
+"race_s": 111.6,
+"text": "Too hot. Settle to 2:39.",
+"ask": "ease",
+"pace_s500": 158.9
+},
+{
+"race_s": 501.2,
+"text": "Speed is holding. Keep this.",
+"ask": "hold",
+"pace_s500": null
+},
+{
+"race_s": 2367.6,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 1,
+"reserve_conflict": 1,
+"fading": 1
+},
+"wall_s": 3.15
+},
+{
+"seed": 9,
+"arm": "autopilot",
+"setting": {
+"overpace_margin_m": 150.0,
+"fade_pct": -5.0
+},
+"race_time_s": 3509.955505676653,
+"blown_s": 0.0,
+"reserve_left": 0.48925073645057593,
+"reference_s": 3518.9581390617136,
+"cues_spoken": 4,
+"cues_followed": 4,
+"cues_blocked": 1,
+"asks": {
+"ease": 1,
+"hold": 1,
+"rate_down": 2
+},
+"cue_log": [
+{
+"race_s": 111.6,
+"text": "Too hot. Settle to 2:39.",
+"ask": "ease",
+"pace_s500": 158.9
+},
+{
+"race_s": 501.2,
+"text": "Speed is holding. Keep this.",
+"ask": "hold",
+"pace_s500": null
+},
+{
+"race_s": 2733.8,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 2913.2,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 1,
+"reserve_conflict": 1,
+"fading": 3
+},
+"wall_s": 3.07
+},
+{
+"seed": 9,
+"arm": "autopilot",
+"setting": {
+"overpace_margin_m": 300.0,
+"fade_pct": -5.0
+},
+"race_time_s": 3509.955505676653,
+"blown_s": 0.0,
+"reserve_left": 0.48925073645057593,
+"reference_s": 3518.9581390617136,
+"cues_spoken": 4,
+"cues_followed": 4,
+"cues_blocked": 1,
+"asks": {
+"ease": 1,
+"hold": 1,
+"rate_down": 2
+},
+"cue_log": [
+{
+"race_s": 111.6,
+"text": "Too hot. Settle to 2:39.",
+"ask": "ease",
+"pace_s500": 158.9
+},
+{
+"race_s": 501.2,
+"text": "Speed is holding. Keep this.",
+"ask": "hold",
+"pace_s500": null
+},
+{
+"race_s": 2733.8,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 2913.2,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 1,
+"reserve_conflict": 1,
+"fading": 3
+},
+"wall_s": 3.3
+},
+{
+"seed": 9,
+"arm": "autopilot",
+"setting": {
+"overpace_margin_m": 600.0,
+"fade_pct": -5.0
+},
+"race_time_s": 3509.955505676653,
+"blown_s": 0.0,
+"reserve_left": 0.48925073645057593,
+"reference_s": 3518.9581390617136,
+"cues_spoken": 4,
+"cues_followed": 4,
+"cues_blocked": 1,
+"asks": {
+"ease": 1,
+"hold": 1,
+"rate_down": 2
+},
+"cue_log": [
+{
+"race_s": 111.6,
+"text": "Too hot. Settle to 2:39.",
+"ask": "ease",
+"pace_s500": 158.9
+},
+{
+"race_s": 501.2,
+"text": "Speed is holding. Keep this.",
+"ask": "hold",
+"pace_s500": null
+},
+{
+"race_s": 2733.8,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 2913.2,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 1,
+"reserve_conflict": 1,
+"fading": 3
+},
+"wall_s": 3.25
+},
+{
+"seed": 9,
+"arm": "autopilot_pod",
+"setting": {
+"overpace_margin_m": 150.0,
+"fade_pct": -3.0
+},
+"race_time_s": 3511.490200763133,
+"blown_s": 0.0,
+"reserve_left": 0.4551466865235965,
+"reference_s": 3518.9581390617136,
+"cues_spoken": 7,
+"cues_followed": 6,
+"cues_blocked": 0,
+"asks": {
+"ease": 4,
+"rate_down": 3
+},
+"cue_log": [
+{
+"race_s": 111.6,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null
+},
+{
+"race_s": 295.5,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null
+},
+{
+"race_s": 475.4,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null
+},
+{
+"race_s": 874.9,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null
+},
+{
+"race_s": 1895.6,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 2113.0,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 2292.2,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 4,
+"fading": 3
+},
+"wall_s": 3.23
+},
+{
+"seed": 9,
+"arm": "autopilot_pod",
+"setting": {
+"overpace_margin_m": 300.0,
+"fade_pct": -3.0
+},
+"race_time_s": 3511.490200763133,
+"blown_s": 0.0,
+"reserve_left": 0.4551466865235965,
+"reference_s": 3518.9581390617136,
+"cues_spoken": 7,
+"cues_followed": 6,
+"cues_blocked": 0,
+"asks": {
+"ease": 4,
+"rate_down": 3
+},
+"cue_log": [
+{
+"race_s": 111.6,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null
+},
+{
+"race_s": 295.5,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null
+},
+{
+"race_s": 475.4,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null
+},
+{
+"race_s": 874.9,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null
+},
+{
+"race_s": 1895.6,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 2113.0,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 2292.2,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 4,
+"fading": 3
+},
+"wall_s": 3.62
+},
+{
+"seed": 9,
+"arm": "autopilot_pod",
+"setting": {
+"overpace_margin_m": 600.0,
+"fade_pct": -3.0
+},
+"race_time_s": 3511.490200763133,
+"blown_s": 0.0,
+"reserve_left": 0.4551466865235965,
+"reference_s": 3518.9581390617136,
+"cues_spoken": 7,
+"cues_followed": 6,
+"cues_blocked": 0,
+"asks": {
+"ease": 4,
+"rate_down": 3
+},
+"cue_log": [
+{
+"race_s": 111.6,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null
+},
+{
+"race_s": 295.5,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null
+},
+{
+"race_s": 475.4,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null
+},
+{
+"race_s": 874.9,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null
+},
+{
+"race_s": 1895.6,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 2113.0,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 2292.2,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 4,
+"fading": 3
+},
+"wall_s": 3.52
+},
+{
+"seed": 9,
+"arm": "autopilot_pod",
+"setting": {
+"overpace_margin_m": 150.0,
+"fade_pct": -5.0
+},
+"race_time_s": 3513.3668422770793,
+"blown_s": 0.0,
+"reserve_left": 0.49905275416557965,
+"reference_s": 3518.9581390617136,
+"cues_spoken": 5,
+"cues_followed": 5,
+"cues_blocked": 0,
+"asks": {
+"ease": 4,
+"rate_down": 1
+},
+"cue_log": [
+{
+"race_s": 111.6,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null
+},
+{
+"race_s": 295.5,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null
+},
+{
+"race_s": 475.4,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null
+},
+{
+"race_s": 874.9,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null
+},
+{
+"race_s": 2468.7,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 4,
+"fading": 1
+},
+"wall_s": 3.17
+},
+{
+"seed": 9,
+"arm": "autopilot_pod",
+"setting": {
+"overpace_margin_m": 300.0,
+"fade_pct": -5.0
+},
+"race_time_s": 3513.3668422770793,
+"blown_s": 0.0,
+"reserve_left": 0.49905275416557965,
+"reference_s": 3518.9581390617136,
+"cues_spoken": 5,
+"cues_followed": 5,
+"cues_blocked": 0,
+"asks": {
+"ease": 4,
+"rate_down": 1
+},
+"cue_log": [
+{
+"race_s": 111.6,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null
+},
+{
+"race_s": 295.5,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null
+},
+{
+"race_s": 475.4,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null
+},
+{
+"race_s": 874.9,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null
+},
+{
+"race_s": 2468.7,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 4,
+"fading": 1
+},
+"wall_s": 3.36
+},
+{
+"seed": 9,
+"arm": "autopilot_pod",
+"setting": {
+"overpace_margin_m": 600.0,
+"fade_pct": -5.0
+},
+"race_time_s": 3513.3668422770793,
+"blown_s": 0.0,
+"reserve_left": 0.49905275416557965,
+"reference_s": 3518.9581390617136,
+"cues_spoken": 5,
+"cues_followed": 5,
+"cues_blocked": 0,
+"asks": {
+"ease": 4,
+"rate_down": 1
+},
+"cue_log": [
+{
+"race_s": 111.6,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null
+},
+{
+"race_s": 295.5,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null
+},
+{
+"race_s": 475.4,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null
+},
+{
+"race_s": 874.9,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null
+},
+{
+"race_s": 2468.7,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 4,
+"fading": 1
+},
+"wall_s": 3.2
+},
+{
+"seed": 9,
+"arm": "fixed_plan",
+"setting": {
+"mult": 0.97,
+"every_s": 120.0
+},
+"race_time_s": 3624.0144383976535,
+"blown_s": 73.36193857937886,
+"reserve_left": 0.009130205366402518,
+"reference_s": 3518.9581390617136,
+"cues_spoken": 20,
+"cues_followed": 16,
+"cues_blocked": 10,
+"asks": {
+"hold": 20
+},
+"cue_log": [
+{
+"race_s": 91.5,
+"text": "Hold 2:54.",
+"ask": "hold",
+"pace_s500": 174.2
+},
+{
+"race_s": 212.3,
+"text": "Hold 2:54.",
+"ask": "hold",
+"pace_s500": 174.2
+},
+{
+"race_s": 332.3,
+"text": "Hold 2:54.",
+"ask": "hold",
+"pace_s500": 174.2
+},
+{
+"race_s": 453.2,
+"text": "Hold 2:54.",
+"ask": "hold",
+"pace_s500": 174.2
+},
+{
+"race_s": 573.9,
+"text": "Hold 2:54.",
+"ask": "hold",
+"pace_s500": 174.2
+},
+{
+"race_s": 694.4,
+"text": "Hold 2:54.",
+"ask": "hold",
+"pace_s500": 174.2
+},
+{
+"race_s": 814.9,
+"text": "Hold 2:54.",
+"ask": "hold",
+"pace_s500": 174.2
+},
+{
+"race_s": 936.0,
+"text": "Hold 2:54.",
+"ask": "hold",
+"pace_s500": 174.2
+},
+{
+"race_s": 1057.0,
+"text": "Hold 2:54.",
+"ask": "hold",
+"pace_s500": 174.2
+},
+{
+"race_s": 1178.0,
+"text": "Hold 2:54.",
+"ask": "hold",
+"pace_s500": 174.2
+},
+{
+"race_s": 1298.8,
+"text": "Hold 2:54.",
+"ask": "hold",
+"pace_s500": 174.2
+},
+{
+"race_s": 1419.6,
+"text": "Hold 2:54.",
+"ask": "hold",
+"pace_s500": 174.2
+},
+{
+"race_s": 1540.5,
+"text": "Hold 2:54.",
+"ask": "hold",
+"pace_s500": 174.2
+},
+{
+"race_s": 1660.5,
+"text": "Hold 2:54.",
+"ask": "hold",
+"pace_s500": 174.2
+},
+{
+"race_s": 1780.7,
+"text": "Hold 2:54.",
+"ask": "hold",
+"pace_s500": 174.2
+},
+{
+"race_s": 1902.0,
+"text": "Hold 2:54.",
+"ask": "hold",
+"pace_s500": 174.2
+},
+{
+"race_s": 2022.7,
+"text": "Hold 2:54.",
+"ask": "hold",
+"pace_s500": 174.2
+},
+{
+"race_s": 2143.5,
+"text": "Hold 2:54.",
+"ask": "hold",
+"pace_s500": 174.2
+},
+{
+"race_s": 2263.6,
+"text": "Hold 2:54.",
+"ask": "hold",
+"pace_s500": 174.2
+},
+{
+"race_s": 2384.0,
+"text": "Hold 2:54.",
+"ask": "hold",
+"pace_s500": 174.2
+}
+],
+"alerts": {},
+"wall_s": 3.15
+},
+{
+"seed": 9,
+"arm": "fixed_plan",
+"setting": {
+"mult": 1.03,
+"every_s": 120.0
+},
+"race_time_s": 3621.3792699806836,
+"blown_s": 74.42227404451931,
+"reserve_left": 0.10433901599119408,
+"reference_s": 3518.9581390617136,
+"cues_spoken": 20,
+"cues_followed": 16,
+"cues_blocked": 10,
+"asks": {
+"hold": 20
+},
+"cue_log": [
+{
+"race_s": 91.5,
+"text": "Hold 2:44.",
+"ask": "hold",
+"pace_s500": 164.1
+},
+{
+"race_s": 212.3,
+"text": "Hold 2:44.",
+"ask": "hold",
+"pace_s500": 164.1
+},
+{
+"race_s": 332.4,
+"text": "Hold 2:44.",
+"ask": "hold",
+"pace_s500": 164.1
+},
+{
+"race_s": 453.3,
+"text": "Hold 2:44.",
+"ask": "hold",
+"pace_s500": 164.1
+},
+{
+"race_s": 573.9,
+"text": "Hold 2:44.",
+"ask": "hold",
+"pace_s500": 164.1
+},
+{
+"race_s": 694.5,
+"text": "Hold 2:44.",
+"ask": "hold",
+"pace_s500": 164.1
+},
+{
+"race_s": 814.9,
+"text": "Hold 2:44.",
+"ask": "hold",
+"pace_s500": 164.1
+},
+{
+"race_s": 936.0,
+"text": "Hold 2:44.",
+"ask": "hold",
+"pace_s500": 164.1
+},
+{
+"race_s": 1056.1,
+"text": "Hold 2:44.",
+"ask": "hold",
+"pace_s500": 164.1
+},
+{
+"race_s": 1176.2,
+"text": "Hold 2:44.",
+"ask": "hold",
+"pace_s500": 164.1
+},
+{
+"race_s": 1297.0,
+"text": "Hold 2:44.",
+"ask": "hold",
+"pace_s500": 164.1
+},
+{
+"race_s": 1417.8,
+"text": "Hold 2:44.",
+"ask": "hold",
+"pace_s500": 164.1
+},
+{
+"race_s": 1537.8,
+"text": "Hold 2:44.",
+"ask": "hold",
+"pace_s500": 164.1
+},
+{
+"race_s": 1657.8,
+"text": "Hold 2:44.",
+"ask": "hold",
+"pace_s500": 164.1
+},
+{
+"race_s": 1778.1,
+"text": "Hold 2:44.",
+"ask": "hold",
+"pace_s500": 164.1
+},
+{
+"race_s": 1898.4,
+"text": "Hold 2:44.",
+"ask": "hold",
+"pace_s500": 164.1
+},
+{
+"race_s": 2020.0,
+"text": "Hold 2:44.",
+"ask": "hold",
+"pace_s500": 164.1
+},
+{
+"race_s": 2140.0,
+"text": "Hold 2:44.",
+"ask": "hold",
+"pace_s500": 164.1
+},
+{
+"race_s": 2260.9,
+"text": "Hold 2:44.",
+"ask": "hold",
+"pace_s500": 164.1
+},
+{
+"race_s": 2381.2,
+"text": "Hold 2:44.",
+"ask": "hold",
+"pace_s500": 164.1
+}
+],
+"alerts": {},
+"wall_s": 3.08
+},
+{
+"seed": 9,
+"arm": "fixed_plan",
+"setting": {
+"mult": 1.0,
+"every_s": 120.0
+},
+"race_time_s": 3623.5233748690143,
+"blown_s": 73.3939692253466,
+"reserve_left": 0.08152297910710801,
+"reference_s": 3518.9581390617136,
+"cues_spoken": 20,
+"cues_followed": 16,
+"cues_blocked": 10,
+"asks": {
+"hold": 20
+},
+"cue_log": [
+{
+"race_s": 91.5,
+"text": "Hold 2:49.",
+"ask": "hold",
+"pace_s500": 169.0
+},
+{
+"race_s": 212.3,
+"text": "Hold 2:49.",
+"ask": "hold",
+"pace_s500": 169.0
+},
+{
+"race_s": 332.3,
+"text": "Hold 2:49.",
+"ask": "hold",
+"pace_s500": 169.0
+},
+{
+"race_s": 453.3,
+"text": "Hold 2:49.",
+"ask": "hold",
+"pace_s500": 169.0
+},
+{
+"race_s": 573.9,
+"text": "Hold 2:49.",
+"ask": "hold",
+"pace_s500": 169.0
+},
+{
+"race_s": 694.4,
+"text": "Hold 2:49.",
+"ask": "hold",
+"pace_s500": 169.0
+},
+{
+"race_s": 814.9,
+"text": "Hold 2:49.",
+"ask": "hold",
+"pace_s500": 169.0
+},
+{
+"race_s": 935.9,
+"text": "Hold 2:49.",
+"ask": "hold",
+"pace_s500": 169.0
+},
+{
+"race_s": 1057.0,
+"text": "Hold 2:49.",
+"ask": "hold",
+"pace_s500": 169.0
+},
+{
+"race_s": 1178.0,
+"text": "Hold 2:49.",
+"ask": "hold",
+"pace_s500": 169.0
+},
+{
+"race_s": 1298.8,
+"text": "Hold 2:49.",
+"ask": "hold",
+"pace_s500": 169.0
+},
+{
+"race_s": 1419.6,
+"text": "Hold 2:49.",
+"ask": "hold",
+"pace_s500": 169.0
+},
+{
+"race_s": 1539.6,
+"text": "Hold 2:49.",
+"ask": "hold",
+"pace_s500": 169.0
+},
+{
+"race_s": 1659.7,
+"text": "Hold 2:49.",
+"ask": "hold",
+"pace_s500": 169.0
+},
+{
+"race_s": 1779.9,
+"text": "Hold 2:49.",
+"ask": "hold",
+"pace_s500": 169.0
+},
+{
+"race_s": 1900.2,
+"text": "Hold 2:49.",
+"ask": "hold",
+"pace_s500": 169.0
+},
+{
+"race_s": 2021.0,
+"text": "Hold 2:49.",
+"ask": "hold",
+"pace_s500": 169.0
+},
+{
+"race_s": 2142.0,
+"text": "Hold 2:49.",
+"ask": "hold",
+"pace_s500": 169.0
+},
+{
+"race_s": 2262.9,
+"text": "Hold 2:49.",
+"ask": "hold",
+"pace_s500": 169.0
+},
+{
+"race_s": 2383.3,
+"text": "Hold 2:49.",
+"ask": "hold",
+"pace_s500": 169.0
+}
+],
+"alerts": {},
+"wall_s": 3.39
+},
+{
+"seed": 9,
+"arm": "fixed_plan",
+"setting": {
+"mult": 0.97,
+"every_s": 300.0
+},
+"race_time_s": 3588.153450050293,
+"blown_s": 144.77247740349634,
+"reserve_left": 0.09521134193136076,
+"reference_s": 3518.9581390617136,
+"cues_spoken": 12,
+"cues_followed": 10,
+"cues_blocked": 0,
+"asks": {
+"hold": 12
+},
+"cue_log": [
+{
+"race_s": 91.5,
+"text": "Hold 2:54.",
+"ask": "hold",
+"pace_s500": 174.2
+},
+{
+"race_s": 392.3,
+"text": "Hold 2:54.",
+"ask": "hold",
+"pace_s500": 174.2
+},
+{
+"race_s": 692.7,
+"text": "Hold 2:54.",
+"ask": "hold",
+"pace_s500": 174.2
+},
+{
+"race_s": 993.3,
+"text": "Hold 2:54.",
+"ask": "hold",
+"pace_s500": 174.2
+},
+{
+"race_s": 1293.9,
+"text": "Hold 2:54.",
+"ask": "hold",
+"pace_s500": 174.2
+},
+{
+"race_s": 1594.7,
+"text": "Hold 2:54.",
+"ask": "hold",
+"pace_s500": 174.2
+},
+{
+"race_s": 1895.6,
+"text": "Hold 2:54.",
+"ask": "hold",
+"pace_s500": 174.2
+},
+{
+"race_s": 2195.6,
+"text": "Hold 2:54.",
+"ask": "hold",
+"pace_s500": 174.2
+},
+{
+"race_s": 2495.9,
+"text": "Hold 2:54.",
+"ask": "hold",
+"pace_s500": 174.2
+},
+{
+"race_s": 2796.0,
+"text": "Hold 2:54.",
+"ask": "hold",
+"pace_s500": 174.2
+},
+{
+"race_s": 3096.3,
+"text": "Hold 2:54.",
+"ask": "hold",
+"pace_s500": 174.2
+},
+{
+"race_s": 3396.7,
+"text": "Hold 2:54.",
+"ask": "hold",
+"pace_s500": 174.2
+}
+],
+"alerts": {},
+"wall_s": 3.52
+},
+{
+"seed": 9,
+"arm": "fixed_plan",
+"setting": {
+"mult": 1.03,
+"every_s": 300.0
+},
+"race_time_s": 3589.0449720840115,
+"blown_s": 183.61202370529162,
+"reserve_left": 0.05261054261565292,
+"reference_s": 3518.9581390617136,
+"cues_spoken": 12,
+"cues_followed": 10,
+"cues_blocked": 0,
+"asks": {
+"hold": 12
+},
+"cue_log": [
+{
+"race_s": 91.5,
+"text": "Hold 2:44.",
+"ask": "hold",
+"pace_s500": 164.1
+},
+{
+"race_s": 392.4,
+"text": "Hold 2:44.",
+"ask": "hold",
+"pace_s500": 164.1
+},
+{
+"race_s": 692.7,
+"text": "Hold 2:44.",
+"ask": "hold",
+"pace_s500": 164.1
+},
+{
+"race_s": 993.3,
+"text": "Hold 2:44.",
+"ask": "hold",
+"pace_s500": 164.1
+},
+{
+"race_s": 1293.9,
+"text": "Hold 2:44.",
+"ask": "hold",
+"pace_s500": 164.1
+},
+{
+"race_s": 1594.7,
+"text": "Hold 2:44.",
+"ask": "hold",
+"pace_s500": 164.1
+},
+{
+"race_s": 1894.8,
+"text": "Hold 2:44.",
+"ask": "hold",
+"pace_s500": 164.1
+},
+{
+"race_s": 2195.2,
+"text": "Hold 2:44.",
+"ask": "hold",
+"pace_s500": 164.1
+},
+{
+"race_s": 2495.8,
+"text": "Hold 2:44.",
+"ask": "hold",
+"pace_s500": 164.1
+},
+{
+"race_s": 2796.7,
+"text": "Hold 2:44.",
+"ask": "hold",
+"pace_s500": 164.1
+},
+{
+"race_s": 3097.5,
+"text": "Hold 2:44.",
+"ask": "hold",
+"pace_s500": 164.1
+},
+{
+"race_s": 3397.7,
+"text": "Hold 2:44.",
+"ask": "hold",
+"pace_s500": 164.1
+}
+],
+"alerts": {},
+"wall_s": 3.76
+},
+{
+"seed": 9,
+"arm": "fixed_plan",
+"setting": {
+"mult": 1.0,
+"every_s": 300.0
+},
+"race_time_s": 3593.900660258763,
+"blown_s": 188.6055385391624,
+"reserve_left": 0.058959805295791305,
+"reference_s": 3518.9581390617136,
+"cues_spoken": 12,
+"cues_followed": 10,
+"cues_blocked": 0,
+"asks": {
+"hold": 12
+},
+"cue_log": [
+{
+"race_s": 91.5,
+"text": "Hold 2:49.",
+"ask": "hold",
+"pace_s500": 169.0
+},
+{
+"race_s": 392.3,
+"text": "Hold 2:49.",
+"ask": "hold",
+"pace_s500": 169.0
+},
+{
+"race_s": 692.7,
+"text": "Hold 2:49.",
+"ask": "hold",
+"pace_s500": 169.0
+},
+{
+"race_s": 993.3,
+"text": "Hold 2:49.",
+"ask": "hold",
+"pace_s500": 169.0
+},
+{
+"race_s": 1293.9,
+"text": "Hold 2:49.",
+"ask": "hold",
+"pace_s500": 169.0
+},
+{
+"race_s": 1594.5,
+"text": "Hold 2:49.",
+"ask": "hold",
+"pace_s500": 169.0
+},
+{
+"race_s": 1894.7,
+"text": "Hold 2:49.",
+"ask": "hold",
+"pace_s500": 169.0
+},
+{
+"race_s": 2195.2,
+"text": "Hold 2:49.",
+"ask": "hold",
+"pace_s500": 169.0
+},
+{
+"race_s": 2495.8,
+"text": "Hold 2:49.",
+"ask": "hold",
+"pace_s500": 169.0
+},
+{
+"race_s": 2796.6,
+"text": "Hold 2:49.",
+"ask": "hold",
+"pace_s500": 169.0
+},
+{
+"race_s": 3096.9,
+"text": "Hold 2:49.",
+"ask": "hold",
+"pace_s500": 169.0
+},
+{
+"race_s": 3397.6,
+"text": "Hold 2:49.",
+"ask": "hold",
+"pace_s500": 169.0
+}
+],
+"alerts": {},
+"wall_s": 3.35
+},
+{
+"seed": 9,
+"arm": "line_rule",
+"setting": {
+"inside_m": 120.0,
+"overpace_margin_m": 150.0,
+"fade_pct": -3.0
+},
+"race_time_s": 3409.5246807992485,
+"blown_s": 0.0,
+"reserve_left": 0.5553712600109539,
+"reference_s": 3518.9581390617136,
+"cues_spoken": 9,
+"cues_followed": 7,
+"cues_blocked": 0,
+"asks": {
+"ease": 4,
+"line_in": 1,
+"rate_down": 4
+},
+"cue_log": [
+{
+"race_s": 111.6,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null
+},
+{
+"race_s": 295.5,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null
+},
+{
+"race_s": 475.4,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null
+},
+{
+"race_s": 874.9,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null
+},
+{
+"race_s": 1490.8,
+"text": "Stream against us. Get inside, hug the shore.",
+"ask": "line_in",
+"pace_s500": null
+},
+{
+"race_s": 1614.7,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 2699.2,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 2879.1,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 3059.9,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 4,
+"fading": 4
+},
+"wall_s": 3.36
+},
+{
+"seed": 9,
+"arm": "line_rule",
+"setting": {
+"inside_m": 60.0,
+"overpace_margin_m": 150.0,
+"fade_pct": -3.0
+},
+"race_time_s": 3350.0155962640333,
+"blown_s": 0.0,
+"reserve_left": 0.5844146626631455,
+"reference_s": 3518.9581390617136,
+"cues_spoken": 7,
+"cues_followed": 6,
+"cues_blocked": 0,
+"asks": {
+"ease": 4,
+"line_in": 1,
+"rate_down": 2
+},
+"cue_log": [
+{
+"race_s": 111.6,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null
+},
+{
+"race_s": 295.5,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null
+},
+{
+"race_s": 475.4,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null
+},
+{
+"race_s": 874.9,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null
+},
+{
+"race_s": 1490.8,
+"text": "Stream against us. Get inside, hug the shore.",
+"ask": "line_in",
+"pace_s500": null
+},
+{
+"race_s": 1614.7,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 3287.4,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 4,
+"fading": 2
+},
+"wall_s": 3.4
+},
+{
+"seed": 9,
+"arm": "no_coach",
+"setting": {},
+"race_time_s": 3516.8739541416226,
+"blown_s": 0.0,
+"reserve_left": 0.5176245728452111,
+"reference_s": 3518.9581390617136,
+"cues_spoken": 0,
+"cues_followed": 0,
+"cues_blocked": 0,
+"asks": {},
+"cue_log": [],
+"alerts": {},
+"wall_s": 4.06
+},
+{
+"seed": 10,
+"arm": "agent_v3",
+"setting": {
+"periodic_s": 300.0,
+"model": "claude-opus-5-5",
+"coach_version": 3
+},
+"race_time_s": 3243.058418926543,
+"blown_s": 129.9358476898106,
+"reserve_left": 0.12931417313237398,
+"reference_s": 3215.975732154108,
+"cues_spoken": 11,
+"cues_followed": 10,
+"cues_blocked": 1,
+"asks": {
+"ease": 6,
+"rate_down": 3,
+"line_in": 1,
+"finish": 1
+},
+"cue_log": [
+{
+"race_s": 68.0,
+"text": "Settle into race pace now, long smooth strokes",
+"ask": "ease",
+"pace_s500": 158
+},
+{
+"race_s": 413.4,
+"text": "Ease slightly, settle into 2:40 pace and hold it",
+"ask": "ease",
+"pace_s500": 160
+},
+{
+"race_s": 585.8,
+"text": "Ease slightly now, settle at 162 pace",
+"ask": "ease",
+"pace_s500": 162
+},
+{
+"race_s": 716.2,
+"text": "Ease a touch, settle long and smooth at 2:45",
+"ask": "ease",
+"pace_s500": 165
+},
+{
+"race_s": 1018.9,
+"text": "Lengthen out, two strokes slower, same effort",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 1082.5,
+"text": "Lengthen out, drop two strokes, keep the same pressure",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 1385.9,
+"text": "Ease slightly, long strokes, settle at 161 pace",
+"ask": "ease",
+"pace_s500": 161
+},
+{
+"race_s": 1600.8,
+"text": "Stream's against us now; angle inshore to 100 metres",
+"ask": "line_in",
+"pace_s500": null
+},
+{
+"race_s": 2213.9,
+"text": "Ease a touch, long strokes, hold 2:48, save the sprint",
+"ask": "ease",
+"pace_s500": 168
+},
+{
+"race_s": 2387.5,
+"text": "Lengthen out, drop the rate two, same effort",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 3105.1,
+"text": "Go now, build to the line, empty it",
+"ask": "finish",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 2,
+"fading": 6
+},
+"consultations": 16,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 12,
+"wall_s": 168.32,
+"model_usage": {
+"calls": 31,
+"errors": 0,
+"input_tokens": 19473,
+"output_tokens": 13051,
+"cache_create_tokens": 28642,
+"cache_read_tokens": 120881,
+"latency_median_s": 4.469373201999588,
+"latency_p90_s": 8.572316030000366
+},
+"model_usd_estimate": 0.5063
+},
+{
+"seed": 10,
+"arm": "autopilot",
+"setting": {
+"overpace_margin_m": 150.0,
+"fade_pct": -3.0
+},
+"race_time_s": 3272.3678199612796,
+"blown_s": 392.80289043141914,
+"reserve_left": 0.14504449214140966,
+"reference_s": 3215.975732154108,
+"cues_spoken": 3,
+"cues_followed": 3,
+"cues_blocked": 0,
+"asks": {
+"ease": 1,
+"rate_down": 2
+},
+"cue_log": [
+{
+"race_s": 110.8,
+"text": "Too hot. Settle to 2:43.",
+"ask": "ease",
+"pace_s500": 163.2
+},
+{
+"race_s": 1274.9,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 1641.4,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 1,
+"fading": 2
+},
+"wall_s": 2.88
+},
+{
+"seed": 10,
+"arm": "autopilot",
+"setting": {
+"overpace_margin_m": 300.0,
+"fade_pct": -3.0
+},
+"race_time_s": 3272.3678199612796,
+"blown_s": 392.80289043141914,
+"reserve_left": 0.14504449214140966,
+"reference_s": 3215.975732154108,
+"cues_spoken": 3,
+"cues_followed": 3,
+"cues_blocked": 0,
+"asks": {
+"ease": 1,
+"rate_down": 2
+},
+"cue_log": [
+{
+"race_s": 110.8,
+"text": "Too hot. Settle to 2:43.",
+"ask": "ease",
+"pace_s500": 163.2
+},
+{
+"race_s": 1274.9,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 1641.4,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 1,
+"fading": 2
+},
+"wall_s": 3.19
+},
+{
+"seed": 10,
+"arm": "autopilot",
+"setting": {
+"overpace_margin_m": 600.0,
+"fade_pct": -3.0
+},
+"race_time_s": 3272.3678199612796,
+"blown_s": 392.80289043141914,
+"reserve_left": 0.14504449214140966,
+"reference_s": 3215.975732154108,
+"cues_spoken": 3,
+"cues_followed": 3,
+"cues_blocked": 0,
+"asks": {
+"ease": 1,
+"rate_down": 2
+},
+"cue_log": [
+{
+"race_s": 110.8,
+"text": "Too hot. Settle to 2:43.",
+"ask": "ease",
+"pace_s500": 163.2
+},
+{
+"race_s": 1274.9,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 1641.4,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 1,
+"fading": 2
+},
+"wall_s": 3.05
+},
+{
+"seed": 10,
+"arm": "autopilot",
+"setting": {
+"overpace_margin_m": 150.0,
+"fade_pct": -5.0
+},
+"race_time_s": 3265.568561417615,
+"blown_s": 260.6133956773808,
+"reserve_left": 0.14709849837574954,
+"reference_s": 3215.975732154108,
+"cues_spoken": 6,
+"cues_followed": 6,
+"cues_blocked": 0,
+"asks": {
+"ease": 1,
+"rate_down": 5
+},
+"cue_log": [
+{
+"race_s": 110.8,
+"text": "Too hot. Settle to 2:43.",
+"ask": "ease",
+"pace_s500": 163.2
+},
+{
+"race_s": 1361.6,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 1890.6,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 2550.9,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 2830.5,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 3124.6,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 1,
+"fading": 5
+},
+"wall_s": 2.88
+},
+{
+"seed": 10,
+"arm": "autopilot",
+"setting": {
+"overpace_margin_m": 300.0,
+"fade_pct": -5.0
+},
+"race_time_s": 3265.568561417615,
+"blown_s": 260.6133956773808,
+"reserve_left": 0.14709849837574954,
+"reference_s": 3215.975732154108,
+"cues_spoken": 6,
+"cues_followed": 6,
+"cues_blocked": 0,
+"asks": {
+"ease": 1,
+"rate_down": 5
+},
+"cue_log": [
+{
+"race_s": 110.8,
+"text": "Too hot. Settle to 2:43.",
+"ask": "ease",
+"pace_s500": 163.2
+},
+{
+"race_s": 1361.6,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 1890.6,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 2550.9,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 2830.5,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 3124.6,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 1,
+"fading": 5
+},
+"wall_s": 2.88
+},
+{
+"seed": 10,
+"arm": "autopilot",
+"setting": {
+"overpace_margin_m": 600.0,
+"fade_pct": -5.0
+},
+"race_time_s": 3265.568561417615,
+"blown_s": 260.6133956773808,
+"reserve_left": 0.14709849837574954,
+"reference_s": 3215.975732154108,
+"cues_spoken": 6,
+"cues_followed": 6,
+"cues_blocked": 0,
+"asks": {
+"ease": 1,
+"rate_down": 5
+},
+"cue_log": [
+{
+"race_s": 110.8,
+"text": "Too hot. Settle to 2:43.",
+"ask": "ease",
+"pace_s500": 163.2
+},
+{
+"race_s": 1361.6,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 1890.6,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 2550.9,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 2830.5,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 3124.6,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 1,
+"fading": 5
+},
+"wall_s": 3.37
+},
+{
+"seed": 10,
+"arm": "autopilot_pod",
+"setting": {
+"overpace_margin_m": 150.0,
+"fade_pct": -3.0
+},
+"race_time_s": 3261.296407063465,
+"blown_s": 258.40990993753,
+"reserve_left": 0.17249272848164346,
+"reference_s": 3215.975732154108,
+"cues_spoken": 4,
+"cues_followed": 4,
+"cues_blocked": 0,
+"asks": {
+"ease": 2,
+"rate_down": 2
+},
+"cue_log": [
+{
+"race_s": 110.8,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null
+},
+{
+"race_s": 735.2,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 958.5,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null
+},
+{
+"race_s": 1860.3,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 2,
+"fading": 2
+},
+"wall_s": 2.44
+},
+{
+"seed": 10,
+"arm": "autopilot_pod",
+"setting": {
+"overpace_margin_m": 300.0,
+"fade_pct": -3.0
+},
+"race_time_s": 3261.296407063465,
+"blown_s": 258.40990993753,
+"reserve_left": 0.17249272848164346,
+"reference_s": 3215.975732154108,
+"cues_spoken": 4,
+"cues_followed": 4,
+"cues_blocked": 0,
+"asks": {
+"ease": 2,
+"rate_down": 2
+},
+"cue_log": [
+{
+"race_s": 110.8,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null
+},
+{
+"race_s": 735.2,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 958.5,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null
+},
+{
+"race_s": 1860.3,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 2,
+"fading": 2
+},
+"wall_s": 2.8
+},
+{
+"seed": 10,
+"arm": "autopilot_pod",
+"setting": {
+"overpace_margin_m": 600.0,
+"fade_pct": -3.0
+},
+"race_time_s": 3261.296407063465,
+"blown_s": 258.40990993753,
+"reserve_left": 0.17249272848164346,
+"reference_s": 3215.975732154108,
+"cues_spoken": 4,
+"cues_followed": 4,
+"cues_blocked": 0,
+"asks": {
+"ease": 2,
+"rate_down": 2
+},
+"cue_log": [
+{
+"race_s": 110.8,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null
+},
+{
+"race_s": 735.2,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 958.5,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null
+},
+{
+"race_s": 1860.3,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 2,
+"fading": 2
+},
+"wall_s": 3.24
+},
+{
+"seed": 10,
+"arm": "autopilot_pod",
+"setting": {
+"overpace_margin_m": 150.0,
+"fade_pct": -5.0
+},
+"race_time_s": 3237.1770961017164,
+"blown_s": 130.65165988636429,
+"reserve_left": 0.008079934052905097,
+"reference_s": 3215.975732154108,
+"cues_spoken": 5,
+"cues_followed": 5,
+"cues_blocked": 0,
+"asks": {
+"ease": 2,
+"rate_down": 3
+},
+"cue_log": [
+{
+"race_s": 110.8,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null
+},
+{
+"race_s": 852.2,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 960.2,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null
+},
+{
+"race_s": 1040.3,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 2950.0,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 2,
+"fading": 3
+},
+"wall_s": 3.34
+},
+{
+"seed": 10,
+"arm": "autopilot_pod",
+"setting": {
+"overpace_margin_m": 300.0,
+"fade_pct": -5.0
+},
+"race_time_s": 3237.1770961017164,
+"blown_s": 130.65165988636429,
+"reserve_left": 0.008079934052905097,
+"reference_s": 3215.975732154108,
+"cues_spoken": 5,
+"cues_followed": 5,
+"cues_blocked": 0,
+"asks": {
+"ease": 2,
+"rate_down": 3
+},
+"cue_log": [
+{
+"race_s": 110.8,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null
+},
+{
+"race_s": 852.2,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 960.2,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null
+},
+{
+"race_s": 1040.3,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 2950.0,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 2,
+"fading": 3
+},
+"wall_s": 3.06
+},
+{
+"seed": 10,
+"arm": "autopilot_pod",
+"setting": {
+"overpace_margin_m": 600.0,
+"fade_pct": -5.0
+},
+"race_time_s": 3237.1770961017164,
+"blown_s": 130.65165988636429,
+"reserve_left": 0.008079934052905097,
+"reference_s": 3215.975732154108,
+"cues_spoken": 5,
+"cues_followed": 5,
+"cues_blocked": 0,
+"asks": {
+"ease": 2,
+"rate_down": 3
+},
+"cue_log": [
+{
+"race_s": 110.8,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null
+},
+{
+"race_s": 852.2,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 960.2,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null
+},
+{
+"race_s": 1040.3,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 2950.0,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 2,
+"fading": 3
+},
+"wall_s": 3.37
+},
+{
+"seed": 10,
+"arm": "fixed_plan",
+"setting": {
+"mult": 0.97,
+"every_s": 120.0
+},
+"race_time_s": 3236.5424234923266,
+"blown_s": 0.0,
+"reserve_left": 0.46261920160080217,
+"reference_s": 3215.975732154108,
+"cues_spoken": 20,
+"cues_followed": 18,
+"cues_blocked": 7,
+"asks": {
+"hold": 20
+},
+"cue_log": [
+{
+"race_s": 90.9,
+"text": "Hold 2:45.",
+"ask": "hold",
+"pace_s500": 165.2
+},
+{
+"race_s": 211.7,
+"text": "Hold 2:45.",
+"ask": "hold",
+"pace_s500": 165.2
+},
+{
+"race_s": 332.4,
+"text": "Hold 2:45.",
+"ask": "hold",
+"pace_s500": 165.2
+},
+{
+"race_s": 453.0,
+"text": "Hold 2:45.",
+"ask": "hold",
+"pace_s500": 165.2
+},
+{
+"race_s": 573.3,
+"text": "Hold 2:45.",
+"ask": "hold",
+"pace_s500": 165.2
+},
+{
+"race_s": 693.6,
+"text": "Hold 2:45.",
+"ask": "hold",
+"pace_s500": 165.2
+},
+{
+"race_s": 813.8,
+"text": "Hold 2:45.",
+"ask": "hold",
+"pace_s500": 165.2
+},
+{
+"race_s": 933.8,
+"text": "Hold 2:45.",
+"ask": "hold",
+"pace_s500": 165.2
+},
+{
+"race_s": 1053.8,
+"text": "Hold 2:45.",
+"ask": "hold",
+"pace_s500": 165.2
+},
+{
+"race_s": 1174.6,
+"text": "Hold 2:45.",
+"ask": "hold",
+"pace_s500": 165.2
+},
+{
+"race_s": 1295.2,
+"text": "Hold 2:45.",
+"ask": "hold",
+"pace_s500": 165.2
+},
+{
+"race_s": 1415.9,
+"text": "Hold 2:45.",
+"ask": "hold",
+"pace_s500": 165.2
+},
+{
+"race_s": 1536.8,
+"text": "Hold 2:45.",
+"ask": "hold",
+"pace_s500": 165.2
+},
+{
+"race_s": 1657.5,
+"text": "Hold 2:45.",
+"ask": "hold",
+"pace_s500": 165.2
+},
+{
+"race_s": 1777.5,
+"text": "Hold 2:45.",
+"ask": "hold",
+"pace_s500": 165.2
+},
+{
+"race_s": 1899.0,
+"text": "Hold 2:45.",
+"ask": "hold",
+"pace_s500": 165.2
+},
+{
+"race_s": 2019.8,
+"text": "Hold 2:45.",
+"ask": "hold",
+"pace_s500": 165.2
+},
+{
+"race_s": 2140.2,
+"text": "Hold 2:45.",
+"ask": "hold",
+"pace_s500": 165.2
+},
+{
+"race_s": 2262.0,
+"text": "Hold 2:45.",
+"ask": "hold",
+"pace_s500": 165.2
+},
+{
+"race_s": 2382.8,
+"text": "Hold 2:45.",
+"ask": "hold",
+"pace_s500": 165.2
+}
+],
+"alerts": {},
+"wall_s": 3.33
+},
+{
+"seed": 10,
+"arm": "fixed_plan",
+"setting": {
+"mult": 1.03,
+"every_s": 120.0
+},
+"race_time_s": 3292.822807988722,
+"blown_s": 873.76974248576,
+"reserve_left": 0.1275722056469948,
+"reference_s": 3215.975732154108,
+"cues_spoken": 20,
+"cues_followed": 18,
+"cues_blocked": 7,
+"asks": {
+"hold": 20
+},
+"cue_log": [
+{
+"race_s": 90.9,
+"text": "Hold 2:36.",
+"ask": "hold",
+"pace_s500": 155.6
+},
+{
+"race_s": 211.8,
+"text": "Hold 2:36.",
+"ask": "hold",
+"pace_s500": 155.6
+},
+{
+"race_s": 332.0,
+"text": "Hold 2:36.",
+"ask": "hold",
+"pace_s500": 155.6
+},
+{
+"race_s": 452.9,
+"text": "Hold 2:36.",
+"ask": "hold",
+"pace_s500": 155.6
+},
+{
+"race_s": 573.5,
+"text": "Hold 2:36.",
+"ask": "hold",
+"pace_s500": 155.6
+},
+{
+"race_s": 694.3,
+"text": "Hold 2:36.",
+"ask": "hold",
+"pace_s500": 155.6
+},
+{
+"race_s": 814.6,
+"text": "Hold 2:36.",
+"ask": "hold",
+"pace_s500": 155.6
+},
+{
+"race_s": 935.1,
+"text": "Hold 2:36.",
+"ask": "hold",
+"pace_s500": 155.6
+},
+{
+"race_s": 1055.2,
+"text": "Hold 2:36.",
+"ask": "hold",
+"pace_s500": 155.6
+},
+{
+"race_s": 1175.8,
+"text": "Hold 2:36.",
+"ask": "hold",
+"pace_s500": 155.6
+},
+{
+"race_s": 1296.2,
+"text": "Hold 2:36.",
+"ask": "hold",
+"pace_s500": 155.6
+},
+{
+"race_s": 1416.3,
+"text": "Hold 2:36.",
+"ask": "hold",
+"pace_s500": 155.6
+},
+{
+"race_s": 1537.0,
+"text": "Hold 2:36.",
+"ask": "hold",
+"pace_s500": 155.6
+},
+{
+"race_s": 1657.6,
+"text": "Hold 2:36.",
+"ask": "hold",
+"pace_s500": 155.6
+},
+{
+"race_s": 1777.7,
+"text": "Hold 2:36.",
+"ask": "hold",
+"pace_s500": 155.6
+},
+{
+"race_s": 1898.3,
+"text": "Hold 2:36.",
+"ask": "hold",
+"pace_s500": 155.6
+},
+{
+"race_s": 2019.2,
+"text": "Hold 2:36.",
+"ask": "hold",
+"pace_s500": 155.6
+},
+{
+"race_s": 2139.2,
+"text": "Hold 2:36.",
+"ask": "hold",
+"pace_s500": 155.6
+},
+{
+"race_s": 2260.0,
+"text": "Hold 2:36.",
+"ask": "hold",
+"pace_s500": 155.6
+},
+{
+"race_s": 2381.0,
+"text": "Hold 2:36.",
+"ask": "hold",
+"pace_s500": 155.6
+}
+],
+"alerts": {},
+"wall_s": 2.98
+},
+{
+"seed": 10,
+"arm": "fixed_plan",
+"setting": {
+"mult": 1.0,
+"every_s": 120.0
+},
+"race_time_s": 3259.721641582176,
+"blown_s": 452.644057757375,
+"reserve_left": 0.08856772075284562,
+"reference_s": 3215.975732154108,
+"cues_spoken": 20,
+"cues_followed": 18,
+"cues_blocked": 7,
+"asks": {
+"hold": 20
+},
+"cue_log": [
+{
+"race_s": 90.9,
+"text": "Hold 2:40.",
+"ask": "hold",
+"pace_s500": 160.2
+},
+{
+"race_s": 211.7,
+"text": "Hold 2:40.",
+"ask": "hold",
+"pace_s500": 160.2
+},
+{
+"race_s": 332.6,
+"text": "Hold 2:40.",
+"ask": "hold",
+"pace_s500": 160.2
+},
+{
+"race_s": 453.5,
+"text": "Hold 2:40.",
+"ask": "hold",
+"pace_s500": 160.2
+},
+{
+"race_s": 573.6,
+"text": "Hold 2:40.",
+"ask": "hold",
+"pace_s500": 160.2
+},
+{
+"race_s": 694.1,
+"text": "Hold 2:40.",
+"ask": "hold",
+"pace_s500": 160.2
+},
+{
+"race_s": 814.4,
+"text": "Hold 2:40.",
+"ask": "hold",
+"pace_s500": 160.2
+},
+{
+"race_s": 934.6,
+"text": "Hold 2:40.",
+"ask": "hold",
+"pace_s500": 160.2
+},
+{
+"race_s": 1054.7,
+"text": "Hold 2:40.",
+"ask": "hold",
+"pace_s500": 160.2
+},
+{
+"race_s": 1175.2,
+"text": "Hold 2:40.",
+"ask": "hold",
+"pace_s500": 160.2
+},
+{
+"race_s": 1295.7,
+"text": "Hold 2:40.",
+"ask": "hold",
+"pace_s500": 160.2
+},
+{
+"race_s": 1416.6,
+"text": "Hold 2:40.",
+"ask": "hold",
+"pace_s500": 160.2
+},
+{
+"race_s": 1536.8,
+"text": "Hold 2:40.",
+"ask": "hold",
+"pace_s500": 160.2
+},
+{
+"race_s": 1657.9,
+"text": "Hold 2:40.",
+"ask": "hold",
+"pace_s500": 160.2
+},
+{
+"race_s": 1778.8,
+"text": "Hold 2:40.",
+"ask": "hold",
+"pace_s500": 160.2
+},
+{
+"race_s": 1898.9,
+"text": "Hold 2:40.",
+"ask": "hold",
+"pace_s500": 160.2
+},
+{
+"race_s": 2019.8,
+"text": "Hold 2:40.",
+"ask": "hold",
+"pace_s500": 160.2
+},
+{
+"race_s": 2140.6,
+"text": "Hold 2:40.",
+"ask": "hold",
+"pace_s500": 160.2
+},
+{
+"race_s": 2260.8,
+"text": "Hold 2:40.",
+"ask": "hold",
+"pace_s500": 160.2
+},
+{
+"race_s": 2381.6,
+"text": "Hold 2:40.",
+"ask": "hold",
+"pace_s500": 160.2
+}
+],
+"alerts": {},
+"wall_s": 2.65
+},
+{
+"seed": 10,
+"arm": "fixed_plan",
+"setting": {
+"mult": 0.97,
+"every_s": 300.0
+},
+"race_time_s": 3214.188495593432,
+"blown_s": 0.0,
+"reserve_left": 0.5004270415341676,
+"reference_s": 3215.975732154108,
+"cues_spoken": 11,
+"cues_followed": 10,
+"cues_blocked": 0,
+"asks": {
+"hold": 11
+},
+"cue_log": [
+{
+"race_s": 90.9,
+"text": "Hold 2:45.",
+"ask": "hold",
+"pace_s500": 165.2
+},
+{
+"race_s": 391.8,
+"text": "Hold 2:45.",
+"ask": "hold",
+"pace_s500": 165.2
+},
+{
+"race_s": 692.4,
+"text": "Hold 2:45.",
+"ask": "hold",
+"pace_s500": 165.2
+},
+{
+"race_s": 993.0,
+"text": "Hold 2:45.",
+"ask": "hold",
+"pace_s500": 165.2
+},
+{
+"race_s": 1293.8,
+"text": "Hold 2:45.",
+"ask": "hold",
+"pace_s500": 165.2
+},
+{
+"race_s": 1594.0,
+"text": "Hold 2:45.",
+"ask": "hold",
+"pace_s500": 165.2
+},
+{
+"race_s": 1894.6,
+"text": "Hold 2:45.",
+"ask": "hold",
+"pace_s500": 165.2
+},
+{
+"race_s": 2195.1,
+"text": "Hold 2:45.",
+"ask": "hold",
+"pace_s500": 165.2
+},
+{
+"race_s": 2495.7,
+"text": "Hold 2:45.",
+"ask": "hold",
+"pace_s500": 165.2
+},
+{
+"race_s": 2796.5,
+"text": "Hold 2:45.",
+"ask": "hold",
+"pace_s500": 165.2
+},
+{
+"race_s": 3097.2,
+"text": "Hold 2:45.",
+"ask": "hold",
+"pace_s500": 165.2
+}
+],
+"alerts": {},
+"wall_s": 3.0
+},
+{
+"seed": 10,
+"arm": "fixed_plan",
+"setting": {
+"mult": 1.03,
+"every_s": 300.0
+},
+"race_time_s": 3292.5573871259885,
+"blown_s": 882.1321373107211,
+"reserve_left": 0.14323420755080127,
+"reference_s": 3215.975732154108,
+"cues_spoken": 11,
+"cues_followed": 10,
+"cues_blocked": 0,
+"asks": {
+"hold": 11
+},
+"cue_log": [
+{
+"race_s": 90.9,
+"text": "Hold 2:36.",
+"ask": "hold",
+"pace_s500": 155.6
+},
+{
+"race_s": 391.4,
+"text": "Hold 2:36.",
+"ask": "hold",
+"pace_s500": 155.6
+},
+{
+"race_s": 691.4,
+"text": "Hold 2:36.",
+"ask": "hold",
+"pace_s500": 155.6
+},
+{
+"race_s": 991.8,
+"text": "Hold 2:36.",
+"ask": "hold",
+"pace_s500": 155.6
+},
+{
+"race_s": 1292.1,
+"text": "Hold 2:36.",
+"ask": "hold",
+"pace_s500": 155.6
+},
+{
+"race_s": 1592.8,
+"text": "Hold 2:36.",
+"ask": "hold",
+"pace_s500": 155.6
+},
+{
+"race_s": 1893.3,
+"text": "Hold 2:36.",
+"ask": "hold",
+"pace_s500": 155.6
+},
+{
+"race_s": 2194.2,
+"text": "Hold 2:36.",
+"ask": "hold",
+"pace_s500": 155.6
+},
+{
+"race_s": 2494.8,
+"text": "Hold 2:36.",
+"ask": "hold",
+"pace_s500": 155.6
+},
+{
+"race_s": 2795.1,
+"text": "Hold 2:36.",
+"ask": "hold",
+"pace_s500": 155.6
+},
+{
+"race_s": 3095.6,
+"text": "Hold 2:36.",
+"ask": "hold",
+"pace_s500": 155.6
+}
+],
+"alerts": {},
+"wall_s": 2.79
+},
+{
+"seed": 10,
+"arm": "fixed_plan",
+"setting": {
+"mult": 1.0,
+"every_s": 300.0
+},
+"race_time_s": 3275.5850368239153,
+"blown_s": 500.2007914189537,
+"reserve_left": 0.15151278170080615,
+"reference_s": 3215.975732154108,
+"cues_spoken": 11,
+"cues_followed": 10,
+"cues_blocked": 0,
+"asks": {
+"hold": 11
+},
+"cue_log": [
+{
+"race_s": 90.9,
+"text": "Hold 2:40.",
+"ask": "hold",
+"pace_s500": 160.2
+},
+{
+"race_s": 391.8,
+"text": "Hold 2:40.",
+"ask": "hold",
+"pace_s500": 160.2
+},
+{
+"race_s": 692.6,
+"text": "Hold 2:40.",
+"ask": "hold",
+"pace_s500": 160.2
+},
+{
+"race_s": 993.3,
+"text": "Hold 2:40.",
+"ask": "hold",
+"pace_s500": 160.2
+},
+{
+"race_s": 1293.4,
+"text": "Hold 2:40.",
+"ask": "hold",
+"pace_s500": 160.2
+},
+{
+"race_s": 1593.9,
+"text": "Hold 2:40.",
+"ask": "hold",
+"pace_s500": 160.2
+},
+{
+"race_s": 1894.9,
+"text": "Hold 2:40.",
+"ask": "hold",
+"pace_s500": 160.2
+},
+{
+"race_s": 2195.3,
+"text": "Hold 2:40.",
+"ask": "hold",
+"pace_s500": 160.2
+},
+{
+"race_s": 2496.1,
+"text": "Hold 2:40.",
+"ask": "hold",
+"pace_s500": 160.2
+},
+{
+"race_s": 2796.5,
+"text": "Hold 2:40.",
+"ask": "hold",
+"pace_s500": 160.2
+},
+{
+"race_s": 3096.7,
+"text": "Hold 2:40.",
+"ask": "hold",
+"pace_s500": 160.2
+}
+],
+"alerts": {},
+"wall_s": 2.69
+},
+{
+"seed": 10,
+"arm": "line_rule",
+"setting": {
+"inside_m": 120.0,
+"overpace_margin_m": 150.0,
+"fade_pct": -3.0
+},
+"race_time_s": 3233.226726916666,
+"blown_s": 129.8428509006196,
+"reserve_left": 0.0937419038562027,
+"reference_s": 3215.975732154108,
+"cues_spoken": 6,
+"cues_followed": 6,
+"cues_blocked": 61,
+"asks": {
+"line_in": 1,
+"rate_down": 3,
+"ease": 2
+},
+"cue_log": [
+{
+"race_s": 60.3,
+"text": "Stream against us. Get inside, hug the shore.",
+"ask": "line_in",
+"pace_s500": null
+},
+{
+"race_s": 774.2,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 884.1,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null
+},
+{
+"race_s": 1091.8,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null
+},
+{
+"race_s": 1653.7,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 1920.2,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 3,
+"fading": 3
+},
+"wall_s": 2.85
+},
+{
+"seed": 10,
+"arm": "line_rule",
+"setting": {
+"inside_m": 60.0,
+"overpace_margin_m": 150.0,
+"fade_pct": -3.0
+},
+"race_time_s": 3234.9136185353505,
+"blown_s": 129.63382032647627,
+"reserve_left": 0.08188873902353205,
+"reference_s": 3215.975732154108,
+"cues_spoken": 9,
+"cues_followed": 8,
+"cues_blocked": 61,
+"asks": {
+"line_in": 1,
+"rate_down": 7,
+"ease": 1
+},
+"cue_log": [
+{
+"race_s": 60.3,
+"text": "Stream against us. Get inside, hug the shore.",
+"ask": "line_in",
+"pace_s500": null
+},
+{
+"race_s": 780.9,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 883.8,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null
+},
+{
+"race_s": 962.2,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 1655.1,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 1918.4,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 2214.3,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 2478.5,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 2852.7,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 2,
+"fading": 7
+},
+"wall_s": 3.18
+},
+{
+"seed": 10,
+"arm": "no_coach",
+"setting": {},
+"race_time_s": 3268.365420415582,
+"blown_s": 315.2349629447969,
+"reserve_left": 0.08322119053933559,
+"reference_s": 3215.975732154108,
+"cues_spoken": 0,
+"cues_followed": 0,
+"cues_blocked": 0,
+"asks": {},
+"cue_log": [],
+"alerts": {},
+"wall_s": 3.57
+},
+{
+"seed": 11,
+"arm": "agent_v3",
+"setting": {
+"periodic_s": 300.0,
+"model": "claude-opus-5-5",
+"coach_version": 3
+},
+"race_time_s": 1961.1611894243788,
+"blown_s": 175.33346238397658,
+"reserve_left": 0.056209190842883484,
+"reference_s": 1925.749087754608,
+"cues_spoken": 5,
+"cues_followed": 3,
+"cues_blocked": 1,
+"asks": {
+"ease": 2,
+"line_in": 1,
+"line_out": 1,
+"finish": 1
+},
+"cue_log": [
+{
+"race_s": 65.9,
+"text": "Settle now, long smooth strokes, hold this pace",
+"ask": "ease",
+"pace_s500": 160
+},
+{
+"race_s": 415.4,
+"text": "Reserve's empty. Ease a touch, settle at 177 pace.",
+"ask": "ease",
+"pace_s500": 177
+},
+{
+"race_s": 631.6,
+"text": "Ease inshore to 100 metres, weaker stream there. Breathe.",
+"ask": "line_in",
+"pace_s500": null
+},
+{
+"race_s": 1044.3,
+"text": "Angle out to 250 metres, stream helps offshore",
+"ask": "line_out",
+"pace_s500": null
+},
+{
+"race_s": 1859.1,
+"text": "Sprint home now, empty the tank to the line",
+"ask": "finish",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 1,
+"fading": 2,
+"finish_window": 1,
+"sprint_300": 1
+},
+"consultations": 11,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 6,
+"wall_s": 122.68,
+"model_usage": {
+"calls": 21,
+"errors": 0,
+"input_tokens": 13244,
+"output_tokens": 9544,
+"cache_create_tokens": 17276,
+"cache_read_tokens": 87228,
+"latency_median_s": 5.813392150999789,
+"latency_p90_s": 7.38741569099966
+},
+"model_usd_estimate": 0.3477
+},
+{
+"seed": 11,
+"arm": "autopilot",
+"setting": {
+"overpace_margin_m": 150.0,
+"fade_pct": -3.0
+},
+"race_time_s": 1956.2141732172217,
+"blown_s": 179.81100859588477,
+"reserve_left": 0.06515659180385364,
+"reference_s": 1925.749087754608,
+"cues_spoken": 3,
+"cues_followed": 1,
+"cues_blocked": 0,
+"asks": {
+"ease": 1,
+"rate_down": 2
+},
+"cue_log": [
+{
+"race_s": 111.9,
+"text": "Too hot. Settle to 2:55.",
+"ask": "ease",
+"pace_s500": 175.3
+},
+{
+"race_s": 615.5,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 1826.4,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 1,
+"fading": 2
+},
+"wall_s": 1.6
+},
+{
+"seed": 11,
+"arm": "autopilot",
+"setting": {
+"overpace_margin_m": 300.0,
+"fade_pct": -3.0
+},
+"race_time_s": 1956.2141732172217,
+"blown_s": 179.81100859588477,
+"reserve_left": 0.06515659180385364,
+"reference_s": 1925.749087754608,
+"cues_spoken": 3,
+"cues_followed": 1,
+"cues_blocked": 0,
+"asks": {
+"ease": 1,
+"rate_down": 2
+},
+"cue_log": [
+{
+"race_s": 111.9,
+"text": "Too hot. Settle to 2:55.",
+"ask": "ease",
+"pace_s500": 175.3
+},
+{
+"race_s": 615.5,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 1826.4,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 1,
+"fading": 2
+},
+"wall_s": 1.55
+},
+{
+"seed": 11,
+"arm": "autopilot",
+"setting": {
+"overpace_margin_m": 600.0,
+"fade_pct": -3.0
+},
+"race_time_s": 1956.2141732172217,
+"blown_s": 179.81100859588477,
+"reserve_left": 0.06515659180385364,
+"reference_s": 1925.749087754608,
+"cues_spoken": 3,
+"cues_followed": 1,
+"cues_blocked": 0,
+"asks": {
+"ease": 1,
+"rate_down": 2
+},
+"cue_log": [
+{
+"race_s": 111.9,
+"text": "Too hot. Settle to 2:55.",
+"ask": "ease",
+"pace_s500": 175.3
+},
+{
+"race_s": 615.5,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 1826.4,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 1,
+"fading": 2
+},
+"wall_s": 1.79
+},
+{
+"seed": 11,
+"arm": "autopilot",
+"setting": {
+"overpace_margin_m": 150.0,
+"fade_pct": -5.0
+},
+"race_time_s": 1956.6646748408402,
+"blown_s": 179.29338557507626,
+"reserve_left": 0.06171918426882352,
+"reference_s": 1925.749087754608,
+"cues_spoken": 3,
+"cues_followed": 1,
+"cues_blocked": 0,
+"asks": {
+"ease": 1,
+"rate_down": 2
+},
+"cue_log": [
+{
+"race_s": 111.9,
+"text": "Too hot. Settle to 2:55.",
+"ask": "ease",
+"pace_s500": 175.3
+},
+{
+"race_s": 624.5,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 1913.0,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 1,
+"fading": 2
+},
+"wall_s": 1.55
+},
+{
+"seed": 11,
+"arm": "autopilot",
+"setting": {
+"overpace_margin_m": 300.0,
+"fade_pct": -5.0
+},
+"race_time_s": 1956.6646748408402,
+"blown_s": 179.29338557507626,
+"reserve_left": 0.06171918426882352,
+"reference_s": 1925.749087754608,
+"cues_spoken": 3,
+"cues_followed": 1,
+"cues_blocked": 0,
+"asks": {
+"ease": 1,
+"rate_down": 2
+},
+"cue_log": [
+{
+"race_s": 111.9,
+"text": "Too hot. Settle to 2:55.",
+"ask": "ease",
+"pace_s500": 175.3
+},
+{
+"race_s": 624.5,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 1913.0,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 1,
+"fading": 2
+},
+"wall_s": 1.81
+},
+{
+"seed": 11,
+"arm": "autopilot",
+"setting": {
+"overpace_margin_m": 600.0,
+"fade_pct": -5.0
+},
+"race_time_s": 1956.6646748408402,
+"blown_s": 179.29338557507626,
+"reserve_left": 0.06171918426882352,
+"reference_s": 1925.749087754608,
+"cues_spoken": 3,
+"cues_followed": 1,
+"cues_blocked": 0,
+"asks": {
+"ease": 1,
+"rate_down": 2
+},
+"cue_log": [
+{
+"race_s": 111.9,
+"text": "Too hot. Settle to 2:55.",
+"ask": "ease",
+"pace_s500": 175.3
+},
+{
+"race_s": 624.5,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 1913.0,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 1,
+"fading": 2
+},
+"wall_s": 1.88
+},
+{
+"seed": 11,
+"arm": "autopilot_pod",
+"setting": {
+"overpace_margin_m": 150.0,
+"fade_pct": -3.0
+},
+"race_time_s": 1956.2141732172217,
+"blown_s": 179.81100859588477,
+"reserve_left": 0.06515659180385364,
+"reference_s": 1925.749087754608,
+"cues_spoken": 3,
+"cues_followed": 1,
+"cues_blocked": 1,
+"asks": {
+"ease": 1,
+"rate_down": 2
+},
+"cue_log": [
+{
+"race_s": 111.9,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null
+},
+{
+"race_s": 615.5,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 1826.4,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 2,
+"fading": 2
+},
+"wall_s": 1.62
+},
+{
+"seed": 11,
+"arm": "autopilot_pod",
+"setting": {
+"overpace_margin_m": 300.0,
+"fade_pct": -3.0
+},
+"race_time_s": 1956.2141732172217,
+"blown_s": 179.81100859588477,
+"reserve_left": 0.06515659180385364,
+"reference_s": 1925.749087754608,
+"cues_spoken": 3,
+"cues_followed": 1,
+"cues_blocked": 1,
+"asks": {
+"ease": 1,
+"rate_down": 2
+},
+"cue_log": [
+{
+"race_s": 111.9,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null
+},
+{
+"race_s": 615.5,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 1826.4,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 2,
+"fading": 2
+},
+"wall_s": 1.77
+},
+{
+"seed": 11,
+"arm": "autopilot_pod",
+"setting": {
+"overpace_margin_m": 600.0,
+"fade_pct": -3.0
+},
+"race_time_s": 1952.0709780077718,
+"blown_s": 138.1219909556431,
+"reserve_left": 0.020388197332889633,
+"reference_s": 1925.749087754608,
+"cues_spoken": 4,
+"cues_followed": 2,
+"cues_blocked": 0,
+"asks": {
+"ease": 2,
+"rate_down": 2
+},
+"cue_log": [
+{
+"race_s": 111.9,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null
+},
+{
+"race_s": 615.5,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 677.0,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null
+},
+{
+"race_s": 1868.8,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 2,
+"fading": 2
+},
+"wall_s": 1.78
+},
+{
+"seed": 11,
+"arm": "autopilot_pod",
+"setting": {
+"overpace_margin_m": 150.0,
+"fade_pct": -5.0
+},
+"race_time_s": 1956.6646748408402,
+"blown_s": 179.29338557507626,
+"reserve_left": 0.06171918426882352,
+"reference_s": 1925.749087754608,
+"cues_spoken": 3,
+"cues_followed": 1,
+"cues_blocked": 1,
+"asks": {
+"ease": 1,
+"rate_down": 2
+},
+"cue_log": [
+{
+"race_s": 111.9,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null
+},
+{
+"race_s": 624.5,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 1913.0,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 2,
+"fading": 2
+},
+"wall_s": 1.61
+},
+{
+"seed": 11,
+"arm": "autopilot_pod",
+"setting": {
+"overpace_margin_m": 300.0,
+"fade_pct": -5.0
+},
+"race_time_s": 1956.6646748408402,
+"blown_s": 179.29338557507626,
+"reserve_left": 0.06171918426882352,
+"reference_s": 1925.749087754608,
+"cues_spoken": 3,
+"cues_followed": 1,
+"cues_blocked": 1,
+"asks": {
+"ease": 1,
+"rate_down": 2
+},
+"cue_log": [
+{
+"race_s": 111.9,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null
+},
+{
+"race_s": 624.5,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 1913.0,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 2,
+"fading": 2
+},
+"wall_s": 1.55
+},
+{
+"seed": 11,
+"arm": "autopilot_pod",
+"setting": {
+"overpace_margin_m": 600.0,
+"fade_pct": -5.0
+},
+"race_time_s": 1956.6646748408402,
+"blown_s": 179.29338557507626,
+"reserve_left": 0.06171918426882352,
+"reference_s": 1925.749087754608,
+"cues_spoken": 3,
+"cues_followed": 1,
+"cues_blocked": 1,
+"asks": {
+"ease": 1,
+"rate_down": 2
+},
+"cue_log": [
+{
+"race_s": 111.9,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null
+},
+{
+"race_s": 624.5,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 1913.0,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 2,
+"fading": 2
+},
+"wall_s": 1.54
+},
+{
+"seed": 11,
+"arm": "fixed_plan",
+"setting": {
+"mult": 0.97,
+"every_s": 120.0
+},
+"race_time_s": 1985.8402373740128,
+"blown_s": 275.0007301381677,
+"reserve_left": 0.027986671635771305,
+"reference_s": 1925.749087754608,
+"cues_spoken": 16,
+"cues_followed": 12,
+"cues_blocked": 0,
+"asks": {
+"hold": 16
+},
+"cue_log": [
+{
+"race_s": 91.2,
+"text": "Hold 2:45.",
+"ask": "hold",
+"pace_s500": 165.5
+},
+{
+"race_s": 211.6,
+"text": "Hold 2:45.",
+"ask": "hold",
+"pace_s500": 165.5
+},
+{
+"race_s": 331.9,
+"text": "Hold 2:45.",
+"ask": "hold",
+"pace_s500": 165.5
+},
+{
+"race_s": 452.9,
+"text": "Hold 2:45.",
+"ask": "hold",
+"pace_s500": 165.5
+},
+{
+"race_s": 572.9,
+"text": "Hold 2:45.",
+"ask": "hold",
+"pace_s500": 165.5
+},
+{
+"race_s": 693.6,
+"text": "Hold 2:45.",
+"ask": "hold",
+"pace_s500": 165.5
+},
+{
+"race_s": 813.9,
+"text": "Hold 2:45.",
+"ask": "hold",
+"pace_s500": 165.5
+},
+{
+"race_s": 934.9,
+"text": "Hold 2:45.",
+"ask": "hold",
+"pace_s500": 165.5
+},
+{
+"race_s": 1055.2,
+"text": "Hold 2:45.",
+"ask": "hold",
+"pace_s500": 165.5
+},
+{
+"race_s": 1175.5,
+"text": "Hold 2:45.",
+"ask": "hold",
+"pace_s500": 165.5
+},
+{
+"race_s": 1295.6,
+"text": "Hold 2:45.",
+"ask": "hold",
+"pace_s500": 165.5
+},
+{
+"race_s": 1416.0,
+"text": "Hold 2:45.",
+"ask": "hold",
+"pace_s500": 165.5
+},
+{
+"race_s": 1536.8,
+"text": "Hold 2:45.",
+"ask": "hold",
+"pace_s500": 165.5
+},
+{
+"race_s": 1657.3,
+"text": "Hold 2:45.",
+"ask": "hold",
+"pace_s500": 165.5
+},
+{
+"race_s": 1777.3,
+"text": "Hold 2:45.",
+"ask": "hold",
+"pace_s500": 165.5
+},
+{
+"race_s": 1898.1,
+"text": "Hold 2:45.",
+"ask": "hold",
+"pace_s500": 165.5
+}
+],
+"alerts": {},
+"wall_s": 1.64
+},
+{
+"seed": 11,
+"arm": "fixed_plan",
+"setting": {
+"mult": 1.03,
+"every_s": 120.0
+},
+"race_time_s": 1964.2856836498781,
+"blown_s": 289.1023852669315,
+"reserve_left": 0.025824933382595974,
+"reference_s": 1925.749087754608,
+"cues_spoken": 16,
+"cues_followed": 12,
+"cues_blocked": 0,
+"asks": {
+"hold": 16
+},
+"cue_log": [
+{
+"race_s": 91.2,
+"text": "Hold 2:36.",
+"ask": "hold",
+"pace_s500": 155.8
+},
+{
+"race_s": 211.6,
+"text": "Hold 2:36.",
+"ask": "hold",
+"pace_s500": 155.8
+},
+{
+"race_s": 331.9,
+"text": "Hold 2:36.",
+"ask": "hold",
+"pace_s500": 155.8
+},
+{
+"race_s": 451.9,
+"text": "Hold 2:36.",
+"ask": "hold",
+"pace_s500": 155.8
+},
+{
+"race_s": 572.8,
+"text": "Hold 2:36.",
+"ask": "hold",
+"pace_s500": 155.8
+},
+{
+"race_s": 693.4,
+"text": "Hold 2:36.",
+"ask": "hold",
+"pace_s500": 155.8
+},
+{
+"race_s": 813.6,
+"text": "Hold 2:36.",
+"ask": "hold",
+"pace_s500": 155.8
+},
+{
+"race_s": 933.6,
+"text": "Hold 2:36.",
+"ask": "hold",
+"pace_s500": 155.8
+},
+{
+"race_s": 1053.9,
+"text": "Hold 2:36.",
+"ask": "hold",
+"pace_s500": 155.8
+},
+{
+"race_s": 1174.2,
+"text": "Hold 2:36.",
+"ask": "hold",
+"pace_s500": 155.8
+},
+{
+"race_s": 1295.1,
+"text": "Hold 2:36.",
+"ask": "hold",
+"pace_s500": 155.8
+},
+{
+"race_s": 1415.8,
+"text": "Hold 2:36.",
+"ask": "hold",
+"pace_s500": 155.8
+},
+{
+"race_s": 1535.9,
+"text": "Hold 2:36.",
+"ask": "hold",
+"pace_s500": 155.8
+},
+{
+"race_s": 1656.7,
+"text": "Hold 2:36.",
+"ask": "hold",
+"pace_s500": 155.8
+},
+{
+"race_s": 1777.2,
+"text": "Hold 2:36.",
+"ask": "hold",
+"pace_s500": 155.8
+},
+{
+"race_s": 1897.3,
+"text": "Hold 2:36.",
+"ask": "hold",
+"pace_s500": 155.8
+}
+],
+"alerts": {},
+"wall_s": 1.88
+},
+{
+"seed": 11,
+"arm": "fixed_plan",
+"setting": {
+"mult": 1.0,
+"every_s": 120.0
+},
+"race_time_s": 1975.955093212287,
+"blown_s": 275.92169264261076,
+"reserve_left": 0.018036763889657425,
+"reference_s": 1925.749087754608,
+"cues_spoken": 16,
+"cues_followed": 12,
+"cues_blocked": 0,
+"asks": {
+"hold": 16
+},
+"cue_log": [
+{
+"race_s": 91.2,
+"text": "Hold 2:41.",
+"ask": "hold",
+"pace_s500": 160.5
+},
+{
+"race_s": 211.6,
+"text": "Hold 2:41.",
+"ask": "hold",
+"pace_s500": 160.5
+},
+{
+"race_s": 331.9,
+"text": "Hold 2:41.",
+"ask": "hold",
+"pace_s500": 160.5
+},
+{
+"race_s": 452.9,
+"text": "Hold 2:41.",
+"ask": "hold",
+"pace_s500": 160.5
+},
+{
+"race_s": 573.8,
+"text": "Hold 2:41.",
+"ask": "hold",
+"pace_s500": 160.5
+},
+{
+"race_s": 694.5,
+"text": "Hold 2:41.",
+"ask": "hold",
+"pace_s500": 160.5
+},
+{
+"race_s": 814.6,
+"text": "Hold 2:41.",
+"ask": "hold",
+"pace_s500": 160.5
+},
+{
+"race_s": 934.6,
+"text": "Hold 2:41.",
+"ask": "hold",
+"pace_s500": 160.5
+},
+{
+"race_s": 1055.0,
+"text": "Hold 2:41.",
+"ask": "hold",
+"pace_s500": 160.5
+},
+{
+"race_s": 1175.2,
+"text": "Hold 2:41.",
+"ask": "hold",
+"pace_s500": 160.5
+},
+{
+"race_s": 1296.0,
+"text": "Hold 2:41.",
+"ask": "hold",
+"pace_s500": 160.5
+},
+{
+"race_s": 1416.5,
+"text": "Hold 2:41.",
+"ask": "hold",
+"pace_s500": 160.5
+},
+{
+"race_s": 1537.3,
+"text": "Hold 2:41.",
+"ask": "hold",
+"pace_s500": 160.5
+},
+{
+"race_s": 1657.9,
+"text": "Hold 2:41.",
+"ask": "hold",
+"pace_s500": 160.5
+},
+{
+"race_s": 1777.9,
+"text": "Hold 2:41.",
+"ask": "hold",
+"pace_s500": 160.5
+},
+{
+"race_s": 1898.6,
+"text": "Hold 2:41.",
+"ask": "hold",
+"pace_s500": 160.5
+}
+],
+"alerts": {},
+"wall_s": 1.95
+},
+{
+"seed": 11,
+"arm": "fixed_plan",
+"setting": {
+"mult": 0.97,
+"every_s": 300.0
+},
+"race_time_s": 1969.0651351420129,
+"blown_s": 209.92339831086602,
+"reserve_left": 0.008470833607046367,
+"reference_s": 1925.749087754608,
+"cues_spoken": 7,
+"cues_followed": 5,
+"cues_blocked": 0,
+"asks": {
+"hold": 7
+},
+"cue_log": [
+{
+"race_s": 91.2,
+"text": "Hold 2:45.",
+"ask": "hold",
+"pace_s500": 165.5
+},
+{
+"race_s": 391.3,
+"text": "Hold 2:45.",
+"ask": "hold",
+"pace_s500": 165.5
+},
+{
+"race_s": 692.0,
+"text": "Hold 2:45.",
+"ask": "hold",
+"pace_s500": 165.5
+},
+{
+"race_s": 992.9,
+"text": "Hold 2:45.",
+"ask": "hold",
+"pace_s500": 165.5
+},
+{
+"race_s": 1293.8,
+"text": "Hold 2:45.",
+"ask": "hold",
+"pace_s500": 165.5
+},
+{
+"race_s": 1594.1,
+"text": "Hold 2:45.",
+"ask": "hold",
+"pace_s500": 165.5
+},
+{
+"race_s": 1894.6,
+"text": "Hold 2:45.",
+"ask": "hold",
+"pace_s500": 165.5
+}
+],
+"alerts": {},
+"wall_s": 1.58
+},
+{
+"seed": 11,
+"arm": "fixed_plan",
+"setting": {
+"mult": 1.03,
+"every_s": 300.0
+},
+"race_time_s": 1963.6538743453393,
+"blown_s": 227.8526798393287,
+"reserve_left": 0.03737671544706605,
+"reference_s": 1925.749087754608,
+"cues_spoken": 7,
+"cues_followed": 5,
+"cues_blocked": 0,
+"asks": {
+"hold": 7
+},
+"cue_log": [
+{
+"race_s": 91.2,
+"text": "Hold 2:36.",
+"ask": "hold",
+"pace_s500": 155.8
+},
+{
+"race_s": 391.3,
+"text": "Hold 2:36.",
+"ask": "hold",
+"pace_s500": 155.8
+},
+{
+"race_s": 692.0,
+"text": "Hold 2:36.",
+"ask": "hold",
+"pace_s500": 155.8
+},
+{
+"race_s": 992.1,
+"text": "Hold 2:36.",
+"ask": "hold",
+"pace_s500": 155.8
+},
+{
+"race_s": 1292.9,
+"text": "Hold 2:36.",
+"ask": "hold",
+"pace_s500": 155.8
+},
+{
+"race_s": 1593.5,
+"text": "Hold 2:36.",
+"ask": "hold",
+"pace_s500": 155.8
+},
+{
+"race_s": 1893.6,
+"text": "Hold 2:36.",
+"ask": "hold",
+"pace_s500": 155.8
+}
+],
+"alerts": {},
+"wall_s": 1.6
+},
+{
+"seed": 11,
+"arm": "fixed_plan",
+"setting": {
+"mult": 1.0,
+"every_s": 300.0
+},
+"race_time_s": 1966.7051832760285,
+"blown_s": 217.29146991885239,
+"reserve_left": 0.018661842325818263,
+"reference_s": 1925.749087754608,
+"cues_spoken": 7,
+"cues_followed": 5,
+"cues_blocked": 0,
+"asks": {
+"hold": 7
+},
+"cue_log": [
+{
+"race_s": 91.2,
+"text": "Hold 2:41.",
+"ask": "hold",
+"pace_s500": 160.5
+},
+{
+"race_s": 391.3,
+"text": "Hold 2:41.",
+"ask": "hold",
+"pace_s500": 160.5
+},
+{
+"race_s": 692.0,
+"text": "Hold 2:41.",
+"ask": "hold",
+"pace_s500": 160.5
+},
+{
+"race_s": 992.0,
+"text": "Hold 2:41.",
+"ask": "hold",
+"pace_s500": 160.5
+},
+{
+"race_s": 1292.9,
+"text": "Hold 2:41.",
+"ask": "hold",
+"pace_s500": 160.5
+},
+{
+"race_s": 1593.6,
+"text": "Hold 2:41.",
+"ask": "hold",
+"pace_s500": 160.5
+},
+{
+"race_s": 1894.1,
+"text": "Hold 2:41.",
+"ask": "hold",
+"pace_s500": 160.5
+}
+],
+"alerts": {},
+"wall_s": 1.92
+},
+{
+"seed": 11,
+"arm": "line_rule",
+"setting": {
+"inside_m": 120.0,
+"overpace_margin_m": 150.0,
+"fade_pct": -3.0
+},
+"race_time_s": 1956.2141732172217,
+"blown_s": 179.81100859588477,
+"reserve_left": 0.06515659180385364,
+"reference_s": 1925.749087754608,
+"cues_spoken": 3,
+"cues_followed": 1,
+"cues_blocked": 63,
+"asks": {
+"line_in": 1,
+"rate_down": 2
+},
+"cue_log": [
+{
+"race_s": 61.4,
+"text": "Stream against us. Get inside, hug the shore.",
+"ask": "line_in",
+"pace_s500": null
+},
+{
+"race_s": 615.5,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 1826.4,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 2,
+"fading": 2
+},
+"wall_s": 1.6
+},
+{
+"seed": 11,
+"arm": "line_rule",
+"setting": {
+"inside_m": 60.0,
+"overpace_margin_m": 150.0,
+"fade_pct": -3.0
+},
+"race_time_s": 1956.2141732172217,
+"blown_s": 179.81100859588477,
+"reserve_left": 0.06515659180385364,
+"reference_s": 1925.749087754608,
+"cues_spoken": 3,
+"cues_followed": 1,
+"cues_blocked": 63,
+"asks": {
+"line_in": 1,
+"rate_down": 2
+},
+"cue_log": [
+{
+"race_s": 61.4,
+"text": "Stream against us. Get inside, hug the shore.",
+"ask": "line_in",
+"pace_s500": null
+},
+{
+"race_s": 615.5,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 1826.4,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 2,
+"fading": 2
+},
+"wall_s": 1.77
+},
+{
+"seed": 11,
+"arm": "no_coach",
+"setting": {},
+"race_time_s": 1956.8961217806668,
+"blown_s": 179.9975976216495,
+"reserve_left": 0.06269042676634311,
+"reference_s": 1925.749087754608,
+"cues_spoken": 0,
+"cues_followed": 0,
+"cues_blocked": 0,
+"asks": {},
+"cue_log": [],
+"alerts": {},
+"wall_s": 1.6
+},
+{
+"seed": 12,
+"arm": "agent_v3",
+"setting": {
+"periodic_s": 300.0,
+"model": "claude-opus-5-5",
+"coach_version": 3
+},
+"race_time_s": 2520.9584341458935,
+"blown_s": 137.0060894568009,
+"reserve_left": 0.05901041530934111,
+"reference_s": 2527.433256052527,
+"cues_spoken": 6,
+"cues_followed": 3,
+"cues_blocked": 1,
+"asks": {
+"ease": 3,
+"rate_down": 1,
+"line_in": 1,
+"push": 1
+},
+"cue_log": [
+{
+"race_s": 67.0,
+"text": "Too hot. Settle to steady race effort, 2:26 pace.",
+"ask": "ease",
+"pace_s500": 146
+},
+{
+"race_s": 417.3,
+"text": "Reserve's empty. Ease a touch, settle at 146.",
+"ask": "ease",
+"pace_s500": 146
+},
+{
+"race_s": 633.5,
+"text": "Settle in, drop the rate two, long strong strokes",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 1186.3,
+"text": "Stream's against us now. Angle inshore, about 80 metres off.",
+"ask": "line_in",
+"pace_s500": null
+},
+{
+"race_s": 1742.2,
+"text": "Settle a touch, steady 168 pace, save the sprint",
+"ask": "ease",
+"pace_s500": 168
+},
+{
+"race_s": 2340.3,
+"text": "Six hundred to go, lift the effort now, build to the line",
+"ask": "push",
+"pace_s500": 164
+}
+],
+"alerts": {
+"over_pace": 1,
+"fading": 1,
+"reserve_conflict": 1
+},
+"consultations": 10,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 7,
+"wall_s": 103.35,
+"model_usage": {
+"calls": 18,
+"errors": 0,
+"input_tokens": 11826,
+"output_tokens": 8094,
+"cache_create_tokens": 12275,
+"cache_read_tokens": 73270,
+"latency_median_s": 5.235040432000005,
+"latency_p90_s": 9.009894988999804
+},
+"model_usd_estimate": 0.2852
+},
+{
+"seed": 12,
+"arm": "autopilot",
+"setting": {
+"overpace_margin_m": 150.0,
+"fade_pct": -3.0
+},
+"race_time_s": 2534.2062569543127,
+"blown_s": 136.10140665478423,
+"reserve_left": 0.10758278142275823,
+"reference_s": 2527.433256052527,
+"cues_spoken": 3,
+"cues_followed": 2,
+"cues_blocked": 0,
+"asks": {
+"ease": 1,
+"rate_down": 1,
+"hold": 1
+},
+"cue_log": [
+{
+"race_s": 111.1,
+"text": "Too hot. Settle to 2:26.",
+"ask": "ease",
+"pace_s500": 145.9
+},
+{
+"race_s": 539.3,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 1853.2,
+"text": "Speed is holding. Keep this.",
+"ask": "hold",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 1,
+"fading": 1,
+"reserve_conflict": 1
+},
+"wall_s": 2.07
+},
+{
+"seed": 12,
+"arm": "autopilot",
+"setting": {
+"overpace_margin_m": 300.0,
+"fade_pct": -3.0
+},
+"race_time_s": 2534.2062569543127,
+"blown_s": 136.10140665478423,
+"reserve_left": 0.10758278142275823,
+"reference_s": 2527.433256052527,
+"cues_spoken": 3,
+"cues_followed": 2,
+"cues_blocked": 0,
+"asks": {
+"ease": 1,
+"rate_down": 1,
+"hold": 1
+},
+"cue_log": [
+{
+"race_s": 111.1,
+"text": "Too hot. Settle to 2:26.",
+"ask": "ease",
+"pace_s500": 145.9
+},
+{
+"race_s": 539.3,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 1853.2,
+"text": "Speed is holding. Keep this.",
+"ask": "hold",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 1,
+"fading": 1,
+"reserve_conflict": 1
+},
+"wall_s": 2.26
+},
+{
+"seed": 12,
+"arm": "autopilot",
+"setting": {
+"overpace_margin_m": 600.0,
+"fade_pct": -3.0
+},
+"race_time_s": 2534.2062569543127,
+"blown_s": 136.10140665478423,
+"reserve_left": 0.10758278142275823,
+"reference_s": 2527.433256052527,
+"cues_spoken": 3,
+"cues_followed": 2,
+"cues_blocked": 0,
+"asks": {
+"ease": 1,
+"rate_down": 1,
+"hold": 1
+},
+"cue_log": [
+{
+"race_s": 111.1,
+"text": "Too hot. Settle to 2:26.",
+"ask": "ease",
+"pace_s500": 145.9
+},
+{
+"race_s": 539.3,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 1853.2,
+"text": "Speed is holding. Keep this.",
+"ask": "hold",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 1,
+"fading": 1,
+"reserve_conflict": 1
+},
+"wall_s": 2.05
+},
+{
+"seed": 12,
+"arm": "autopilot",
+"setting": {
+"overpace_margin_m": 150.0,
+"fade_pct": -5.0
+},
+"race_time_s": 2537.963133871086,
+"blown_s": 169.53411076160054,
+"reserve_left": 0.05259864702295605,
+"reference_s": 2527.433256052527,
+"cues_spoken": 3,
+"cues_followed": 2,
+"cues_blocked": 0,
+"asks": {
+"ease": 1,
+"rate_down": 1,
+"hold": 1
+},
+"cue_log": [
+{
+"race_s": 111.1,
+"text": "Too hot. Settle to 2:26.",
+"ask": "ease",
+"pace_s500": 145.9
+},
+{
+"race_s": 617.3,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 1818.1,
+"text": "Speed is holding. Keep this.",
+"ask": "hold",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 1,
+"fading": 1,
+"reserve_conflict": 1
+},
+"wall_s": 2.18
+},
+{
+"seed": 12,
+"arm": "autopilot",
+"setting": {
+"overpace_margin_m": 300.0,
+"fade_pct": -5.0
+},
+"race_time_s": 2537.963133871086,
+"blown_s": 169.53411076160054,
+"reserve_left": 0.05259864702295605,
+"reference_s": 2527.433256052527,
+"cues_spoken": 3,
+"cues_followed": 2,
+"cues_blocked": 0,
+"asks": {
+"ease": 1,
+"rate_down": 1,
+"hold": 1
+},
+"cue_log": [
+{
+"race_s": 111.1,
+"text": "Too hot. Settle to 2:26.",
+"ask": "ease",
+"pace_s500": 145.9
+},
+{
+"race_s": 617.3,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 1818.1,
+"text": "Speed is holding. Keep this.",
+"ask": "hold",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 1,
+"fading": 1,
+"reserve_conflict": 1
+},
+"wall_s": 2.05
+},
+{
+"seed": 12,
+"arm": "autopilot",
+"setting": {
+"overpace_margin_m": 600.0,
+"fade_pct": -5.0
+},
+"race_time_s": 2537.963133871086,
+"blown_s": 169.53411076160054,
+"reserve_left": 0.05259864702295605,
+"reference_s": 2527.433256052527,
+"cues_spoken": 3,
+"cues_followed": 2,
+"cues_blocked": 0,
+"asks": {
+"ease": 1,
+"rate_down": 1,
+"hold": 1
+},
+"cue_log": [
+{
+"race_s": 111.1,
+"text": "Too hot. Settle to 2:26.",
+"ask": "ease",
+"pace_s500": 145.9
+},
+{
+"race_s": 617.3,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 1818.1,
+"text": "Speed is holding. Keep this.",
+"ask": "hold",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 1,
+"fading": 1,
+"reserve_conflict": 1
+},
+"wall_s": 2.29
+},
+{
+"seed": 12,
+"arm": "autopilot_pod",
+"setting": {
+"overpace_margin_m": 150.0,
+"fade_pct": -3.0
+},
+"race_time_s": 2539.5035048255872,
+"blown_s": 162.0179449789772,
+"reserve_left": 0.04353264062045571,
+"reference_s": 2527.433256052527,
+"cues_spoken": 4,
+"cues_followed": 3,
+"cues_blocked": 1,
+"asks": {
+"ease": 2,
+"rate_down": 1,
+"finish": 1
+},
+"cue_log": [
+{
+"race_s": 111.1,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null
+},
+{
+"race_s": 539.3,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 806.5,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null
+},
+{
+"race_s": 2294.7,
+"text": "Reserve left. Go now.",
+"ask": "finish",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 2,
+"fading": 1,
+"finish_window": 1,
+"reserve_conflict": 1
+},
+"wall_s": 2.12
+},
+{
+"seed": 12,
+"arm": "autopilot_pod",
+"setting": {
+"overpace_margin_m": 300.0,
+"fade_pct": -3.0
+},
+"race_time_s": 2539.5035048255872,
+"blown_s": 162.0179449789772,
+"reserve_left": 0.04353264062045571,
+"reference_s": 2527.433256052527,
+"cues_spoken": 4,
+"cues_followed": 3,
+"cues_blocked": 1,
+"asks": {
+"ease": 2,
+"rate_down": 1,
+"finish": 1
+},
+"cue_log": [
+{
+"race_s": 111.1,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null
+},
+{
+"race_s": 539.3,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 806.5,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null
+},
+{
+"race_s": 2294.7,
+"text": "Reserve left. Go now.",
+"ask": "finish",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 2,
+"fading": 1,
+"finish_window": 1,
+"reserve_conflict": 1
+},
+"wall_s": 2.14
+},
+{
+"seed": 12,
+"arm": "autopilot_pod",
+"setting": {
+"overpace_margin_m": 600.0,
+"fade_pct": -3.0
+},
+"race_time_s": 2539.5035048255872,
+"blown_s": 162.0179449789772,
+"reserve_left": 0.04353264062045571,
+"reference_s": 2527.433256052527,
+"cues_spoken": 4,
+"cues_followed": 3,
+"cues_blocked": 1,
+"asks": {
+"ease": 2,
+"rate_down": 1,
+"finish": 1
+},
+"cue_log": [
+{
+"race_s": 111.1,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null
+},
+{
+"race_s": 539.3,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 806.5,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null
+},
+{
+"race_s": 2294.7,
+"text": "Reserve left. Go now.",
+"ask": "finish",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 2,
+"fading": 1,
+"finish_window": 1,
+"reserve_conflict": 1
+},
+"wall_s": 2.5
+},
+{
+"seed": 12,
+"arm": "autopilot_pod",
+"setting": {
+"overpace_margin_m": 150.0,
+"fade_pct": -5.0
+},
+"race_time_s": 2538.2866597247366,
+"blown_s": 135.94614340411013,
+"reserve_left": 0.12918707710781352,
+"reference_s": 2527.433256052527,
+"cues_spoken": 4,
+"cues_followed": 3,
+"cues_blocked": 0,
+"asks": {
+"ease": 2,
+"rate_down": 1,
+"finish": 1
+},
+"cue_log": [
+{
+"race_s": 111.1,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null
+},
+{
+"race_s": 617.3,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 802.9,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null
+},
+{
+"race_s": 2359.6,
+"text": "Reserve left. Go now.",
+"ask": "finish",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 2,
+"fading": 1,
+"finish_window": 1
+},
+"wall_s": 2.13
+},
+{
+"seed": 12,
+"arm": "autopilot_pod",
+"setting": {
+"overpace_margin_m": 300.0,
+"fade_pct": -5.0
+},
+"race_time_s": 2538.2866597247366,
+"blown_s": 135.94614340411013,
+"reserve_left": 0.12918707710781352,
+"reference_s": 2527.433256052527,
+"cues_spoken": 4,
+"cues_followed": 3,
+"cues_blocked": 0,
+"asks": {
+"ease": 2,
+"rate_down": 1,
+"finish": 1
+},
+"cue_log": [
+{
+"race_s": 111.1,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null
+},
+{
+"race_s": 617.3,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 802.9,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null
+},
+{
+"race_s": 2359.6,
+"text": "Reserve left. Go now.",
+"ask": "finish",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 2,
+"fading": 1,
+"finish_window": 1
+},
+"wall_s": 2.23
+},
+{
+"seed": 12,
+"arm": "autopilot_pod",
+"setting": {
+"overpace_margin_m": 600.0,
+"fade_pct": -5.0
+},
+"race_time_s": 2538.2866597247366,
+"blown_s": 135.94614340411013,
+"reserve_left": 0.12918707710781352,
+"reference_s": 2527.433256052527,
+"cues_spoken": 4,
+"cues_followed": 3,
+"cues_blocked": 0,
+"asks": {
+"ease": 2,
+"rate_down": 1,
+"finish": 1
+},
+"cue_log": [
+{
+"race_s": 111.1,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null
+},
+{
+"race_s": 617.3,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 802.9,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null
+},
+{
+"race_s": 2359.6,
+"text": "Reserve left. Go now.",
+"ask": "finish",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 2,
+"fading": 1,
+"finish_window": 1
+},
+"wall_s": 2.39
+},
+{
+"seed": 12,
+"arm": "fixed_plan",
+"setting": {
+"mult": 0.97,
+"every_s": 120.0
+},
+"race_time_s": 2579.198879945433,
+"blown_s": 280.10848441994693,
+"reserve_left": 0.013765481144782045,
+"reference_s": 2527.433256052527,
+"cues_spoken": 20,
+"cues_followed": 16,
+"cues_blocked": 1,
+"asks": {
+"hold": 20
+},
+"cue_log": [
+{
+"race_s": 91.4,
+"text": "Hold 2:46.",
+"ask": "hold",
+"pace_s500": 166.4
+},
+{
+"race_s": 211.5,
+"text": "Hold 2:46.",
+"ask": "hold",
+"pace_s500": 166.4
+},
+{
+"race_s": 331.7,
+"text": "Hold 2:46.",
+"ask": "hold",
+"pace_s500": 166.4
+},
+{
+"race_s": 452.4,
+"text": "Hold 2:46.",
+"ask": "hold",
+"pace_s500": 166.4
+},
+{
+"race_s": 573.0,
+"text": "Hold 2:46.",
+"ask": "hold",
+"pace_s500": 166.4
+},
+{
+"race_s": 693.2,
+"text": "Hold 2:46.",
+"ask": "hold",
+"pace_s500": 166.4
+},
+{
+"race_s": 814.2,
+"text": "Hold 2:46.",
+"ask": "hold",
+"pace_s500": 166.4
+},
+{
+"race_s": 934.6,
+"text": "Hold 2:46.",
+"ask": "hold",
+"pace_s500": 166.4
+},
+{
+"race_s": 1055.3,
+"text": "Hold 2:46.",
+"ask": "hold",
+"pace_s500": 166.4
+},
+{
+"race_s": 1175.7,
+"text": "Hold 2:46.",
+"ask": "hold",
+"pace_s500": 166.4
+},
+{
+"race_s": 1296.1,
+"text": "Hold 2:46.",
+"ask": "hold",
+"pace_s500": 166.4
+},
+{
+"race_s": 1416.8,
+"text": "Hold 2:46.",
+"ask": "hold",
+"pace_s500": 166.4
+},
+{
+"race_s": 1537.1,
+"text": "Hold 2:46.",
+"ask": "hold",
+"pace_s500": 166.4
+},
+{
+"race_s": 1657.5,
+"text": "Hold 2:46.",
+"ask": "hold",
+"pace_s500": 166.4
+},
+{
+"race_s": 1777.7,
+"text": "Hold 2:46.",
+"ask": "hold",
+"pace_s500": 166.4
+},
+{
+"race_s": 1897.8,
+"text": "Hold 2:46.",
+"ask": "hold",
+"pace_s500": 166.4
+},
+{
+"race_s": 2018.7,
+"text": "Hold 2:46.",
+"ask": "hold",
+"pace_s500": 166.4
+},
+{
+"race_s": 2139.2,
+"text": "Hold 2:46.",
+"ask": "hold",
+"pace_s500": 166.4
+},
+{
+"race_s": 2259.2,
+"text": "Hold 2:46.",
+"ask": "hold",
+"pace_s500": 166.4
+},
+{
+"race_s": 2380.0,
+"text": "Hold 2:46.",
+"ask": "hold",
+"pace_s500": 166.4
+}
+],
+"alerts": {},
+"wall_s": 1.91
+},
+{
+"seed": 12,
+"arm": "fixed_plan",
+"setting": {
+"mult": 1.03,
+"every_s": 120.0
+},
+"race_time_s": 2586.275536001777,
+"blown_s": 549.0750660740737,
+"reserve_left": 0.1592596329955676,
+"reference_s": 2527.433256052527,
+"cues_spoken": 20,
+"cues_followed": 16,
+"cues_blocked": 1,
+"asks": {
+"hold": 20
+},
+"cue_log": [
+{
+"race_s": 91.4,
+"text": "Hold 2:37.",
+"ask": "hold",
+"pace_s500": 156.7
+},
+{
+"race_s": 211.5,
+"text": "Hold 2:37.",
+"ask": "hold",
+"pace_s500": 156.7
+},
+{
+"race_s": 331.7,
+"text": "Hold 2:37.",
+"ask": "hold",
+"pace_s500": 156.7
+},
+{
+"race_s": 452.4,
+"text": "Hold 2:37.",
+"ask": "hold",
+"pace_s500": 156.7
+},
+{
+"race_s": 573.0,
+"text": "Hold 2:37.",
+"ask": "hold",
+"pace_s500": 156.7
+},
+{
+"race_s": 693.3,
+"text": "Hold 2:37.",
+"ask": "hold",
+"pace_s500": 156.7
+},
+{
+"race_s": 814.3,
+"text": "Hold 2:37.",
+"ask": "hold",
+"pace_s500": 156.7
+},
+{
+"race_s": 934.7,
+"text": "Hold 2:37.",
+"ask": "hold",
+"pace_s500": 156.7
+},
+{
+"race_s": 1055.5,
+"text": "Hold 2:37.",
+"ask": "hold",
+"pace_s500": 156.7
+},
+{
+"race_s": 1175.8,
+"text": "Hold 2:37.",
+"ask": "hold",
+"pace_s500": 156.7
+},
+{
+"race_s": 1296.4,
+"text": "Hold 2:37.",
+"ask": "hold",
+"pace_s500": 156.7
+},
+{
+"race_s": 1416.6,
+"text": "Hold 2:37.",
+"ask": "hold",
+"pace_s500": 156.7
+},
+{
+"race_s": 1536.7,
+"text": "Hold 2:37.",
+"ask": "hold",
+"pace_s500": 156.7
+},
+{
+"race_s": 1657.4,
+"text": "Hold 2:37.",
+"ask": "hold",
+"pace_s500": 156.7
+},
+{
+"race_s": 1777.9,
+"text": "Hold 2:37.",
+"ask": "hold",
+"pace_s500": 156.7
+},
+{
+"race_s": 1898.5,
+"text": "Hold 2:37.",
+"ask": "hold",
+"pace_s500": 156.7
+},
+{
+"race_s": 2019.2,
+"text": "Hold 2:37.",
+"ask": "hold",
+"pace_s500": 156.7
+},
+{
+"race_s": 2139.6,
+"text": "Hold 2:37.",
+"ask": "hold",
+"pace_s500": 156.7
+},
+{
+"race_s": 2259.6,
+"text": "Hold 2:37.",
+"ask": "hold",
+"pace_s500": 156.7
+},
+{
+"race_s": 2379.9,
+"text": "Hold 2:37.",
+"ask": "hold",
+"pace_s500": 156.7
+}
+],
+"alerts": {},
+"wall_s": 1.92
+},
+{
+"seed": 12,
+"arm": "fixed_plan",
+"setting": {
+"mult": 1.0,
+"every_s": 120.0
+},
+"race_time_s": 2582.9181678311006,
+"blown_s": 420.45943135824115,
+"reserve_left": 0.01861895624509129,
+"reference_s": 2527.433256052527,
+"cues_spoken": 20,
+"cues_followed": 16,
+"cues_blocked": 1,
+"asks": {
+"hold": 20
+},
+"cue_log": [
+{
+"race_s": 91.4,
+"text": "Hold 2:41.",
+"ask": "hold",
+"pace_s500": 161.4
+},
+{
+"race_s": 211.5,
+"text": "Hold 2:41.",
+"ask": "hold",
+"pace_s500": 161.4
+},
+{
+"race_s": 331.7,
+"text": "Hold 2:41.",
+"ask": "hold",
+"pace_s500": 161.4
+},
+{
+"race_s": 452.4,
+"text": "Hold 2:41.",
+"ask": "hold",
+"pace_s500": 161.4
+},
+{
+"race_s": 572.9,
+"text": "Hold 2:41.",
+"ask": "hold",
+"pace_s500": 161.4
+},
+{
+"race_s": 693.2,
+"text": "Hold 2:41.",
+"ask": "hold",
+"pace_s500": 161.4
+},
+{
+"race_s": 814.2,
+"text": "Hold 2:41.",
+"ask": "hold",
+"pace_s500": 161.4
+},
+{
+"race_s": 934.6,
+"text": "Hold 2:41.",
+"ask": "hold",
+"pace_s500": 161.4
+},
+{
+"race_s": 1055.3,
+"text": "Hold 2:41.",
+"ask": "hold",
+"pace_s500": 161.4
+},
+{
+"race_s": 1175.7,
+"text": "Hold 2:41.",
+"ask": "hold",
+"pace_s500": 161.4
+},
+{
+"race_s": 1296.1,
+"text": "Hold 2:41.",
+"ask": "hold",
+"pace_s500": 161.4
+},
+{
+"race_s": 1417.0,
+"text": "Hold 2:41.",
+"ask": "hold",
+"pace_s500": 161.4
+},
+{
+"race_s": 1537.1,
+"text": "Hold 2:41.",
+"ask": "hold",
+"pace_s500": 161.4
+},
+{
+"race_s": 1657.9,
+"text": "Hold 2:41.",
+"ask": "hold",
+"pace_s500": 161.4
+},
+{
+"race_s": 1778.9,
+"text": "Hold 2:41.",
+"ask": "hold",
+"pace_s500": 161.4
+},
+{
+"race_s": 1898.9,
+"text": "Hold 2:41.",
+"ask": "hold",
+"pace_s500": 161.4
+},
+{
+"race_s": 2019.3,
+"text": "Hold 2:41.",
+"ask": "hold",
+"pace_s500": 161.4
+},
+{
+"race_s": 2140.0,
+"text": "Hold 2:41.",
+"ask": "hold",
+"pace_s500": 161.4
+},
+{
+"race_s": 2260.6,
+"text": "Hold 2:41.",
+"ask": "hold",
+"pace_s500": 161.4
+},
+{
+"race_s": 2381.2,
+"text": "Hold 2:41.",
+"ask": "hold",
+"pace_s500": 161.4
+}
+],
+"alerts": {},
+"wall_s": 2.27
+},
+{
+"seed": 12,
+"arm": "fixed_plan",
+"setting": {
+"mult": 0.97,
+"every_s": 300.0
+},
+"race_time_s": 2572.850992357415,
+"blown_s": 411.26949760557414,
+"reserve_left": 0.020010980322988585,
+"reference_s": 2527.433256052527,
+"cues_spoken": 9,
+"cues_followed": 6,
+"cues_blocked": 0,
+"asks": {
+"hold": 9
+},
+"cue_log": [
+{
+"race_s": 91.4,
+"text": "Hold 2:46.",
+"ask": "hold",
+"pace_s500": 166.4
+},
+{
+"race_s": 392.2,
+"text": "Hold 2:46.",
+"ask": "hold",
+"pace_s500": 166.4
+},
+{
+"race_s": 692.7,
+"text": "Hold 2:46.",
+"ask": "hold",
+"pace_s500": 166.4
+},
+{
+"race_s": 993.3,
+"text": "Hold 2:46.",
+"ask": "hold",
+"pace_s500": 166.4
+},
+{
+"race_s": 1294.1,
+"text": "Hold 2:46.",
+"ask": "hold",
+"pace_s500": 166.4
+},
+{
+"race_s": 1594.2,
+"text": "Hold 2:46.",
+"ask": "hold",
+"pace_s500": 166.4
+},
+{
+"race_s": 1895.0,
+"text": "Hold 2:46.",
+"ask": "hold",
+"pace_s500": 166.4
+},
+{
+"race_s": 2195.1,
+"text": "Hold 2:46.",
+"ask": "hold",
+"pace_s500": 166.4
+},
+{
+"race_s": 2495.8,
+"text": "Hold 2:46.",
+"ask": "hold",
+"pace_s500": 166.4
+}
+],
+"alerts": {},
+"wall_s": 2.15
+},
+{
+"seed": 12,
+"arm": "fixed_plan",
+"setting": {
+"mult": 1.03,
+"every_s": 300.0
+},
+"race_time_s": 2569.9285066356397,
+"blown_s": 387.4649699492155,
+"reserve_left": 0.14974833932117415,
+"reference_s": 2527.433256052527,
+"cues_spoken": 9,
+"cues_followed": 6,
+"cues_blocked": 0,
+"asks": {
+"hold": 9
+},
+"cue_log": [
+{
+"race_s": 91.4,
+"text": "Hold 2:37.",
+"ask": "hold",
+"pace_s500": 156.7
+},
+{
+"race_s": 392.2,
+"text": "Hold 2:37.",
+"ask": "hold",
+"pace_s500": 156.7
+},
+{
+"race_s": 693.0,
+"text": "Hold 2:37.",
+"ask": "hold",
+"pace_s500": 156.7
+},
+{
+"race_s": 993.1,
+"text": "Hold 2:37.",
+"ask": "hold",
+"pace_s500": 156.7
+},
+{
+"race_s": 1293.5,
+"text": "Hold 2:37.",
+"ask": "hold",
+"pace_s500": 156.7
+},
+{
+"race_s": 1594.4,
+"text": "Hold 2:37.",
+"ask": "hold",
+"pace_s500": 156.7
+},
+{
+"race_s": 1894.7,
+"text": "Hold 2:37.",
+"ask": "hold",
+"pace_s500": 156.7
+},
+{
+"race_s": 2194.9,
+"text": "Hold 2:37.",
+"ask": "hold",
+"pace_s500": 156.7
+},
+{
+"race_s": 2495.5,
+"text": "Hold 2:37.",
+"ask": "hold",
+"pace_s500": 156.7
+}
+],
+"alerts": {},
+"wall_s": 2.06
+},
+{
+"seed": 12,
+"arm": "fixed_plan",
+"setting": {
+"mult": 1.0,
+"every_s": 300.0
+},
+"race_time_s": 2573.583832279919,
+"blown_s": 410.6093447177239,
+"reserve_left": 0.14465246639272614,
+"reference_s": 2527.433256052527,
+"cues_spoken": 9,
+"cues_followed": 6,
+"cues_blocked": 0,
+"asks": {
+"hold": 9
+},
+"cue_log": [
+{
+"race_s": 91.4,
+"text": "Hold 2:41.",
+"ask": "hold",
+"pace_s500": 161.4
+},
+{
+"race_s": 392.2,
+"text": "Hold 2:41.",
+"ask": "hold",
+"pace_s500": 161.4
+},
+{
+"race_s": 692.8,
+"text": "Hold 2:41.",
+"ask": "hold",
+"pace_s500": 161.4
+},
+{
+"race_s": 993.4,
+"text": "Hold 2:41.",
+"ask": "hold",
+"pace_s500": 161.4
+},
+{
+"race_s": 1294.4,
+"text": "Hold 2:41.",
+"ask": "hold",
+"pace_s500": 161.4
+},
+{
+"race_s": 1595.0,
+"text": "Hold 2:41.",
+"ask": "hold",
+"pace_s500": 161.4
+},
+{
+"race_s": 1895.7,
+"text": "Hold 2:41.",
+"ask": "hold",
+"pace_s500": 161.4
+},
+{
+"race_s": 2196.7,
+"text": "Hold 2:41.",
+"ask": "hold",
+"pace_s500": 161.4
+},
+{
+"race_s": 2497.5,
+"text": "Hold 2:41.",
+"ask": "hold",
+"pace_s500": 161.4
+}
+],
+"alerts": {},
+"wall_s": 1.89
+},
+{
+"seed": 12,
+"arm": "line_rule",
+"setting": {
+"inside_m": 120.0,
+"overpace_margin_m": 150.0,
+"fade_pct": -3.0
+},
+"race_time_s": 2530.5596516408596,
+"blown_s": 136.10140665478423,
+"reserve_left": 0.15069515181094734,
+"reference_s": 2527.433256052527,
+"cues_spoken": 5,
+"cues_followed": 3,
+"cues_blocked": 0,
+"asks": {
+"ease": 2,
+"rate_down": 1,
+"line_in": 1,
+"finish": 1
+},
+"cue_log": [
+{
+"race_s": 111.1,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null
+},
+{
+"race_s": 539.3,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 806.5,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null
+},
+{
+"race_s": 1182.8,
+"text": "Stream against us. Get inside, hug the shore.",
+"ask": "line_in",
+"pace_s500": null
+},
+{
+"race_s": 2287.8,
+"text": "Reserve left. Go now.",
+"ask": "finish",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 2,
+"fading": 1,
+"finish_window": 1
+},
+"wall_s": 2.28
+},
+{
+"seed": 12,
+"arm": "line_rule",
+"setting": {
+"inside_m": 60.0,
+"overpace_margin_m": 150.0,
+"fade_pct": -3.0
+},
+"race_time_s": 2517.2249986940574,
+"blown_s": 136.10140665478423,
+"reserve_left": 0.1830293601575039,
+"reference_s": 2527.433256052527,
+"cues_spoken": 5,
+"cues_followed": 3,
+"cues_blocked": 0,
+"asks": {
+"ease": 2,
+"rate_down": 1,
+"line_in": 1,
+"finish": 1
+},
+"cue_log": [
+{
+"race_s": 111.1,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null
+},
+{
+"race_s": 539.3,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 806.5,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null
+},
+{
+"race_s": 1182.8,
+"text": "Stream against us. Get inside, hug the shore.",
+"ask": "line_in",
+"pace_s500": null
+},
+{
+"race_s": 2277.0,
+"text": "Reserve left. Go now.",
+"ask": "finish",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 2,
+"fading": 1,
+"finish_window": 1
+},
+"wall_s": 2.28
+},
+{
+"seed": 12,
+"arm": "no_coach",
+"setting": {},
+"race_time_s": 2533.6322030759493,
+"blown_s": 136.38551499869223,
+"reserve_left": 0.13155131009862958,
+"reference_s": 2527.433256052527,
+"cues_spoken": 0,
+"cues_followed": 0,
+"cues_blocked": 0,
+"asks": {},
+"cue_log": [],
+"alerts": {},
+"wall_s": 2.13
+},
+{
+"seed": 13,
+"arm": "agent_v3",
+"setting": {
+"periodic_s": 300.0,
+"model": "claude-opus-5-5",
+"coach_version": 3
+},
+"race_time_s": 3438.393880253798,
+"blown_s": 193.9944902395294,
+"reserve_left": 0.03842539260794983,
+"reference_s": 3407.653213790113,
+"cues_spoken": 14,
+"cues_followed": 13,
+"cues_blocked": 3,
+"asks": {
+"ease": 7,
+"line_in": 1,
+"rate_down": 3,
+"line_out": 1,
+"push": 2
+},
+"cue_log": [
+{
+"race_s": 69.2,
+"text": "Settle now, long steady strokes, ease to this pace",
+"ask": "ease",
+"pace_s500": 198
+},
+{
+"race_s": 417.6,
+"text": "Ease slightly, settle into a steady rhythm",
+"ask": "ease",
+"pace_s500": 200
+},
+{
+"race_s": 479.8,
+"text": "Angle in toward shore, about 100 metres off. Steady effort.",
+"ask": "line_in",
+"pace_s500": null
+},
+{
+"race_s": 777.8,
+"text": "Ease slightly, settle and breathe, hold two hundred",
+"ask": "ease",
+"pace_s500": 200
+},
+{
+"race_s": 1067.3,
+"text": "Same effort, longer stroke, drop the rate a touch",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 1288.8,
+"text": "Ease slightly, settle at 185, smooth and steady",
+"ask": "ease",
+"pace_s500": 185
+},
+{
+"race_s": 1413.9,
+"text": "Ease slightly, settle the stroke, hold 191 pace",
+"ask": "ease",
+"pace_s500": 191
+},
+{
+"race_s": 1596.7,
+"text": "Ease slightly, lengthen stroke, settle and hold 195",
+"ask": "ease",
+"pace_s500": 195
+},
+{
+"race_s": 1903.1,
+"text": "Drop two strokes, long strong pulls, settle in",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 1978.6,
+"text": "Reserve empty. Ease slightly, settle at 155 pace.",
+"ask": "ease",
+"pace_s500": 155
+},
+{
+"race_s": 2284.0,
+"text": "Move out to 250 metres, stronger stream there. Same effort.",
+"ask": "line_out",
+"pace_s500": null
+},
+{
+"race_s": 2363.2,
+"text": "Same effort, two strokes slower, longer stroke",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 2962.9,
+"text": "Effort's dropped. Lift back to steady race pace, hold it.",
+"ask": "push",
+"pace_s500": 151
+},
+{
+"race_s": 3094.2,
+"text": "Six minutes left. Lift the effort a little, hold 148.",
+"ask": "push",
+"pace_s500": 148
+}
+],
+"alerts": {
+"over_pace": 3,
+"fading": 5,
+"line_out_leg2": 1,
+"reserve_conflict": 1
+},
+"consultations": 19,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 17,
+"wall_s": 232.39,
+"model_usage": {
+"calls": 42,
+"errors": 0,
+"input_tokens": 23400,
+"output_tokens": 18526,
+"cache_create_tokens": 42843,
+"cache_read_tokens": 188898,
+"latency_median_s": 4.926389022999956,
+"latency_p90_s": 8.564171676000115
+},
+"model_usd_estimate": 0.7161
+},
+{
+"seed": 13,
+"arm": "autopilot",
+"setting": {
+"overpace_margin_m": 150.0,
+"fade_pct": -3.0
+},
+"race_time_s": 3461.6227826298655,
+"blown_s": 170.0767048377576,
+"reserve_left": 0.05959532915760476,
+"reference_s": 3407.653213790113,
+"cues_spoken": 6,
+"cues_followed": 6,
+"cues_blocked": 0,
+"asks": {
+"ease": 2,
+"rate_down": 3,
+"hold": 1
+},
+"cue_log": [
+{
+"race_s": 111.2,
+"text": "Too hot. Settle to 3:15.",
+"ask": "ease",
+"pace_s500": 195.4
+},
+{
+"race_s": 437.0,
+"text": "Too hot. Settle to 3:12.",
+"ask": "ease",
+"pace_s500": 191.8
+},
+{
+"race_s": 776.8,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 956.1,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 3064.3,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 3411.4,
+"text": "Speed is holding. Keep this.",
+"ask": "hold",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 2,
+"fading": 3,
+"reserve_conflict": 1
+},
+"wall_s": 2.91
+},
+{
+"seed": 13,
+"arm": "autopilot",
+"setting": {
+"overpace_margin_m": 300.0,
+"fade_pct": -3.0
+},
+"race_time_s": 3461.6227826298655,
+"blown_s": 170.0767048377576,
+"reserve_left": 0.05959532915760476,
+"reference_s": 3407.653213790113,
+"cues_spoken": 6,
+"cues_followed": 6,
+"cues_blocked": 0,
+"asks": {
+"ease": 2,
+"rate_down": 3,
+"hold": 1
+},
+"cue_log": [
+{
+"race_s": 111.2,
+"text": "Too hot. Settle to 3:15.",
+"ask": "ease",
+"pace_s500": 195.4
+},
+{
+"race_s": 437.0,
+"text": "Too hot. Settle to 3:12.",
+"ask": "ease",
+"pace_s500": 191.8
+},
+{
+"race_s": 776.8,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 956.1,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 3064.3,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 3411.4,
+"text": "Speed is holding. Keep this.",
+"ask": "hold",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 2,
+"fading": 3,
+"reserve_conflict": 1
+},
+"wall_s": 2.93
+},
+{
+"seed": 13,
+"arm": "autopilot",
+"setting": {
+"overpace_margin_m": 600.0,
+"fade_pct": -3.0
+},
+"race_time_s": 3461.6227826298655,
+"blown_s": 170.0767048377576,
+"reserve_left": 0.05959532915760476,
+"reference_s": 3407.653213790113,
+"cues_spoken": 6,
+"cues_followed": 6,
+"cues_blocked": 0,
+"asks": {
+"ease": 2,
+"rate_down": 3,
+"hold": 1
+},
+"cue_log": [
+{
+"race_s": 111.2,
+"text": "Too hot. Settle to 3:15.",
+"ask": "ease",
+"pace_s500": 195.4
+},
+{
+"race_s": 437.0,
+"text": "Too hot. Settle to 3:12.",
+"ask": "ease",
+"pace_s500": 191.8
+},
+{
+"race_s": 776.8,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 956.1,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 3064.3,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 3411.4,
+"text": "Speed is holding. Keep this.",
+"ask": "hold",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 2,
+"fading": 3,
+"reserve_conflict": 1
+},
+"wall_s": 3.05
+},
+{
+"seed": 13,
+"arm": "autopilot",
+"setting": {
+"overpace_margin_m": 150.0,
+"fade_pct": -5.0
+},
+"race_time_s": 3451.85467824875,
+"blown_s": 85.4060207634672,
+"reserve_left": 0.2233738784764824,
+"reference_s": 3407.653213790113,
+"cues_spoken": 5,
+"cues_followed": 5,
+"cues_blocked": 0,
+"asks": {
+"ease": 2,
+"rate_down": 2,
+"hold": 1
+},
+"cue_log": [
+{
+"race_s": 111.2,
+"text": "Too hot. Settle to 3:15.",
+"ask": "ease",
+"pace_s500": 195.4
+},
+{
+"race_s": 437.0,
+"text": "Too hot. Settle to 3:12.",
+"ask": "ease",
+"pace_s500": 191.8
+},
+{
+"race_s": 990.2,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 1383.6,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 2923.5,
+"text": "Speed is holding. Keep this.",
+"ask": "hold",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 2,
+"fading": 2,
+"reserve_conflict": 1
+},
+"wall_s": 2.75
+},
+{
+"seed": 13,
+"arm": "autopilot",
+"setting": {
+"overpace_margin_m": 300.0,
+"fade_pct": -5.0
+},
+"race_time_s": 3451.85467824875,
+"blown_s": 85.4060207634672,
+"reserve_left": 0.2233738784764824,
+"reference_s": 3407.653213790113,
+"cues_spoken": 5,
+"cues_followed": 5,
+"cues_blocked": 0,
+"asks": {
+"ease": 2,
+"rate_down": 2,
+"hold": 1
+},
+"cue_log": [
+{
+"race_s": 111.2,
+"text": "Too hot. Settle to 3:15.",
+"ask": "ease",
+"pace_s500": 195.4
+},
+{
+"race_s": 437.0,
+"text": "Too hot. Settle to 3:12.",
+"ask": "ease",
+"pace_s500": 191.8
+},
+{
+"race_s": 990.2,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 1383.6,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 2923.5,
+"text": "Speed is holding. Keep this.",
+"ask": "hold",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 2,
+"fading": 2,
+"reserve_conflict": 1
+},
+"wall_s": 3.12
+},
+{
+"seed": 13,
+"arm": "autopilot",
+"setting": {
+"overpace_margin_m": 600.0,
+"fade_pct": -5.0
+},
+"race_time_s": 3451.85467824875,
+"blown_s": 85.4060207634672,
+"reserve_left": 0.2233738784764824,
+"reference_s": 3407.653213790113,
+"cues_spoken": 5,
+"cues_followed": 5,
+"cues_blocked": 0,
+"asks": {
+"ease": 2,
+"rate_down": 2,
+"hold": 1
+},
+"cue_log": [
+{
+"race_s": 111.2,
+"text": "Too hot. Settle to 3:15.",
+"ask": "ease",
+"pace_s500": 195.4
+},
+{
+"race_s": 437.0,
+"text": "Too hot. Settle to 3:12.",
+"ask": "ease",
+"pace_s500": 191.8
+},
+{
+"race_s": 990.2,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 1383.6,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 2923.5,
+"text": "Speed is holding. Keep this.",
+"ask": "hold",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 2,
+"fading": 2,
+"reserve_conflict": 1
+},
+"wall_s": 3.06
+},
+{
+"seed": 13,
+"arm": "autopilot_pod",
+"setting": {
+"overpace_margin_m": 150.0,
+"fade_pct": -3.0
+},
+"race_time_s": 3473.74531956767,
+"blown_s": 256.40651534119667,
+"reserve_left": 0.14519774497471963,
+"reference_s": 3407.653213790113,
+"cues_spoken": 4,
+"cues_followed": 4,
+"cues_blocked": 0,
+"asks": {
+"ease": 1,
+"rate_down": 3
+},
+"cue_log": [
+{
+"race_s": 111.2,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null
+},
+{
+"race_s": 483.5,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 720.7,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 2330.5,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 1,
+"fading": 3
+},
+"wall_s": 2.92
+},
+{
+"seed": 13,
+"arm": "autopilot_pod",
+"setting": {
+"overpace_margin_m": 300.0,
+"fade_pct": -3.0
+},
+"race_time_s": 3473.74531956767,
+"blown_s": 256.40651534119667,
+"reserve_left": 0.14519774497471963,
+"reference_s": 3407.653213790113,
+"cues_spoken": 4,
+"cues_followed": 4,
+"cues_blocked": 0,
+"asks": {
+"ease": 1,
+"rate_down": 3
+},
+"cue_log": [
+{
+"race_s": 111.2,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null
+},
+{
+"race_s": 483.5,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 720.7,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 2330.5,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 1,
+"fading": 3
+},
+"wall_s": 2.78
+},
+{
+"seed": 13,
+"arm": "autopilot_pod",
+"setting": {
+"overpace_margin_m": 600.0,
+"fade_pct": -3.0
+},
+"race_time_s": 3473.74531956767,
+"blown_s": 256.40651534119667,
+"reserve_left": 0.14519774497471963,
+"reference_s": 3407.653213790113,
+"cues_spoken": 4,
+"cues_followed": 4,
+"cues_blocked": 0,
+"asks": {
+"ease": 1,
+"rate_down": 3
+},
+"cue_log": [
+{
+"race_s": 111.2,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null
+},
+{
+"race_s": 483.5,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 720.7,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 2330.5,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 1,
+"fading": 3
+},
+"wall_s": 2.93
+},
+{
+"seed": 13,
+"arm": "autopilot_pod",
+"setting": {
+"overpace_margin_m": 150.0,
+"fade_pct": -5.0
+},
+"race_time_s": 3468.0690833596673,
+"blown_s": 307.0738152224253,
+"reserve_left": 0.07281009024732604,
+"reference_s": 3407.653213790113,
+"cues_spoken": 5,
+"cues_followed": 5,
+"cues_blocked": 1,
+"asks": {
+"ease": 2,
+"rate_down": 3
+},
+"cue_log": [
+{
+"race_s": 111.2,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null
+},
+{
+"race_s": 998.7,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 1265.3,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null
+},
+{
+"race_s": 2363.2,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 2843.2,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 3,
+"fading": 3
+},
+"wall_s": 2.81
+},
+{
+"seed": 13,
+"arm": "autopilot_pod",
+"setting": {
+"overpace_margin_m": 300.0,
+"fade_pct": -5.0
+},
+"race_time_s": 3468.0690833596673,
+"blown_s": 307.0738152224253,
+"reserve_left": 0.07281009024732604,
+"reference_s": 3407.653213790113,
+"cues_spoken": 5,
+"cues_followed": 5,
+"cues_blocked": 1,
+"asks": {
+"ease": 2,
+"rate_down": 3
+},
+"cue_log": [
+{
+"race_s": 111.2,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null
+},
+{
+"race_s": 998.7,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 1265.3,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null
+},
+{
+"race_s": 2363.2,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 2843.2,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 3,
+"fading": 3
+},
+"wall_s": 3.16
+},
+{
+"seed": 13,
+"arm": "autopilot_pod",
+"setting": {
+"overpace_margin_m": 600.0,
+"fade_pct": -5.0
+},
+"race_time_s": 3468.0690833596673,
+"blown_s": 307.0738152224253,
+"reserve_left": 0.07281009024732604,
+"reference_s": 3407.653213790113,
+"cues_spoken": 5,
+"cues_followed": 5,
+"cues_blocked": 1,
+"asks": {
+"ease": 2,
+"rate_down": 3
+},
+"cue_log": [
+{
+"race_s": 111.2,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null
+},
+{
+"race_s": 998.7,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 1265.3,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null
+},
+{
+"race_s": 2363.2,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 2843.2,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 3,
+"fading": 3
+},
+"wall_s": 2.98
+},
+{
+"seed": 13,
+"arm": "fixed_plan",
+"setting": {
+"mult": 0.97,
+"every_s": 120.0
+},
+"race_time_s": 3500.660710841029,
+"blown_s": 512.2545399964956,
+"reserve_left": 0.35379824639381957,
+"reference_s": 3407.653213790113,
+"cues_spoken": 20,
+"cues_followed": 18,
+"cues_blocked": 9,
+"asks": {
+"hold": 20
+},
+"cue_log": [
+{
+"race_s": 91.9,
+"text": "Hold 2:57.",
+"ask": "hold",
+"pace_s500": 177.4
+},
+{
+"race_s": 212.1,
+"text": "Hold 2:57.",
+"ask": "hold",
+"pace_s500": 177.4
+},
+{
+"race_s": 332.9,
+"text": "Hold 2:57.",
+"ask": "hold",
+"pace_s500": 177.4
+},
+{
+"race_s": 453.1,
+"text": "Hold 2:57.",
+"ask": "hold",
+"pace_s500": 177.4
+},
+{
+"race_s": 573.3,
+"text": "Hold 2:57.",
+"ask": "hold",
+"pace_s500": 177.4
+},
+{
+"race_s": 693.7,
+"text": "Hold 2:57.",
+"ask": "hold",
+"pace_s500": 177.4
+},
+{
+"race_s": 814.4,
+"text": "Hold 2:57.",
+"ask": "hold",
+"pace_s500": 177.4
+},
+{
+"race_s": 934.8,
+"text": "Hold 2:57.",
+"ask": "hold",
+"pace_s500": 177.4
+},
+{
+"race_s": 1055.3,
+"text": "Hold 2:57.",
+"ask": "hold",
+"pace_s500": 177.4
+},
+{
+"race_s": 1175.9,
+"text": "Hold 2:57.",
+"ask": "hold",
+"pace_s500": 177.4
+},
+{
+"race_s": 1296.1,
+"text": "Hold 2:57.",
+"ask": "hold",
+"pace_s500": 177.4
+},
+{
+"race_s": 1416.8,
+"text": "Hold 2:57.",
+"ask": "hold",
+"pace_s500": 177.4
+},
+{
+"race_s": 1537.2,
+"text": "Hold 2:57.",
+"ask": "hold",
+"pace_s500": 177.4
+},
+{
+"race_s": 1657.9,
+"text": "Hold 2:57.",
+"ask": "hold",
+"pace_s500": 177.4
+},
+{
+"race_s": 1777.9,
+"text": "Hold 2:57.",
+"ask": "hold",
+"pace_s500": 177.4
+},
+{
+"race_s": 1898.7,
+"text": "Hold 2:57.",
+"ask": "hold",
+"pace_s500": 177.4
+},
+{
+"race_s": 2019.4,
+"text": "Hold 2:57.",
+"ask": "hold",
+"pace_s500": 177.4
+},
+{
+"race_s": 2140.1,
+"text": "Hold 2:57.",
+"ask": "hold",
+"pace_s500": 177.4
+},
+{
+"race_s": 2260.8,
+"text": "Hold 2:57.",
+"ask": "hold",
+"pace_s500": 177.4
+},
+{
+"race_s": 2381.3,
+"text": "Hold 2:57.",
+"ask": "hold",
+"pace_s500": 177.4
+}
+],
+"alerts": {},
+"wall_s": 2.97
+},
+{
+"seed": 13,
+"arm": "fixed_plan",
+"setting": {
+"mult": 1.03,
+"every_s": 120.0
+},
+"race_time_s": 3502.9808245560694,
+"blown_s": 425.69474673585876,
+"reserve_left": 0.23530646666890295,
+"reference_s": 3407.653213790113,
+"cues_spoken": 20,
+"cues_followed": 18,
+"cues_blocked": 9,
+"asks": {
+"hold": 20
+},
+"cue_log": [
+{
+"race_s": 91.9,
+"text": "Hold 2:47.",
+"ask": "hold",
+"pace_s500": 167.0
+},
+{
+"race_s": 212.4,
+"text": "Hold 2:47.",
+"ask": "hold",
+"pace_s500": 167.0
+},
+{
+"race_s": 332.7,
+"text": "Hold 2:47.",
+"ask": "hold",
+"pace_s500": 167.0
+},
+{
+"race_s": 453.6,
+"text": "Hold 2:47.",
+"ask": "hold",
+"pace_s500": 167.0
+},
+{
+"race_s": 574.1,
+"text": "Hold 2:47.",
+"ask": "hold",
+"pace_s500": 167.0
+},
+{
+"race_s": 694.6,
+"text": "Hold 2:47.",
+"ask": "hold",
+"pace_s500": 167.0
+},
+{
+"race_s": 814.7,
+"text": "Hold 2:47.",
+"ask": "hold",
+"pace_s500": 167.0
+},
+{
+"race_s": 935.0,
+"text": "Hold 2:47.",
+"ask": "hold",
+"pace_s500": 167.0
+},
+{
+"race_s": 1055.2,
+"text": "Hold 2:47.",
+"ask": "hold",
+"pace_s500": 167.0
+},
+{
+"race_s": 1175.8,
+"text": "Hold 2:47.",
+"ask": "hold",
+"pace_s500": 167.0
+},
+{
+"race_s": 1296.1,
+"text": "Hold 2:47.",
+"ask": "hold",
+"pace_s500": 167.0
+},
+{
+"race_s": 1416.8,
+"text": "Hold 2:47.",
+"ask": "hold",
+"pace_s500": 167.0
+},
+{
+"race_s": 1537.4,
+"text": "Hold 2:47.",
+"ask": "hold",
+"pace_s500": 167.0
+},
+{
+"race_s": 1658.2,
+"text": "Hold 2:47.",
+"ask": "hold",
+"pace_s500": 167.0
+},
+{
+"race_s": 1780.0,
+"text": "Hold 2:47.",
+"ask": "hold",
+"pace_s500": 167.0
+},
+{
+"race_s": 1900.9,
+"text": "Hold 2:47.",
+"ask": "hold",
+"pace_s500": 167.0
+},
+{
+"race_s": 2021.6,
+"text": "Hold 2:47.",
+"ask": "hold",
+"pace_s500": 167.0
+},
+{
+"race_s": 2142.5,
+"text": "Hold 2:47.",
+"ask": "hold",
+"pace_s500": 167.0
+},
+{
+"race_s": 2262.5,
+"text": "Hold 2:47.",
+"ask": "hold",
+"pace_s500": 167.0
+},
+{
+"race_s": 2383.4,
+"text": "Hold 2:47.",
+"ask": "hold",
+"pace_s500": 167.0
+}
+],
+"alerts": {},
+"wall_s": 2.76
+},
+{
+"seed": 13,
+"arm": "fixed_plan",
+"setting": {
+"mult": 1.0,
+"every_s": 120.0
+},
+"race_time_s": 3501.521097640242,
+"blown_s": 511.65667583660826,
+"reserve_left": 0.38619032087003824,
+"reference_s": 3407.653213790113,
+"cues_spoken": 20,
+"cues_followed": 18,
+"cues_blocked": 9,
+"asks": {
+"hold": 20
+},
+"cue_log": [
+{
+"race_s": 91.9,
+"text": "Hold 2:52.",
+"ask": "hold",
+"pace_s500": 172.0
+},
+{
+"race_s": 212.2,
+"text": "Hold 2:52.",
+"ask": "hold",
+"pace_s500": 172.0
+},
+{
+"race_s": 332.6,
+"text": "Hold 2:52.",
+"ask": "hold",
+"pace_s500": 172.0
+},
+{
+"race_s": 452.6,
+"text": "Hold 2:52.",
+"ask": "hold",
+"pace_s500": 172.0
+},
+{
+"race_s": 572.7,
+"text": "Hold 2:52.",
+"ask": "hold",
+"pace_s500": 172.0
+},
+{
+"race_s": 693.3,
+"text": "Hold 2:52.",
+"ask": "hold",
+"pace_s500": 172.0
+},
+{
+"race_s": 813.6,
+"text": "Hold 2:52.",
+"ask": "hold",
+"pace_s500": 172.0
+},
+{
+"race_s": 934.0,
+"text": "Hold 2:52.",
+"ask": "hold",
+"pace_s500": 172.0
+},
+{
+"race_s": 1054.5,
+"text": "Hold 2:52.",
+"ask": "hold",
+"pace_s500": 172.0
+},
+{
+"race_s": 1174.9,
+"text": "Hold 2:52.",
+"ask": "hold",
+"pace_s500": 172.0
+},
+{
+"race_s": 1295.3,
+"text": "Hold 2:52.",
+"ask": "hold",
+"pace_s500": 172.0
+},
+{
+"race_s": 1416.2,
+"text": "Hold 2:52.",
+"ask": "hold",
+"pace_s500": 172.0
+},
+{
+"race_s": 1537.0,
+"text": "Hold 2:52.",
+"ask": "hold",
+"pace_s500": 172.0
+},
+{
+"race_s": 1657.5,
+"text": "Hold 2:52.",
+"ask": "hold",
+"pace_s500": 172.0
+},
+{
+"race_s": 1778.3,
+"text": "Hold 2:52.",
+"ask": "hold",
+"pace_s500": 172.0
+},
+{
+"race_s": 1899.2,
+"text": "Hold 2:52.",
+"ask": "hold",
+"pace_s500": 172.0
+},
+{
+"race_s": 2019.6,
+"text": "Hold 2:52.",
+"ask": "hold",
+"pace_s500": 172.0
+},
+{
+"race_s": 2140.3,
+"text": "Hold 2:52.",
+"ask": "hold",
+"pace_s500": 172.0
+},
+{
+"race_s": 2262.0,
+"text": "Hold 2:52.",
+"ask": "hold",
+"pace_s500": 172.0
+},
+{
+"race_s": 2382.5,
+"text": "Hold 2:52.",
+"ask": "hold",
+"pace_s500": 172.0
+}
+],
+"alerts": {},
+"wall_s": 3.05
+},
+{
+"seed": 13,
+"arm": "fixed_plan",
+"setting": {
+"mult": 0.97,
+"every_s": 300.0
+},
+"race_time_s": 3497.966690062051,
+"blown_s": 342.69196799989084,
+"reserve_left": 0.4348957458049237,
+"reference_s": 3407.653213790113,
+"cues_spoken": 12,
+"cues_followed": 12,
+"cues_blocked": 0,
+"asks": {
+"hold": 12
+},
+"cue_log": [
+{
+"race_s": 91.9,
+"text": "Hold 2:57.",
+"ask": "hold",
+"pace_s500": 177.4
+},
+{
+"race_s": 393.0,
+"text": "Hold 2:57.",
+"ask": "hold",
+"pace_s500": 177.4
+},
+{
+"race_s": 693.6,
+"text": "Hold 2:57.",
+"ask": "hold",
+"pace_s500": 177.4
+},
+{
+"race_s": 993.9,
+"text": "Hold 2:57.",
+"ask": "hold",
+"pace_s500": 177.4
+},
+{
+"race_s": 1294.2,
+"text": "Hold 2:57.",
+"ask": "hold",
+"pace_s500": 177.4
+},
+{
+"race_s": 1594.9,
+"text": "Hold 2:57.",
+"ask": "hold",
+"pace_s500": 177.4
+},
+{
+"race_s": 1895.0,
+"text": "Hold 2:57.",
+"ask": "hold",
+"pace_s500": 177.4
+},
+{
+"race_s": 2195.3,
+"text": "Hold 2:57.",
+"ask": "hold",
+"pace_s500": 177.4
+},
+{
+"race_s": 2495.6,
+"text": "Hold 2:57.",
+"ask": "hold",
+"pace_s500": 177.4
+},
+{
+"race_s": 2796.3,
+"text": "Hold 2:57.",
+"ask": "hold",
+"pace_s500": 177.4
+},
+{
+"race_s": 3097.9,
+"text": "Hold 2:57.",
+"ask": "hold",
+"pace_s500": 177.4
+},
+{
+"race_s": 3398.1,
+"text": "Hold 2:57.",
+"ask": "hold",
+"pace_s500": 177.4
+}
+],
+"alerts": {},
+"wall_s": 2.98
+},
+{
+"seed": 13,
+"arm": "fixed_plan",
+"setting": {
+"mult": 1.03,
+"every_s": 300.0
+},
+"race_time_s": 3494.3080768192403,
+"blown_s": 256.371484972201,
+"reserve_left": 0.42378513493285763,
+"reference_s": 3407.653213790113,
+"cues_spoken": 12,
+"cues_followed": 12,
+"cues_blocked": 0,
+"asks": {
+"hold": 12
+},
+"cue_log": [
+{
+"race_s": 91.9,
+"text": "Hold 2:47.",
+"ask": "hold",
+"pace_s500": 167.0
+},
+{
+"race_s": 391.9,
+"text": "Hold 2:47.",
+"ask": "hold",
+"pace_s500": 167.0
+},
+{
+"race_s": 692.5,
+"text": "Hold 2:47.",
+"ask": "hold",
+"pace_s500": 167.0
+},
+{
+"race_s": 992.6,
+"text": "Hold 2:47.",
+"ask": "hold",
+"pace_s500": 167.0
+},
+{
+"race_s": 1294.0,
+"text": "Hold 2:47.",
+"ask": "hold",
+"pace_s500": 167.0
+},
+{
+"race_s": 1594.7,
+"text": "Hold 2:47.",
+"ask": "hold",
+"pace_s500": 167.0
+},
+{
+"race_s": 1894.8,
+"text": "Hold 2:47.",
+"ask": "hold",
+"pace_s500": 167.0
+},
+{
+"race_s": 2195.3,
+"text": "Hold 2:47.",
+"ask": "hold",
+"pace_s500": 167.0
+},
+{
+"race_s": 2495.7,
+"text": "Hold 2:47.",
+"ask": "hold",
+"pace_s500": 167.0
+},
+{
+"race_s": 2796.4,
+"text": "Hold 2:47.",
+"ask": "hold",
+"pace_s500": 167.0
+},
+{
+"race_s": 3097.9,
+"text": "Hold 2:47.",
+"ask": "hold",
+"pace_s500": 167.0
+},
+{
+"race_s": 3399.0,
+"text": "Hold 2:47.",
+"ask": "hold",
+"pace_s500": 167.0
+}
+],
+"alerts": {},
+"wall_s": 2.67
+},
+{
+"seed": 13,
+"arm": "fixed_plan",
+"setting": {
+"mult": 1.0,
+"every_s": 300.0
+},
+"race_time_s": 3497.8047267044794,
+"blown_s": 341.1093960472108,
+"reserve_left": 0.47236889127291537,
+"reference_s": 3407.653213790113,
+"cues_spoken": 12,
+"cues_followed": 12,
+"cues_blocked": 0,
+"asks": {
+"hold": 12
+},
+"cue_log": [
+{
+"race_s": 91.9,
+"text": "Hold 2:52.",
+"ask": "hold",
+"pace_s500": 172.0
+},
+{
+"race_s": 392.6,
+"text": "Hold 2:52.",
+"ask": "hold",
+"pace_s500": 172.0
+},
+{
+"race_s": 692.8,
+"text": "Hold 2:52.",
+"ask": "hold",
+"pace_s500": 172.0
+},
+{
+"race_s": 993.2,
+"text": "Hold 2:52.",
+"ask": "hold",
+"pace_s500": 172.0
+},
+{
+"race_s": 1293.2,
+"text": "Hold 2:52.",
+"ask": "hold",
+"pace_s500": 172.0
+},
+{
+"race_s": 1593.5,
+"text": "Hold 2:52.",
+"ask": "hold",
+"pace_s500": 172.0
+},
+{
+"race_s": 1893.8,
+"text": "Hold 2:52.",
+"ask": "hold",
+"pace_s500": 172.0
+},
+{
+"race_s": 2194.3,
+"text": "Hold 2:52.",
+"ask": "hold",
+"pace_s500": 172.0
+},
+{
+"race_s": 2494.8,
+"text": "Hold 2:52.",
+"ask": "hold",
+"pace_s500": 172.0
+},
+{
+"race_s": 2795.5,
+"text": "Hold 2:52.",
+"ask": "hold",
+"pace_s500": 172.0
+},
+{
+"race_s": 3096.0,
+"text": "Hold 2:52.",
+"ask": "hold",
+"pace_s500": 172.0
+},
+{
+"race_s": 3397.0,
+"text": "Hold 2:52.",
+"ask": "hold",
+"pace_s500": 172.0
+}
+],
+"alerts": {},
+"wall_s": 2.94
+},
+{
+"seed": 13,
+"arm": "line_rule",
+"setting": {
+"inside_m": 120.0,
+"overpace_margin_m": 150.0,
+"fade_pct": -3.0
+},
+"race_time_s": 3441.499961684711,
+"blown_s": 85.00307242977556,
+"reserve_left": 0.06967698270290427,
+"reference_s": 3407.653213790113,
+"cues_spoken": 9,
+"cues_followed": 9,
+"cues_blocked": 62,
+"asks": {
+"line_in": 1,
+"ease": 4,
+"rate_down": 4
+},
+"cue_log": [
+{
+"race_s": 60.9,
+"text": "Stream against us. Get inside, hug the shore.",
+"ask": "line_in",
+"pace_s500": null
+},
+{
+"race_s": 474.5,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null
+},
+{
+"race_s": 654.9,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null
+},
+{
+"race_s": 834.9,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null
+},
+{
+"race_s": 1068.4,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 1299.5,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null
+},
+{
+"race_s": 1497.7,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 2195.3,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 3045.9,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 6,
+"fading": 4
+},
+"wall_s": 3.1
+},
+{
+"seed": 13,
+"arm": "line_rule",
+"setting": {
+"inside_m": 60.0,
+"overpace_margin_m": 150.0,
+"fade_pct": -3.0
+},
+"race_time_s": 3466.9785433922016,
+"blown_s": 255.66098481434713,
+"reserve_left": 0.0539719947665404,
+"reference_s": 3407.653213790113,
+"cues_spoken": 11,
+"cues_followed": 11,
+"cues_blocked": 61,
+"asks": {
+"line_in": 1,
+"ease": 4,
+"hold": 2,
+"rate_down": 4
+},
+"cue_log": [
+{
+"race_s": 60.9,
+"text": "Stream against us. Get inside, hug the shore.",
+"ask": "line_in",
+"pace_s500": null
+},
+{
+"race_s": 474.5,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null
+},
+{
+"race_s": 654.9,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null
+},
+{
+"race_s": 834.9,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null
+},
+{
+"race_s": 1114.6,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null
+},
+{
+"race_s": 1400.3,
+"text": "Speed is holding. Keep this.",
+"ask": "hold",
+"pace_s500": null
+},
+{
+"race_s": 1828.7,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 2394.6,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 2552.4,
+"text": "Speed is holding. Keep this.",
+"ask": "hold",
+"pace_s500": null
+},
+{
+"race_s": 2674.6,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+},
+{
+"race_s": 2913.8,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null
+}
+],
+"alerts": {
+"over_pace": 5,
+"reserve_conflict": 2,
+"fading": 4
+},
+"wall_s": 3.52
+},
+{
+"seed": 13,
+"arm": "no_coach",
+"setting": {},
+"race_time_s": 3467.7614720575557,
+"blown_s": 84.76496673057171,
+"reserve_left": 0.06327378185209763,
+"reference_s": 3407.653213790113,
+"cues_spoken": 0,
+"cues_followed": 0,
+"cues_blocked": 0,
+"asks": {},
+"cue_log": [],
+"alerts": {},
+"wall_s": 3.1
+}
+]
