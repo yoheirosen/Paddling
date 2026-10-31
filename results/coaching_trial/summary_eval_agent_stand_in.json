@@ -286,5 +286,31 @@
    "n_gap": 20
   }
  },
- "mean_reference_vs_no_coach_s": -31.455596766517633
+ "mean_reference_vs_no_coach_s": -31.455596766517633,
+ "breakdown": {
+  "n_over_pacers": 17,
+  "n_under_pacers": 13,
+  "arms": {
+   "agent_stand_in": {
+    "vs_no_coach_over_pacers_s": -5.8578317467687855,
+    "vs_no_coach_under_pacers_s": 0.39584813247917666
+   },
+   "fixed_plan_best": {
+    "vs_no_coach_over_pacers_s": -12.859992909259343,
+    "vs_no_coach_under_pacers_s": 16.506241180898368
+   },
+   "fixed_plan_typical": {
+    "vs_no_coach_over_pacers_s": -13.686821003047257,
+    "vs_no_coach_under_pacers_s": 35.84583441799476
+   },
+   "autopilot_best": {
+    "vs_no_coach_over_pacers_s": -14.736950863498699,
+    "vs_no_coach_under_pacers_s": -0.2804893312537178
+   },
+   "autopilot_typical": {
+    "vs_no_coach_over_pacers_s": -14.736950863498699,
+    "vs_no_coach_under_pacers_s": -0.2804893312537178
+   }
+  }
+ }
 }

@@ -282,6 +282,7 @@ def summarize(tag: str, agent_arm: str = "agent", figure: Optional[str] = None) 
             "median_gap_closed": float(np.median(gaps)) if gaps else None, "n_gap": len(gaps)}
     out["arms"] = arms_table
     out["mean_reference_vs_no_coach_s"] = float(np.mean([nc[s]["reference_s"] - nc[s]["race_time_s"] for s in seeds]))
+    out["breakdown"] = breakdown(rows, seeds, {agent_arm: ag, **comps})
     usage = [ag[s].get("model_usage") for s in seeds if ag[s].get("model_usage")]
     if usage:
         out["model_usage"] = {k: int(sum(u[k] for u in usage)) for k in (
@@ -293,6 +294,35 @@ def summarize(tag: str, agent_arm: str = "agent", figure: Optional[str] = None) 
     _print(out)
     if figure:
         make_figure(tag, agent_arm, figure, out)
+    return out
+
+
+def breakdown(rows, seeds, arms: Dict[str, Dict[int, Dict[str, Any]]]) -> Dict[str, Any]:
+    """Gains vs no coach split by the paddler's own pacing (over- vs under-pacers: their
+    planted body effort above or below their even pace), and what each coach defined."""
+    preps = _load_preps()
+    nc = arms.get("no_coach") or _by(rows, "no_coach")
+    over = [s for s in seeds if preps[str(s)]["traits"]["body_bias"] > 1.0]
+    under = [s for s in seeds if s not in over]
+    out: Dict[str, Any] = {"n_over_pacers": len(over), "n_under_pacers": len(under), "arms": {}}
+    for name, d in arms.items():
+        if name == "no_coach" or not all(s in d for s in seeds):
+            continue
+        g = lambda ss: float(np.mean([d[s]["race_time_s"] - nc[s]["race_time_s"] for s in ss])) if ss else None  # noqa: E731
+        row = {"vs_no_coach_over_pacers_s": g(over), "vs_no_coach_under_pacers_s": g(under)}
+        defs = [d[s].get("definitions") for s in seeds if d[s].get("definitions")]
+        if defs and name.startswith("agent") and name != "agent_stand_in":
+            start_w = {"over_pace", "fading", "reserve_conflict", "finish_window"}
+            n_w = [len([w for w in x.get("watches", []) if w["watch_id"] not in start_w]) for x in defs]
+            n_m = [len([m for m in x.get("metrics", []) if m["name"] != "fade_min_5min"]) for x in defs]
+            row.update({"own_watches_per_race": float(np.mean(n_w)), "own_metrics_per_race": float(np.mean(n_m)),
+                        "races_with_own_definitions": int(sum(1 for a, b in zip(n_w, n_m) if a + b > 0))})
+            asks: Dict[str, int] = {}
+            for s in seeds:
+                for k, v in (d[s].get("asks") or {}).items():
+                    asks[k] = asks.get(k, 0) + v
+            row["asks"] = asks
+        out["arms"][name] = row
     return out
 
 
@@ -313,6 +343,16 @@ def _print(out: Dict[str, Any]) -> None:
               f"p {c.get('wilcoxon_p') if c.get('wilcoxon_p') is None else round(c['wilcoxon_p'], 4)}  "
               f"agent faster on {c['n_a_faster']}/{c['n']}" if ci else f"  agent - {name}: n={c['n']}")
     print("  Holm (primary):", {k: (None if v is None else round(v, 4)) for k, v in out["holm_primary"].items()})
+    b = out.get("breakdown") or {}
+    if b:
+        print(f"  by own pacing ({b['n_over_pacers']} over-pacers, {b['n_under_pacers']} under-pacers):")
+        for name, row in b["arms"].items():
+            extra = ""
+            if "own_watches_per_race" in row:
+                extra = (f"; wrote {row['own_watches_per_race']:.1f} watch rules and {row['own_metrics_per_race']:.1f} "
+                         f"metrics per race (in {row['races_with_own_definitions']} races); asks {row['asks']}")
+            print(f"    {name:22s} over-pacers {row['vs_no_coach_over_pacers_s']:+6.1f} s, "
+                  f"under-pacers {row['vs_no_coach_under_pacers_s']:+6.1f} s{extra}")
     if out.get("model_usage"):
         print("  model usage:", out["model_usage"])
 
