@@ -93,7 +93,35 @@ PREREGISTERED: Dict[str, Any] = {
     "statistics": ("paired per seed: d = agent - comparator (s); Wilcoxon signed-rank (two-sided); "
                    "bootstrap 95% CI of the mean d (10 000 resamples, seed 0); Holm over the primary "
                    "family {race_time_s} x {no_coach, fixed_plan best, autopilot best}"),
-    "revisions": [],
+    "revisions": [{
+        "date": "2026-10-31",
+        "before_any_real_model_run": True,
+        "kind": "owner decision (the model choice the registration left open)",
+        "changes": [
+            "primary agent arm 'agent': claude-opus-5-5 (default effort); the Holm family is "
+            "computed for this arm",
+            "secondary agent arm 'agent_haiku': claude-haiku-5-5 (default effort); reported with "
+            "the same tests, outside the primary family",
+            "the coach's system prompt and tool descriptions are prompt-cached (cost only; the "
+            "model sees the same input)",
+            "budget cap: about USD 45 for both arms; stop and ask the owner if it would be exceeded",
+            "a smoke test on development seeds precedes the evaluation run (plumbing only; any "
+            "change it forces is logged here before the evaluation run)",
+            "smoke test, development seed 1 (6 km): both models ran the whole loop with no errors "
+            "(Haiku 41 calls, median 1.4 s, ~USD 0.01; Opus 36 calls, median 3.7 s, ~USD 0.36); both "
+            "wrote watch rules of their own; no change was forced",
+        ],
+    }, {
+        "date": "2026-10-31",
+        "kind": "data-handling rule (after the API account ran out of credit mid-run)",
+        "during_evaluation": True,
+        "changes": [
+            "a race in which any of the coach's model calls failed is not a coached race: it is kept "
+            "out of the results (results/coaching_trial/failed_<tag>.jsonl) and rerun on the same seed",
+            "at the time: 3 clean primary-arm races (seeds 1000-1002) and 9 with refused calls "
+            "(seeds 1003-1011, moved out); no arm comparison had been computed",
+        ],
+    }],
 }
 
 
@@ -297,8 +325,9 @@ class AgentArm(Arm):
         c = self.coach
         if c is None:
             return {}
+        errs = [x["error"] for x in c.consultations if x.get("error")]
         return {"consultations": len(c.consultations),
-                "consult_errors": sum(1 for x in c.consultations if x.get("error")),
+                "consult_errors": len(errs), "consult_error_example": errs[0][:200] if errs else "",
                 "cue_calls": sum(1 for x in c.consultations if x.get("cued"))}
 
 

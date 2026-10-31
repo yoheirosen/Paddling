@@ -277,8 +277,10 @@ class RaceCoach:
 
     def __init__(self, provider: Any, state: RaceState, gate: ActuatorGate, *,
                  system: Optional[str] = None, caller: str = "race_coach", max_tokens: int = 400,
-                 panel: Any = None, max_iterations: Optional[int] = None) -> None:
+                 panel: Any = None, max_iterations: Optional[int] = None,
+                 cache_system: Optional[bool] = None) -> None:
         self.provider, self.state, self.gate, self.panel = provider, state, gate, panel
+        self.cache_system = (panel is not None) if cache_system is None else bool(cache_system)
         self.system = system or (COACH_PANEL_SYSTEM if panel is not None else COACH_SYSTEM)
         self.caller, self.max_tokens = caller, max_tokens
         self.consultations: List[Dict[str, Any]] = []
@@ -327,7 +329,7 @@ class RaceCoach:
         res = run_tool_loop(self.provider, system=self.system,
                             messages=[Message(role="user", text=json.dumps(msg))],
                             policy=self.policy, max_tokens=self.max_tokens, caller=self.caller,
-                            catch_errors=True)
+                            cache_system=self.cache_system, catch_errors=True)
         out = {"t_asked": t0, "t_answered": s.last.get("t"), "why": why,
                "events": [e["kind"] for e in events], "text": res.text,
                "cued": any(tc.name == "cue" for tc, _ in res.tool_log),
