@@ -337,6 +337,22 @@ latency; a harness check) gained 3.1 s. The language-model coach has not run yet
 waits for the API key and the choice of model. Development seeds (20): reference
 −52 s, autopilot −11.5 s, best fixed plan −0.5 s.
 
+### Held-out confirmation of the improved coach (written down 2026-11-01, before the run)
+
+After the registered result (above), three exploratory rounds on development seeds
+improved the coach: the paddle pod's shaft power and a reserve from it, live
+evidence about the calibration and a tool to revise it, a prompt that says how far to
+trust each number, the last five minutes in each update (round 1); water that varies
+across the course, with eddies, a stream that can turn, a forecast with errors, a
+local current reading, and line cues (round 2); a forecast calculator, a plan per leg
+and decisive line targets (round 3). The confirmation runs on 10 fresh coastal seeds
+(3000–3009) never used before: no coach, the registered autopilot, the same rules on
+the pod's reserve, the pod autopilot plus "inside against the forecast stream", and
+the improved coach (Opus 5.5), every baseline setting fixed in advance. Primary: race
+time, coach minus line rule and coach minus no coach, paired per seed (Wilcoxon,
+bootstrap interval, Holm over the two). Ten seeds detect only a large difference.
+Design in code: `coaching_trial.HELDOUT_ROUND3`.
+
 ## Results so far
 
 **Simulated 37-minute OC1 training session** (`demos/demo_oc1_training.py`,

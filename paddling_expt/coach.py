@@ -323,6 +323,19 @@ Against the stream the inshore water is usually better; with it, the channel. Cu
 line_out (100 m), or give line_m (a target distance from shore, 40-600 m)."""
 
 
+WATER_SECTION_V4 = """
+
+How to use the water: at the start of each leg (you are woken then) make a plan for the leg: \
+compare lines with stream_by_line (the forecast's stream along your heading at a line and \
+position) and choose where to paddle. Against the stream, the inshore water is often worth \
+several seconds per minute; with it, the channel. When a line is clearly better for most of the \
+leg, go there early and in one move: cue line_in or line_out WITH line_m (e.g. 50-80 m from shore \
+against the stream, 300-450 m with it); 100-m steps arrive too late. Eddies (forecast, uncertain) \
+can reverse the inshore water. Once there, check the forecast against push_local_mps; if the \
+water is not what the forecast said (the stream has turned, an eddy is elsewhere), change the \
+plan. Pacing still matters: keep the reserve from running empty."""
+
+
 _CUE_SCHEMA = {
     "type": "object",
     "properties": {
@@ -351,7 +364,8 @@ class RaceCoach:
         self.provider, self.state, self.gate, self.panel = provider, state, gate, panel
         self.version = int(version)
         if system is None and panel is not None and self.version >= 2:
-            system = COACH_PANEL_SYSTEM_V2 + (WATER_SECTION if self.version >= 3 else "")
+            system = (COACH_PANEL_SYSTEM_V2 + (WATER_SECTION if self.version >= 3 else "")
+                      + (WATER_SECTION_V4 if self.version >= 4 else ""))
         self.forecast: Optional[Dict[str, Any]] = None
         self.cache_system = (panel is not None) if cache_system is None else bool(cache_system)
         self.system = system or (COACH_PANEL_SYSTEM if panel is not None else COACH_SYSTEM)
@@ -376,6 +390,11 @@ class RaceCoach:
                          description="The pre-race forecast of the tidal stream, its change during the race, "
                                      "the inshore weakening and the eddies (local knowledge; can be wrong).")
             allowed.append("current_forecast")
+        if self.version >= 4:
+            reg.register(self.stream_by_line, name="stream_by_line",
+                         description="The forecast's stream along the current heading (m/s, + helps) at each "
+                                     "given distance from shore, here or at another position along the course.")
+            allowed.append("stream_by_line")
         if self.version >= 2:
             reg.register(self.set_critical_power, name="set_critical_power", writes=True,
                          description="Correct the critical power the reserve models use from now on "
@@ -420,6 +439,20 @@ class RaceCoach:
         self.recalibrations.append(entry)
         record.emit("revision", target="critical_power", **entry)
         return {"ok": True, **out}
+
+    def stream_by_line(self, lines_m: Optional[List[float]] = None, along_m: Optional[float] = None) -> Dict[str, Any]:
+        from .sim.twin import forecast_stream
+        if not self.forecast:
+            return {"ok": False, "error": "no forecast for this race"}
+        s = self.state.last
+        hd = s.get("heading_deg", 0.0) or 0.0
+        sign = 1.0 if (hd < 90.0 or hd > 270.0) else -1.0
+        pos = float(along_m) if along_m is not None else float(s.get("along_m", 0.0) or 0.0)
+        t = float(s.get("elapsed_s", 0.0) or 0.0)
+        lines = lines_m or [50, 80, 120, 200, 300, 450]
+        return {"ok": True, "heading_deg": round(hd), "along_m": round(pos), "race_s": round(t),
+                "along_heading_mps": {str(int(y)): round(sign * forecast_stream(self.forecast, float(y), pos, t), 3)
+                                      for y in lines}}
 
     def current_forecast(self) -> Dict[str, Any]:
         return dict(self.forecast or {"note": "no forecast for this race"})

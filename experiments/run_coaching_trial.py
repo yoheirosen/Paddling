@@ -124,6 +124,8 @@ def _make_arms(spec: str, a: argparse.Namespace) -> List[Any]:
             arms += ct.baseline_arms()
         elif part == "no_coach":
             arms.append(ct.NoCoach())
+        elif part == "heldout_baselines":
+            arms += [ct.NoCoach(), ct.Autopilot(150.0, -3.0), ct.PodAutopilot(150.0, -3.0), ct.LineRule(60.0)]
         elif part == "line_rule":
             arms += [ct.LineRule(60.0), ct.LineRule(120.0)]
         elif part == "autopilot_pod":

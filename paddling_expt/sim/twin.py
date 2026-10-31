@@ -53,7 +53,7 @@ from ..boatspeed import power_at_speed
 from ..hydro import Craft
 from .paddler import PaddlerParams, best_rate, efficiency
 
-__all__ = ["Traits", "RaceSetup", "PaddlerTwin", "ASKS", "CoastalWater", "water_forecast", "draw_traits", "draw_setup",
+__all__ = ["Traits", "RaceSetup", "PaddlerTwin", "ASKS", "CoastalWater", "water_forecast", "forecast_stream", "draw_traits", "draw_setup",
            "even_effort", "oracle_effort", "twin_cp_test"]
 
 ASKS = ("ease", "push", "hold", "rate_up", "rate_down", "finish", "line_in", "line_out", "none")
@@ -102,12 +102,30 @@ def water_forecast(water: CoastalWater, seed: int) -> Dict[str, Any]:
     if rng.random() < 0.3:
         eddies.append({"along_m": round(float(rng.uniform(0.1, 0.9) * max(1.0, max([e[0] for e in water.eddies] + [1000.0])))),
                        "length_m": 300, "within_m_of_shore": 120})
-    return {"stream_at_start_mps": round(float(water.c0 + rng.normal(0.0, 0.1)), 2),
-            "stream_change_mps": round(float(water.c1 + rng.normal(0.0, 0.15)), 2),
-            "over_s": round(water.trend_s),
-            "inshore": f"the stream is weaker close to shore (roughly half strength within ~{round(water.inshore_scale_m)} m)",
-            "eddies": sorted(eddies, key=lambda e: e["along_m"]),
-            "convention": "stream + flows north (with the first leg); along_m is measured from the start line along the course"}
+    out = {"stream_at_start_mps": round(float(water.c0 + rng.normal(0.0, 0.1)), 2),
+           "stream_change_mps": round(float(water.c1 + rng.normal(0.0, 0.15)), 2),
+           "over_s": round(water.trend_s),
+           "inshore": f"the stream is weaker close to shore (roughly half strength within ~{round(water.inshore_scale_m)} m)",
+           "eddies": sorted(eddies, key=lambda e: e["along_m"]),
+           "convention": "stream + flows north (with the first leg); along_m is measured from the start line along the course"}
+    # the inshore profile as local knowledge has it (shape known, its width uncertain)
+    out["inshore_profile"] = {"share_at_shore": water.inshore_floor,
+                              "scale_m": round(float(water.inshore_scale_m * rng.uniform(0.75, 1.25)))}
+    return out
+
+
+def forecast_stream(fc: Dict[str, Any], line_m: float, along_m: float, race_s: float) -> float:
+    """Along-shore stream (m/s, + north) the forecast expects at a line and position."""
+    f = min(1.0, max(0.0, race_s / max(1.0, float(fc.get("over_s", 3000.0)))))
+    c = float(fc.get("stream_at_start_mps", 0.0)) + f * float(fc.get("stream_change_mps", 0.0))
+    prof = fc.get("inshore_profile") or {"share_at_shore": 0.25, "scale_m": 150.0}
+    a, sc = float(prof["share_at_shore"]), float(prof["scale_m"])
+    v = c * (a + (1.0 - a) * (1.0 - math.exp(-max(0.0, line_m) / sc)))
+    for e in fc.get("eddies", []):
+        half, width = 0.5 * float(e.get("length_m", 300)), float(e.get("within_m_of_shore", 120))
+        if abs(along_m - float(e["along_m"])) <= half and line_m <= width:
+            v -= 1.5 * c * (1.0 - abs(along_m - float(e["along_m"])) / half) * (1.0 - line_m / width)
+    return v
 
 
 @dataclass

@@ -52,7 +52,7 @@ from .sim.paddler import PaddlerParams
 from .sim.twin import (CoastalWater, PaddlerTwin, RaceSetup, Traits, draw_setup, draw_traits,
                        even_effort, oracle_effort, twin_cp_test, water_forecast)
 
-__all__ = ["PREREGISTERED", "Preparation", "draw_preparation", "Arm", "NoCoach", "FixedPlan",
+__all__ = ["PREREGISTERED", "HELDOUT_ROUND3", "Preparation", "draw_preparation", "Arm", "NoCoach", "FixedPlan",
            "Autopilot", "PodAutopilot", "LineRule", "AgentArm", "shaft_athlete", "run_episode", "baseline_arms", "paired", "holm",
            "CountingProvider", "HONESTY_STAND_IN"]
 
@@ -122,6 +122,29 @@ PREREGISTERED: Dict[str, Any] = {
             "(seeds 1003-1011, moved out); no arm comparison had been computed",
         ],
     }],
+}
+
+
+# The held-out confirmation of the improved coach (rounds 1-3 were exploratory, on
+# development seeds); written down before it was run.
+HELDOUT_ROUND3: Dict[str, Any] = {
+    "date": "2026-11-01",
+    "question": ("On water that varies across the course (coastal twin), is the improved coach "
+                 "(version 4: paddle-pod effort, calibration evidence and recalibration, the forecast and "
+                 "its calculator, line cues, a plan per leg) faster than the strongest rule baseline and "
+                 "than no coach, on paddlers and races it has never seen?"),
+    "seeds": list(range(3000, 3010)),
+    "arms": {"no_coach": "own pacing and habitual line",
+             "autopilot": "registered rule autopilot, setting fixed in advance (margin 150 m, fade -3 %)",
+             "autopilot_pod": "the same rules on the paddle pod's reserve",
+             "line_rule": "pod autopilot plus 'inside (60 m) against the forecast stream'",
+             "agent_v4": "the improved coach, claude-opus-5-5, each call its measured time"},
+    "settings": "every baseline setting fixed in advance from the development rounds; none chosen on these seeds",
+    "primary": ("race time, agent_v4 minus line_rule and agent_v4 minus no_coach, paired per seed; Wilcoxon "
+                "signed-rank (two-sided), bootstrap 95% interval of the mean; Holm over the two"),
+    "budget_usd": 4.2,
+    "power": "10 seeds: only a large difference can be detected; a null result here is weak evidence",
+    "twin": "coastal water (draw_setup(seed, coastal=True)); forecast with errors (water_forecast)",
 }
 
 
@@ -434,9 +457,9 @@ class AgentArm(Arm):
             leg = 0 if (s["heading_deg"] < 90.0 or s["heading_deg"] > 270.0) else 1
             if leg != self._leg:                 # the start of each leg (after the start) is a natural check-in
                 self._leg = leg
-                alerts = list(alerts) + [{"watch_id": "new_leg", "message": f"leg {leg + 1} begins: heading "
-                                          f"{s['heading_deg']:.0f} deg at {s.get('along_m', 0):.0f} m along",
-                                          "values": {}}]
+                msg = (f"leg {leg + 1} begins: heading {s['heading_deg']:.0f} deg at {s.get('along_m', 0):.0f} m along"
+                       + ("; plan this leg: the line to hold (give line_m) and the pace" if self.coach_version >= 4 else ""))
+                alerts = list(alerts) + [{"watch_id": "new_leg", "message": msg, "values": {}}]
         if alerts:
             self._wake(ep, [{"kind": a["watch_id"], "detail": _alert_detail(a)} for a in alerts], "alerts")
         elif (self.periodic_s and s.get("elapsed_s", 0.0) > 60.0
@@ -539,7 +562,7 @@ def run_episode(prep: Preparation, arm: Arm, *, latency_s: Optional[float] = 6.0
            "cues_blocked": int(status.get("n_blocked", 0)),
            "asks": _count(c["ask"] for c in sink.log),
            "cue_log": [{"race_s": round((c["t"] or 0) - twin.start_t, 1), "text": c["text"],
-                        "ask": c["ask"], "pace_s500": c["pace_s500"]} for c in sink.log],
+                        "ask": c["ask"], "pace_s500": c["pace_s500"], "line_m": c.get("line_m")} for c in sink.log],
            "alerts": _count(a["watch_id"] for a in panel.alerts),
            "definitions": panel.service.list_definitions(),
            "series": series}

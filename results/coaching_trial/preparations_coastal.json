@@ -29,6 +29,10 @@
     }
    ],
    "inshore": "the stream is weaker close to shore (roughly half strength within ~150 m)",
+   "inshore_profile": {
+    "scale_m": 185,
+    "share_at_shore": 0.25
+   },
    "over_s": 3333,
    "stream_at_start_mps": -0.02,
    "stream_change_mps": -0.01
@@ -163,6 +167,10 @@
     }
    ],
    "inshore": "the stream is weaker close to shore (roughly half strength within ~150 m)",
+   "inshore_profile": {
+    "scale_m": 177,
+    "share_at_shore": 0.25
+   },
    "over_s": 2000,
    "stream_at_start_mps": -0.32,
    "stream_change_mps": 0.22
@@ -293,6 +301,10 @@
     }
    ],
    "inshore": "the stream is weaker close to shore (roughly half strength within ~150 m)",
+   "inshore_profile": {
+    "scale_m": 150,
+    "share_at_shore": 0.25
+   },
    "over_s": 2667,
    "stream_at_start_mps": 0.21,
    "stream_change_mps": -0.19
@@ -428,6 +440,10 @@
     }
    ],
    "inshore": "the stream is weaker close to shore (roughly half strength within ~150 m)",
+   "inshore_profile": {
+    "scale_m": 174,
+    "share_at_shore": 0.25
+   },
    "over_s": 3333,
    "stream_at_start_mps": -0.29,
    "stream_change_mps": -0.24
@@ -563,6 +579,10 @@
     }
    ],
    "inshore": "the stream is weaker close to shore (roughly half strength within ~150 m)",
+   "inshore_profile": {
+    "scale_m": 184,
+    "share_at_shore": 0.25
+   },
    "over_s": 2000,
    "stream_at_start_mps": 0.23,
    "stream_change_mps": -0.31
@@ -698,6 +718,10 @@
     }
    ],
    "inshore": "the stream is weaker close to shore (roughly half strength within ~150 m)",
+   "inshore_profile": {
+    "scale_m": 175,
+    "share_at_shore": 0.25
+   },
    "over_s": 3333,
    "stream_at_start_mps": 0.26,
    "stream_change_mps": 0.37
