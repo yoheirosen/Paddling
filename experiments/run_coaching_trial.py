@@ -178,6 +178,15 @@ def run(a: argparse.Namespace) -> None:
                 s, arm = futs[fut]
                 print(f"  seed {s} arm {arm}: FAILED {exc!r}", flush=True)
                 continue
+            if r.get("model_usage", {}).get("errors"):
+                # a race in which the coach's model failed is not a coached race: keep it out
+                with open(os.path.join(OUT, f"failed_{a.tag}.jsonl"), "a") as f:
+                    f.write(json.dumps(r) + "\n")
+                print(f"  seed {r['seed']} {r['arm']}: {r['model_usage']['errors']} failed model calls "
+                      f"({r.get('consult_error_example', '')}) - not recorded; stopping", flush=True)
+                for f_ in futs:
+                    f_.cancel()
+                break
             if r.get("model_usage"):
                 r["model_usd_estimate"] = round(estimate_usd(r["model_usage"], r["setting"].get("model", "")), 4)
                 spent += r["model_usd_estimate"]

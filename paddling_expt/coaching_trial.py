@@ -111,6 +111,16 @@ PREREGISTERED: Dict[str, Any] = {
             "(Haiku 41 calls, median 1.4 s, ~USD 0.01; Opus 36 calls, median 3.7 s, ~USD 0.36); both "
             "wrote watch rules of their own; no change was forced",
         ],
+    }, {
+        "date": "2026-10-31",
+        "kind": "data-handling rule (after the API account ran out of credit mid-run)",
+        "during_evaluation": True,
+        "changes": [
+            "a race in which any of the coach's model calls failed is not a coached race: it is kept "
+            "out of the results (results/coaching_trial/failed_<tag>.jsonl) and rerun on the same seed",
+            "at the time: 3 clean primary-arm races (seeds 1000-1002) and 9 with refused calls "
+            "(seeds 1003-1011, moved out); no arm comparison had been computed",
+        ],
     }],
 }
 
@@ -315,8 +325,9 @@ class AgentArm(Arm):
         c = self.coach
         if c is None:
             return {}
+        errs = [x["error"] for x in c.consultations if x.get("error")]
         return {"consultations": len(c.consultations),
-                "consult_errors": sum(1 for x in c.consultations if x.get("error")),
+                "consult_errors": len(errs), "consult_error_example": errs[0][:200] if errs else "",
                 "cue_calls": sum(1 for x in c.consultations if x.get("cued"))}
 
 
