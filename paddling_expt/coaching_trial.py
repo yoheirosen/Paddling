@@ -52,7 +52,7 @@ from .sim.paddler import PaddlerParams
 from .sim.twin import (CoastalWater, PaddlerTwin, RaceSetup, Traits, draw_setup, draw_traits,
                        even_effort, oracle_effort, twin_cp_test, water_forecast)
 
-__all__ = ["PREREGISTERED", "HELDOUT_ROUND3", "Preparation", "draw_preparation", "Arm", "NoCoach", "FixedPlan",
+__all__ = ["PREREGISTERED", "HELDOUT_ROUND3", "HELDOUT_ROUND3_EXTENSION", "Preparation", "draw_preparation", "Arm", "NoCoach", "FixedPlan",
            "Autopilot", "PodAutopilot", "LineRule", "AgentArm", "shaft_athlete", "run_episode", "baseline_arms", "paired", "holm",
            "CountingProvider", "HONESTY_STAND_IN"]
 
@@ -145,6 +145,21 @@ HELDOUT_ROUND3: Dict[str, Any] = {
     "budget_usd": 4.2,
     "power": "10 seeds: only a large difference can be detected; a null result here is weak evidence",
     "twin": "coastal water (draw_setup(seed, coastal=True)); forecast with errors (water_forecast)",
+}
+
+
+# A larger held-out check of the same coach (owner's choice, 2026-11-02), written down
+# before it was run; nothing changed from HELDOUT_ROUND3 but the seeds.
+HELDOUT_ROUND3_EXTENSION: Dict[str, Any] = {
+    "date": "2026-11-02",
+    "seeds": list(range(3010, 3040)),
+    "design": "identical to HELDOUT_ROUND3 (arms, fixed baseline settings, coach version 4, Opus 5.5)",
+    "primary": ("on the 30 new seeds: agent_v4 minus line_rule and agent_v4 minus no_coach, paired, "
+                "Wilcoxon, bootstrap 95% interval, Holm over the two; also reported pooled with the "
+                "first 10 seeds (40)"),
+    "budget_usd": 14.0,
+    "use_later": ("these 30 races are also the held-out set for the tiered coach (rule by default, coach for "
+                  "exceptions), whose design is frozen on development seeds before these results are read"),
 }
 
 

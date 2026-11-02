@@ -398,6 +398,13 @@ steers by the forecast; ten races cannot tell them apart. It used two line cues 
 with direct targets (50–70 m inshore, 300–400 m out). Figure:
 `artifacts/coaching_heldout_coastal`.
 
+### A larger held-out check (written down 2026-11-02, before the run)
+
+Thirty more fresh coastal seeds (3010–3039), identical design (`coaching_trial.
+HELDOUT_ROUND3_EXTENSION`); primary on the new 30, also pooled with the first 10. The
+same 30 races then serve as the held-out set for the tiered coach (below), whose
+design is frozen on development seeds before these results are read.
+
 ## Results so far
 
 **Simulated 37-minute OC1 training session** (`demos/demo_oc1_training.py`,
