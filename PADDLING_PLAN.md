@@ -405,6 +405,19 @@ HELDOUT_ROUND3_EXTENSION`); primary on the new 30, also pooled with the first 10
 same 30 races then serve as the held-out set for the tiered coach (below), whose
 design is frozen on development seeds before these results are read.
 
+### The tiered coach and its held-out check (written down 2026-11-02, before the run)
+
+The rule layer (pod autopilot plus "inside against the forecast stream") coaches by
+default; the reasoning coach reviews each rule action, is woken at each leg start and
+every five minutes, and steps in only on exceptions, muting a lever of the rule when
+it overrules it (`coaching_trial.TieredAgentArm`, coach version 5). On development
+seeds 14–19 it was 22.7 s faster than no coach and 2.0 s faster than the line rule
+(faster on 3 of 6); a variant with a line-move calculator and corrected water advice
+(version 6) was 2.8 s slower than the rule, so version 5 was kept, as decided
+beforehand. Held-out check on the same 30 fresh seeds as the larger check (3010–3039),
+written down before those results were read: tiered coach minus line rule and minus
+the version-4 coach, paired, Holm over the two (`coaching_trial.HELDOUT_TIERED`).
+
 ## Results so far
 
 **Simulated 37-minute OC1 training session** (`demos/demo_oc1_training.py`,

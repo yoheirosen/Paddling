@@ -154,8 +154,12 @@ def _episode(prep_d: Dict[str, Any], arm_spec: Any, opts: Dict[str, Any]) -> Dic
             prov = make_coach_provider(opts["provider"], opts.get("model"),
                                        api_key_env=opts["api_key_env"], api_base_url=opts["api_base_url"])
             counting = ct.CountingProvider(prov)
-            arm = ct.AgentArm(counting, label=opts.get("agent_label") or "agent",
-                              coach_version=opts.get("coach_version", 1))
+            if opts.get("coach_version", 1) >= 5:
+                arm = ct.TieredAgentArm(counting, label=opts.get("agent_label") or "agent_tiered",
+                                        coach_version=opts["coach_version"])
+            else:
+                arm = ct.AgentArm(counting, label=opts.get("agent_label") or "agent",
+                                  coach_version=opts.get("coach_version", 1))
             arm.setting["model"] = getattr(prov, "model", "?")
             latency = None                       # each call takes its measured time
             os.makedirs(os.path.join(OUT, "records"), exist_ok=True)
@@ -291,7 +295,7 @@ def summarize(tag: str, agent_arm: str = "agent", figure: Optional[str] = None) 
         for which in ("best", "typical"):
             if sel[fam]:
                 comps[f"{fam}_{which}"] = _by(rows, fam, sel[fam][which])
-    for other in ("agent", "agent_haiku", "agent_stand_in", "agent_v2", "agent_v3"):
+    for other in ("agent", "agent_haiku", "agent_stand_in", "agent_v2", "agent_v3", "agent_v4", "agent_tiered"):
         if other != agent_arm and _by(rows, other):
             comps[other] = _by(rows, other)
     t = lambda d: [d[s]["race_time_s"] for s in seeds]                           # noqa: E731
