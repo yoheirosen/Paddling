@@ -398,6 +398,69 @@ steers by the forecast; ten races cannot tell them apart. It used two line cues 
 with direct targets (50–70 m inshore, 300–400 m out). Figure:
 `artifacts/coaching_heldout_coastal`.
 
+### A larger held-out check (written down 2026-11-02, before the run)
+
+Thirty more fresh coastal seeds (3010–3039), identical design (`coaching_trial.
+HELDOUT_ROUND3_EXTENSION`); primary on the new 30, also pooled with the first 10. The
+same 30 races then serve as the held-out set for the tiered coach (below), whose
+design is frozen on development seeds before these results are read.
+
+**Result of the larger check (no failed model calls, ~USD 12.4).** On the 30 new races
+the improved coach was faster than no coach by 21.6 s (95 % interval 6.9–41.0 s;
+faster in 20 of 30; Holm p 0.014) and 4.9 s faster than the line rule, which is no
+detectable difference (interval −14.5 to +4.4 s; p 0.42). Pooled over all 40 held-out
+races: 22.2 s faster than no coach (10.8–37.6 s; faster in 30 of 40; p 0.0001), 1.9 s
+faster than the line rule (−10.3 to +6.5 s; p 0.72), and 12.0 s faster than the
+registered autopilot. So the 10-race result (7.2 s behind the line rule) was noise:
+the improved coach and the forecast line rule are level, and both clearly beat no
+coach and the pacing-only rules.
+
+### The tiered coach and its held-out check (written down 2026-11-02, before the run)
+
+The rule layer (pod autopilot plus "inside against the forecast stream") coaches by
+default; the reasoning coach reviews each rule action, is woken at each leg start and
+every five minutes, and steps in only on exceptions, muting a lever of the rule when
+it overrules it (`coaching_trial.TieredAgentArm`, coach version 5). On development
+seeds 14–19 it was 22.7 s faster than no coach and 2.0 s faster than the line rule
+(faster on 3 of 6); a variant with a line-move calculator and corrected water advice
+(version 6) was 2.8 s slower than the rule, so version 5 was kept, as decided
+beforehand. Held-out check on the same 30 fresh seeds as the larger check (3010–3039),
+written down before those results were read: tiered coach minus line rule and minus
+the version-4 coach, paired, Holm over the two (`coaching_trial.HELDOUT_TIERED`).
+
+**Result of the tiered coach's check (30 held-out races, no failed model calls, ~USD
+10.9).** Against the line rule: 8.1 s faster (95 % interval −19.9 to +3.2 s; Holm p
+1.0; faster in 16 of 30). Against the version-4 coach: 3.2 s faster (−10.0 to +3.4 s;
+Holm p 1.0). Against no coach (secondary): 24.8 s faster (8.1–45.1 s; faster in 22 of
+30). On these races the order of the means is tiered coach (−24.8 s), version-4 coach
+(−21.6 s), line rule (−16.7 s) against no coach, but none of the differences between
+those three is detectable with 30 races. The tiered coach mostly let the rule act: it
+overruled 0.3 rule cues a race and added 3.7 cues of its own.
+
+### Drafting a pack, and its held-out check (written down 2026-11-02, before the run)
+
+The twin can carry a pack of boats (`sim/twin.py` `Pack`, planted): a little faster
+than the paddler's even pace (1.00–1.07 times), and sitting on its wash, 6–10 m
+behind, cuts drag by 8–16 %. The paddler hangs on while the effort feels bearable
+(a planted willingness) and lets go otherwise; more than about 25 m back, the wash is
+lost. Cues "hang on" and "let go". The coach (version 7) is told a pack exists but
+cannot see it: a wash shows as speed above what the shaft power gives. Baseline: the
+pod autopilot plus "hang on at the start, let go when the pod's over-pace alarm
+fires". Development (pack seeds 0–5): coach 14.8 s faster than no coach and 11.8 s
+faster than the pack rule (faster on 3 of 6). Held-out check on 12 fresh pack seeds
+(4000–4011): coach minus pack rule and minus no coach, Holm over the two
+(`coaching_trial.HELDOUT_PACK`).
+
+**Result of the drafting check (12 held-out races, no failed model calls, ~USD 4.9).**
+Against the pack rule: 11.0 s faster (95 % interval −19.1 to −4.0 s; Wilcoxon p 0.049,
+Holm p 0.098; faster in 7 of 12). Against no coach: 7.7 s faster (−17.0 to +0.5 s;
+Holm p 0.12). Against the pod autopilot (secondary): 8.2 s faster (−14.8 to −2.6 s).
+Both fixed rules were slower than no coach here (pack rule +3.4 s, pod autopilot
++0.5 s): a rule cannot tell when a wash is worth keeping. The coach mostly cued
+pushes (46) to keep the paddler on the wash and let go once. This is the first lever
+where the reasoning coach beats the rules, but with 12 races it falls just short of
+significance after the correction for two comparisons.
+
 ## Results so far
 
 **Simulated 37-minute OC1 training session** (`demos/demo_oc1_training.py`,
@@ -545,6 +608,12 @@ the other eight sessions: critical power 93 W, reserve 6.4 kJ; stand-in coach):
   ±0.1 m/s, its change ±0.15 m/s, eddies misplaced by ~120 m, 30 % missing, 30 %
   chance of a false one, the inshore width ±25 %). How much line choice is worth on
   the twin follows from these choices.
+* **Drafting is planted** (`sim/twin.py` `Pack`): one pack, steady through the water
+  at 1.00–1.07 times the paddler's even-pace speed, slowing 15 % at its turns; on its
+  wash (6–10 m behind) the paddler's drag falls by 8–16 %; off it, holding on takes the
+  full effort plus a margin to close, and more than ~25 m back the wash is lost; the
+  paddler's willingness to work for the wash is a drawn trait. Real packs surge,
+  split and race each other, and wash riding depends on position and sea state.
 * The twin's **critical-power test reads 10–25 % low** against the paddler at their
   best rate and fresh; this is what the test measures on this model (efficiency
   falls as the reserve drains inside each piece), and it is left in on purpose.

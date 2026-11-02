@@ -140,3 +140,22 @@ def test_the_forecast_calculator_follows_the_forecast():
     fc = {"stream_at_start_mps": 0.4, "stream_change_mps": 0.0, "over_s": 1000,
           "inshore_profile": {"share_at_shore": 0.25, "scale_m": 150.0}, "eddies": []}
     assert forecast_stream(fc, 50.0, 0.0, 0.0) < forecast_stream(fc, 400.0, 0.0, 0.0) <= 0.4
+
+
+def test_a_pack_wash_saves_effort_and_a_paddler_can_be_told_to_let_go():
+    from dataclasses import replace
+    from paddling_expt.sim.twin import Pack, draw_setup, draw_traits
+    su = replace(draw_setup(3), pack=Pack(speed_frac=1.0, draft=0.12, wash_m=8.0))
+    tr = replace(draw_traits(3), compliance=1.0, wander_sd=0.0, hang_on=1.0, body_bias=0.97, start_effort=1.05)
+    alone_su = replace(su, pack=None)
+    e = even_effort(tr, alone_su)
+    alone = PaddlerTwin(tr, alone_su, seed=3, even=e)
+    alone.run_alone()
+    packed = PaddlerTwin(tr, su, seed=3, even=e)
+    packed.run_alone()
+    assert packed.wash_s > 60.0 and packed.race_time_s < alone.race_time_s
+    dropped = PaddlerTwin(tr, su, seed=3, even=e)
+    dropped.advance(dropped.start_t + 150.0)
+    dropped.cue("let_go")
+    dropped.run_alone()
+    assert not dropped.hanging and dropped.wash_s < packed.wash_s

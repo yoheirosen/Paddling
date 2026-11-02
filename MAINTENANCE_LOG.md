@@ -5,6 +5,21 @@ Dated entries, newest first. Entries before the move refer to paths under
 
 ---
 
+### Coaching: a 30-race held-out check, a tiered coach, drafting (2026-11-02)
+
+Owner's choices A, B and C, each held-out check written down before it ran. Larger held-out check of
+the version-4 coach (30 fresh coastal seeds): 21.6 s faster than no coach (Holm p 0.014), level
+with the forecast line rule (−4.9 s, interval −14.5 to +4.4); pooled with the first 10: −22.2 s vs
+no coach, −1.9 s vs the line rule. Tiered coach (`TieredAgentArm`, coach version 5: the rule layer
+acts by default through a gate the coach can mute per lever; version 6 with `line_change_value`
+was tried on development seeds and not kept): on the same 30 races 8.1 s faster than the line rule
+and 3.2 s faster than the version-4 coach, neither detectable (Holm p 1.0); 24.8 s faster than no
+coach. Drafting (`Pack` in the twin, `hang_on` / `let_go` cues, coach version 7, `PackRule`): a test
+found the first pack model wrong (no slowing at its turns, gaps that could not close), corrected
+before any coached held-out race and logged; on 12 fresh pack races the coach was 11.0 s faster than
+the pack rule (Holm p 0.098) and 7.7 s faster than no coach (Holm p 0.12); both rules were slower
+than no coach. Model spend about USD 35. Tests: 69.
+
 ### Coaching: the registered result, three improvement rounds, a held-out confirmation (2026-10-31 to 11-01)
 
 Registered evaluation (30 seeds): the Opus 5.5 coach was 2.3 s faster than no coach and 6.1 s

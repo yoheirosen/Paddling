@@ -53,7 +53,8 @@ from agent_lib.tool_registry import ToolPolicy, ToolRegistry
 
 from .race import RaceState
 
-_ASKS = ("ease", "push", "hold", "rate_up", "rate_down", "finish", "line_in", "line_out", "none")
+_ASKS = ("ease", "push", "hold", "rate_up", "rate_down", "finish", "line_in", "line_out",
+         "hang_on", "let_go", "none")
 
 __all__ = ["RaceScreen", "CueSink", "make_cue_gate", "RaceCoach", "COACH_SYSTEM", "COACH_PANEL_SYSTEM",
            "stand_in_coach", "make_coach_provider", "replay_race", "format_pace"]
@@ -336,12 +337,52 @@ water is not what the forecast said (the stream has turned, an eddy is elsewhere
 plan. Pacing still matters: keep the reserve from running empty."""
 
 
+WATER_SECTION_V6 = """
+
+How to use the water: before moving the paddler across, price the move with line_change_value \
+(the seconds a move to a line saves over the rest of the leg by the forecast, net of the crossing). \
+Against the stream the inshore water usually pays; moving out with the stream rarely pays back the \
+crossing unless the stream is strong and much of the leg is left. When a move clearly pays, make \
+it early and in one go, with line_m. Eddies (forecast, uncertain) can reverse the inshore water. \
+Once there, check the forecast against push_local_mps; if the water is not what the forecast said, \
+re-plan. Pacing still matters: keep the reserve from running empty."""
+
+
+DRAFT_SECTION = """
+
+Other boats (this race): the paddler starts with a pack slightly faster than their even pace. \
+Sitting on a wash, a few metres behind a boat, cuts drag by roughly a tenth, so the pack's speed \
+costs less effort there; falling off the wash costs that saving, and a gap of more than a few \
+boat lengths is hard to close. You cannot see the boats: you see a wash in the numbers, as speed \
+through the water higher than the shaft power alone would give (push_local_mps rising well above \
+push_along_mps) at the same effort. Hanging on pays if the effort it takes (shaft power while on \
+the wash) can be held to the finish on the pod's reserve, plus the sprint; if it cannot, letting \
+go early, before the reserve runs out, beats blowing up and being dropped anyway. Paddlers tend to \
+hang on by instinct until it is too late, or give up a wash that was worth keeping. Cue hang_on \
+(work to stay on the wash) or let_go (drop off and settle to your own pace)."""
+
+
+TIER_SECTION = """
+
+A rule layer coaches by default, and you supervise it. Its rules: pacing alarms on the pod's \
+reserve (over-pace -> ease; fading -> rate down; reserve conflict -> hold; finish window -> \
+finish) and "inside against the stream": at the start of a leg, if the FORECAST stream is \
+against the heading, it sends the paddler to 60 m from shore. It is right most of the time. You \
+are the exception handler: step in only when the live data shows a rule's assumption is wrong for \
+this paddler or this water, for example the stream is not what the forecast said (compare \
+push_local_mps with stream_by_line), it has turned, an eddy is elsewhere, the calibration is off \
+(cp_implied_w), an ease would slow a paddler whose speed and effort are fine, or the finish needs \
+judgement. To overrule, call mute_rule for that lever ("line" or "pace") for some minutes and give \
+your own cue; unmute_rule hands it back. Each update lists what the rule did recently. When the \
+rule is doing fine, say "no cue" at once."""
+
+
 _CUE_SCHEMA = {
     "type": "object",
     "properties": {
         "text": {"type": "string", "description": "what the paddler hears, at most 12 words"},
         "ask": {"type": "string", "enum": ["ease", "push", "hold", "rate_up", "rate_down", "finish",
-                                           "line_in", "line_out", "none"],
+                                           "line_in", "line_out", "hang_on", "let_go", "none"],
                 "description": "the change asked for"},
         "pace_s500": {"type": "number", "description": "optional target pace, s per 500 m, as the display shows it"},
         "line_m": {"type": "number", "description": "with line_in / line_out: optional target distance from shore (m, 40-600)"},
@@ -364,8 +405,10 @@ class RaceCoach:
         self.provider, self.state, self.gate, self.panel = provider, state, gate, panel
         self.version = int(version)
         if system is None and panel is not None and self.version >= 2:
-            system = (COACH_PANEL_SYSTEM_V2 + (WATER_SECTION if self.version >= 3 else "")
-                      + (WATER_SECTION_V4 if self.version >= 4 else ""))
+            system = (COACH_PANEL_SYSTEM_V2 + (DRAFT_SECTION if self.version == 7 else "")
+                      + (WATER_SECTION if 3 <= self.version < 7 else "")
+                      + (WATER_SECTION_V6 if self.version == 6 else WATER_SECTION_V4 if 4 <= self.version < 7 else "")
+                      + (TIER_SECTION if self.version in (5, 6) else ""))
         self.forecast: Optional[Dict[str, Any]] = None
         self.cache_system = (panel is not None) if cache_system is None else bool(cache_system)
         self.system = system or (COACH_PANEL_SYSTEM if panel is not None else COACH_SYSTEM)
@@ -385,12 +428,25 @@ class RaceCoach:
                              input_schema=tool.input_schema, writes=tool.writes)
                 allowed.append(name)
         self.recalibrations: List[Dict[str, Any]] = []
-        if self.version >= 3:
+        if 3 <= self.version < 7:
             reg.register(self.current_forecast, name="current_forecast",
                          description="The pre-race forecast of the tidal stream, its change during the race, "
                                      "the inshore weakening and the eddies (local knowledge; can be wrong).")
             allowed.append("current_forecast")
-        if self.version >= 4:
+        self.rule_control: Optional[Dict[str, Callable]] = None
+        if self.version in (5, 6):
+            reg.register(self.mute_rule, name="mute_rule", writes=True,
+                         description="Stop the rule layer's cues on one lever ('line' or 'pace') for some "
+                                     "minutes, with the reason (you take over that lever).")
+            reg.register(self.unmute_rule, name="unmute_rule", writes=True,
+                         description="Hand a lever ('line' or 'pace') back to the rule layer.")
+            allowed += ["mute_rule", "unmute_rule"]
+        if self.version == 6:
+            reg.register(self.line_change_value, name="line_change_value",
+                         description="Seconds saved over the rest of this leg by moving to each given distance "
+                                     "from shore, by the forecast, net of the crossing (negative = costs time).")
+            allowed.append("line_change_value")
+        if 4 <= self.version < 7:
             reg.register(self.stream_by_line, name="stream_by_line",
                          description="The forecast's stream along the current heading (m/s, + helps) at each "
                                      "given distance from shore, here or at another position along the course.")
@@ -454,6 +510,63 @@ class RaceCoach:
                 "along_heading_mps": {str(int(y)): round(sign * forecast_stream(self.forecast, float(y), pos, t), 3)
                                       for y in lines}}
 
+    def mute_rule(self, lever: str, minutes: float = 5.0, reason: str = "") -> Dict[str, Any]:
+        if not self.rule_control:
+            return {"ok": False, "error": "no rule layer in this race"}
+        if lever not in ("line", "pace"):
+            return {"ok": False, "error": "lever must be 'line' or 'pace'"}
+        minutes = min(30.0, max(0.5, float(minutes)))
+        out = self.rule_control["mute"](lever, minutes * 60.0)
+        record.emit("revision", target="rule_mute", lever=lever, minutes=minutes, reason=reason,
+                    t=self.state.last.get("t"))
+        return {"ok": True, **out}
+
+    def unmute_rule(self, lever: str) -> Dict[str, Any]:
+        if not self.rule_control:
+            return {"ok": False, "error": "no rule layer in this race"}
+        out = self.rule_control["unmute"](lever)
+        record.emit("revision", target="rule_unmute", lever=lever, t=self.state.last.get("t"))
+        return {"ok": True, **out}
+
+    def line_change_value(self, lines_m: Optional[List[float]] = None) -> Dict[str, Any]:
+        from .sim.twin import forecast_stream
+        if not self.forecast:
+            return {"ok": False, "error": "no forecast for this race"}
+        s = self.state.last
+        hd = s.get("heading_deg", 0.0) or 0.0
+        north = hd < 90.0 or hd > 270.0
+        sign = 1.0 if north else -1.0
+        pos = float(s.get("along_m", 0.0) or 0.0)
+        leg = (self.state.distance_m or 0.0) / 2.0
+        end = leg if north else 0.0
+        if abs(end - pos) < 50.0:
+            return {"ok": True, "note": "the leg is nearly over"}
+        here = float(s.get("line_m", 250.0) or 250.0)
+        vw = float(s.get("speed_water", 3.0) or 3.0)
+        t0 = float(s.get("elapsed_s", 0.0) or 0.0)
+
+        def leg_time(line: float, cross: float) -> float:
+            n, total, t = 40, 0.0, t0
+            step = (end - pos) / n
+            for k in range(n):
+                sk = pos + (k + 0.5) * step
+                y = line if cross <= 0 else here + (line - here) * min(1.0, (t - t0) / max(cross, 1e-6))
+                vg = max(0.3, vw + sign * forecast_stream(self.forecast, y, sk, t))
+                dt = abs(step) / vg
+                total += dt
+                t += dt
+            return total
+        base = leg_time(here, 0.0)
+        out = {}
+        for y in (lines_m or [50, 80, 120, 200, 300, 450]):
+            dy = abs(float(y) - here)
+            cross = dy / 0.8
+            lost = cross * (vw - math.sqrt(max(0.0, vw * vw - 0.64)))       # distance given up while crossing
+            t_y = leg_time(float(y), cross) + lost / max(0.5, vw)
+            out[str(int(y))] = round(base - t_y, 1)
+        return {"ok": True, "from_line_m": round(here), "metres_left_in_leg": round(abs(end - pos)),
+                "seconds_saved_by_moving_to": out}
+
     def current_forecast(self) -> Dict[str, Any]:
         return dict(self.forecast or {"note": "no forecast for this race"})
 
@@ -499,13 +612,18 @@ class RaceCoach:
                         v = ser[-1][1] if isinstance(ser[-1], (tuple, list)) else ser[-1]
                         msg["state"][k] = round(float(v), 1)
             msg["last_5_min"] = self._recent_minutes()
+            if self.version >= 5 and self.rule_control:
+                msg["rule_layer"] = self.rule_control["status"]()
             if not self.consultations:
                 msg["race"] = {"distance_m": s.distance_m, "course": "out-and-back legs; turns cost a few seconds",
                                "calibration": ("critical power and reserve from an all-out 3- and 12-minute test: "
                                                f"boat {s.athlete.cp_w:.0f} W / {s.athlete.w_prime_j / 1000:.1f} kJ" +
                                                (f"; shaft (pod) {s.athlete_shaft.cp_w:.0f} W / "
                                                 f"{s.athlete_shaft.w_prime_j / 1000:.1f} kJ" if s.athlete_shaft else ""))}
-                if self.version >= 3 and self.forecast:
+                if self.version == 7:
+                    msg["race"]["others"] = ("a pack of boats starts with you, a little faster than your even "
+                                             "pace; their wash cuts drag by roughly a tenth")
+                if 3 <= self.version < 7 and self.forecast:
                     msg["race"]["forecast"] = self.forecast
                     msg["race"]["course"] = (f"along a shore: one leg of {s.distance_m / 2:.0f} m north, "
                                              "then back south to the start")

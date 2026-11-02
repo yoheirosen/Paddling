@@ -33,7 +33,7 @@ from __future__ import annotations
 import json
 import math
 import statistics
-from dataclasses import asdict, dataclass, field
+from dataclasses import asdict, dataclass, field, replace
 from typing import Any, Dict, List, Optional, Sequence
 
 import numpy as np
@@ -49,11 +49,11 @@ from .coach import CueSink, RaceCoach, format_pace, make_cue_gate
 from .race import Athlete, RaceState, calibrate, sustainable_power
 from .race_panel import SCREEN_PROGRAMS, SCREEN_WATCHES, RacePanel
 from .sim.paddler import PaddlerParams
-from .sim.twin import (CoastalWater, PaddlerTwin, RaceSetup, Traits, draw_setup, draw_traits,
+from .sim.twin import (CoastalWater, Pack, PaddlerTwin, RaceSetup, Traits, draw_setup, draw_traits,
                        even_effort, oracle_effort, twin_cp_test, water_forecast)
 
-__all__ = ["PREREGISTERED", "HELDOUT_ROUND3", "Preparation", "draw_preparation", "Arm", "NoCoach", "FixedPlan",
-           "Autopilot", "PodAutopilot", "LineRule", "AgentArm", "shaft_athlete", "run_episode", "baseline_arms", "paired", "holm",
+__all__ = ["PREREGISTERED", "HELDOUT_ROUND3", "HELDOUT_ROUND3_EXTENSION", "HELDOUT_TIERED", "HELDOUT_PACK", "Preparation", "draw_preparation", "Arm", "NoCoach", "FixedPlan",
+           "Autopilot", "PodAutopilot", "LineRule", "PackRule", "AgentArm", "TieredAgentArm", "shaft_athlete", "run_episode", "baseline_arms", "paired", "holm",
            "CountingProvider", "HONESTY_STAND_IN"]
 
 HONESTY_STAND_IN = ("provider=stand-in: a scripted coach that maps each alert to a fixed cue, "
@@ -148,6 +148,68 @@ HELDOUT_ROUND3: Dict[str, Any] = {
 }
 
 
+# A larger held-out check of the same coach (owner's choice, 2026-11-02), written down
+# before it was run; nothing changed from HELDOUT_ROUND3 but the seeds.
+HELDOUT_ROUND3_EXTENSION: Dict[str, Any] = {
+    "date": "2026-11-02",
+    "seeds": list(range(3010, 3040)),
+    "design": "identical to HELDOUT_ROUND3 (arms, fixed baseline settings, coach version 4, Opus 5.5)",
+    "primary": ("on the 30 new seeds: agent_v4 minus line_rule and agent_v4 minus no_coach, paired, "
+                "Wilcoxon, bootstrap 95% interval, Holm over the two; also reported pooled with the "
+                "first 10 seeds (40)"),
+    "budget_usd": 14.0,
+    "use_later": ("these 30 races are also the held-out set for the tiered coach (rule by default, coach for "
+                  "exceptions), whose design is frozen on development seeds before these results are read"),
+}
+
+
+# The tiered coach's held-out check (owner's choice A, 2026-11-02), frozen on development
+# seeds 14-19 and written down before the 30-race results of HELDOUT_ROUND3_EXTENSION were read.
+HELDOUT_TIERED: Dict[str, Any] = {
+    "date": "2026-11-02",
+    "seeds": list(range(3010, 3040)),
+    "coach": ("TieredAgentArm, coach version 5: the rule layer (pod autopilot + 'inside against the "
+              "forecast stream', 60 m) acts by default; the reasoning coach (claude-opus-5-5) reviews "
+              "each rule action, is woken at each leg start and every 5 min, and may mute a lever of the "
+              "rule and cue itself"),
+    "chosen_over": ("version 6 (adds line_change_value and corrected water advice): on development seeds "
+                    "14-19 version 5 was -2.0 s and version 6 +2.8 s against the line rule; the version "
+                    "with the better development mean was kept, as decided beforehand"),
+    "primary": ("on seeds 3010-3039: agent_tiered minus line_rule and agent_tiered minus agent_v4, paired, "
+                "Wilcoxon, bootstrap 95% interval, Holm over the two"),
+    "budget_usd": 13.0,
+}
+
+
+# The drafting coach's held-out check (owner's choice C, 2026-11-02), frozen on development
+# pack seeds 0-5 and written down before it was run.
+HELDOUT_PACK: Dict[str, Any] = {
+    "date": "2026-11-02",
+    "seeds": list(range(4000, 4012)),
+    "twin": "draw_setup(seed, pack=True): a pack to draft, uniform current, out-and-back legs",
+    "arms": {"no_coach": "own pacing and own hang-on instinct", "autopilot_pod": "pod autopilot (150 m, -3 %)",
+             "pack_rule": "pod autopilot + hang on at the start, let go when the pod over-pace alarm fires",
+             "agent_v7": "coach version 7 (drafting section; cannot see the boats), claude-opus-5-5"},
+    "primary": ("agent_v7 minus pack_rule and agent_v7 minus no_coach, paired, Wilcoxon, bootstrap 95% "
+                "interval, Holm over the two"),
+    "budget_usd": 5.5,
+    "power": "12 seeds: only a large difference can be detected",
+    "revisions": [{
+        "date": "2026-11-02",
+        "before_any_held_out_result": True,
+        "kind": "twin correction (found by a test, after registration, before any coached held-out race)",
+        "changes": [
+            "the pack slows at its own turns and feels the current for its own heading (it did neither, so "
+            "a paddler matching its speed lost metres at every turn and dropped off)",
+            "hanging on applies from the start, and off the wash the paddler needs the effort without the "
+            "drag saving, plus a margin to close (before: the drafting effort, so a gap only grew)",
+            "the development round (pack seeds 0-5) ran on the earlier pack and is kept only as a plumbing "
+            "check (episodes_dev_pack_superseded); the coach (version 7) was not changed",
+        ],
+    }],
+}
+
+
 # ── preparations ────────────────────────────────────────────────────────────
 
 @dataclass
@@ -183,6 +245,8 @@ class Preparation:
         tr["paddler"] = PaddlerParams(**{k: (tuple(v) if isinstance(v, list) else v)
                                          for k, v in tr["paddler"].items()})
         su = dict(d["setup"])
+        if su.get("pack"):
+            su["pack"] = Pack(**su["pack"])
         if su.get("water"):
             w = dict(su["water"])
             w["eddies"] = [tuple(e) for e in w.get("eddies", [])]
@@ -223,15 +287,16 @@ def shaft_athlete(traits: Traits, seed: int) -> Athlete:
     return calibrate(best, source="3- and 12-minute test on the twin, paddle-pod shaft power")
 
 
-def draw_preparation(seed: int, coastal: bool = False) -> Preparation:
-    tr, su = draw_traits(seed), draw_setup(seed, coastal=coastal)
+def draw_preparation(seed: int, coastal: bool = False, pack: bool = False) -> Preparation:
+    tr, su = draw_traits(seed), draw_setup(seed, coastal=coastal, pack=pack)
     rows, tw = twin_cp_test(tr, seed=seed)
     prep = ss.prepare_rows(rows, tw.craft, tw.total_kg)
     best = ss.best_efforts(prep["all_rows"], (180, 720))
     ath = calibrate(best, source="3- and 12-minute test on the twin")
     true_boat_cp = tr.paddler.critical_power_w * tr.paddler.eta_max
-    return Preparation(seed=seed, traits=tr, setup=su, even=even_effort(tr, su),
-                       reference=oracle_effort(tr, su), athlete=ath,
+    alone = replace(su, pack=None)                 # the even pace and the reference ignore the pack
+    return Preparation(seed=seed, traits=tr, setup=su, even=even_effort(tr, alone),
+                       reference=oracle_effort(tr, alone), athlete=ath,
                        athlete_shaft=shaft_athlete(tr, seed),
                        forecast=water_forecast(su.water, seed) if su.water is not None else None,
                        calibration={"best_180_w": best[180]["power"], "best_720_w": best[720]["power"],
@@ -458,7 +523,9 @@ class AgentArm(Arm):
             if leg != self._leg:                 # the start of each leg (after the start) is a natural check-in
                 self._leg = leg
                 msg = (f"leg {leg + 1} begins: heading {s['heading_deg']:.0f} deg at {s.get('along_m', 0):.0f} m along"
-                       + ("; plan this leg: the line to hold (give line_m) and the pace" if self.coach_version >= 4 else ""))
+                       + ("; the rule layer sets the line from the forecast: check it against the water"
+                          if self.coach_version >= 5 else
+                          "; plan this leg: the line to hold (give line_m) and the pace" if self.coach_version >= 4 else ""))
                 alerts = list(alerts) + [{"watch_id": "new_leg", "message": msg, "values": {}}]
         if alerts:
             self._wake(ep, [{"kind": a["watch_id"], "detail": _alert_detail(a)} for a in alerts], "alerts")
@@ -474,6 +541,114 @@ class AgentArm(Arm):
         return {"consultations": len(c.consultations),
                 "consult_errors": len(errs), "consult_error_example": errs[0][:200] if errs else "",
                 "cue_calls": sum(1 for x in c.consultations if x.get("cued"))}
+
+
+class _RuleGate:
+    """What the rule layer delivers through: the race's gate, unless the coach has muted
+    that lever; every rule action is logged for the coach to review."""
+
+    def __init__(self, gate: Any, owner: "TieredAgentArm") -> None:
+        self.gate, self.owner = gate, owner
+
+    def deliver(self, action: Dict[str, Any], *, source: str = "", now: Optional[float] = None) -> Dict[str, Any]:
+        lever = "line" if str(action.get("ask", "")).startswith("line") else "pace"
+        t = self.owner.ep.sched.now()
+        if self.owner.muted.get(lever, -1.0) > t:
+            self.owner.suppressed.append({"t": t, "lever": lever, "ask": action.get("ask")})
+            return {"delivered": False, "blocked": True, "stage": "muted_by_coach"}
+        res = self.gate.deliver(action, source="rule", now=now)
+        if res.get("delivered"):
+            s = self.owner.ep.state.last
+            self.owner.rule_log.append({"race_min": round((s.get("elapsed_s") or 0) / 60.0, 1), "lever": lever,
+                                        "ask": action.get("ask"), "text": action.get("text"),
+                                        "pace_s500": action.get("pace_s500"), "line_m": action.get("line_m")})
+            self.owner.rule_acted = True
+        return res
+
+
+class PackRule(PodAutopilot):
+    """Pacing by the pod autopilot, plus "hang on to the pack; let go when the pod's
+    over-pace alarm says the reserve will not last" (exploratory baseline, drafting)."""
+
+    name = "pack_rule"
+
+    def __init__(self, overpace_margin_m: float = 150.0, fade_pct: float = -3.0) -> None:
+        super().__init__(overpace_margin_m, fade_pct)
+        self._started = False
+        self._let_go = False
+
+    def on_tick(self, ep: "Episode", t: float, alerts: List[Dict[str, Any]]) -> None:
+        s = ep.state.last
+        if not self._started and (s.get("elapsed_s") or 0) > 62.0:
+            if ep.gate.deliver({"text": "Stay on their wash.", "ask": "hang_on", "source": self.name},
+                               source=self.name).get("delivered"):
+                self._started = True
+        rest = []
+        for a in alerts:
+            if a["watch_id"] == "over_pace" and not self._let_go:
+                if ep.gate.deliver({"text": "Let them go. Settle to your pace.", "ask": "let_go",
+                                    "source": self.name}, source=self.name).get("delivered"):
+                    self._let_go = True
+                    continue
+            rest.append(a)
+        super().on_tick(ep, t, rest)
+
+
+class TieredAgentArm(AgentArm):
+    """Round A: the rule layer (pod autopilot + forecast line rule) coaches by default;
+    the reasoning coach (version 5) reviews its actions and steps in on exceptions,
+    muting a lever of the rule when it overrules it."""
+
+    def __init__(self, provider: Any, *, label: str = "agent_tiered", **kw: Any) -> None:
+        kw.setdefault("coach_version", 5)
+        super().__init__(provider, label=label, **kw)
+        self.rule = LineRule(60.0)
+        self.muted: Dict[str, float] = {}
+        self.rule_log: List[Dict[str, Any]] = []
+        self.suppressed: List[Dict[str, Any]] = []
+        self.rule_acted = False
+        self.ep = None
+
+    def watches(self) -> List[Dict[str, Any]]:
+        return self.rule.watches()
+
+    def setup(self, ep: "Episode") -> None:
+        super().setup(ep)
+        self.ep = ep
+        self._rule_ep = Episode(ep.prep, ep.twin, ep.state, ep.panel, ep.sink, _RuleGate(ep.gate, self), ep.sched)
+        now = lambda: ep.sched.now()                                             # noqa: E731
+
+        def mute(lever, seconds):
+            self.muted[lever] = now() + seconds
+            return {"lever": lever, "muted_until_race_min": round((self.muted[lever] - ep.twin.start_t) / 60.0, 1)}
+
+        def unmute(lever):
+            self.muted.pop(lever, None)
+            return {"lever": lever, "muted": False}
+
+        def status():
+            t = now()
+            return {"recent_actions": self.rule_log[-4:],
+                    "muted": {k: round((v - t) / 60.0, 1) for k, v in self.muted.items() if v > t},
+                    "suppressed_by_you": len(self.suppressed)}
+        self.coach.rule_control = {"mute": mute, "unmute": unmute, "status": status}
+
+    def on_tick(self, ep: "Episode", t: float, alerts: List[Dict[str, Any]]) -> None:
+        self.rule_acted = False
+        self.rule.on_tick(self._rule_ep, t, alerts)
+        if self.rule_acted:
+            last = self.rule_log[-1]
+            alerts = [{"watch_id": "rule_acted", "values": {},
+                       "message": f"the rule layer cued {last['ask']}: {last['text']}"}]
+        else:
+            alerts = []                    # the rule handles the watch alerts; the coach reviews actions
+        super().on_tick(ep, t, alerts)
+
+    def summary(self) -> Dict[str, Any]:
+        out = super().summary()
+        out.update({"rule_cues": len(self.rule_log), "rule_suppressed": len(self.suppressed),
+                    "mutes": sum(1 for _ in self.muted)})
+        return out
 
 
 def _alert_detail(a: Dict[str, Any]) -> str:

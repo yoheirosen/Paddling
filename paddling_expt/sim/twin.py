@@ -53,10 +53,22 @@ from ..boatspeed import power_at_speed
 from ..hydro import Craft
 from .paddler import PaddlerParams, best_rate, efficiency
 
-__all__ = ["Traits", "RaceSetup", "PaddlerTwin", "ASKS", "CoastalWater", "water_forecast", "forecast_stream", "draw_traits", "draw_setup",
+__all__ = ["Traits", "RaceSetup", "PaddlerTwin", "ASKS", "CoastalWater", "water_forecast", "forecast_stream", "Pack", "draw_traits", "draw_setup",
            "even_effort", "oracle_effort", "twin_cp_test"]
 
-ASKS = ("ease", "push", "hold", "rate_up", "rate_down", "finish", "line_in", "line_out", "none")
+ASKS = ("ease", "push", "hold", "rate_up", "rate_down", "finish", "line_in", "line_out",
+        "hang_on", "let_go", "none")
+
+
+@dataclass
+class Pack:
+    """A group of boats racing the same course at a steady speed through the water (planted):
+    ``speed_frac`` x the paddler's even-pace speed; sitting on their wash (0 to ``wash_m``
+    behind them) cuts the paddler's drag by ``draft``."""
+
+    speed_frac: float = 1.03
+    draft: float = 0.12
+    wash_m: float = 8.0
 
 
 @dataclass
@@ -155,6 +167,7 @@ class Traits:
     habit_line_m: float = 250.0         # distance from shore they hold unless cued (water that varies across the course)
     lateral_mps: float = 0.8            # how fast they move across when changing line
     line_step_m: float = 100.0          # line in / out moves the line by this
+    hang_on: float = 0.5                # 0-1: how hard they will work to stay on a pack's wash
 
 
 @dataclass
@@ -170,6 +183,7 @@ class RaceSetup:
     craft: str = "oc1"
     plan: Optional[List[Tuple[float, float, float]]] = None   # (seconds, rate, effort): a session, not a race
     water: Optional[CoastalWater] = None   # water that varies across and along the course (else: current_mps)
+    pack: Optional[Pack] = None            # other boats to draft (else: alone)
 
 
 def draw_traits(seed: int) -> Traits:
@@ -185,14 +199,18 @@ def draw_traits(seed: int) -> Traits:
                   wander_sd=u(0.01, 0.03), compliance=u(0.55, 0.95), response_s=u(4, 15),
                   adherence_s=u(120, 420), effort_step=u(0.03, 0.06),
                   blowup_effort=u(0.75, 0.9), recover_frac=u(0.1, 0.2),
-                  settle_frac=u(0.95, 1.0), habit_line_m=u(120.0, 380.0))
+                  settle_frac=u(0.95, 1.0), habit_line_m=u(120.0, 380.0), hang_on=u(0.0, 1.0))
 
 
-def draw_setup(seed: int, coastal: bool = False) -> RaceSetup:
+def draw_setup(seed: int, coastal: bool = False, pack: bool = False) -> RaceSetup:
     rng = np.random.default_rng([seed, 29])
     su = RaceSetup(distance_m=float(rng.choice([6000.0, 8000.0, 10000.0])),
                    leg_m=float(rng.choice([1000.0, 1250.0])),
                    current_mps=float(rng.uniform(-0.35, 0.35)))
+    if pack:
+        rp = np.random.default_rng([seed, 41])
+        su.pack = Pack(speed_frac=float(rp.uniform(1.0, 1.07)), draft=float(rp.uniform(0.08, 0.16)),
+                       wash_m=float(rp.uniform(6.0, 10.0)))
     if not coastal:
         return su
     rw = np.random.default_rng([seed, 31])
@@ -230,6 +248,15 @@ class PaddlerTwin:
         self.rng_pos = np.random.default_rng([seed, 5])    # GPS line / course position (varying water only)
         self.y = float(traits.habit_line_m)
         self.y_target = self.y
+        # the pack: its distance raced, its speed through the water, whether the paddler hangs on
+        self.pack_m = 0.0
+        self.hanging = setup.pack is not None
+        self._hang_bonus = (0.0, 0.0)
+        self.on_wash = False
+        self.wash_s = 0.0
+        self._v_pack_w = None
+        self._pack_leg = 0
+        self._pack_turn_until = -1.0
         if body_effort is None and setup.plan is None:
             even = even if even is not None else even_effort(traits, setup)
             body_effort = traits.body_bias * even
@@ -314,12 +341,41 @@ class PaddlerTwin:
             r = best_rate(self.p, fatigue) + (4.0 if self.kicking else 0.0)
         return e, r
 
+    def _pack_effort(self, fatigue: float, rate: float) -> Optional[float]:
+        """Effort that holds the pack's speed on their wash now (None when not near them)."""
+        pk = self.su.pack
+        if pk is None or not self.racing or self._v_pack_w is None:
+            return None
+        gap = self.pack_m - self.race_m
+        if gap < -2.0 or gap > 25.0:
+            return None
+        eta = efficiency(self.p, rate, fatigue)
+        ama = (self.p.ama_load_kg + self.p.ama_load_fatigue_kg * fatigue) if self.craft.outrigger else 0.0
+        P_tab, v_tab = _table_at(self._table, ama)
+        on = 0.0 <= gap <= pk.wash_m
+        # on the wash: the pack's speed with the drag saving; off it: without, a little faster to close
+        v_need = self._v_pack_w * (1.0 if on else 1.03)
+        p_boat = float(np.interp(v_need, v_tab, P_tab)) * ((1.0 - pk.draft) if on else 1.0)
+        return p_boat / max(1e-6, eta) / self._cp_eff()
+
     def _choose(self, fatigue: float, T: float, commit: bool = False) -> Tuple[float, float, bool]:
         e_own, r = self._own(fatigue)
         if r <= 0:
             return 0.0, 0.0, False
         coached = False
         e = e_own
+        if self.hanging and not self.kicking and not self.blown:
+            e_need = self._pack_effort(fatigue, r)
+            if e_need is not None:
+                b, tb = self._hang_bonus
+                limit = self.body_effort * (1.0 + 0.15 * self.tr.hang_on) + b * self._decay(tb)
+                if self.t - self.start_t < self.tr.start_s:
+                    limit = max(limit, self.tr.start_effort * 1.05)
+                    e_need = max(e_need, 0.0)
+                if e_need <= limit:
+                    return max(0.3, e_need), min(85.0, max(40.0, r)), b * self._decay(tb) > 0.005
+                if commit:
+                    self.hanging = False            # too hard: they let the pack go
         if self.racing and not self.kicking:
             if self._hold is not None:
                 k = self._decay(self._hold[1])
@@ -363,6 +419,13 @@ class PaddlerTwin:
 
     def _apply(self, ask: str, pace_s500: Optional[float], e_now: float, line_m: Optional[float] = None) -> None:
         tr, t = self.tr, self.t
+        if ask == "hang_on":
+            self.hanging = True
+            self._hang_bonus = (0.08, t)
+            return
+        if ask == "let_go":
+            self.hanging = False
+            return
         if ask in ("line_in", "line_out"):
             if line_m is not None:
                 self.y_target = min(600.0, max(40.0, float(line_m)))
@@ -462,7 +525,18 @@ class PaddlerTwin:
         turning = self.t < self._turn_until
         eta = efficiency(p, rate, fat) * (0.6 if turning else 1.0)
         ama = (p.ama_load_kg + p.ama_load_fatigue_kg * fat) if self.craft.outrigger else 0.0
-        v_target = float(np.interp(eta * P, *_table_at(self._table, ama)))
+        pk = self.su.pack
+        if pk is not None and self.racing:
+            if self._v_pack_w is None and self.even is not None:
+                P_tab, v_tab = _table_at(self._table, ama)
+                p_even = self.even * cp * efficiency(p, self.tr.habit_rate, 0.3)
+                self._v_pack_w = pk.speed_frac * float(np.interp(p_even, P_tab, v_tab))
+            gap = self.pack_m - self.race_m
+            self.on_wash = 0.0 <= gap <= pk.wash_m
+        else:
+            self.on_wash = False
+        p_eff = eta * P / (1.0 - pk.draft) if self.on_wash else eta * P
+        v_target = float(np.interp(p_eff, *_table_at(self._table, ama)))
         self.v += (v_target - self.v) * (1.0 - math.exp(-T / 6.0))
         along = self._current_along()
         u_lat = 0.0
@@ -479,6 +553,20 @@ class PaddlerTwin:
                             + self.tr.wander_sd * math.sqrt(2.0 * T / self.tr.wander_tau_s)
                             * float(self.rng_feel.normal()))
         t_end = self.t + T
+        if pk is not None and self.racing and self._v_pack_w is not None:
+            leg_k = int(self.pack_m // self.su.leg_m)
+            if leg_k != self._pack_leg:                 # the pack turns too
+                self._pack_leg = leg_k
+                self._pack_turn_until = self.t + self.su.turn_s
+            pack_heading = 0.0 if leg_k % 2 == 0 else 180.0
+            if self.su.water is not None:
+                c_pack = self.su.water.at(self.y, self._along_pos(), self.t - self.start_t) * math.cos(math.radians(pack_heading))
+            else:
+                c_pack = self.su.current_mps * math.cos(math.radians(pack_heading))
+            v_pk = self._v_pack_w * (0.85 if self.t < self._pack_turn_until else 1.0)
+            self.pack_m += max(0.0, v_pk + c_pack) * T
+            if self.on_wash:
+                self.wash_s += T
         self.total_m += d
         if self.t >= self.start_t and self.su.plan is None:
             before = self.race_m
@@ -501,6 +589,7 @@ class PaddlerTwin:
         self.v_disp = vg if self.v_disp is None else (1 - a) * self.v_disp + a * vg
         lg = self.log
         lg.setdefault("line_m", []).append(float(self.y))
+        lg.setdefault("on_wash", []).append(float(self.on_wash))
         for k, v in (("t", t_end), ("race_s", t_end - self.start_t), ("race_m", self.race_m),
                      ("effort", e), ("p_shaft", P), ("p_boat", eta * P), ("eta", eta), ("rate", rate),
                      ("rate_best", best_rate(p, fat)), ("fatigue", fat), ("w_bal", self.w),

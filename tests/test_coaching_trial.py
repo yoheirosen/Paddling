@@ -118,3 +118,36 @@ def test_coastal_arms_and_the_version_4_coach_run(prep):
     r = run_episode(cprep, AgentArm(FakeProvider(ans), label="probe", coach_version=4))
     assert {"stream_by_line", "current_forecast", "set_critical_power", "cue"} <= seen[0]
     assert r["consultations"] > 0
+
+
+def test_the_tiered_arm_runs_the_rule_and_the_coach_can_mute_a_lever():
+    from paddling_expt.coaching_trial import LineRule, TieredAgentArm
+    cprep = draw_preparation(14, coastal=True)
+    rule = run_episode(cprep, LineRule(60.0))
+    silent = run_episode(cprep, TieredAgentArm(FakeProvider("no cue: the rule is fine")))
+    assert silent["race_time_s"] == pytest.approx(rule["race_time_s"])       # a silent coach = the rule
+    calls = []
+
+    def ans(system, messages, tools):
+        if not calls:
+            calls.append(1)
+            return {"tool_calls": [{"name": "mute_rule", "arguments": {"lever": "pace", "minutes": 30,
+                                                                         "reason": "test"}}]}
+        return "no cue"
+    muted = run_episode(cprep, TieredAgentArm(FakeProvider(ans)))
+    assert muted["rule_cues"] <= silent["rule_cues"]
+
+
+def test_the_pack_rule_and_the_drafting_coach_run():
+    from paddling_expt.coaching_trial import PackRule
+    pprep = draw_preparation(2, pack=True)
+    r = run_episode(pprep, PackRule())
+    assert r["asks"].get("hang_on") == 1
+    seen = []
+
+    def ans(system, messages, tools):
+        if not seen:
+            seen.append("wash" in system)
+        return "no cue"
+    run_episode(pprep, AgentArm(FakeProvider(ans), label="probe", coach_version=7))
+    assert seen == [True]
