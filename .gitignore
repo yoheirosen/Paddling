@@ -16,5 +16,8 @@ __pycache__/
 build/
 dist/
 
-# role-play races in progress (final records are added with -f when a run finishes)
-results/coaching_trial/roleplay/
+# role-played races: only the role-player's answers are tracked; each race replays
+# exactly from them (experiments/roleplay_race.py verify), so the rest is regenerated
+results/coaching_trial/roleplay/**
+!results/coaching_trial/roleplay/**/
+!results/coaching_trial/roleplay/**/answers.json

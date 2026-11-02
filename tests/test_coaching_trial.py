@@ -151,3 +151,24 @@ def test_the_pack_rule_and_the_drafting_coach_run():
         return "no cue"
     run_episode(pprep, AgentArm(FakeProvider(ans), label="probe", coach_version=7))
     assert seen == [True]
+
+
+def test_a_role_play_answering_no_cue_every_call_races_exactly_like_no_coach():
+    """The role-play driver hands the model's turn to its answers and nothing else: a
+    role-player that never cues gives the no-coach race, to the millisecond."""
+    import argparse
+    import importlib.util
+    import itertools
+    import os
+    path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                        "experiments", "roleplay_race.py")
+    spec = importlib.util.spec_from_file_location("roleplay_race", path)
+    rr = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(rr)
+    prep = draw_preparation(1, pack=True)
+    rr._prep = lambda a: prep
+    a = argparse.Namespace(model_label="test", label="agent_v7_roleplay", coach_version=7, latency_s=5.0)
+    r = rr._replay(a, itertools.repeat({"text": "no cue: holding"}))
+    nc = run_episode(prep, NoCoach())
+    assert r["cues_spoken"] == 0 and r["consultations"] > 0
+    assert r["race_time_s"] == pytest.approx(nc["race_time_s"], abs=1e-9)

@@ -12,13 +12,16 @@ role-player's answer is appended and the race continues.
         '{"tool_calls": [{"name": "get_metric_series", "arguments": {"metric": "fade_pct", "window_s": 120}}]}'
     python experiments/roleplay_race.py answer ... '{"text": "no cue: holding well"}'
     python experiments/roleplay_race.py collect --tag heldout_pack_rp
+    python experiments/roleplay_race.py verify  --tag heldout_pack_rp [--pack]
 
 An answer is JSON: ``{"text": "..."}`` (the reply, ending the wake-up) or
 ``{"tool_calls": [{"name": ..., "arguments": {...}}], "text": "optional"}`` (the tool
 results come back in the next packet, within the same wake-up).  Each model call takes
 a fixed ``--latency-s`` of race time.  When the race ends the driver prints RACE
 FINISHED and saves the scored episode; ``collect`` appends the finished races to
-``results/coaching_trial/episodes_<tag>.jsonl``.
+``results/coaching_trial/episodes_<tag>.jsonl``.  The role-player's answers
+(``answers.json``) are the whole record: ``verify`` replays every finished race of a
+tag from its answers alone and checks the race time matches the saved result.
 """
 from __future__ import annotations
 
@@ -130,9 +133,23 @@ def _run(a: argparse.Namespace) -> None:
     print("RACE FINISHED: the result is saved. Thank you; nothing more to do for this race.")
 
 
+def _replay(a: argparse.Namespace, answers: List[Any]) -> Dict[str, Any]:
+    """Re-run one race from a complete list of answers (no pausing)."""
+    it = iter(answers)
+
+    def answer(system, messages, tools):
+        v = next(it)
+        if isinstance(v, dict) and v.get("tool_calls"):
+            return v
+        return str(v.get("text", "") if isinstance(v, dict) else v)
+
+    arm = ct.AgentArm(FakeProvider(answer, model=a.model_label), label=a.label, coach_version=a.coach_version)
+    return ct.run_episode(_prep(a), arm, latency_s=a.latency_s)
+
+
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
-    ap.add_argument("cmd", choices=["start", "answer", "show", "tools", "collect"])
+    ap.add_argument("cmd", choices=["start", "answer", "show", "tools", "collect", "verify"])
     ap.add_argument("answer_json", nargs="?", default=None)
     ap.add_argument("--seed", type=int, default=None)
     ap.add_argument("--tag", required=True)
@@ -155,6 +172,23 @@ def main(argv=None) -> int:
                 f.write(json.dumps(r) + "\n")
         print(f"collected {len(done)} finished races into episodes_{a.tag}.jsonl")
         return 0
+    if a.cmd == "verify":
+        base = os.path.join(OUT, "roleplay", a.tag)
+        bad = n = 0
+        for s in sorted(os.listdir(base), key=lambda x: int(x)) if os.path.isdir(base) else []:
+            res_p, ans_p = os.path.join(base, s, "result.json"), os.path.join(base, s, "answers.json")
+            if not os.path.exists(ans_p):
+                continue
+            a.seed = int(s)
+            r = _replay(a, json.load(open(ans_p)))
+            n += 1
+            saved = json.load(open(res_p))["race_time_s"] if os.path.exists(res_p) else None
+            ok = saved is not None and abs(r["race_time_s"] - saved) < 1e-6
+            bad += not ok
+            print(f"seed {s}: replayed {r['race_time_s']:.3f} s, saved {saved if saved is None else round(saved, 3)}"
+                  f" {'ok' if ok else 'MISMATCH'}")
+        print(f"{n - bad} of {n} races reproduce from their answers")
+        return 1 if bad else 0
     if a.seed is None:
         ap.error("--seed is required")
     d = _dir(a.tag, a.seed)

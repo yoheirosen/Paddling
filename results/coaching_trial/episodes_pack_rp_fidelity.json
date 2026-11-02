@@ -1,0 +1,349 @@
+[
+{
+"seed": 4000,
+"arm": "agent_v7_roleplay",
+"setting": {
+"periodic_s": 300.0,
+"model": "roleplay-subagent",
+"coach_version": 7
+},
+"race_time_s": 3231.008465979938,
+"blown_s": 81.97135647805166,
+"reserve_left": 0.023244244724754098,
+"reference_s": 3156.6014898460417,
+"cues_spoken": 9,
+"cues_followed": 5,
+"cues_blocked": 1,
+"asks": {
+"ease": 5,
+"let_go": 1,
+"rate_down": 2,
+"push": 1
+},
+"cue_log": [
+{
+"race_s": 70.7,
+"text": "Ease to 2:54 pace, tuck in behind a boat.",
+"ask": "ease",
+"pace_s500": 174,
+"line_m": null
+},
+{
+"race_s": 524.4,
+"text": "Let the pack go, settle to your own steady pace.",
+"ask": "let_go",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 609.7,
+"text": "Ease now, settle at 2:23 pace, let them go.",
+"ask": "ease",
+"pace_s500": 143,
+"line_m": null
+},
+{
+"race_s": 809.1,
+"text": "Ease a touch, hold 2:51 pace, steady to the finish.",
+"ask": "ease",
+"pace_s500": 171,
+"line_m": null
+},
+{
+"race_s": 924.9,
+"text": "Drop the rate two, long smooth strokes, recover.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1251.9,
+"text": "Rate down two, same effort, longer stroke.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 2274.0,
+"text": "Ease a fraction, smooth and steady, save some for the finish.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 2572.8,
+"text": "A little more now, build steadily to the finish.",
+"ask": "push",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 3118.4,
+"text": "Settle a touch, hold 2:28, then kick the last 150.",
+"ask": "ease",
+"pace_s500": 148,
+"line_m": null
+}
+],
+"alerts": {
+"over_pace": 1,
+"pod_reserve_low": 1,
+"reserve_conflict": 1,
+"fading": 1,
+"finish_window": 1,
+"final_kick": 1
+},
+"consultations": 19,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 10,
+"roleplay": {
+"answers": 34,
+"latency_s": 5.0,
+"stand_in": "roleplay-subagent"
+}
+},
+{
+"seed": 4004,
+"arm": "agent_v7_roleplay",
+"setting": {
+"periodic_s": 300.0,
+"model": "roleplay-subagent",
+"coach_version": 7
+},
+"race_time_s": 3396.3797744330495,
+"blown_s": 134.0712640243546,
+"reserve_left": 0.0941615828056854,
+"reference_s": 3358.589530121473,
+"cues_spoken": 17,
+"cues_followed": 14,
+"cues_blocked": 0,
+"asks": {
+"let_go": 2,
+"ease": 10,
+"push": 3,
+"rate_down": 1,
+"finish": 1
+},
+"cue_log": [
+{
+"race_s": 70.2,
+"text": "Let the pack go. Settle to your own steady pace.",
+"ask": "let_go",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 205.7,
+"text": "Let them go. Settle into your own steady rhythm.",
+"ask": "let_go",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 298.1,
+"text": "Ease a touch, settle at 2:29 pace.",
+"ask": "ease",
+"pace_s500": 149,
+"line_m": null
+},
+{
+"race_s": 550.4,
+"text": "Ease off now, steady effort, 2:58 pace into this current.",
+"ask": "ease",
+"pace_s500": 178,
+"line_m": null
+},
+{
+"race_s": 646.4,
+"text": "A touch easier, then hold 2:56 steady.",
+"ask": "ease",
+"pace_s500": 176,
+"line_m": null
+},
+{
+"race_s": 708.7,
+"text": "Lift a little, settle at 2:34 with this tailwind.",
+"ask": "push",
+"pace_s500": 154,
+"line_m": null
+},
+{
+"race_s": 942.7,
+"text": "Back off a touch, hold 2:35 steady to the turn.",
+"ask": "ease",
+"pace_s500": 155,
+"line_m": null
+},
+{
+"race_s": 1082.3,
+"text": "Ease right off now, 3:06 pace on this leg.",
+"ask": "ease",
+"pace_s500": 186,
+"line_m": null
+},
+{
+"race_s": 1313.4,
+"text": "Ease slightly, 3:09 pace, let your breathing settle.",
+"ask": "ease",
+"pace_s500": 189,
+"line_m": null
+},
+{
+"race_s": 1559.7,
+"text": "Ease a touch, hold steady effort by feel, not pace.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1794.6,
+"text": "Into the current, ease to steady effort; let pace drop.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1998.6,
+"text": "Lengthen out, drop the rate two, same effort.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 2546.9,
+"text": "Steady into this current, save it for the finish.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 2786.9,
+"text": "Settle a touch, steady to 400 to go, then empty it.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 3014.2,
+"text": "Build now, 2:37 pace, sprint from 400 to go.",
+"ask": "push",
+"pace_s500": 157,
+"line_m": null
+},
+{
+"race_s": 3224.9,
+"text": "Lift now, 2:59 pace, all out at 200 to go.",
+"ask": "push",
+"pace_s500": 179,
+"line_m": null
+},
+{
+"race_s": 3305.2,
+"text": "Go now, everything to the line!",
+"ask": "finish",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"over_pace": 1,
+"off_wash": 3,
+"pod_low_on_wash": 7,
+"fading": 1,
+"fading_hard": 2,
+"finish_approach": 1,
+"final_sprint": 1
+},
+"consultations": 26,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 17,
+"roleplay": {
+"answers": 52,
+"latency_s": 5.0,
+"stand_in": "roleplay-subagent"
+}
+},
+{
+"seed": 4008,
+"arm": "agent_v7_roleplay",
+"setting": {
+"periodic_s": 300.0,
+"model": "roleplay-subagent",
+"coach_version": 7
+},
+"race_time_s": 1887.8976710857637,
+"blown_s": 0.0,
+"reserve_left": 0.025061383206800313,
+"reference_s": 1864.4218059186974,
+"cues_spoken": 6,
+"cues_followed": 4,
+"cues_blocked": 2,
+"asks": {
+"let_go": 1,
+"ease": 4,
+"finish": 1
+},
+"cue_log": [
+{
+"race_s": 70.6,
+"text": "Let the pack go. Settle into your own steady rhythm.",
+"ask": "let_go",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 331.0,
+"text": "Ease a touch. Settle at 2:48 pace, long strokes.",
+"ask": "ease",
+"pace_s500": 168,
+"line_m": null
+},
+{
+"race_s": 616.8,
+"text": "Ease slightly. Hold 2:26 pace, smooth and steady.",
+"ask": "ease",
+"pace_s500": 146,
+"line_m": null
+},
+{
+"race_s": 698.5,
+"text": "Current against now. Ease off, settle at 2:57 pace.",
+"ask": "ease",
+"pace_s500": 177,
+"line_m": null
+},
+{
+"race_s": 970.3,
+"text": "Ease a hair. Hold 2:58 pace, save the sprint.",
+"ask": "ease",
+"pace_s500": 178,
+"line_m": null
+},
+{
+"race_s": 1803.2,
+"text": "Three hundred to go. Sprint now, everything to the line.",
+"ask": "finish",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"over_pace": 1,
+"over_pace_pod": 5,
+"fading": 1,
+"sprint_point": 1,
+"sprint_go": 1
+},
+"consultations": 16,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 8,
+"roleplay": {
+"answers": 31,
+"latency_s": 5.0,
+"stand_in": "roleplay-subagent"
+}
+}
+]

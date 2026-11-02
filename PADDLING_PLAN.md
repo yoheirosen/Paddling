@@ -457,9 +457,10 @@ Holm p 0.098; faster in 7 of 12). Against no coach: 7.7 s faster (−17.0 to +0.
 Holm p 0.12). Against the pod autopilot (secondary): 8.2 s faster (−14.8 to −2.6 s).
 Both fixed rules were slower than no coach here (pack rule +3.4 s, pod autopilot
 +0.5 s): a rule cannot tell when a wash is worth keeping. The coach mostly cued
-pushes (46) to keep the paddler on the wash and let go once. This is the first lever
-where the reasoning coach beats the rules, but with 12 races it falls just short of
-significance after the correction for two comparisons.
+pushes (46) to keep the paddler on the wash and let go once. This looked like the first
+lever where the reasoning coach beats the rules, but with 12 races it falls just short
+of significance after the correction for two comparisons, and the role-played check
+on 30 further races (below) did not repeat it.
 
 ### Confirming drafting with role-played coaching (written down 2026-11-02, before any race)
 
@@ -472,6 +473,50 @@ primary as before (Holm over the two); pooled with the 12 API races as a seconda
 labelled as mixed; a fidelity check role-plays 3 of those 12 races. A role-player is
 not the deployed model (it remembers earlier wake-ups of its race; latency fixed at
 5 s). Design in code: `coaching_trial.HELDOUT_PACK_ROLEPLAY`.
+
+**Result of the role-played check (30 fresh pack races, every race finished; no API
+calls).** The drafting gain did not repeat. Against the pack rule: 0.2 s slower (95 %
+interval −13.6 to +13.8 s; coach faster in 14 of 30). Against no coach: 3.5 s slower
+(−5.5 to +15.1 s; faster in 13 of 30). Holm p 1.0 for both. Against the pod autopilot
+(secondary): 7.5 s slower (−0.6 to +18.1 s). Pooled with the 12 API-coached races
+(42 races, two different coaches, secondary): 3.0 s faster than the pack rule (−13.1
+to +7.2 s, p 0.25) and level with no coach (+0.3 s). On these 30 races the pack rule
+was 3.3 s slower than no coach and the pod autopilot 4.0 s faster. Each race replays
+exactly from the role-player's saved answers (`roleplay_race.py verify`: 33 of 33).
+Figure `coaching_drafting_roleplay`.
+
+Why it differs from the API run (exploratory, not part of the registered test):
+* **The role-played coach let go of the pack at once; the API coach almost never
+  did.** The first wake-up comes about a minute in, when riding the wash takes more
+  shaft power than the paddler can sustain alone. The role-players cued "let go" in
+  the first 5 minutes in 16 of 30 races (14 of them at 1.1–1.3 minutes); the API
+  coach did so in 1 of 12. Races where the role-player let go early averaged 6.8 s
+  slower than no coach; the rest −0.2 s. The two worst races (+129 s and +64 s) both
+  began with an early let-go, followed by pace targets the paddler chased into a
+  blow-up after the current changed.
+* **The fidelity check agrees only in part.** On the 3 races both coaches ran, the
+  role play matched the API coach on one (−45.4 against −45.1 s against no coach),
+  came close on one (−5.7 against −1.4 s), and lost badly on the third (+85.6
+  against −17.1 s, after two let-go cues and ten ease cues). So the role play is a
+  different coach, not a copy of the API one, and this run cannot tell whether the
+  API result was luck on 12 races or a real difference between the two coaches.
+* **The coach cannot see whether the wash is worth keeping.** Nearly every
+  role-player said so. The only sign of a wash is the gap between the measured local
+  push and the current along the heading, which is noisy and also moves when the
+  current changes. The reserve and the fade are both measured against minutes spent
+  on the wash.
+* **The coach cannot see whether a cue was followed.** The twin paddler followed
+  165 of 210 role-played cues, but by a fixed step that fades back over minutes, and
+  nothing in the coach's input says so. Coaches repeated ease cues that looked
+  ignored, and several were blocked for coming within 60 s of the last one, which
+  the coach could not see either.
+
+What this does to the drafting claim: the result is weaker. With the API coach on
+12 races, the coach beat the pack rule by 11 s, just short of significance. With a
+role-played coach on 30 further races it did not, and the pooled 42 races show no
+reliable gain. The parts of the coach's input that the role-players found misleading
+are listed under next steps; they are the same ones that make the early let-go
+look right.
 
 ## Results so far
 
@@ -671,8 +716,16 @@ the other eight sessions: critical power 93 W, reserve 6.4 kJ; stand-in coach):
   efficiency falls, and a short test can misjudge critical power (see Results).
   Its live current estimate needs the course to turn, and on a single heading
   (a point-to-point race) it cannot separate current from speed. A known push (a
-  tide model or the pod's water speed) can be passed in instead. Every cue so far
-  comes from the scripted stand-in; no model has coached a race yet.
+  tide model or the pod's water speed) can be passed in instead.
+* **Role-played coaching is a stand-in, not the deployed model.** In the drafting
+  check (above), Claude subagents answered every model call, with the same prompt,
+  tools and live state, and a fixed 5 s of race time per call. Each role-player
+  coached one whole race and was told to decide each wake-up from its input alone,
+  but it could still remember earlier wake-ups. In the first 5 role-played races
+  (4000, 4004, 4008, 4012, 4014) the tool list in the first input was cut short.
+  On the 3 races both ran, the role play matched the API coach on one and lost
+  badly on another, so a role-played result says what this kind of reasoner does
+  with the coach's inputs, not what the API model would do.
 * Light recovery strokes right after hard pieces can be missed (2 % of strokes in
   the training session, none in race paddling).
 * All timings are on this cloud sandbox (4 virtual CPUs, shared).
@@ -722,9 +775,19 @@ connectivity.
    strap; and one all-out 3-minute and one all-out 12-minute piece to pin down
    critical power. The pod's force measurement would make this direct.
 4. **Coaching loop, next**: built, replayed, and put in a closed loop on the paddler
-   twin (above). Still to do:
-   * the pre-registered evaluation with a real model in the coach's seat (waits
-     for the key and the choice of model);
+   twin (above), and evaluated with real models and with role play. Still to do,
+   from what the role-played coaches found misleading in the drafting races:
+   * show the coach its own recent cues, whether the paddler followed them, and when
+     the next cue is allowed;
+   * a direct estimate of how much the wash is giving (speed above what the shaft
+     power gives in still water, with the current removed), with its uncertainty;
+   * measure the fade and the reserve against the paddler's own power off the wash,
+     and put the paddle pod's numbers (not only the boat's) in the race history;
+   * the distance to the next turn; pace targets as effort rather than speed over the
+     ground, which goes wrong when the current changes;
+   * tell the coach when a watch it wrote cannot be evaluated: a missing input makes
+     the watch silently false;
+   * drop the "check the line" note at each new leg in races with no line to choose;
    * the replay demo on the race panel's watches instead of the old screen;
    * effort from the pod (force) so the reserve does not drift;
    * the current from a tide model when the course does not turn;
