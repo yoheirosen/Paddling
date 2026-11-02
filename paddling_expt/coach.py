@@ -53,7 +53,8 @@ from agent_lib.tool_registry import ToolPolicy, ToolRegistry
 
 from .race import RaceState
 
-_ASKS = ("ease", "push", "hold", "rate_up", "rate_down", "finish", "line_in", "line_out", "none")
+_ASKS = ("ease", "push", "hold", "rate_up", "rate_down", "finish", "line_in", "line_out",
+         "hang_on", "let_go", "none")
 
 __all__ = ["RaceScreen", "CueSink", "make_cue_gate", "RaceCoach", "COACH_SYSTEM", "COACH_PANEL_SYSTEM",
            "stand_in_coach", "make_coach_provider", "replay_race", "format_pace"]
@@ -347,6 +348,20 @@ Once there, check the forecast against push_local_mps; if the water is not what 
 re-plan. Pacing still matters: keep the reserve from running empty."""
 
 
+DRAFT_SECTION = """
+
+Other boats (this race): the paddler starts with a pack slightly faster than their even pace. \
+Sitting on a wash, a few metres behind a boat, cuts drag by roughly a tenth, so the pack's speed \
+costs less effort there; falling off the wash costs that saving, and a gap of more than a few \
+boat lengths is hard to close. You cannot see the boats: you see a wash in the numbers, as speed \
+through the water higher than the shaft power alone would give (push_local_mps rising well above \
+push_along_mps) at the same effort. Hanging on pays if the effort it takes (shaft power while on \
+the wash) can be held to the finish on the pod's reserve, plus the sprint; if it cannot, letting \
+go early, before the reserve runs out, beats blowing up and being dropped anyway. Paddlers tend to \
+hang on by instinct until it is too late, or give up a wash that was worth keeping. Cue hang_on \
+(work to stay on the wash) or let_go (drop off and settle to your own pace)."""
+
+
 TIER_SECTION = """
 
 A rule layer coaches by default, and you supervise it. Its rules: pacing alarms on the pod's \
@@ -367,7 +382,7 @@ _CUE_SCHEMA = {
     "properties": {
         "text": {"type": "string", "description": "what the paddler hears, at most 12 words"},
         "ask": {"type": "string", "enum": ["ease", "push", "hold", "rate_up", "rate_down", "finish",
-                                           "line_in", "line_out", "none"],
+                                           "line_in", "line_out", "hang_on", "let_go", "none"],
                 "description": "the change asked for"},
         "pace_s500": {"type": "number", "description": "optional target pace, s per 500 m, as the display shows it"},
         "line_m": {"type": "number", "description": "with line_in / line_out: optional target distance from shore (m, 40-600)"},
@@ -390,9 +405,10 @@ class RaceCoach:
         self.provider, self.state, self.gate, self.panel = provider, state, gate, panel
         self.version = int(version)
         if system is None and panel is not None and self.version >= 2:
-            system = (COACH_PANEL_SYSTEM_V2 + (WATER_SECTION if self.version >= 3 else "")
-                      + (WATER_SECTION_V6 if self.version >= 6 else WATER_SECTION_V4 if self.version >= 4 else "")
-                      + (TIER_SECTION if self.version >= 5 else ""))
+            system = (COACH_PANEL_SYSTEM_V2 + (DRAFT_SECTION if self.version == 7 else "")
+                      + (WATER_SECTION if 3 <= self.version < 7 else "")
+                      + (WATER_SECTION_V6 if self.version == 6 else WATER_SECTION_V4 if 4 <= self.version < 7 else "")
+                      + (TIER_SECTION if self.version in (5, 6) else ""))
         self.forecast: Optional[Dict[str, Any]] = None
         self.cache_system = (panel is not None) if cache_system is None else bool(cache_system)
         self.system = system or (COACH_PANEL_SYSTEM if panel is not None else COACH_SYSTEM)
@@ -412,25 +428,25 @@ class RaceCoach:
                              input_schema=tool.input_schema, writes=tool.writes)
                 allowed.append(name)
         self.recalibrations: List[Dict[str, Any]] = []
-        if self.version >= 3:
+        if 3 <= self.version < 7:
             reg.register(self.current_forecast, name="current_forecast",
                          description="The pre-race forecast of the tidal stream, its change during the race, "
                                      "the inshore weakening and the eddies (local knowledge; can be wrong).")
             allowed.append("current_forecast")
         self.rule_control: Optional[Dict[str, Callable]] = None
-        if self.version >= 5:
+        if self.version in (5, 6):
             reg.register(self.mute_rule, name="mute_rule", writes=True,
                          description="Stop the rule layer's cues on one lever ('line' or 'pace') for some "
                                      "minutes, with the reason (you take over that lever).")
             reg.register(self.unmute_rule, name="unmute_rule", writes=True,
                          description="Hand a lever ('line' or 'pace') back to the rule layer.")
             allowed += ["mute_rule", "unmute_rule"]
-        if self.version >= 6:
+        if self.version == 6:
             reg.register(self.line_change_value, name="line_change_value",
                          description="Seconds saved over the rest of this leg by moving to each given distance "
                                      "from shore, by the forecast, net of the crossing (negative = costs time).")
             allowed.append("line_change_value")
-        if self.version >= 4:
+        if 4 <= self.version < 7:
             reg.register(self.stream_by_line, name="stream_by_line",
                          description="The forecast's stream along the current heading (m/s, + helps) at each "
                                      "given distance from shore, here or at another position along the course.")
@@ -604,7 +620,10 @@ class RaceCoach:
                                                f"boat {s.athlete.cp_w:.0f} W / {s.athlete.w_prime_j / 1000:.1f} kJ" +
                                                (f"; shaft (pod) {s.athlete_shaft.cp_w:.0f} W / "
                                                 f"{s.athlete_shaft.w_prime_j / 1000:.1f} kJ" if s.athlete_shaft else ""))}
-                if self.version >= 3 and self.forecast:
+                if self.version == 7:
+                    msg["race"]["others"] = ("a pack of boats starts with you, a little faster than your even "
+                                             "pace; their wash cuts drag by roughly a tenth")
+                if 3 <= self.version < 7 and self.forecast:
                     msg["race"]["forecast"] = self.forecast
                     msg["race"]["course"] = (f"along a shore: one leg of {s.distance_m / 2:.0f} m north, "
                                              "then back south to the start")

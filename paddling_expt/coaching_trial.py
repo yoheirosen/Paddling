@@ -33,7 +33,7 @@ from __future__ import annotations
 import json
 import math
 import statistics
-from dataclasses import asdict, dataclass, field
+from dataclasses import asdict, dataclass, field, replace
 from typing import Any, Dict, List, Optional, Sequence
 
 import numpy as np
@@ -49,11 +49,11 @@ from .coach import CueSink, RaceCoach, format_pace, make_cue_gate
 from .race import Athlete, RaceState, calibrate, sustainable_power
 from .race_panel import SCREEN_PROGRAMS, SCREEN_WATCHES, RacePanel
 from .sim.paddler import PaddlerParams
-from .sim.twin import (CoastalWater, PaddlerTwin, RaceSetup, Traits, draw_setup, draw_traits,
+from .sim.twin import (CoastalWater, Pack, PaddlerTwin, RaceSetup, Traits, draw_setup, draw_traits,
                        even_effort, oracle_effort, twin_cp_test, water_forecast)
 
 __all__ = ["PREREGISTERED", "HELDOUT_ROUND3", "HELDOUT_ROUND3_EXTENSION", "HELDOUT_TIERED", "Preparation", "draw_preparation", "Arm", "NoCoach", "FixedPlan",
-           "Autopilot", "PodAutopilot", "LineRule", "AgentArm", "TieredAgentArm", "shaft_athlete", "run_episode", "baseline_arms", "paired", "holm",
+           "Autopilot", "PodAutopilot", "LineRule", "PackRule", "AgentArm", "TieredAgentArm", "shaft_athlete", "run_episode", "baseline_arms", "paired", "holm",
            "CountingProvider", "HONESTY_STAND_IN"]
 
 HONESTY_STAND_IN = ("provider=stand-in: a scripted coach that maps each alert to a fixed cue, "
@@ -216,6 +216,8 @@ class Preparation:
         tr["paddler"] = PaddlerParams(**{k: (tuple(v) if isinstance(v, list) else v)
                                          for k, v in tr["paddler"].items()})
         su = dict(d["setup"])
+        if su.get("pack"):
+            su["pack"] = Pack(**su["pack"])
         if su.get("water"):
             w = dict(su["water"])
             w["eddies"] = [tuple(e) for e in w.get("eddies", [])]
@@ -256,15 +258,16 @@ def shaft_athlete(traits: Traits, seed: int) -> Athlete:
     return calibrate(best, source="3- and 12-minute test on the twin, paddle-pod shaft power")
 
 
-def draw_preparation(seed: int, coastal: bool = False) -> Preparation:
-    tr, su = draw_traits(seed), draw_setup(seed, coastal=coastal)
+def draw_preparation(seed: int, coastal: bool = False, pack: bool = False) -> Preparation:
+    tr, su = draw_traits(seed), draw_setup(seed, coastal=coastal, pack=pack)
     rows, tw = twin_cp_test(tr, seed=seed)
     prep = ss.prepare_rows(rows, tw.craft, tw.total_kg)
     best = ss.best_efforts(prep["all_rows"], (180, 720))
     ath = calibrate(best, source="3- and 12-minute test on the twin")
     true_boat_cp = tr.paddler.critical_power_w * tr.paddler.eta_max
-    return Preparation(seed=seed, traits=tr, setup=su, even=even_effort(tr, su),
-                       reference=oracle_effort(tr, su), athlete=ath,
+    alone = replace(su, pack=None)                 # the even pace and the reference ignore the pack
+    return Preparation(seed=seed, traits=tr, setup=su, even=even_effort(tr, alone),
+                       reference=oracle_effort(tr, alone), athlete=ath,
                        athlete_shaft=shaft_athlete(tr, seed),
                        forecast=water_forecast(su.water, seed) if su.water is not None else None,
                        calibration={"best_180_w": best[180]["power"], "best_720_w": best[720]["power"],
@@ -532,6 +535,34 @@ class _RuleGate:
                                         "pace_s500": action.get("pace_s500"), "line_m": action.get("line_m")})
             self.owner.rule_acted = True
         return res
+
+
+class PackRule(PodAutopilot):
+    """Pacing by the pod autopilot, plus "hang on to the pack; let go when the pod's
+    over-pace alarm says the reserve will not last" (exploratory baseline, drafting)."""
+
+    name = "pack_rule"
+
+    def __init__(self, overpace_margin_m: float = 150.0, fade_pct: float = -3.0) -> None:
+        super().__init__(overpace_margin_m, fade_pct)
+        self._started = False
+        self._let_go = False
+
+    def on_tick(self, ep: "Episode", t: float, alerts: List[Dict[str, Any]]) -> None:
+        s = ep.state.last
+        if not self._started and (s.get("elapsed_s") or 0) > 62.0:
+            if ep.gate.deliver({"text": "Stay on their wash.", "ask": "hang_on", "source": self.name},
+                               source=self.name).get("delivered"):
+                self._started = True
+        rest = []
+        for a in alerts:
+            if a["watch_id"] == "over_pace" and not self._let_go:
+                if ep.gate.deliver({"text": "Let them go. Settle to your pace.", "ask": "let_go",
+                                    "source": self.name}, source=self.name).get("delivered"):
+                    self._let_go = True
+                    continue
+            rest.append(a)
+        super().on_tick(ep, t, rest)
 
 
 class TieredAgentArm(AgentArm):
