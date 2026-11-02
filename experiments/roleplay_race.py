@@ -1,0 +1,175 @@
+#!/usr/bin/env python3
+"""Role-play the race coach: a person or an agent stands in for the model API.
+
+The race runs exactly as in ``run_coaching_trial.py`` (same twin, panel, gate, coach
+prompt and tools), but every model call is answered by the role-player.  The race is
+deterministic, so the driver replays it from the start with the answers given so far
+and stops at the next model call, printing what the model would see; the
+role-player's answer is appended and the race continues.
+
+    python experiments/roleplay_race.py start  --pack --seed 4012 --tag heldout_pack_rp
+    python experiments/roleplay_race.py answer --pack --seed 4012 --tag heldout_pack_rp \\
+        '{"tool_calls": [{"name": "get_metric_series", "arguments": {"metric": "fade_pct", "window_s": 120}}]}'
+    python experiments/roleplay_race.py answer ... '{"text": "no cue: holding well"}'
+    python experiments/roleplay_race.py collect --tag heldout_pack_rp
+
+An answer is JSON: ``{"text": "..."}`` (the reply, ending the wake-up) or
+``{"tool_calls": [{"name": ..., "arguments": {...}}], "text": "optional"}`` (the tool
+results come back in the next packet, within the same wake-up).  Each model call takes
+a fixed ``--latency-s`` of race time.  When the race ends the driver prints RACE
+FINISHED and saves the scored episode; ``collect`` appends the finished races to
+``results/coaching_trial/episodes_<tag>.jsonl``.
+"""
+from __future__ import annotations
+
+import argparse
+import json
+import os
+import sys
+from typing import Any, Dict, List
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+ROOT = os.path.dirname(HERE)
+sys.path.insert(0, ROOT)
+
+from agent_lib.providers.fake_provider import FakeProvider       # noqa: E402
+
+from paddling_expt import coaching_trial as ct                     # noqa: E402
+
+OUT = os.path.join(ROOT, "results", "coaching_trial")
+
+
+def _dir(tag: str, seed: int) -> str:
+    d = os.path.join(OUT, "roleplay", tag, str(seed))
+    os.makedirs(d, exist_ok=True)
+    return d
+
+
+def _prep(a: argparse.Namespace) -> ct.Preparation:
+    name = "preparations_pack.json" if a.pack else "preparations_coastal.json" if a.coastal else "preparations.json"
+    path = os.path.join(OUT, name)
+    cache = json.load(open(path)) if os.path.exists(path) else {}
+    if str(a.seed) in cache:
+        return ct.Preparation.from_dict(cache[str(a.seed)])
+    return ct.draw_preparation(a.seed, coastal=a.coastal, pack=a.pack)
+
+
+def _packet(system: str, messages: List[Any], tools: List[Dict[str, Any]], first: bool,
+            n_calls: int) -> Dict[str, Any]:
+    out: Dict[str, Any] = {"model_call": n_calls}
+    if first:
+        out["system_prompt"] = system
+        out["tools"] = [{"name": t["name"], "description": t.get("description", ""),
+                         "input_schema": t.get("input_schema", {})} for t in tools]
+    last = messages[-1]
+    rounds = sum(1 for m in messages if m.role == "assistant")
+    out["round_in_this_wake_up"] = rounds + 1
+    if len(messages) == 1:
+        out["kind"] = "new wake-up (no memory of earlier wake-ups: decide from this alone)"
+        try:
+            out["update"] = json.loads(last.text)
+        except (TypeError, ValueError):
+            out["update"] = last.text
+    else:
+        names = {tc.id: tc.name for tc in messages[-2].tool_calls} if len(messages) >= 2 else {}
+        res = []
+        for tr in last.tool_results:
+            try:
+                content = json.loads(tr.content)
+            except (TypeError, ValueError):
+                content = tr.content
+            res.append({"tool": names.get(tr.tool_call_id, "?"), "result": content, "is_error": tr.is_error})
+        out["kind"] = "tool results (same wake-up)"
+        out["tool_results"] = res
+    return out
+
+
+def _run(a: argparse.Namespace) -> None:
+    d = _dir(a.tag, a.seed)
+    ans_path = os.path.join(d, "answers.json")
+    answers = json.load(open(ans_path)) if os.path.exists(ans_path) else []
+    st = {"i": 0}
+
+    def answer(system, messages, tools):
+        if st["i"] < len(answers):
+            v = answers[st["i"]]
+            st["i"] += 1
+            if isinstance(v, dict) and v.get("tool_calls"):
+                return v
+            return str(v.get("text", "") if isinstance(v, dict) else v)
+        pk = _packet(system, messages, tools, first=st["i"] == 0, n_calls=st["i"] + 1)
+        with open(os.path.join(d, "packet.json"), "w") as f:
+            json.dump(pk, f)
+        sys.stdout.write(json.dumps(pk, indent=1) + "\n")
+        sys.stdout.flush()
+        os._exit(3)                      # paused: waiting for the role-player's answer
+
+    prov = FakeProvider(answer, model=a.model_label)
+    arm = ct.AgentArm(prov, label=a.label, coach_version=a.coach_version)
+    r = ct.run_episode(_prep(a), arm, latency_s=a.latency_s)
+    r["roleplay"] = {"answers": len(answers), "latency_s": a.latency_s, "stand_in": a.model_label}
+    with open(os.path.join(d, "result.json"), "w") as f:
+        json.dump(r, f)
+    print("RACE FINISHED: the result is saved. Thank you; nothing more to do for this race.")
+
+
+def main(argv=None) -> int:
+    ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
+    ap.add_argument("cmd", choices=["start", "answer", "show", "collect"])
+    ap.add_argument("answer_json", nargs="?", default=None)
+    ap.add_argument("--seed", type=int, default=None)
+    ap.add_argument("--tag", required=True)
+    ap.add_argument("--pack", action="store_true")
+    ap.add_argument("--coastal", action="store_true")
+    ap.add_argument("--coach-version", type=int, default=7)
+    ap.add_argument("--label", default="agent_v7_roleplay")
+    ap.add_argument("--model-label", default="roleplay-subagent")
+    ap.add_argument("--latency-s", type=float, default=5.0)
+    a = ap.parse_args(argv)
+    if a.cmd == "collect":
+        base = os.path.join(OUT, "roleplay", a.tag)
+        done = []
+        for s in sorted(os.listdir(base), key=lambda x: int(x)) if os.path.isdir(base) else []:
+            p = os.path.join(base, s, "result.json")
+            if os.path.exists(p):
+                done.append(json.load(open(p)))
+        with open(os.path.join(OUT, f"episodes_{a.tag}.jsonl"), "a") as f:
+            for r in done:
+                f.write(json.dumps(r) + "\n")
+        print(f"collected {len(done)} finished races into episodes_{a.tag}.jsonl")
+        return 0
+    if a.seed is None:
+        ap.error("--seed is required")
+    d = _dir(a.tag, a.seed)
+    if os.path.exists(os.path.join(d, "result.json")):
+        print("RACE FINISHED: this race is already done.")
+        return 0
+    if a.cmd == "show":
+        p = os.path.join(d, "packet.json")
+        print(open(p).read() if os.path.exists(p) else "no packet yet: run start")
+        return 0
+    ans_path = os.path.join(d, "answers.json")
+    answers = json.load(open(ans_path)) if os.path.exists(ans_path) else []
+    if a.cmd == "start" and answers:
+        print("already started: use show to see the current packet, then answer")
+        return 0
+    if a.cmd == "answer":
+        if not a.answer_json:
+            ap.error("answer needs a JSON answer")
+        try:
+            v = json.loads(a.answer_json)
+        except ValueError as exc:
+            print(f"not valid JSON: {exc}")
+            return 2
+        if not isinstance(v, dict) or not ("text" in v or "tool_calls" in v):
+            print('an answer is {"text": "..."} or {"tool_calls": [{"name": ..., "arguments": {...}}]}')
+            return 2
+        answers.append(v)
+        with open(ans_path, "w") as f:
+            json.dump(answers, f)
+    _run(a)
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

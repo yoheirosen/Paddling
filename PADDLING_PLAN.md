@@ -461,6 +461,18 @@ pushes (46) to keep the paddler on the wash and let go once. This is the first l
 where the reasoning coach beats the rules, but with 12 races it falls just short of
 significance after the correction for two comparisons.
 
+### Confirming drafting with role-played coaching (written down 2026-11-02, before any race)
+
+At the owner's instruction the model API is not used any more. Claude subagents stand
+in for the coach's model: each coaches one race through `experiments/roleplay_race.py`,
+which replays the deterministic race and stops at every model call to show exactly the
+model's input (the same prompt, tools and live state), taking each answer as the
+model's. Thirty fresh pack races (4012–4041) against the pack rule and no coach,
+primary as before (Holm over the two); pooled with the 12 API races as a secondary,
+labelled as mixed; a fidelity check role-plays 3 of those 12 races. A role-player is
+not the deployed model (it remembers earlier wake-ups of its race; latency fixed at
+5 s). Design in code: `coaching_trial.HELDOUT_PACK_ROLEPLAY`.
+
 ## Results so far
 
 **Simulated 37-minute OC1 training session** (`demos/demo_oc1_training.py`,
