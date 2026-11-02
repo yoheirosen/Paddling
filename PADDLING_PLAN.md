@@ -405,6 +405,16 @@ HELDOUT_ROUND3_EXTENSION`); primary on the new 30, also pooled with the first 10
 same 30 races then serve as the held-out set for the tiered coach (below), whose
 design is frozen on development seeds before these results are read.
 
+**Result of the larger check (no failed model calls, ~USD 12.4).** On the 30 new races
+the improved coach was faster than no coach by 21.6 s (95 % interval 6.9–41.0 s;
+faster in 20 of 30; Holm p 0.014) and 4.9 s faster than the line rule, which is no
+detectable difference (interval −14.5 to +4.4 s; p 0.42). Pooled over all 40 held-out
+races: 22.2 s faster than no coach (10.8–37.6 s; faster in 30 of 40; p 0.0001), 1.9 s
+faster than the line rule (−10.3 to +6.5 s; p 0.72), and 12.0 s faster than the
+registered autopilot. So the 10-race result (7.2 s behind the line rule) was noise:
+the improved coach and the forecast line rule are level, and both clearly beat no
+coach and the pacing-only rules.
+
 ### The tiered coach and its held-out check (written down 2026-11-02, before the run)
 
 The rule layer (pod autopilot plus "inside against the forecast stream") coaches by
