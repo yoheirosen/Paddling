@@ -15,3 +15,6 @@ __pycache__/
 *.egg-info/
 build/
 dist/
+
+# role-play races in progress (final records are added with -f when a run finishes)
+results/coaching_trial/roleplay/
