@@ -418,6 +418,20 @@ beforehand. Held-out check on the same 30 fresh seeds as the larger check (3010�
 written down before those results were read: tiered coach minus line rule and minus
 the version-4 coach, paired, Holm over the two (`coaching_trial.HELDOUT_TIERED`).
 
+### Drafting a pack, and its held-out check (written down 2026-11-02, before the run)
+
+The twin can carry a pack of boats (`sim/twin.py` `Pack`, planted): a little faster
+than the paddler's even pace (1.00–1.07 times), and sitting on its wash, 6–10 m
+behind, cuts drag by 8–16 %. The paddler hangs on while the effort feels bearable
+(a planted willingness) and lets go otherwise; more than about 25 m back, the wash is
+lost. Cues "hang on" and "let go". The coach (version 7) is told a pack exists but
+cannot see it: a wash shows as speed above what the shaft power gives. Baseline: the
+pod autopilot plus "hang on at the start, let go when the pod's over-pace alarm
+fires". Development (pack seeds 0–5): coach 14.8 s faster than no coach and 11.8 s
+faster than the pack rule (faster on 3 of 6). Held-out check on 12 fresh pack seeds
+(4000–4011): coach minus pack rule and minus no coach, Holm over the two
+(`coaching_trial.HELDOUT_PACK`).
+
 ## Results so far
 
 **Simulated 37-minute OC1 training session** (`demos/demo_oc1_training.py`,

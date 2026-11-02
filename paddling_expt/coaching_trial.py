@@ -52,7 +52,7 @@ from .sim.paddler import PaddlerParams
 from .sim.twin import (CoastalWater, Pack, PaddlerTwin, RaceSetup, Traits, draw_setup, draw_traits,
                        even_effort, oracle_effort, twin_cp_test, water_forecast)
 
-__all__ = ["PREREGISTERED", "HELDOUT_ROUND3", "HELDOUT_ROUND3_EXTENSION", "HELDOUT_TIERED", "Preparation", "draw_preparation", "Arm", "NoCoach", "FixedPlan",
+__all__ = ["PREREGISTERED", "HELDOUT_ROUND3", "HELDOUT_ROUND3_EXTENSION", "HELDOUT_TIERED", "HELDOUT_PACK", "Preparation", "draw_preparation", "Arm", "NoCoach", "FixedPlan",
            "Autopilot", "PodAutopilot", "LineRule", "PackRule", "AgentArm", "TieredAgentArm", "shaft_athlete", "run_episode", "baseline_arms", "paired", "holm",
            "CountingProvider", "HONESTY_STAND_IN"]
 
@@ -178,6 +178,22 @@ HELDOUT_TIERED: Dict[str, Any] = {
     "primary": ("on seeds 3010-3039: agent_tiered minus line_rule and agent_tiered minus agent_v4, paired, "
                 "Wilcoxon, bootstrap 95% interval, Holm over the two"),
     "budget_usd": 13.0,
+}
+
+
+# The drafting coach's held-out check (owner's choice C, 2026-11-02), frozen on development
+# pack seeds 0-5 and written down before it was run.
+HELDOUT_PACK: Dict[str, Any] = {
+    "date": "2026-11-02",
+    "seeds": list(range(4000, 4012)),
+    "twin": "draw_setup(seed, pack=True): a pack to draft, uniform current, out-and-back legs",
+    "arms": {"no_coach": "own pacing and own hang-on instinct", "autopilot_pod": "pod autopilot (150 m, -3 %)",
+             "pack_rule": "pod autopilot + hang on at the start, let go when the pod over-pace alarm fires",
+             "agent_v7": "coach version 7 (drafting section; cannot see the boats), claude-opus-5-5"},
+    "primary": ("agent_v7 minus pack_rule and agent_v7 minus no_coach, paired, Wilcoxon, bootstrap 95% "
+                "interval, Holm over the two"),
+    "budget_usd": 5.5,
+    "power": "12 seeds: only a large difference can be detected",
 }
 
 
