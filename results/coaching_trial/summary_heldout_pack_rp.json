@@ -1,0 +1,144 @@
+{
+ "roleplay": {
+  "n": 30,
+  "comparisons": {
+   "pack_rule": {
+    "n": 30,
+    "mean_d": 0.22404013141117501,
+    "median_d": 0.0,
+    "n_a_faster": 14,
+    "n_b_faster": 14,
+    "ci95": [
+     -13.608763639596331,
+     13.825104503069682
+    ],
+    "wilcoxon_p": 0.9455354646923675
+   },
+   "no_coach": {
+    "n": 30,
+    "mean_d": 3.5226308825860544,
+    "median_d": 0.0,
+    "n_a_faster": 13,
+    "n_b_faster": 10,
+    "ci95": [
+     -5.531305840302598,
+     15.107942143686424
+    ],
+    "wilcoxon_p": 0.7151267545585855
+   },
+   "autopilot_pod": {
+    "n": 30,
+    "mean_d": 7.538441141421739,
+    "median_d": 0.00023608367405358877,
+    "n_a_faster": 14,
+    "n_b_faster": 15,
+    "ci95": [
+     -0.5936562899502004,
+     18.11070658651181
+    ],
+    "wilcoxon_p": 0.3469051394778403
+   }
+  },
+  "holm": {
+   "pack_rule": 1.0,
+   "no_coach": 1.0
+  },
+  "asks": {
+   "ease": 83,
+   "let_go": 23,
+   "hang_on": 18,
+   "push": 47,
+   "finish": 19,
+   "rate_up": 2,
+   "rate_down": 16,
+   "hold": 2
+  }
+ },
+ "pooled": {
+  "vs_pack_rule": {
+   "n": 42,
+   "mean_d": -2.992043310664236,
+   "median_d": -0.02270914016844472,
+   "n_a_faster": 21,
+   "n_b_faster": 17,
+   "ci95": [
+    -13.058603860133527,
+    7.181027479028239
+   ],
+   "wilcoxon_p": 0.24893874120238457
+  },
+  "vs_no_coach": {
+   "n": 42,
+   "mean_d": 0.3284184833492721,
+   "median_d": -0.02877541467773881,
+   "n_a_faster": 21,
+   "n_b_faster": 13,
+   "ci95": [
+    -6.991372257182384,
+    8.916852125537941
+   ],
+   "wilcoxon_p": 0.2701465087269428
+  }
+ },
+ "exploratory_let_go_split": {
+  "early": {
+   "n": 16,
+   "mean_vs_no_coach_s": 6.783838272905314
+  },
+  "late": {
+   "n": 14,
+   "mean_vs_no_coach_s": -0.2044632777788138
+  },
+  "api_races_let_go_in_first_5_min": 1
+ },
+ "fidelity": [
+  {
+   "seed": 4000,
+   "roleplay_vs_no_coach_s": -5.72813919329883,
+   "api_vs_no_coach_s": -1.3643087852556164,
+   "roleplay_asks": {
+    "ease": 5,
+    "let_go": 1,
+    "rate_down": 2,
+    "push": 1
+   },
+   "api_asks": {
+    "ease": 5,
+    "hold": 1,
+    "rate_down": 4,
+    "push": 1
+   }
+  },
+  {
+   "seed": 4004,
+   "roleplay_vs_no_coach_s": 85.63503793054178,
+   "api_vs_no_coach_s": -17.125794931464952,
+   "roleplay_asks": {
+    "let_go": 2,
+    "ease": 10,
+    "push": 3,
+    "rate_down": 1,
+    "finish": 1
+   },
+   "api_asks": {
+    "ease": 5,
+    "rate_down": 1,
+    "finish": 1
+   }
+  },
+  {
+   "seed": 4008,
+   "roleplay_vs_no_coach_s": -45.4012668547889,
+   "api_vs_no_coach_s": -45.146530854015964,
+   "roleplay_asks": {
+    "let_go": 1,
+    "ease": 4,
+    "finish": 1
+   },
+   "api_asks": {
+    "ease": 5,
+    "rate_down": 1
+   }
+  }
+ ]
+}

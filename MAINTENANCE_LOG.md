@@ -5,6 +5,31 @@ Dated entries, newest first. Entries before the move refer to paths under
 
 ---
 
+### Drafting re-checked with role-played coaching, no API (2026-11-02)
+
+At the owner's instruction the model API is no longer used. `experiments/roleplay_race.py`
+replays a deterministic race and stops at every model call, showing exactly what the model
+would receive; a Claude subagent answers as the model. Commands `start` / `answer` / `show` /
+`tools` / `collect`, and `verify`, which replays every finished race from its saved answers
+(33 of 33 reproduce). Only the answers are tracked (`results/coaching_trial/roleplay/<tag>/
+<seed>/answers.json`). Registered before any race as `coaching_trial.HELDOUT_PACK_ROLEPLAY`:
+30 fresh pack races (4012–4041), plus a fidelity check on 3 of the 12 API races.
+
+Result: the drafting gain did not repeat. The role-played coach was 0.2 s slower than the pack
+rule (interval −13.6 to +13.8 s) and 3.5 s slower than no coach (−5.5 to +15.1 s), Holm p 1.0.
+Pooled with the 12 API races: 3.0 s faster than the pack rule (p 0.25), level with no coach.
+Exploratory: the role-players let go of the pack in the first 5 minutes in 16 of 30 races, the
+API coach in 1 of 12, and those races were the costly ones. The fidelity check matched on one
+race of three and diverged badly on another. Write-up, limits and next steps in
+`PADDLING_PLAN.md`; figure `coaching_drafting_roleplay`; summary
+`experiments/roleplay_summary.py [--figure]` → `results/coaching_trial/summary_heldout_pack_rp.json`.
+
+Known flaws kept for this run's consistency, to fix next:
+* the version-7 coach's new-leg note says "the rule layer sets the line from the forecast" in
+  drafting races, which have no rule layer or line;
+* a coach-written watch whose input is missing on a tick is silently false, and the coach is not
+  told.
+
 ### Coaching: a 30-race held-out check, a tiered coach, drafting (2026-11-02)
 
 Owner's choices A, B and C, each held-out check written down before it ran. Larger held-out check of

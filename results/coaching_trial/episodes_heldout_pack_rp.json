@@ -1,0 +1,5745 @@
+[
+{
+"seed": 4012,
+"arm": "agent_v7_roleplay",
+"setting": {
+"periodic_s": 300.0,
+"model": "roleplay-subagent",
+"coach_version": 7
+},
+"race_time_s": 1813.2204021874445,
+"blown_s": 0.0,
+"reserve_left": 0.34253506438478976,
+"reference_s": 1845.1239282203014,
+"cues_spoken": 5,
+"cues_followed": 2,
+"cues_blocked": 0,
+"asks": {
+"ease": 4,
+"let_go": 1
+},
+"cue_log": [
+{
+"race_s": 363.4,
+"text": "Off the wash now. Ease a touch, steady to the finish.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 619.9,
+"text": "Let the pack go. Settle to your own steady pace.",
+"ask": "let_go",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 735.3,
+"text": "Ease a little more. Long smooth strokes, save some for the end.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1234.5,
+"text": "Ease back to steady. Do not chase the speed yet.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1512.4,
+"text": "Reserve nearly gone. Ease a fraction, hold it smooth home.",
+"ask": "ease",
+"pace_s500": 161.5,
+"line_m": null
+}
+],
+"alerts": {
+"wash_letgo_pod": 2,
+"fading": 1
+},
+"consultations": 9,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 5,
+"roleplay": {
+"answers": 19,
+"latency_s": 5.0,
+"stand_in": "roleplay-subagent"
+}
+},
+{
+"seed": 4012,
+"arm": "autopilot_pod",
+"setting": {
+"overpace_margin_m": 150.0,
+"fade_pct": -3.0
+},
+"race_time_s": 1814.0059740159422,
+"blown_s": 0.0,
+"reserve_left": 0.09896150824482469,
+"reference_s": 1845.1239282203014,
+"cues_spoken": 4,
+"cues_followed": 1,
+"cues_blocked": 0,
+"asks": {
+"ease": 2,
+"rate_down": 2
+},
+"cue_log": [
+{
+"race_s": 111.9,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 291.9,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 777.8,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 957.6,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"over_pace": 2,
+"fading": 2
+},
+"wall_s": 1.26
+},
+{
+"seed": 4012,
+"arm": "no_coach",
+"setting": {},
+"race_time_s": 1817.150737028111,
+"blown_s": 2.7031173687146084,
+"reserve_left": 0.013588801791558155,
+"reference_s": 1845.1239282203014,
+"cues_spoken": 0,
+"cues_followed": 0,
+"cues_blocked": 0,
+"asks": {},
+"cue_log": [],
+"alerts": {},
+"wall_s": 1.1
+},
+{
+"seed": 4012,
+"arm": "pack_rule",
+"setting": {
+"overpace_margin_m": 150.0,
+"fade_pct": -3.0
+},
+"race_time_s": 1814.0059740159422,
+"blown_s": 0.0,
+"reserve_left": 0.09896150824482469,
+"reference_s": 1845.1239282203014,
+"cues_spoken": 4,
+"cues_followed": 1,
+"cues_blocked": 2,
+"asks": {
+"hang_on": 1,
+"let_go": 1,
+"rate_down": 2
+},
+"cue_log": [
+{
+"race_s": 63.7,
+"text": "Stay on their wash.",
+"ask": "hang_on",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 291.9,
+"text": "Let them go. Settle to your pace.",
+"ask": "let_go",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 777.8,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 957.6,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"over_pace": 2,
+"fading": 2
+},
+"wall_s": 1.17
+},
+{
+"seed": 4013,
+"arm": "agent_v7_roleplay",
+"setting": {
+"periodic_s": 300.0,
+"model": "roleplay-subagent",
+"coach_version": 7
+},
+"race_time_s": 1801.6826473875471,
+"blown_s": 0.0,
+"reserve_left": 0.6767360235515028,
+"reference_s": 1849.9548397930757,
+"cues_spoken": 4,
+"cues_followed": 1,
+"cues_blocked": 0,
+"asks": {
+"hang_on": 2,
+"let_go": 1,
+"push": 1
+},
+"cue_log": [
+{
+"race_s": 1033.9,
+"text": "You are slipping off the wash. Close up, stay on it.",
+"ask": "hang_on",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1101.8,
+"text": "Pack is close. Hard thirty strokes, get back on their wash.",
+"ask": "hang_on",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1226.2,
+"text": "Let the pack go. Settle into your own steady rhythm.",
+"ask": "let_go",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1494.6,
+"text": "One kilometre left. Lift it now, hold 1:55 to the line.",
+"ask": "push",
+"pace_s500": 155,
+"line_m": null
+}
+],
+"alerts": {
+"over_pace": 1,
+"fading": 1,
+"chase_failing": 1
+},
+"consultations": 11,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 4,
+"roleplay": {
+"answers": 20,
+"latency_s": 5.0,
+"stand_in": "roleplay-subagent"
+}
+},
+{
+"seed": 4013,
+"arm": "autopilot_pod",
+"setting": {
+"overpace_margin_m": 150.0,
+"fade_pct": -3.0
+},
+"race_time_s": 1801.7405510727658,
+"blown_s": 0.0,
+"reserve_left": 0.6784586917665206,
+"reference_s": 1849.9548397930757,
+"cues_spoken": 1,
+"cues_followed": 0,
+"cues_blocked": 0,
+"asks": {
+"rate_down": 1
+},
+"cue_log": [
+{
+"race_s": 1079.8,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"fading": 1
+},
+"wall_s": 1.35
+},
+{
+"seed": 4013,
+"arm": "no_coach",
+"setting": {},
+"race_time_s": 1801.7405510727658,
+"blown_s": 0.0,
+"reserve_left": 0.6784586917665206,
+"reference_s": 1849.9548397930757,
+"cues_spoken": 0,
+"cues_followed": 0,
+"cues_blocked": 0,
+"asks": {},
+"cue_log": [],
+"alerts": {},
+"wall_s": 1.4
+},
+{
+"seed": 4013,
+"arm": "pack_rule",
+"setting": {
+"overpace_margin_m": 150.0,
+"fade_pct": -3.0
+},
+"race_time_s": 1801.7405510727658,
+"blown_s": 0.0,
+"reserve_left": 0.6784586917665206,
+"reference_s": 1849.9548397930757,
+"cues_spoken": 2,
+"cues_followed": 0,
+"cues_blocked": 0,
+"asks": {
+"hang_on": 1,
+"rate_down": 1
+},
+"cue_log": [
+{
+"race_s": 62.7,
+"text": "Stay on their wash.",
+"ask": "hang_on",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1079.8,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"fading": 1
+},
+"wall_s": 1.52
+},
+{
+"seed": 4014,
+"arm": "agent_v7_roleplay",
+"setting": {
+"periodic_s": 300.0,
+"model": "roleplay-subagent",
+"coach_version": 7
+},
+"race_time_s": 3074.855126103376,
+"blown_s": 45.90634814805247,
+"reserve_left": 0.07385775633993522,
+"reference_s": 3087.2637875904147,
+"cues_spoken": 5,
+"cues_followed": 5,
+"cues_blocked": 0,
+"asks": {
+"let_go": 1,
+"ease": 4
+},
+"cue_log": [
+{
+"race_s": 69.4,
+"text": "Let the pack go. Settle into your own steady pace.",
+"ask": "let_go",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 363.4,
+"text": "Ease slightly to 2:28 pace and hold it there.",
+"ask": "ease",
+"pace_s500": 148,
+"line_m": null
+},
+{
+"race_s": 547.5,
+"text": "Ease off now, 2:40 pace, long smooth strokes.",
+"ask": "ease",
+"pace_s500": 160,
+"line_m": null
+},
+{
+"race_s": 703.7,
+"text": "Back off a touch, 2:43 pace, recover while staying smooth.",
+"ask": "ease",
+"pace_s500": 163,
+"line_m": null
+},
+{
+"race_s": 1835.2,
+"text": "Ease a touch, steady effort, save something for the finish.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"over_pace": 3,
+"reserve_conflict": 2,
+"fading": 1,
+"pod_over": 1
+},
+"consultations": 19,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 5,
+"roleplay": {
+"answers": 28,
+"latency_s": 5.0,
+"stand_in": "roleplay-subagent"
+}
+},
+{
+"seed": 4014,
+"arm": "autopilot_pod",
+"setting": {
+"overpace_margin_m": 150.0,
+"fade_pct": -3.0
+},
+"race_time_s": 3062.0721559994045,
+"blown_s": 67.33820289407679,
+"reserve_left": 0.09877141893101277,
+"reference_s": 3087.2637875904147,
+"cues_spoken": 5,
+"cues_followed": 5,
+"cues_blocked": 0,
+"asks": {
+"ease": 4,
+"rate_down": 1
+},
+"cue_log": [
+{
+"race_s": 110.1,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 290.1,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 733.7,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1050.0,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 2783.7,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"over_pace": 4,
+"fading": 1
+},
+"wall_s": 2.57
+},
+{
+"seed": 4014,
+"arm": "no_coach",
+"setting": {},
+"race_time_s": 3126.7431750160686,
+"blown_s": 270.1531362717846,
+"reserve_left": 0.07277968714707117,
+"reference_s": 3087.2637875904147,
+"cues_spoken": 0,
+"cues_followed": 0,
+"cues_blocked": 0,
+"asks": {},
+"cue_log": [],
+"alerts": {},
+"wall_s": 2.11
+},
+{
+"seed": 4014,
+"arm": "pack_rule",
+"setting": {
+"overpace_margin_m": 150.0,
+"fade_pct": -3.0
+},
+"race_time_s": 3123.6620220709656,
+"blown_s": 232.14763726636218,
+"reserve_left": 0.02465234992843978,
+"reference_s": 3087.2637875904147,
+"cues_spoken": 3,
+"cues_followed": 3,
+"cues_blocked": 2,
+"asks": {
+"hang_on": 1,
+"rate_down": 2
+},
+"cue_log": [
+{
+"race_s": 62.2,
+"text": "Stay on their wash.",
+"ask": "hang_on",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1244.3,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 3040.6,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"over_pace": 1,
+"fading": 2
+},
+"wall_s": 2.4
+},
+{
+"seed": 4015,
+"arm": "agent_v7_roleplay",
+"setting": {
+"periodic_s": 300.0,
+"model": "roleplay-subagent",
+"coach_version": 7
+},
+"race_time_s": 2298.740845454584,
+"blown_s": 0.0,
+"reserve_left": 0.44024223081766933,
+"reference_s": 2409.448945276797,
+"cues_spoken": 10,
+"cues_followed": 7,
+"cues_blocked": 1,
+"asks": {
+"hang_on": 2,
+"push": 6,
+"finish": 2
+},
+"cue_log": [
+{
+"race_s": 357.4,
+"text": "Lift a little, get back on their wash and stay.",
+"ask": "hang_on",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 657.6,
+"text": "Lift a touch, settle at 1:45 pace and hold it.",
+"ask": "push",
+"pace_s500": 145,
+"line_m": null
+},
+{
+"race_s": 730.5,
+"text": "Out of the turn, build to 1:45 pace and hold.",
+"ask": "push",
+"pace_s500": 145,
+"line_m": null
+},
+{
+"race_s": 826.4,
+"text": "You are on a wash now, lift a little and stay there.",
+"ask": "hang_on",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1076.5,
+"text": "Plenty in the tank, press on to 1:38 pace.",
+"ask": "push",
+"pace_s500": 138,
+"line_m": null
+},
+{
+"race_s": 1376.3,
+"text": "Strong and steady, press harder now, hold 1:45 pace.",
+"ask": "push",
+"pace_s500": 145,
+"line_m": null
+},
+{
+"race_s": 1444.9,
+"text": "Three kilometres left, you have reserve. Lift to 1:43 pace.",
+"ask": "push",
+"pace_s500": 143,
+"line_m": null
+},
+{
+"race_s": 1744.7,
+"text": "Two kilometres, lots left. Build now to 1:36 pace.",
+"ask": "push",
+"pace_s500": 136,
+"line_m": null
+},
+{
+"race_s": 2051.3,
+"text": "Lots left in the tank. Go now, sprint to the line.",
+"ask": "finish",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 2163.6,
+"text": "Last 500, empty the tank, all out to the line.",
+"ask": "finish",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"reserve_conflict": 1,
+"pod_finish_window": 1
+},
+"consultations": 12,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 11,
+"roleplay": {
+"answers": 26,
+"latency_s": 5.0,
+"stand_in": "roleplay-subagent"
+}
+},
+{
+"seed": 4015,
+"arm": "autopilot_pod",
+"setting": {
+"overpace_margin_m": 150.0,
+"fade_pct": -3.0
+},
+"race_time_s": 2298.786263734921,
+"blown_s": 0.0,
+"reserve_left": 0.19036002673497948,
+"reference_s": 2409.448945276797,
+"cues_spoken": 1,
+"cues_followed": 1,
+"cues_blocked": 0,
+"asks": {
+"finish": 1
+},
+"cue_log": [
+{
+"race_s": 2081.6,
+"text": "Reserve left. Go now.",
+"ask": "finish",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"finish_window": 1
+},
+"wall_s": 1.93
+},
+{
+"seed": 4015,
+"arm": "no_coach",
+"setting": {},
+"race_time_s": 2298.740845454584,
+"blown_s": 0.0,
+"reserve_left": 0.44024223081766933,
+"reference_s": 2409.448945276797,
+"cues_spoken": 0,
+"cues_followed": 0,
+"cues_blocked": 0,
+"asks": {},
+"cue_log": [],
+"alerts": {},
+"wall_s": 2.05
+},
+{
+"seed": 4015,
+"arm": "pack_rule",
+"setting": {
+"overpace_margin_m": 150.0,
+"fade_pct": -3.0
+},
+"race_time_s": 2298.786263734921,
+"blown_s": 0.0,
+"reserve_left": 0.19036002673497948,
+"reference_s": 2409.448945276797,
+"cues_spoken": 2,
+"cues_followed": 2,
+"cues_blocked": 0,
+"asks": {
+"hang_on": 1,
+"finish": 1
+},
+"cue_log": [
+{
+"race_s": 63.4,
+"text": "Stay on their wash.",
+"ask": "hang_on",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 2081.6,
+"text": "Reserve left. Go now.",
+"ask": "finish",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"finish_window": 1
+},
+"wall_s": 1.89
+},
+{
+"seed": 4016,
+"arm": "agent_v7_roleplay",
+"setting": {
+"periodic_s": 300.0,
+"model": "roleplay-subagent",
+"coach_version": 7
+},
+"race_time_s": 1831.6702886990424,
+"blown_s": 0.0,
+"reserve_left": 0.5313972347188565,
+"reference_s": 1893.3348414551338,
+"cues_spoken": 6,
+"cues_followed": 4,
+"cues_blocked": 2,
+"asks": {
+"hang_on": 2,
+"push": 3,
+"finish": 1
+},
+"cue_log": [
+{
+"race_s": 299.5,
+"text": "Out of the turn, get back on their wash. You have plenty.",
+"ask": "hang_on",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 599.9,
+"text": "Lift the effort a touch, settle at 1:54 pace.",
+"ask": "push",
+"pace_s500": 154,
+"line_m": null
+},
+{
+"race_s": 910.4,
+"text": "Good wash. Stay tight on it through the turn, same effort.",
+"ask": "hang_on",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1210.8,
+"text": "You have plenty left. Lift to 1:53 and hold it home.",
+"ask": "push",
+"pace_s500": 153,
+"line_m": null
+},
+{
+"race_s": 1521.8,
+"text": "One km to go, lots left. Build now to 2:20 pace.",
+"ask": "push",
+"pace_s500": 140,
+"line_m": null
+},
+{
+"race_s": 1622.6,
+"text": "Go now! Sprint to the line, empty the tank.",
+"ask": "finish",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"finish_window_pod": 1
+},
+"consultations": 9,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 8,
+"roleplay": {
+"answers": 19,
+"latency_s": 5.0,
+"stand_in": "roleplay-subagent"
+}
+},
+{
+"seed": 4016,
+"arm": "autopilot_pod",
+"setting": {
+"overpace_margin_m": 150.0,
+"fade_pct": -3.0
+},
+"race_time_s": 1831.6697129297331,
+"blown_s": 0.0,
+"reserve_left": 0.37647672465375726,
+"reference_s": 1893.3348414551338,
+"cues_spoken": 2,
+"cues_followed": 2,
+"cues_blocked": 0,
+"asks": {
+"ease": 1,
+"finish": 1
+},
+"cue_log": [
+{
+"race_s": 110.8,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1592.7,
+"text": "Reserve left. Go now.",
+"ask": "finish",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"over_pace": 1,
+"finish_window": 1
+},
+"wall_s": 1.65
+},
+{
+"seed": 4016,
+"arm": "no_coach",
+"setting": {},
+"race_time_s": 1831.6702886990424,
+"blown_s": 0.0,
+"reserve_left": 0.5313972347188565,
+"reference_s": 1893.3348414551338,
+"cues_spoken": 0,
+"cues_followed": 0,
+"cues_blocked": 0,
+"asks": {},
+"cue_log": [],
+"alerts": {},
+"wall_s": 1.31
+},
+{
+"seed": 4016,
+"arm": "pack_rule",
+"setting": {
+"overpace_margin_m": 150.0,
+"fade_pct": -3.0
+},
+"race_time_s": 1831.6697129297331,
+"blown_s": 0.0,
+"reserve_left": 0.37647672465375726,
+"reference_s": 1893.3348414551338,
+"cues_spoken": 2,
+"cues_followed": 2,
+"cues_blocked": 2,
+"asks": {
+"hang_on": 1,
+"finish": 1
+},
+"cue_log": [
+{
+"race_s": 62.7,
+"text": "Stay on their wash.",
+"ask": "hang_on",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1592.7,
+"text": "Reserve left. Go now.",
+"ask": "finish",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"over_pace": 1,
+"finish_window": 1
+},
+"wall_s": 1.44
+},
+{
+"seed": 4017,
+"arm": "agent_v7_roleplay",
+"setting": {
+"periodic_s": 300.0,
+"model": "roleplay-subagent",
+"coach_version": 7
+},
+"race_time_s": 1838.8021578138842,
+"blown_s": 0.0,
+"reserve_left": 0.552309001570903,
+"reference_s": 1831.2765126797303,
+"cues_spoken": 6,
+"cues_followed": 3,
+"cues_blocked": 0,
+"asks": {
+"let_go": 2,
+"ease": 2,
+"push": 2
+},
+"cue_log": [
+{
+"race_s": 70.0,
+"text": "Let the pack go, settle into your own steady pace.",
+"ask": "let_go",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 279.2,
+"text": "Let the pack go, settle to your own steady effort.",
+"ask": "let_go",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 397.6,
+"text": "Ease a touch now, settle at two forty pace.",
+"ask": "ease",
+"pace_s500": 160,
+"line_m": null
+},
+{
+"race_s": 1194.3,
+"text": "Lift the effort a little now, hold it to the finish.",
+"ask": "push",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1285.6,
+"text": "Ease a touch here, save it for the last leg.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1514.4,
+"text": "Last leg, lift the effort now, strong and steady.",
+"ask": "push",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"over_pace": 1,
+"pod_reserve_low": 1,
+"pod_overspend": 2,
+"fading": 1
+},
+"consultations": 13,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 6,
+"roleplay": {
+"answers": 24,
+"latency_s": 5.0,
+"stand_in": "roleplay-subagent"
+}
+},
+{
+"seed": 4017,
+"arm": "autopilot_pod",
+"setting": {
+"overpace_margin_m": 150.0,
+"fade_pct": -3.0
+},
+"race_time_s": 1834.1855989802543,
+"blown_s": 0.0,
+"reserve_left": 0.5406536026895907,
+"reference_s": 1831.2765126797303,
+"cues_spoken": 2,
+"cues_followed": 1,
+"cues_blocked": 0,
+"asks": {
+"ease": 1,
+"rate_down": 1
+},
+"cue_log": [
+{
+"race_s": 110.2,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 420.7,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"over_pace": 1,
+"fading": 1
+},
+"wall_s": 1.28
+},
+{
+"seed": 4017,
+"arm": "no_coach",
+"setting": {},
+"race_time_s": 1836.2108447321625,
+"blown_s": 0.0,
+"reserve_left": 0.6060670204939798,
+"reference_s": 1831.2765126797303,
+"cues_spoken": 0,
+"cues_followed": 0,
+"cues_blocked": 0,
+"asks": {},
+"cue_log": [],
+"alerts": {},
+"wall_s": 1.25
+},
+{
+"seed": 4017,
+"arm": "pack_rule",
+"setting": {
+"overpace_margin_m": 150.0,
+"fade_pct": -3.0
+},
+"race_time_s": 1834.1855989802543,
+"blown_s": 0.0,
+"reserve_left": 0.5406536026895907,
+"reference_s": 1831.2765126797303,
+"cues_spoken": 2,
+"cues_followed": 1,
+"cues_blocked": 2,
+"asks": {
+"hang_on": 1,
+"rate_down": 1
+},
+"cue_log": [
+{
+"race_s": 62.9,
+"text": "Stay on their wash.",
+"ask": "hang_on",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 420.7,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"over_pace": 1,
+"fading": 1
+},
+"wall_s": 1.57
+},
+{
+"seed": 4018,
+"arm": "agent_v7_roleplay",
+"setting": {
+"periodic_s": 300.0,
+"model": "roleplay-subagent",
+"coach_version": 7
+},
+"race_time_s": 3090.3338752416425,
+"blown_s": 0.0,
+"reserve_left": 0.17824824048914015,
+"reference_s": 3218.1613348586548,
+"cues_spoken": 5,
+"cues_followed": 4,
+"cues_blocked": 0,
+"asks": {
+"push": 3,
+"hang_on": 1,
+"rate_up": 1
+},
+"cue_log": [
+{
+"race_s": 776.9,
+"text": "Lift the effort a touch, you have reserve to spend.",
+"ask": "push",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1147.2,
+"text": "Stay on their wash through the turn, it is cheap.",
+"ask": "hang_on",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1342.7,
+"text": "Press a bit harder now and hold it to the finish.",
+"ask": "push",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1846.4,
+"text": "More pressure each stroke, you have plenty left. Keep it.",
+"ask": "push",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 2218.7,
+"text": "Lift the rate two strokes, same power per stroke.",
+"ask": "rate_up",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"reserve_conflict": 1,
+"wash_lost": 3,
+"finish_pod": 1
+},
+"consultations": 19,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 5,
+"roleplay": {
+"answers": 29,
+"latency_s": 5.0,
+"stand_in": "roleplay-subagent"
+}
+},
+{
+"seed": 4018,
+"arm": "autopilot_pod",
+"setting": {
+"overpace_margin_m": 150.0,
+"fade_pct": -3.0
+},
+"race_time_s": 3089.2807228849824,
+"blown_s": 0.0,
+"reserve_left": 0.0537950233145247,
+"reference_s": 3218.1613348586548,
+"cues_spoken": 2,
+"cues_followed": 1,
+"cues_blocked": 1,
+"asks": {
+"ease": 1,
+"finish": 1
+},
+"cue_log": [
+{
+"race_s": 110.7,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 2839.5,
+"text": "Reserve left. Go now.",
+"ask": "finish",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"over_pace": 1,
+"finish_window": 1,
+"fading": 1
+},
+"wall_s": 2.96
+},
+{
+"seed": 4018,
+"arm": "no_coach",
+"setting": {},
+"race_time_s": 3088.048810439525,
+"blown_s": 0.0,
+"reserve_left": 0.18134875593092906,
+"reference_s": 3218.1613348586548,
+"cues_spoken": 0,
+"cues_followed": 0,
+"cues_blocked": 0,
+"asks": {},
+"cue_log": [],
+"alerts": {},
+"wall_s": 2.74
+},
+{
+"seed": 4018,
+"arm": "pack_rule",
+"setting": {
+"overpace_margin_m": 150.0,
+"fade_pct": -3.0
+},
+"race_time_s": 3089.2807228849824,
+"blown_s": 0.0,
+"reserve_left": 0.0537950233145247,
+"reference_s": 3218.1613348586548,
+"cues_spoken": 2,
+"cues_followed": 1,
+"cues_blocked": 3,
+"asks": {
+"hang_on": 1,
+"finish": 1
+},
+"cue_log": [
+{
+"race_s": 62.8,
+"text": "Stay on their wash.",
+"ask": "hang_on",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 2839.5,
+"text": "Reserve left. Go now.",
+"ask": "finish",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"over_pace": 1,
+"finish_window": 1,
+"fading": 1
+},
+"wall_s": 2.88
+},
+{
+"seed": 4019,
+"arm": "agent_v7_roleplay",
+"setting": {
+"periodic_s": 300.0,
+"model": "roleplay-subagent",
+"coach_version": 7
+},
+"race_time_s": 2570.377830117646,
+"blown_s": 0.0,
+"reserve_left": 0.24838279999356186,
+"reference_s": 2653.0419990398254,
+"cues_spoken": 7,
+"cues_followed": 5,
+"cues_blocked": 1,
+"asks": {
+"let_go": 1,
+"hang_on": 1,
+"ease": 4,
+"rate_down": 1
+},
+"cue_log": [
+{
+"race_s": 70.9,
+"text": "Let the pack go. Settle to your own steady pace.",
+"ask": "let_go",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 396.8,
+"text": "Close up onto their wash, then sit in and relax.",
+"ask": "hang_on",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1494.4,
+"text": "Ease a touch now, save a little for the sprint.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1607.6,
+"text": "Ease off slightly, smooth strokes, keep something for the sprint.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1782.5,
+"text": "Ease now to 2:39 pace, or you empty before the line.",
+"ask": "ease",
+"pace_s500": 159,
+"line_m": null
+},
+{
+"race_s": 1994.0,
+"text": "You are nearly empty. Ease to 2:41 pace now.",
+"ask": "ease",
+"pace_s500": 161,
+"line_m": null
+},
+{
+"race_s": 2404.8,
+"text": "Lengthen out, drop the rate a little, long strong pulls home.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"over_pace": 1,
+"reserve_conflict": 2,
+"over_pace_pod": 1,
+"fading": 1
+},
+"consultations": 14,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 8,
+"roleplay": {
+"answers": 28,
+"latency_s": 5.0,
+"stand_in": "roleplay-subagent"
+}
+},
+{
+"seed": 4019,
+"arm": "autopilot_pod",
+"setting": {
+"overpace_margin_m": 150.0,
+"fade_pct": -3.0
+},
+"race_time_s": 2571.0702682148294,
+"blown_s": 0.0,
+"reserve_left": 0.32078631860334866,
+"reference_s": 2653.0419990398254,
+"cues_spoken": 6,
+"cues_followed": 5,
+"cues_blocked": 0,
+"asks": {
+"ease": 4,
+"hold": 1,
+"rate_down": 1
+},
+"cue_log": [
+{
+"race_s": 112.2,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 292.4,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 531.1,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 809.7,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 2057.0,
+"text": "Speed is holding. Keep this.",
+"ask": "hold",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 2350.8,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"over_pace": 4,
+"reserve_conflict": 1,
+"fading": 1
+},
+"wall_s": 2.45
+},
+{
+"seed": 4019,
+"arm": "no_coach",
+"setting": {},
+"race_time_s": 2573.63812268824,
+"blown_s": 0.0,
+"reserve_left": 0.3144012259183218,
+"reference_s": 2653.0419990398254,
+"cues_spoken": 0,
+"cues_followed": 0,
+"cues_blocked": 0,
+"asks": {},
+"cue_log": [],
+"alerts": {},
+"wall_s": 1.65
+},
+{
+"seed": 4019,
+"arm": "pack_rule",
+"setting": {
+"overpace_margin_m": 150.0,
+"fade_pct": -3.0
+},
+"race_time_s": 2698.216303020787,
+"blown_s": 192.21437028428133,
+"reserve_left": 0.06387346333463136,
+"reference_s": 2653.0419990398254,
+"cues_spoken": 3,
+"cues_followed": 2,
+"cues_blocked": 2,
+"asks": {
+"hang_on": 1,
+"let_go": 1,
+"rate_down": 1
+},
+"cue_log": [
+{
+"race_s": 63.9,
+"text": "Stay on their wash.",
+"ask": "hang_on",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 292.4,
+"text": "Let them go. Settle to your pace.",
+"ask": "let_go",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1124.5,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"over_pace": 2,
+"fading": 1
+},
+"wall_s": 1.94
+},
+{
+"seed": 4020,
+"arm": "agent_v7_roleplay",
+"setting": {
+"periodic_s": 300.0,
+"model": "roleplay-subagent",
+"coach_version": 7
+},
+"race_time_s": 1851.922990360582,
+"blown_s": 0.0,
+"reserve_left": 0.6348311207448978,
+"reference_s": 1955.6220231120565,
+"cues_spoken": 1,
+"cues_followed": 1,
+"cues_blocked": 0,
+"asks": {
+"finish": 1
+},
+"cue_log": [
+{
+"race_s": 1722.2,
+"text": "Four hundred to go. Sprint now, empty the tank to the line.",
+"ask": "finish",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"over_pace": 1,
+"finish_window": 1
+},
+"consultations": 10,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 1,
+"roleplay": {
+"answers": 18,
+"latency_s": 5.0,
+"stand_in": "roleplay-subagent"
+}
+},
+{
+"seed": 4020,
+"arm": "autopilot_pod",
+"setting": {
+"overpace_margin_m": 150.0,
+"fade_pct": -3.0
+},
+"race_time_s": 1851.9225181932338,
+"blown_s": 0.0,
+"reserve_left": 0.3863020937138777,
+"reference_s": 1955.6220231120565,
+"cues_spoken": 2,
+"cues_followed": 2,
+"cues_blocked": 0,
+"asks": {
+"ease": 1,
+"finish": 1
+},
+"cue_log": [
+{
+"race_s": 111.8,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1602.3,
+"text": "Reserve left. Go now.",
+"ask": "finish",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"over_pace": 1,
+"finish_window": 1
+},
+"wall_s": 1.65
+},
+{
+"seed": 4020,
+"arm": "no_coach",
+"setting": {},
+"race_time_s": 1851.922990360582,
+"blown_s": 0.0,
+"reserve_left": 0.6348311207448978,
+"reference_s": 1955.6220231120565,
+"cues_spoken": 0,
+"cues_followed": 0,
+"cues_blocked": 0,
+"asks": {},
+"cue_log": [],
+"alerts": {},
+"wall_s": 1.84
+},
+{
+"seed": 4020,
+"arm": "pack_rule",
+"setting": {
+"overpace_margin_m": 150.0,
+"fade_pct": -3.0
+},
+"race_time_s": 1851.9225181932338,
+"blown_s": 0.0,
+"reserve_left": 0.3863020937138777,
+"reference_s": 1955.6220231120565,
+"cues_spoken": 2,
+"cues_followed": 2,
+"cues_blocked": 2,
+"asks": {
+"hang_on": 1,
+"finish": 1
+},
+"cue_log": [
+{
+"race_s": 63.4,
+"text": "Stay on their wash.",
+"ask": "hang_on",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1602.3,
+"text": "Reserve left. Go now.",
+"ask": "finish",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"over_pace": 1,
+"finish_window": 1
+},
+"wall_s": 1.44
+},
+{
+"seed": 4021,
+"arm": "agent_v7_roleplay",
+"setting": {
+"periodic_s": 300.0,
+"model": "roleplay-subagent",
+"coach_version": 7
+},
+"race_time_s": 2196.7569028730086,
+"blown_s": 432.82794567151495,
+"reserve_left": 0.10591297161700747,
+"reference_s": 2022.232788004117,
+"cues_spoken": 8,
+"cues_followed": 5,
+"cues_blocked": 2,
+"asks": {
+"let_go": 2,
+"ease": 3,
+"rate_down": 2,
+"finish": 1
+},
+"cue_log": [
+{
+"race_s": 75.8,
+"text": "Let the pack go, settle to your own steady pace.",
+"ask": "let_go",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 328.9,
+"text": "Off the wash now, ease a touch, settle at 2:47.",
+"ask": "ease",
+"pace_s500": 167,
+"line_m": null
+},
+{
+"race_s": 628.6,
+"text": "Stop chasing, let them go, settle to your own pace.",
+"ask": "let_go",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 725.5,
+"text": "Ease off now, settle at 2:59, save it for the sprint.",
+"ask": "ease",
+"pace_s500": 179,
+"line_m": null
+},
+{
+"race_s": 1025.8,
+"text": "Rate down two, lengthen each stroke, stay relaxed.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1335.3,
+"text": "Rate down two strokes, longer cleaner pulls, keep the power.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1774.4,
+"text": "Ease a touch, hold 3:02 steady, sprint comes later.",
+"ask": "ease",
+"pace_s500": 182,
+"line_m": null
+},
+{
+"race_s": 2074.9,
+"text": "Final sprint now, everything left to the line.",
+"ask": "finish",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"over_pace": 1,
+"fading": 1
+},
+"consultations": 13,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 10,
+"roleplay": {
+"answers": 27,
+"latency_s": 5.0,
+"stand_in": "roleplay-subagent"
+}
+},
+{
+"seed": 4021,
+"arm": "autopilot_pod",
+"setting": {
+"overpace_margin_m": 150.0,
+"fade_pct": -3.0
+},
+"race_time_s": 2210.9843356180254,
+"blown_s": 425.0955378822464,
+"reserve_left": 0.10694992569768853,
+"reference_s": 2022.232788004117,
+"cues_spoken": 2,
+"cues_followed": 1,
+"cues_blocked": 0,
+"asks": {
+"ease": 1,
+"rate_down": 1
+},
+"cue_log": [
+{
+"race_s": 111.2,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 682.4,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"over_pace": 1,
+"fading": 1
+},
+"wall_s": 1.64
+},
+{
+"seed": 4021,
+"arm": "no_coach",
+"setting": {},
+"race_time_s": 2215.6477561987895,
+"blown_s": 446.54662702550974,
+"reserve_left": 0.025375463811706758,
+"reference_s": 2022.232788004117,
+"cues_spoken": 0,
+"cues_followed": 0,
+"cues_blocked": 0,
+"asks": {},
+"cue_log": [],
+"alerts": {},
+"wall_s": 1.29
+},
+{
+"seed": 4021,
+"arm": "pack_rule",
+"setting": {
+"overpace_margin_m": 150.0,
+"fade_pct": -3.0
+},
+"race_time_s": 2215.6477561987895,
+"blown_s": 446.54662702550974,
+"reserve_left": 0.025375463811706758,
+"reference_s": 2022.232788004117,
+"cues_spoken": 2,
+"cues_followed": 1,
+"cues_blocked": 2,
+"asks": {
+"hang_on": 1,
+"rate_down": 1
+},
+"cue_log": [
+{
+"race_s": 63.6,
+"text": "Stay on their wash.",
+"ask": "hang_on",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 658.8,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"over_pace": 1,
+"fading": 1
+},
+"wall_s": 1.7
+},
+{
+"seed": 4022,
+"arm": "agent_v7_roleplay",
+"setting": {
+"periodic_s": 300.0,
+"model": "roleplay-subagent",
+"coach_version": 7
+},
+"race_time_s": 1717.6103995118801,
+"blown_s": 0.0,
+"reserve_left": 0.32765694173252374,
+"reference_s": 1793.3441136518823,
+"cues_spoken": 3,
+"cues_followed": 3,
+"cues_blocked": 0,
+"asks": {
+"hang_on": 2,
+"ease": 1
+},
+"cue_log": [
+{
+"race_s": 293.7,
+"text": "Out of the turn, close up and stay on their wash.",
+"ask": "hang_on",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 861.1,
+"text": "Through the turn, stay tight on that wash.",
+"ask": "hang_on",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1630.2,
+"text": "Tank is empty, ease a touch, long strokes to the line.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"pod_reserve_low": 1,
+"sprint_point": 1,
+"reserve_conflict": 1
+},
+"consultations": 9,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 3,
+"roleplay": {
+"answers": 17,
+"latency_s": 5.0,
+"stand_in": "roleplay-subagent"
+}
+},
+{
+"seed": 4022,
+"arm": "autopilot_pod",
+"setting": {
+"overpace_margin_m": 150.0,
+"fade_pct": -3.0
+},
+"race_time_s": 1717.6103995118801,
+"blown_s": 0.0,
+"reserve_left": 0.32765694173252374,
+"reference_s": 1793.3441136518823,
+"cues_spoken": 1,
+"cues_followed": 1,
+"cues_blocked": 1,
+"asks": {
+"ease": 1
+},
+"cue_log": [
+{
+"race_s": 110.5,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"over_pace": 1,
+"reserve_conflict": 1
+},
+"wall_s": 1.12
+},
+{
+"seed": 4022,
+"arm": "no_coach",
+"setting": {},
+"race_time_s": 1717.6103995118801,
+"blown_s": 0.0,
+"reserve_left": 0.32765694173252374,
+"reference_s": 1793.3441136518823,
+"cues_spoken": 0,
+"cues_followed": 0,
+"cues_blocked": 0,
+"asks": {},
+"cue_log": [],
+"alerts": {},
+"wall_s": 1.06
+},
+{
+"seed": 4022,
+"arm": "pack_rule",
+"setting": {
+"overpace_margin_m": 150.0,
+"fade_pct": -3.0
+},
+"race_time_s": 1717.6103995118801,
+"blown_s": 0.0,
+"reserve_left": 0.32765694173252374,
+"reference_s": 1793.3441136518823,
+"cues_spoken": 1,
+"cues_followed": 1,
+"cues_blocked": 3,
+"asks": {
+"hang_on": 1
+},
+"cue_log": [
+{
+"race_s": 62.9,
+"text": "Stay on their wash.",
+"ask": "hang_on",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"over_pace": 1,
+"reserve_conflict": 1
+},
+"wall_s": 1.33
+},
+{
+"seed": 4023,
+"arm": "agent_v7_roleplay",
+"setting": {
+"periodic_s": 300.0,
+"model": "roleplay-subagent",
+"coach_version": 7
+},
+"race_time_s": 3030.0030310447523,
+"blown_s": 0.0,
+"reserve_left": 0.45587846603645876,
+"reference_s": 3093.3427199646903,
+"cues_spoken": 11,
+"cues_followed": 6,
+"cues_blocked": 2,
+"asks": {
+"let_go": 2,
+"ease": 7,
+"rate_down": 1,
+"finish": 1
+},
+"cue_log": [
+{
+"race_s": 287.4,
+"text": "Let the pack go, settle into your own steady pace.",
+"ask": "let_go",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 363.6,
+"text": "Ease a touch, settle at 2:25 pace, long smooth strokes.",
+"ask": "ease",
+"pace_s500": 145,
+"line_m": null
+},
+{
+"race_s": 548.1,
+"text": "Ease a touch to 2:25 pace, smooth and long.",
+"ask": "ease",
+"pace_s500": 145,
+"line_m": null
+},
+{
+"race_s": 723.9,
+"text": "Ease now, 2:27 pace, save it for the finish.",
+"ask": "ease",
+"pace_s500": 147,
+"line_m": null
+},
+{
+"race_s": 792.8,
+"text": "Let this wash go, settle to your own pace now.",
+"ask": "let_go",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1097.7,
+"text": "Ease off a little and hold it there, protect your finish.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1221.8,
+"text": "Lengthen your stroke, drop the rate two, keep the effort.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1310.9,
+"text": "Ease a touch to 2:35 pace and hold it there.",
+"ask": "ease",
+"pace_s500": 155,
+"line_m": null
+},
+{
+"race_s": 2170.4,
+"text": "Settle at 2:35, no faster, save the rest for the sprint.",
+"ask": "ease",
+"pace_s500": 155,
+"line_m": null
+},
+{
+"race_s": 2543.9,
+"text": "Ease to 2:36 now and hold it, sprint comes later.",
+"ask": "ease",
+"pace_s500": 156,
+"line_m": null
+},
+{
+"race_s": 2944.8,
+"text": "Go now, everything you have to the line.",
+"ask": "finish",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"over_pace": 7,
+"reserve_conflict": 1,
+"wash_drop_point": 2,
+"fading": 2,
+"finish_window": 1
+},
+"consultations": 22,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 13,
+"roleplay": {
+"answers": 43,
+"latency_s": 5.0,
+"stand_in": "roleplay-subagent"
+}
+},
+{
+"seed": 4023,
+"arm": "autopilot_pod",
+"setting": {
+"overpace_margin_m": 150.0,
+"fade_pct": -3.0
+},
+"race_time_s": 3061.0845241844268,
+"blown_s": 98.21709074888865,
+"reserve_left": 0.14550517023067414,
+"reference_s": 3093.3427199646903,
+"cues_spoken": 3,
+"cues_followed": 0,
+"cues_blocked": 0,
+"asks": {
+"ease": 1,
+"hold": 1,
+"rate_down": 1
+},
+"cue_log": [
+{
+"race_s": 111.0,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1244.0,
+"text": "Speed is holding. Keep this.",
+"ask": "hold",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1448.2,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"over_pace": 1,
+"reserve_conflict": 1,
+"fading": 1
+},
+"wall_s": 2.16
+},
+{
+"seed": 4023,
+"arm": "no_coach",
+"setting": {},
+"race_time_s": 3061.0845241844268,
+"blown_s": 98.21709074888865,
+"reserve_left": 0.14550517023067414,
+"reference_s": 3093.3427199646903,
+"cues_spoken": 0,
+"cues_followed": 0,
+"cues_blocked": 0,
+"asks": {},
+"cue_log": [],
+"alerts": {},
+"wall_s": 2.21
+},
+{
+"seed": 4023,
+"arm": "pack_rule",
+"setting": {
+"overpace_margin_m": 150.0,
+"fade_pct": -3.0
+},
+"race_time_s": 3061.0845241844268,
+"blown_s": 98.21709074888865,
+"reserve_left": 0.14550517023067414,
+"reference_s": 3093.3427199646903,
+"cues_spoken": 3,
+"cues_followed": 0,
+"cues_blocked": 2,
+"asks": {
+"hang_on": 1,
+"hold": 1,
+"rate_down": 1
+},
+"cue_log": [
+{
+"race_s": 63.6,
+"text": "Stay on their wash.",
+"ask": "hang_on",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1244.0,
+"text": "Speed is holding. Keep this.",
+"ask": "hold",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1448.2,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"over_pace": 1,
+"reserve_conflict": 1,
+"fading": 1
+},
+"wall_s": 2.47
+},
+{
+"seed": 4024,
+"arm": "agent_v7_roleplay",
+"setting": {
+"periodic_s": 300.0,
+"model": "roleplay-subagent",
+"coach_version": 7
+},
+"race_time_s": 2515.1164331132923,
+"blown_s": 336.75931493772316,
+"reserve_left": 0.043728634550876395,
+"reference_s": 2456.232863880275,
+"cues_spoken": 6,
+"cues_followed": 4,
+"cues_blocked": 2,
+"asks": {
+"let_go": 1,
+"ease": 4,
+"finish": 1
+},
+"cue_log": [
+{
+"race_s": 69.9,
+"text": "Let the pack go, settle to your own steady pace.",
+"ask": "let_go",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 299.2,
+"text": "Ease a touch to 2:35 pace, smooth and steady.",
+"ask": "ease",
+"pace_s500": 155,
+"line_m": null
+},
+{
+"race_s": 599.7,
+"text": "Ease slightly to 2:33, keep it smooth and even.",
+"ask": "ease",
+"pace_s500": 153,
+"line_m": null
+},
+{
+"race_s": 1398.0,
+"text": "Recover, then settle steady at 2:38, no surges.",
+"ask": "ease",
+"pace_s500": 158,
+"line_m": null
+},
+{
+"race_s": 1556.1,
+"text": "Ease a touch to 2:42, smooth, save it for the finish.",
+"ask": "ease",
+"pace_s500": 162,
+"line_m": null
+},
+{
+"race_s": 2430.2,
+"text": "Final sprint now, everything to the line.",
+"ask": "finish",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"over_pace": 2,
+"fading": 2,
+"fade_deep": 4
+},
+"consultations": 17,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 8,
+"roleplay": {
+"answers": 29,
+"latency_s": 5.0,
+"stand_in": "roleplay-subagent"
+}
+},
+{
+"seed": 4024,
+"arm": "autopilot_pod",
+"setting": {
+"overpace_margin_m": 150.0,
+"fade_pct": -3.0
+},
+"race_time_s": 2498.664723706975,
+"blown_s": 240.60119923071122,
+"reserve_left": 0.013358874961554705,
+"reference_s": 2456.232863880275,
+"cues_spoken": 2,
+"cues_followed": 2,
+"cues_blocked": 1,
+"asks": {
+"ease": 1,
+"rate_down": 1
+},
+"cue_log": [
+{
+"race_s": 110.2,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 612.3,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"over_pace": 2,
+"fading": 1
+},
+"wall_s": 2.1
+},
+{
+"seed": 4024,
+"arm": "no_coach",
+"setting": {},
+"race_time_s": 2497.389575604588,
+"blown_s": 237.81232898400185,
+"reserve_left": 0.012561025246083313,
+"reference_s": 2456.232863880275,
+"cues_spoken": 0,
+"cues_followed": 0,
+"cues_blocked": 0,
+"asks": {},
+"cue_log": [],
+"alerts": {},
+"wall_s": 2.41
+},
+{
+"seed": 4024,
+"arm": "pack_rule",
+"setting": {
+"overpace_margin_m": 150.0,
+"fade_pct": -3.0
+},
+"race_time_s": 2487.3196221814655,
+"blown_s": 167.03402887412275,
+"reserve_left": 0.02203321966480287,
+"reference_s": 2456.232863880275,
+"cues_spoken": 2,
+"cues_followed": 2,
+"cues_blocked": 4,
+"asks": {
+"hang_on": 1,
+"rate_down": 1
+},
+"cue_log": [
+{
+"race_s": 62.6,
+"text": "Stay on their wash.",
+"ask": "hang_on",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 612.3,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"over_pace": 2,
+"fading": 1
+},
+"wall_s": 2.01
+},
+{
+"seed": 4025,
+"arm": "agent_v7_roleplay",
+"setting": {
+"periodic_s": 300.0,
+"model": "roleplay-subagent",
+"coach_version": 7
+},
+"race_time_s": 2536.641879093772,
+"blown_s": 0.9326254226782104,
+"reserve_left": 0.008256078517577568,
+"reference_s": 2537.922494609781,
+"cues_spoken": 6,
+"cues_followed": 5,
+"cues_blocked": 0,
+"asks": {
+"let_go": 1,
+"ease": 1,
+"push": 4
+},
+"cue_log": [
+{
+"race_s": 71.0,
+"text": "Let the pack go, settle into your own steady pace.",
+"ask": "let_go",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 935.3,
+"text": "Ease a touch, steady effort, save some for the finish.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1569.7,
+"text": "Into the current, lift slightly, hold 173 pace.",
+"ask": "push",
+"pace_s500": 173,
+"line_m": null
+},
+{
+"race_s": 1908.6,
+"text": "Two km left, you have energy, lift the effort a little.",
+"ask": "push",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 2209.0,
+"text": "Push now, hold 169 pace until the final sprint.",
+"ask": "push",
+"pace_s500": 169,
+"line_m": null
+},
+{
+"race_s": 2306.7,
+"text": "Lift now, hold 140 pace, sprint at 400 to go.",
+"ask": "push",
+"pace_s500": 140,
+"line_m": null
+}
+],
+"alerts": {
+"over_pace": 1,
+"pod_over_pace": 1,
+"reserve_conflict": 2,
+"push_ignored": 1,
+"finish_window": 1
+},
+"consultations": 17,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 6,
+"roleplay": {
+"answers": 29,
+"latency_s": 5.0,
+"stand_in": "roleplay-subagent"
+}
+},
+{
+"seed": 4025,
+"arm": "autopilot_pod",
+"setting": {
+"overpace_margin_m": 150.0,
+"fade_pct": -3.0
+},
+"race_time_s": 2537.2606166637206,
+"blown_s": 0.0,
+"reserve_left": 0.05367134515984551,
+"reference_s": 2537.922494609781,
+"cues_spoken": 3,
+"cues_followed": 3,
+"cues_blocked": 0,
+"asks": {
+"ease": 3
+},
+"cue_log": [
+{
+"race_s": 111.6,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 448.2,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 644.1,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"over_pace": 3
+},
+"wall_s": 2.26
+},
+{
+"seed": 4025,
+"arm": "no_coach",
+"setting": {},
+"race_time_s": 2532.42685191609,
+"blown_s": 0.0,
+"reserve_left": 0.02439789981878937,
+"reference_s": 2537.922494609781,
+"cues_spoken": 0,
+"cues_followed": 0,
+"cues_blocked": 0,
+"asks": {},
+"cue_log": [],
+"alerts": {},
+"wall_s": 1.55
+},
+{
+"seed": 4025,
+"arm": "pack_rule",
+"setting": {
+"overpace_margin_m": 150.0,
+"fade_pct": -3.0
+},
+"race_time_s": 2537.481650677727,
+"blown_s": 3.7052378396393544,
+"reserve_left": 0.01397918366720317,
+"reference_s": 2537.922494609781,
+"cues_spoken": 5,
+"cues_followed": 4,
+"cues_blocked": 2,
+"asks": {
+"hang_on": 1,
+"let_go": 1,
+"ease": 2,
+"finish": 1
+},
+"cue_log": [
+{
+"race_s": 63.2,
+"text": "Stay on their wash.",
+"ask": "hang_on",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 307.1,
+"text": "Let them go. Settle to your pace.",
+"ask": "let_go",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 490.7,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 752.0,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 2322.7,
+"text": "Reserve left. Go now.",
+"ask": "finish",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"over_pace": 4,
+"finish_window": 1
+},
+"wall_s": 1.88
+},
+{
+"seed": 4026,
+"arm": "agent_v7_roleplay",
+"setting": {
+"periodic_s": 300.0,
+"model": "roleplay-subagent",
+"coach_version": 7
+},
+"race_time_s": 3138.3020184907537,
+"blown_s": 0.0,
+"reserve_left": 0.182932995242539,
+"reference_s": 3278.153924735636,
+"cues_spoken": 4,
+"cues_followed": 3,
+"cues_blocked": 0,
+"asks": {
+"hang_on": 3,
+"finish": 1
+},
+"cue_log": [
+{
+"race_s": 327.5,
+"text": "Slipping off the wash, close up and sit on it.",
+"ask": "hang_on",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 627.8,
+"text": "Drifting back, lift a little and get on their wash.",
+"ask": "hang_on",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1884.5,
+"text": "Gap opening, close it now and stay on their wash.",
+"ask": "hang_on",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 2963.5,
+"text": "Six hundred to go, go now, empty it to the line.",
+"ask": "finish",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"over_pace": 1,
+"finish_window": 1
+},
+"consultations": 20,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 4,
+"roleplay": {
+"answers": 30,
+"latency_s": 5.0,
+"stand_in": "roleplay-subagent"
+}
+},
+{
+"seed": 4026,
+"arm": "autopilot_pod",
+"setting": {
+"overpace_margin_m": 150.0,
+"fade_pct": -3.0
+},
+"race_time_s": 3138.359569320109,
+"blown_s": 0.0,
+"reserve_left": 0.2246595761251883,
+"reference_s": 3278.153924735636,
+"cues_spoken": 1,
+"cues_followed": 0,
+"cues_blocked": 0,
+"asks": {
+"finish": 1
+},
+"cue_log": [
+{
+"race_s": 2904.4,
+"text": "Reserve left. Go now.",
+"ask": "finish",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"finish_window": 1
+},
+"wall_s": 2.53
+},
+{
+"seed": 4026,
+"arm": "no_coach",
+"setting": {},
+"race_time_s": 3138.359569320109,
+"blown_s": 0.0,
+"reserve_left": 0.2246595761251883,
+"reference_s": 3278.153924735636,
+"cues_spoken": 0,
+"cues_followed": 0,
+"cues_blocked": 0,
+"asks": {},
+"cue_log": [],
+"alerts": {},
+"wall_s": 2.51
+},
+{
+"seed": 4026,
+"arm": "pack_rule",
+"setting": {
+"overpace_margin_m": 150.0,
+"fade_pct": -3.0
+},
+"race_time_s": 3139.4628128919785,
+"blown_s": 10.409240688567056,
+"reserve_left": 0.023003754244544313,
+"reference_s": 3278.153924735636,
+"cues_spoken": 2,
+"cues_followed": 1,
+"cues_blocked": 0,
+"asks": {
+"hang_on": 1,
+"finish": 1
+},
+"cue_log": [
+{
+"race_s": 63.7,
+"text": "Stay on their wash.",
+"ask": "hang_on",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 2904.4,
+"text": "Reserve left. Go now.",
+"ask": "finish",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"finish_window": 1
+},
+"wall_s": 2.57
+},
+{
+"seed": 4027,
+"arm": "agent_v7_roleplay",
+"setting": {
+"periodic_s": 300.0,
+"model": "roleplay-subagent",
+"coach_version": 7
+},
+"race_time_s": 2078.472993120372,
+"blown_s": 147.42558387070983,
+"reserve_left": 0.029585990628422817,
+"reference_s": 1972.6137207007705,
+"cues_spoken": 5,
+"cues_followed": 5,
+"cues_blocked": 1,
+"asks": {
+"let_go": 1,
+"ease": 2,
+"hold": 1,
+"push": 1
+},
+"cue_log": [
+{
+"race_s": 70.0,
+"text": "Let the pack go. Settle to your own steady race effort.",
+"ask": "let_go",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 294.5,
+"text": "Off the wash now. Ease a touch, settle at 2:29 pace.",
+"ask": "ease",
+"pace_s500": 149,
+"line_m": null
+},
+{
+"race_s": 539.5,
+"text": "Ease now, into the current. Settle at 3:18, smooth strokes.",
+"ask": "ease",
+"pace_s500": 198,
+"line_m": null
+},
+{
+"race_s": 1276.8,
+"text": "Hold this effort, no harder. Save it for the sprint.",
+"ask": "hold",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1905.3,
+"text": "Lift now, steady build to the line. Pace 3:08.",
+"ask": "push",
+"pace_s500": 188,
+"line_m": null
+}
+],
+"alerts": {
+"over_pace": 1,
+"fading": 1,
+"sprint_now": 1,
+"final_kick": 1
+},
+"consultations": 13,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 6,
+"roleplay": {
+"answers": 25,
+"latency_s": 5.0,
+"stand_in": "roleplay-subagent"
+}
+},
+{
+"seed": 4027,
+"arm": "autopilot_pod",
+"setting": {
+"overpace_margin_m": 150.0,
+"fade_pct": -3.0
+},
+"race_time_s": 1951.5859966444227,
+"blown_s": 0.0,
+"reserve_left": 0.2658257670867023,
+"reference_s": 1972.6137207007705,
+"cues_spoken": 1,
+"cues_followed": 1,
+"cues_blocked": 0,
+"asks": {
+"finish": 1
+},
+"cue_log": [
+{
+"race_s": 1676.1,
+"text": "Reserve left. Go now.",
+"ask": "finish",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"finish_window": 1
+},
+"wall_s": 1.65
+},
+{
+"seed": 4027,
+"arm": "no_coach",
+"setting": {},
+"race_time_s": 1949.1518819129046,
+"blown_s": 0.0,
+"reserve_left": 0.6522690046380077,
+"reference_s": 1972.6137207007705,
+"cues_spoken": 0,
+"cues_followed": 0,
+"cues_blocked": 0,
+"asks": {},
+"cue_log": [],
+"alerts": {},
+"wall_s": 1.38
+},
+{
+"seed": 4027,
+"arm": "pack_rule",
+"setting": {
+"overpace_margin_m": 150.0,
+"fade_pct": -3.0
+},
+"race_time_s": 1951.5859966444227,
+"blown_s": 0.0,
+"reserve_left": 0.2658257670867023,
+"reference_s": 1972.6137207007705,
+"cues_spoken": 2,
+"cues_followed": 2,
+"cues_blocked": 0,
+"asks": {
+"hang_on": 1,
+"finish": 1
+},
+"cue_log": [
+{
+"race_s": 63.4,
+"text": "Stay on their wash.",
+"ask": "hang_on",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1676.1,
+"text": "Reserve left. Go now.",
+"ask": "finish",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"finish_window": 1
+},
+"wall_s": 1.48
+},
+{
+"seed": 4028,
+"arm": "agent_v7_roleplay",
+"setting": {
+"periodic_s": 300.0,
+"model": "roleplay-subagent",
+"coach_version": 7
+},
+"race_time_s": 2293.619900953139,
+"blown_s": 0.0,
+"reserve_left": 0.7052957797869605,
+"reference_s": 2437.2403060716224,
+"cues_spoken": 7,
+"cues_followed": 7,
+"cues_blocked": 0,
+"asks": {
+"push": 6,
+"finish": 1
+},
+"cue_log": [
+{
+"race_s": 369.4,
+"text": "Lift a little, stay close to the wash ahead.",
+"ask": "push",
+"pace_s500": 148.5,
+"line_m": null
+},
+{
+"race_s": 679.5,
+"text": "Lift a touch, you have reserve to spare. Hold it.",
+"ask": "push",
+"pace_s500": 134.5,
+"line_m": null
+},
+{
+"race_s": 1393.2,
+"text": "Plenty in the tank. Lift the pace a notch, hold it.",
+"ask": "push",
+"pace_s500": 133.5,
+"line_m": null
+},
+{
+"race_s": 1734.9,
+"text": "Two k to go, strong reserve. Build the pace now.",
+"ask": "push",
+"pace_s500": 146.5,
+"line_m": null
+},
+{
+"race_s": 1808.3,
+"text": "Out of the turn, press harder now, you have plenty left.",
+"ask": "push",
+"pace_s500": 145.0,
+"line_m": null
+},
+{
+"race_s": 2076.6,
+"text": "Build hard now, full sprint in the last 300.",
+"ask": "push",
+"pace_s500": 130.0,
+"line_m": null
+},
+{
+"race_s": 2204.3,
+"text": "Three hundred to go. Sprint now, empty the tank.",
+"ask": "finish",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"pod_finish_window": 1,
+"sprint_point": 1
+},
+"consultations": 14,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 7,
+"roleplay": {
+"answers": 25,
+"latency_s": 5.0,
+"stand_in": "roleplay-subagent"
+}
+},
+{
+"seed": 4028,
+"arm": "autopilot_pod",
+"setting": {
+"overpace_margin_m": 150.0,
+"fade_pct": -3.0
+},
+"race_time_s": 2294.268972213936,
+"blown_s": 0.0,
+"reserve_left": 0.4277331912380374,
+"reference_s": 2437.2403060716224,
+"cues_spoken": 1,
+"cues_followed": 1,
+"cues_blocked": 0,
+"asks": {
+"finish": 1
+},
+"cue_log": [
+{
+"race_s": 2072.9,
+"text": "Reserve left. Go now.",
+"ask": "finish",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"finish_window": 1
+},
+"wall_s": 1.74
+},
+{
+"seed": 4028,
+"arm": "no_coach",
+"setting": {},
+"race_time_s": 2293.619900953139,
+"blown_s": 0.0,
+"reserve_left": 0.7052957797869605,
+"reference_s": 2437.2403060716224,
+"cues_spoken": 0,
+"cues_followed": 0,
+"cues_blocked": 0,
+"asks": {},
+"cue_log": [],
+"alerts": {},
+"wall_s": 1.81
+},
+{
+"seed": 4028,
+"arm": "pack_rule",
+"setting": {
+"overpace_margin_m": 150.0,
+"fade_pct": -3.0
+},
+"race_time_s": 2294.268972213936,
+"blown_s": 0.0,
+"reserve_left": 0.4277331912380374,
+"reference_s": 2437.2403060716224,
+"cues_spoken": 2,
+"cues_followed": 2,
+"cues_blocked": 0,
+"asks": {
+"hang_on": 1,
+"finish": 1
+},
+"cue_log": [
+{
+"race_s": 62.9,
+"text": "Stay on their wash.",
+"ask": "hang_on",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 2072.9,
+"text": "Reserve left. Go now.",
+"ask": "finish",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"finish_window": 1
+},
+"wall_s": 1.67
+},
+{
+"seed": 4029,
+"arm": "agent_v7_roleplay",
+"setting": {
+"periodic_s": 300.0,
+"model": "roleplay-subagent",
+"coach_version": 7
+},
+"race_time_s": 2025.8120159354958,
+"blown_s": 65.45667266399228,
+"reserve_left": 0.09380888828798536,
+"reference_s": 2001.7651857552564,
+"cues_spoken": 9,
+"cues_followed": 9,
+"cues_blocked": 1,
+"asks": {
+"let_go": 1,
+"ease": 6,
+"rate_down": 1,
+"finish": 1
+},
+"cue_log": [
+{
+"race_s": 69.7,
+"text": "Let the pack go. Settle to your own steady rhythm.",
+"ask": "let_go",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 329.4,
+"text": "Ease a touch, settle at 2:45 pace, long smooth strokes.",
+"ask": "ease",
+"pace_s500": 165,
+"line_m": null
+},
+{
+"race_s": 586.8,
+"text": "Ease off now to 2:46 pace, save it for the finish.",
+"ask": "ease",
+"pace_s500": 166,
+"line_m": null
+},
+{
+"race_s": 958.5,
+"text": "Ease slightly to 2:50 pace, stay smooth, sprint comes later.",
+"ask": "ease",
+"pace_s500": 170,
+"line_m": null
+},
+{
+"race_s": 1022.6,
+"text": "Too hard. Back off the effort, relax, forget the pace.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1121.5,
+"text": "Lengthen out, drop the rate a little, easy power.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1197.9,
+"text": "Reserve is gone. Ease to 2:52 and hold it steady.",
+"ask": "ease",
+"pace_s500": 172,
+"line_m": null
+},
+{
+"race_s": 1301.9,
+"text": "Settle down a notch to 2:53, breathe, save the sprint.",
+"ask": "ease",
+"pace_s500": 173,
+"line_m": null
+},
+{
+"race_s": 1906.9,
+"text": "Three hundred to go. Build it now, sprint to the line!",
+"ask": "finish",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"over_pace": 1,
+"over_pace_pod": 3,
+"fading": 2,
+"sprint_window": 1
+},
+"consultations": 15,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 9,
+"roleplay": {
+"answers": 30,
+"latency_s": 5.0,
+"stand_in": "roleplay-subagent"
+}
+},
+{
+"seed": 4029,
+"arm": "autopilot_pod",
+"setting": {
+"overpace_margin_m": 150.0,
+"fade_pct": -3.0
+},
+"race_time_s": 1962.947608042653,
+"blown_s": 0.0,
+"reserve_left": 0.5794349561747213,
+"reference_s": 2001.7651857552564,
+"cues_spoken": 1,
+"cues_followed": 1,
+"cues_blocked": 0,
+"asks": {
+"finish": 1
+},
+"cue_log": [
+{
+"race_s": 1710.3,
+"text": "Reserve left. Go now.",
+"ask": "finish",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"finish_window": 1
+},
+"wall_s": 1.75
+},
+{
+"seed": 4029,
+"arm": "no_coach",
+"setting": {},
+"race_time_s": 1962.0961293816895,
+"blown_s": 0.0,
+"reserve_left": 0.7726534852613651,
+"reference_s": 2001.7651857552564,
+"cues_spoken": 0,
+"cues_followed": 0,
+"cues_blocked": 0,
+"asks": {},
+"cue_log": [],
+"alerts": {},
+"wall_s": 1.61
+},
+{
+"seed": 4029,
+"arm": "pack_rule",
+"setting": {
+"overpace_margin_m": 150.0,
+"fade_pct": -3.0
+},
+"race_time_s": 1962.947608042653,
+"blown_s": 0.0,
+"reserve_left": 0.5794349561747213,
+"reference_s": 2001.7651857552564,
+"cues_spoken": 2,
+"cues_followed": 2,
+"cues_blocked": 0,
+"asks": {
+"hang_on": 1,
+"finish": 1
+},
+"cue_log": [
+{
+"race_s": 63.3,
+"text": "Stay on their wash.",
+"ask": "hang_on",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1710.3,
+"text": "Reserve left. Go now.",
+"ask": "finish",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"finish_window": 1
+},
+"wall_s": 1.72
+},
+{
+"seed": 4030,
+"arm": "agent_v7_roleplay",
+"setting": {
+"periodic_s": 300.0,
+"model": "roleplay-subagent",
+"coach_version": 7
+},
+"race_time_s": 2021.106937180325,
+"blown_s": 237.59410437237702,
+"reserve_left": 0.08362447525392695,
+"reference_s": 1951.305520782405,
+"cues_spoken": 8,
+"cues_followed": 7,
+"cues_blocked": 1,
+"asks": {
+"let_go": 1,
+"ease": 5,
+"rate_down": 1,
+"finish": 1
+},
+"cue_log": [
+{
+"race_s": 65.5,
+"text": "Let the pack go, settle into your own steady pace.",
+"ask": "let_go",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 380.4,
+"text": "Ease a little. Settle at 2:42 pace and hold it.",
+"ask": "ease",
+"pace_s500": 162,
+"line_m": null
+},
+{
+"race_s": 447.4,
+"text": "Ease off. Current is against you, settle at 2:55 pace.",
+"ask": "ease",
+"pace_s500": 175,
+"line_m": null
+},
+{
+"race_s": 572.7,
+"text": "A touch easier still. Hold 2:58 pace into the current.",
+"ask": "ease",
+"pace_s500": 178,
+"line_m": null
+},
+{
+"race_s": 813.7,
+"text": "Reserve is spent. Ease to 3:01 pace, long and smooth.",
+"ask": "ease",
+"pace_s500": 181,
+"line_m": null
+},
+{
+"race_s": 1519.2,
+"text": "Lengthen out, drop two strokes a minute, same pressure.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1832.0,
+"text": "Too early. Ease a touch, sprint from 200 to go.",
+"ask": "ease",
+"pace_s500": 173,
+"line_m": null
+},
+{
+"race_s": 1939.5,
+"text": "Go now! Sprint everything to the line.",
+"ask": "finish",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"over_pace": 1,
+"pod_overspend": 3,
+"fading": 1,
+"sprint_200": 1
+},
+"consultations": 13,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 9,
+"roleplay": {
+"answers": 29,
+"latency_s": 5.0,
+"stand_in": "roleplay-subagent"
+}
+},
+{
+"seed": 4030,
+"arm": "autopilot_pod",
+"setting": {
+"overpace_margin_m": 150.0,
+"fade_pct": -3.0
+},
+"race_time_s": 2022.094666221586,
+"blown_s": 308.37505195909546,
+"reserve_left": 0.05697095268506131,
+"reference_s": 1951.305520782405,
+"cues_spoken": 2,
+"cues_followed": 2,
+"cues_blocked": 0,
+"asks": {
+"ease": 1,
+"rate_down": 1
+},
+"cue_log": [
+{
+"race_s": 111.5,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 529.4,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"over_pace": 1,
+"fading": 1
+},
+"wall_s": 1.43
+},
+{
+"seed": 4030,
+"arm": "no_coach",
+"setting": {},
+"race_time_s": 2028.722435109832,
+"blown_s": 333.29460772671985,
+"reserve_left": 0.09045015878359675,
+"reference_s": 1951.305520782405,
+"cues_spoken": 0,
+"cues_followed": 0,
+"cues_blocked": 0,
+"asks": {},
+"cue_log": [],
+"alerts": {},
+"wall_s": 1.38
+},
+{
+"seed": 4030,
+"arm": "pack_rule",
+"setting": {
+"overpace_margin_m": 150.0,
+"fade_pct": -3.0
+},
+"race_time_s": 2017.2519632610247,
+"blown_s": 293.4149469783173,
+"reserve_left": 0.03585857124973222,
+"reference_s": 1951.305520782405,
+"cues_spoken": 2,
+"cues_followed": 2,
+"cues_blocked": 2,
+"asks": {
+"hang_on": 1,
+"rate_down": 1
+},
+"cue_log": [
+{
+"race_s": 63.8,
+"text": "Stay on their wash.",
+"ask": "hang_on",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 551.1,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"over_pace": 1,
+"fading": 1
+},
+"wall_s": 1.63
+},
+{
+"seed": 4031,
+"arm": "agent_v7_roleplay",
+"setting": {
+"periodic_s": 300.0,
+"model": "roleplay-subagent",
+"coach_version": 7
+},
+"race_time_s": 2939.97083390249,
+"blown_s": 0.0,
+"reserve_left": 0.2541006101628512,
+"reference_s": 3095.0538970520224,
+"cues_spoken": 0,
+"cues_followed": 0,
+"cues_blocked": 0,
+"asks": {},
+"cue_log": [],
+"alerts": {},
+"consultations": 14,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 0,
+"roleplay": {
+"answers": 19,
+"latency_s": 5.0,
+"stand_in": "roleplay-subagent"
+}
+},
+{
+"seed": 4031,
+"arm": "autopilot_pod",
+"setting": {
+"overpace_margin_m": 150.0,
+"fade_pct": -3.0
+},
+"race_time_s": 2939.9715991877542,
+"blown_s": 0.0,
+"reserve_left": 0.25419503548143363,
+"reference_s": 3095.0538970520224,
+"cues_spoken": 1,
+"cues_followed": 1,
+"cues_blocked": 1,
+"asks": {
+"ease": 1
+},
+"cue_log": [
+{
+"race_s": 111.7,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"over_pace": 1,
+"fading": 1
+},
+"wall_s": 2.32
+},
+{
+"seed": 4031,
+"arm": "no_coach",
+"setting": {},
+"race_time_s": 2939.97083390249,
+"blown_s": 0.0,
+"reserve_left": 0.2541006101628512,
+"reference_s": 3095.0538970520224,
+"cues_spoken": 0,
+"cues_followed": 0,
+"cues_blocked": 0,
+"asks": {},
+"cue_log": [],
+"alerts": {},
+"wall_s": 2.49
+},
+{
+"seed": 4031,
+"arm": "pack_rule",
+"setting": {
+"overpace_margin_m": 150.0,
+"fade_pct": -3.0
+},
+"race_time_s": 2939.97083390249,
+"blown_s": 0.0,
+"reserve_left": 0.2541006101628512,
+"reference_s": 3095.0538970520224,
+"cues_spoken": 1,
+"cues_followed": 1,
+"cues_blocked": 3,
+"asks": {
+"hang_on": 1
+},
+"cue_log": [
+{
+"race_s": 63.7,
+"text": "Stay on their wash.",
+"ask": "hang_on",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"over_pace": 1,
+"fading": 1
+},
+"wall_s": 2.56
+},
+{
+"seed": 4032,
+"arm": "agent_v7_roleplay",
+"setting": {
+"periodic_s": 300.0,
+"model": "roleplay-subagent",
+"coach_version": 7
+},
+"race_time_s": 1907.5145296513815,
+"blown_s": 0.0,
+"reserve_left": 0.08100885488473421,
+"reference_s": 1978.5706943492123,
+"cues_spoken": 5,
+"cues_followed": 3,
+"cues_blocked": 0,
+"asks": {
+"push": 3,
+"rate_up": 1,
+"finish": 1
+},
+"cue_log": [
+{
+"race_s": 602.4,
+"text": "Plenty in reserve. Lift your effort a notch and hold it.",
+"ask": "push",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 987.9,
+"text": "Off the wash, lots left. Build to 2:44 pace and hold.",
+"ask": "push",
+"pace_s500": 164,
+"line_m": null
+},
+{
+"race_s": 1227.2,
+"text": "Rate up two, same strong pull. You have plenty left.",
+"ask": "rate_up",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1548.8,
+"text": "One kilometre left, tank is full. Build to 2:19 and hold.",
+"ask": "push",
+"pace_s500": 139,
+"line_m": null
+},
+{
+"race_s": 1698.4,
+"text": "Sprint now, empty the tank to the line!",
+"ask": "finish",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"over_pace": 1,
+"reserve_conflict": 1,
+"off_wash_with_reserve": 2,
+"pod_long_finish": 1,
+"finish_window": 1
+},
+"consultations": 13,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 5,
+"roleplay": {
+"answers": 22,
+"latency_s": 5.0,
+"stand_in": "roleplay-subagent"
+}
+},
+{
+"seed": 4032,
+"arm": "autopilot_pod",
+"setting": {
+"overpace_margin_m": 150.0,
+"fade_pct": -3.0
+},
+"race_time_s": 1912.604884722176,
+"blown_s": 35.84963149267865,
+"reserve_left": 0.05472053093046493,
+"reference_s": 1978.5706943492123,
+"cues_spoken": 2,
+"cues_followed": 1,
+"cues_blocked": 0,
+"asks": {
+"ease": 1,
+"finish": 1
+},
+"cue_log": [
+{
+"race_s": 110.8,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1651.0,
+"text": "Reserve left. Go now.",
+"ask": "finish",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"over_pace": 1,
+"finish_window": 1
+},
+"wall_s": 1.29
+},
+{
+"seed": 4032,
+"arm": "no_coach",
+"setting": {},
+"race_time_s": 1907.5145296513815,
+"blown_s": 0.0,
+"reserve_left": 0.08100885488473421,
+"reference_s": 1978.5706943492123,
+"cues_spoken": 0,
+"cues_followed": 0,
+"cues_blocked": 0,
+"asks": {},
+"cue_log": [],
+"alerts": {},
+"wall_s": 1.39
+},
+{
+"seed": 4032,
+"arm": "pack_rule",
+"setting": {
+"overpace_margin_m": 150.0,
+"fade_pct": -3.0
+},
+"race_time_s": 1912.604884722176,
+"blown_s": 35.84963149267865,
+"reserve_left": 0.05472053093046493,
+"reference_s": 1978.5706943492123,
+"cues_spoken": 2,
+"cues_followed": 1,
+"cues_blocked": 2,
+"asks": {
+"hang_on": 1,
+"finish": 1
+},
+"cue_log": [
+{
+"race_s": 63.3,
+"text": "Stay on their wash.",
+"ask": "hang_on",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1651.0,
+"text": "Reserve left. Go now.",
+"ask": "finish",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"over_pace": 1,
+"finish_window": 1
+},
+"wall_s": 1.46
+},
+{
+"seed": 4033,
+"arm": "agent_v7_roleplay",
+"setting": {
+"periodic_s": 300.0,
+"model": "roleplay-subagent",
+"coach_version": 7
+},
+"race_time_s": 3319.5023337688326,
+"blown_s": 0.0,
+"reserve_left": 0.23372977067275366,
+"reference_s": 3350.425398688823,
+"cues_spoken": 8,
+"cues_followed": 8,
+"cues_blocked": 0,
+"asks": {
+"hang_on": 1,
+"let_go": 1,
+"ease": 1,
+"push": 3,
+"rate_down": 1,
+"finish": 1
+},
+"cue_log": [
+{
+"race_s": 370.2,
+"text": "Close the gap onto their wash now, then sit there.",
+"ask": "hang_on",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 747.5,
+"text": "Let the pack go, settle into your own steady pace.",
+"ask": "let_go",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1234.5,
+"text": "Ease a touch, back to steady race effort.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1714.8,
+"text": "Lift a little into this current, hold 2:59 pace.",
+"ask": "push",
+"pace_s500": 179,
+"line_m": null
+},
+{
+"race_s": 2470.5,
+"text": "After the turn, lift into the current, hold 3:00 pace.",
+"ask": "push",
+"pace_s500": 180,
+"line_m": null
+},
+{
+"race_s": 2850.0,
+"text": "Drop the rate two, longer strokes, same pressure.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 3026.5,
+"text": "Build now, hold 2:28 pace, sprint comes soon.",
+"ask": "push",
+"pace_s500": 148,
+"line_m": null
+},
+{
+"race_s": 3197.0,
+"text": "Four hundred to go, sprint now, empty the tank.",
+"ask": "finish",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"pod_reserve_half": 1,
+"into_current": 2,
+"below_sustainable": 1,
+"finish_window": 1,
+"last_400": 1,
+"fading": 1
+},
+"consultations": 22,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 8,
+"roleplay": {
+"answers": 39,
+"latency_s": 5.0,
+"stand_in": "roleplay-subagent"
+}
+},
+{
+"seed": 4033,
+"arm": "autopilot_pod",
+"setting": {
+"overpace_margin_m": 150.0,
+"fade_pct": -3.0
+},
+"race_time_s": 3314.2187529632783,
+"blown_s": 0.0,
+"reserve_left": 0.6128827511700605,
+"reference_s": 3350.425398688823,
+"cues_spoken": 4,
+"cues_followed": 4,
+"cues_blocked": 0,
+"asks": {
+"ease": 2,
+"rate_down": 2
+},
+"cue_log": [
+{
+"race_s": 111.9,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 583.9,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1992.2,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 2895.3,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"over_pace": 2,
+"fading": 2
+},
+"wall_s": 1.93
+},
+{
+"seed": 4033,
+"arm": "no_coach",
+"setting": {},
+"race_time_s": 3320.7058982570143,
+"blown_s": 0.0,
+"reserve_left": 0.6016765724973436,
+"reference_s": 3350.425398688823,
+"cues_spoken": 0,
+"cues_followed": 0,
+"cues_blocked": 0,
+"asks": {},
+"cue_log": [],
+"alerts": {},
+"wall_s": 2.27
+},
+{
+"seed": 4033,
+"arm": "pack_rule",
+"setting": {
+"overpace_margin_m": 150.0,
+"fade_pct": -3.0
+},
+"race_time_s": 3313.7803524745887,
+"blown_s": 0.0,
+"reserve_left": 0.6127931349992236,
+"reference_s": 3350.425398688823,
+"cues_spoken": 7,
+"cues_followed": 7,
+"cues_blocked": 2,
+"asks": {
+"hang_on": 1,
+"let_go": 1,
+"ease": 1,
+"rate_down": 3,
+"finish": 1
+},
+"cue_log": [
+{
+"race_s": 63.5,
+"text": "Stay on their wash.",
+"ask": "hang_on",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 580.3,
+"text": "Let them go. Settle to your pace.",
+"ask": "let_go",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1108.0,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1992.2,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 2502.7,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 2897.6,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 3251.9,
+"text": "Reserve left. Go now.",
+"ask": "finish",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"over_pace": 3,
+"fading": 3,
+"finish_window": 1
+},
+"wall_s": 2.47
+},
+{
+"seed": 4034,
+"arm": "agent_v7_roleplay",
+"setting": {
+"periodic_s": 300.0,
+"model": "roleplay-subagent",
+"coach_version": 7
+},
+"race_time_s": 2564.8344420653543,
+"blown_s": 334.7627608857071,
+"reserve_left": 0.035720471279327606,
+"reference_s": 2568.022307620294,
+"cues_spoken": 12,
+"cues_followed": 12,
+"cues_blocked": 1,
+"asks": {
+"let_go": 1,
+"ease": 8,
+"rate_down": 2,
+"finish": 1
+},
+"cue_log": [
+{
+"race_s": 513.6,
+"text": "Let the pack go. Settle into your own steady pace.",
+"ask": "let_go",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 731.2,
+"text": "Ease off now, let them go. Hold 2:39 pace.",
+"ask": "ease",
+"pace_s500": 159,
+"line_m": null
+},
+{
+"race_s": 898.8,
+"text": "A touch easier still. Hold 2:41, smooth and steady.",
+"ask": "ease",
+"pace_s500": 161,
+"line_m": null
+},
+{
+"race_s": 1001.6,
+"text": "Ease back now. Hold 2:42 to save your finish.",
+"ask": "ease",
+"pace_s500": 162,
+"line_m": null
+},
+{
+"race_s": 1149.5,
+"text": "Back right off now, you are on empty. Hold 2:43.",
+"ask": "ease",
+"pace_s500": 163,
+"line_m": null
+},
+{
+"race_s": 1214.3,
+"text": "Drop the rate a little. Long, relaxed strokes, let it recover.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1278.9,
+"text": "Stop forcing it. Ease to 2:45 and let your body recover.",
+"ask": "ease",
+"pace_s500": 165,
+"line_m": null
+},
+{
+"race_s": 1560.9,
+"text": "Drop the rate two. Long, strong, relaxed strokes.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1842.5,
+"text": "Ease a touch. Hold 2:43 steady, save the sprint for the end.",
+"ask": "ease",
+"pace_s500": 163,
+"line_m": null
+},
+{
+"race_s": 1967.7,
+"text": "Just a little easier, 2:44. Sprint comes in the last 300.",
+"ask": "ease",
+"pace_s500": 164,
+"line_m": null
+},
+{
+"race_s": 2216.9,
+"text": "Ease slightly and stay smooth, 2:49. Big finish from 300 out.",
+"ask": "ease",
+"pace_s500": 169,
+"line_m": null
+},
+{
+"race_s": 2476.3,
+"text": "Go now! Empty the tank all the way to the line.",
+"ask": "finish",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"over_pace": 7,
+"reserve_conflict": 1,
+"let_go_point": 1,
+"blade_inefficient": 1,
+"fading": 1,
+"finish_window": 1
+},
+"consultations": 19,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 12,
+"roleplay": {
+"answers": 41,
+"latency_s": 5.0,
+"stand_in": "roleplay-subagent"
+}
+},
+{
+"seed": 4034,
+"arm": "autopilot_pod",
+"setting": {
+"overpace_margin_m": 150.0,
+"fade_pct": -3.0
+},
+"race_time_s": 2562.770507107521,
+"blown_s": 308.59399229182327,
+"reserve_left": 0.10440336789424182,
+"reference_s": 2568.022307620294,
+"cues_spoken": 3,
+"cues_followed": 3,
+"cues_blocked": 0,
+"asks": {
+"ease": 1,
+"rate_down": 2
+},
+"cue_log": [
+{
+"race_s": 111.0,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1110.2,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 2442.2,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"over_pace": 1,
+"fading": 2
+},
+"wall_s": 2.29
+},
+{
+"seed": 4034,
+"arm": "no_coach",
+"setting": {},
+"race_time_s": 2564.742443431767,
+"blown_s": 313.6345954170672,
+"reserve_left": 0.08886831422747497,
+"reference_s": 2568.022307620294,
+"cues_spoken": 0,
+"cues_followed": 0,
+"cues_blocked": 0,
+"asks": {},
+"cue_log": [],
+"alerts": {},
+"wall_s": 1.97
+},
+{
+"seed": 4034,
+"arm": "pack_rule",
+"setting": {
+"overpace_margin_m": 150.0,
+"fade_pct": -3.0
+},
+"race_time_s": 2562.1729579505736,
+"blown_s": 285.1260294932299,
+"reserve_left": 0.07360051333909372,
+"reference_s": 2568.022307620294,
+"cues_spoken": 2,
+"cues_followed": 2,
+"cues_blocked": 2,
+"asks": {
+"hang_on": 1,
+"rate_down": 1
+},
+"cue_log": [
+{
+"race_s": 62.7,
+"text": "Stay on their wash.",
+"ask": "hang_on",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1110.2,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"over_pace": 1,
+"fading": 1
+},
+"wall_s": 2.16
+},
+{
+"seed": 4035,
+"arm": "agent_v7_roleplay",
+"setting": {
+"periodic_s": 300.0,
+"model": "roleplay-subagent",
+"coach_version": 7
+},
+"race_time_s": 2599.4484932421196,
+"blown_s": 0.0,
+"reserve_left": 0.5721190772777661,
+"reference_s": 2639.4074079875422,
+"cues_spoken": 5,
+"cues_followed": 5,
+"cues_blocked": 1,
+"asks": {
+"let_go": 1,
+"ease": 4
+},
+"cue_log": [
+{
+"race_s": 285.9,
+"text": "Let the pack go. Settle into your own steady pace.",
+"ask": "let_go",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 630.7,
+"text": "Ease a touch. Smooth and long, hold that all the way.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 891.9,
+"text": "Ease a little more. Relaxed, steady effort; save it for the finish.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1649.5,
+"text": "Back off a touch and hold it. Save the push.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 2499.7,
+"text": "Settle to steady now. Sprint only the last 150 metres.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"over_pace": 4,
+"fading": 1,
+"wash_cost": 1,
+"finish_window": 1
+},
+"consultations": 18,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 5,
+"roleplay": {
+"answers": 31,
+"latency_s": 5.0,
+"stand_in": "roleplay-subagent"
+}
+},
+{
+"seed": 4035,
+"arm": "autopilot_pod",
+"setting": {
+"overpace_margin_m": 150.0,
+"fade_pct": -3.0
+},
+"race_time_s": 2595.776215409032,
+"blown_s": 0.0,
+"reserve_left": 0.5035642963822955,
+"reference_s": 2639.4074079875422,
+"cues_spoken": 5,
+"cues_followed": 5,
+"cues_blocked": 0,
+"asks": {
+"ease": 4,
+"rate_down": 1
+},
+"cue_log": [
+{
+"race_s": 111.6,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 355.0,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 455.0,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 548.3,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 758.2,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"over_pace": 4,
+"fading": 1
+},
+"wall_s": 1.64
+},
+{
+"seed": 4035,
+"arm": "no_coach",
+"setting": {},
+"race_time_s": 2606.9076821616554,
+"blown_s": 0.0,
+"reserve_left": 0.3676200172489108,
+"reference_s": 2639.4074079875422,
+"cues_spoken": 0,
+"cues_followed": 0,
+"cues_blocked": 0,
+"asks": {},
+"cue_log": [],
+"alerts": {},
+"wall_s": 1.81
+},
+{
+"seed": 4035,
+"arm": "pack_rule",
+"setting": {
+"overpace_margin_m": 150.0,
+"fade_pct": -3.0
+},
+"race_time_s": 2610.6956949285654,
+"blown_s": 0.0,
+"reserve_left": 0.26464504987818194,
+"reference_s": 2639.4074079875422,
+"cues_spoken": 2,
+"cues_followed": 2,
+"cues_blocked": 2,
+"asks": {
+"hang_on": 1,
+"rate_down": 1
+},
+"cue_log": [
+{
+"race_s": 63.8,
+"text": "Stay on their wash.",
+"ask": "hang_on",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 487.8,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"over_pace": 1,
+"fading": 1
+},
+"wall_s": 1.94
+},
+{
+"seed": 4036,
+"arm": "agent_v7_roleplay",
+"setting": {
+"periodic_s": 300.0,
+"model": "roleplay-subagent",
+"coach_version": 7
+},
+"race_time_s": 1790.9936171843756,
+"blown_s": 0.0,
+"reserve_left": 0.692766404575337,
+"reference_s": 1858.0810852265636,
+"cues_spoken": 7,
+"cues_followed": 3,
+"cues_blocked": 0,
+"asks": {
+"push": 6,
+"finish": 1
+},
+"cue_log": [
+{
+"race_s": 353.1,
+"text": "Off the pack now. Lift your effort a little and settle.",
+"ask": "push",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 648.1,
+"text": "You have plenty left. Lift the effort, hold 2:43 pace.",
+"ask": "push",
+"pace_s500": 163,
+"line_m": null
+},
+{
+"race_s": 769.5,
+"text": "Current helps this leg. Keep pressing, hold 2:17 pace.",
+"ask": "push",
+"pace_s500": 137,
+"line_m": null
+},
+{
+"race_s": 906.7,
+"text": "Plenty in reserve. Lift the effort, hold 2:13 this leg.",
+"ask": "push",
+"pace_s500": 133,
+"line_m": null
+},
+{
+"race_s": 1107.3,
+"text": "Into the current now. Dig in harder, hold 2:38.",
+"ask": "push",
+"pace_s500": 158,
+"line_m": null
+},
+{
+"race_s": 1522.1,
+"text": "Last leg, current helps. Lift to 2:10, sprint soon.",
+"ask": "push",
+"pace_s500": 130,
+"line_m": null
+},
+{
+"race_s": 1595.3,
+"text": "Go now! Sprint all the way to the line.",
+"ask": "finish",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"over_pace": 1,
+"reserve_conflict": 1,
+"finish_window": 1
+},
+"consultations": 10,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 7,
+"roleplay": {
+"answers": 22,
+"latency_s": 5.0,
+"stand_in": "roleplay-subagent"
+}
+},
+{
+"seed": 4036,
+"arm": "autopilot_pod",
+"setting": {
+"overpace_margin_m": 150.0,
+"fade_pct": -3.0
+},
+"race_time_s": 1790.9838126655618,
+"blown_s": 0.0,
+"reserve_left": 0.8139562058870663,
+"reference_s": 1858.0810852265636,
+"cues_spoken": 1,
+"cues_followed": 0,
+"cues_blocked": 0,
+"asks": {
+"finish": 1
+},
+"cue_log": [
+{
+"race_s": 1584.4,
+"text": "Reserve left. Go now.",
+"ask": "finish",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"finish_window": 1
+},
+"wall_s": 1.6
+},
+{
+"seed": 4036,
+"arm": "no_coach",
+"setting": {},
+"race_time_s": 1790.9838126655618,
+"blown_s": 0.0,
+"reserve_left": 0.8139562058870663,
+"reference_s": 1858.0810852265636,
+"cues_spoken": 0,
+"cues_followed": 0,
+"cues_blocked": 0,
+"asks": {},
+"cue_log": [],
+"alerts": {},
+"wall_s": 1.34
+},
+{
+"seed": 4036,
+"arm": "pack_rule",
+"setting": {
+"overpace_margin_m": 150.0,
+"fade_pct": -3.0
+},
+"race_time_s": 1790.9835206409257,
+"blown_s": 0.0,
+"reserve_left": 0.6904061277828937,
+"reference_s": 1858.0810852265636,
+"cues_spoken": 2,
+"cues_followed": 1,
+"cues_blocked": 0,
+"asks": {
+"hang_on": 1,
+"finish": 1
+},
+"cue_log": [
+{
+"race_s": 63.8,
+"text": "Stay on their wash.",
+"ask": "hang_on",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1584.4,
+"text": "Reserve left. Go now.",
+"ask": "finish",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"finish_window": 1
+},
+"wall_s": 1.49
+},
+{
+"seed": 4037,
+"arm": "agent_v7_roleplay",
+"setting": {
+"periodic_s": 300.0,
+"model": "roleplay-subagent",
+"coach_version": 7
+},
+"race_time_s": 1855.996530900804,
+"blown_s": 146.97947208548123,
+"reserve_left": 0.06138032849671831,
+"reference_s": 1869.966978228737,
+"cues_spoken": 11,
+"cues_followed": 9,
+"cues_blocked": 0,
+"asks": {
+"let_go": 1,
+"hang_on": 1,
+"ease": 7,
+"rate_down": 2
+},
+"cue_log": [
+{
+"race_s": 71.0,
+"text": "Let the pack go. Settle into your own steady pace.",
+"ask": "let_go",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 200.2,
+"text": "Close the gap, get back on that wash and stay.",
+"ask": "hang_on",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 312.0,
+"text": "Pack is gone. Ease a touch, settle at 2:31 pace.",
+"ask": "ease",
+"pace_s500": 151,
+"line_m": null
+},
+{
+"race_s": 459.5,
+"text": "Ease off now, you are burning too much. Long and smooth.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 537.4,
+"text": "Too hard. Drop the effort a notch and hold it there.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 609.7,
+"text": "Tank is empty. Ease to 2:41 pace and recover.",
+"ask": "ease",
+"pace_s500": 161,
+"line_m": null
+},
+{
+"race_s": 755.3,
+"text": "Drop the rate two, long strokes, let the breathing settle.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 935.7,
+"text": "Rate down again, long strokes, easy on the catch.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1000.6,
+"text": "A touch easier. Find a rhythm you can hold home.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1646.1,
+"text": "Not yet. Settle a touch, sprint comes at two hundred.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1763.6,
+"text": "Smooth it a touch, hold your form to the line.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"over_pace_pod": 1,
+"overspend_off_wash": 2,
+"reserve_conflict": 1,
+"reserve_critical": 4,
+"pod_empty_overspend": 2,
+"fading": 2,
+"finish_window": 1
+},
+"consultations": 20,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 11,
+"roleplay": {
+"answers": 36,
+"latency_s": 5.0,
+"stand_in": "roleplay-subagent"
+}
+},
+{
+"seed": 4037,
+"arm": "autopilot_pod",
+"setting": {
+"overpace_margin_m": 150.0,
+"fade_pct": -3.0
+},
+"race_time_s": 1840.2736264839673,
+"blown_s": 3.5534266821301994,
+"reserve_left": 0.012371339697318452,
+"reference_s": 1869.966978228737,
+"cues_spoken": 2,
+"cues_followed": 1,
+"cues_blocked": 0,
+"asks": {
+"ease": 1,
+"rate_down": 1
+},
+"cue_log": [
+{
+"race_s": 111.2,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 713.9,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"over_pace": 1,
+"fading": 1
+},
+"wall_s": 1.34
+},
+{
+"seed": 4037,
+"arm": "no_coach",
+"setting": {},
+"race_time_s": 1857.3168462175572,
+"blown_s": 41.671381872835134,
+"reserve_left": 0.06330570135241503,
+"reference_s": 1869.966978228737,
+"cues_spoken": 0,
+"cues_followed": 0,
+"cues_blocked": 0,
+"asks": {},
+"cue_log": [],
+"alerts": {},
+"wall_s": 1.21
+},
+{
+"seed": 4037,
+"arm": "pack_rule",
+"setting": {
+"overpace_margin_m": 150.0,
+"fade_pct": -3.0
+},
+"race_time_s": 1840.2736264839673,
+"blown_s": 3.5534266821301994,
+"reserve_left": 0.012371339697318452,
+"reference_s": 1869.966978228737,
+"cues_spoken": 2,
+"cues_followed": 1,
+"cues_blocked": 2,
+"asks": {
+"hang_on": 1,
+"rate_down": 1
+},
+"cue_log": [
+{
+"race_s": 63.6,
+"text": "Stay on their wash.",
+"ask": "hang_on",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 713.9,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"over_pace": 1,
+"fading": 1
+},
+"wall_s": 1.35
+},
+{
+"seed": 4038,
+"arm": "agent_v7_roleplay",
+"setting": {
+"periodic_s": 300.0,
+"model": "roleplay-subagent",
+"coach_version": 7
+},
+"race_time_s": 2552.1288299513053,
+"blown_s": 121.80737203513368,
+"reserve_left": 0.057520643075562115,
+"reference_s": 2572.46663980032,
+"cues_spoken": 11,
+"cues_followed": 11,
+"cues_blocked": 0,
+"asks": {
+"let_go": 1,
+"ease": 7,
+"rate_down": 1,
+"hold": 1,
+"finish": 1
+},
+"cue_log": [
+{
+"race_s": 243.3,
+"text": "Let the pack go. Settle into your own steady pace.",
+"ask": "let_go",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 351.5,
+"text": "Ease a touch. Long way home, smooth steady effort.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 457.5,
+"text": "Ease a little more. Settle at 2:42 pace into this current.",
+"ask": "ease",
+"pace_s500": 162,
+"line_m": null
+},
+{
+"race_s": 715.7,
+"text": "Forget the pace, current is stronger here. Ease off, steady by feel.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1059.9,
+"text": "Ease off now, tank nearly empty. Lighter, smooth strokes.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1150.9,
+"text": "Out of the turn, ease back. Stay just under this effort.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1222.2,
+"text": "Little lighter again, then hold that. Do not blow up.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1310.1,
+"text": "Good effort. Lengthen out, drop the rate two, same effort.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1573.6,
+"text": "Just a touch lighter. Steady to the last turn, then go.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 2245.3,
+"text": "Hold this effort, no harder. Sprint after the last turn.",
+"ask": "hold",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 2461.6,
+"text": "Three hundred to go. Everything you have left, go now.",
+"ask": "finish",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"pod_over_pace_alone": 5,
+"fading": 2,
+"check_rate": 1,
+"rate_check2": 1,
+"finish_pod": 1
+},
+"consultations": 20,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 11,
+"roleplay": {
+"answers": 39,
+"latency_s": 5.0,
+"stand_in": "roleplay-subagent"
+}
+},
+{
+"seed": 4038,
+"arm": "autopilot_pod",
+"setting": {
+"overpace_margin_m": 150.0,
+"fade_pct": -3.0
+},
+"race_time_s": 2534.875244882425,
+"blown_s": 82.24364891844557,
+"reserve_left": 0.26043871909063593,
+"reference_s": 2572.46663980032,
+"cues_spoken": 2,
+"cues_followed": 2,
+"cues_blocked": 0,
+"asks": {
+"ease": 1,
+"rate_down": 1
+},
+"cue_log": [
+{
+"race_s": 111.3,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1036.8,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"over_pace": 1,
+"fading": 1
+},
+"wall_s": 1.52
+},
+{
+"seed": 4038,
+"arm": "no_coach",
+"setting": {},
+"race_time_s": 2536.7882426593505,
+"blown_s": 81.7227696269475,
+"reserve_left": 0.19082723039222013,
+"reference_s": 2572.46663980032,
+"cues_spoken": 0,
+"cues_followed": 0,
+"cues_blocked": 0,
+"asks": {},
+"cue_log": [],
+"alerts": {},
+"wall_s": 1.51
+},
+{
+"seed": 4038,
+"arm": "pack_rule",
+"setting": {
+"overpace_margin_m": 150.0,
+"fade_pct": -3.0
+},
+"race_time_s": 2535.7535576859314,
+"blown_s": 81.8798096380665,
+"reserve_left": 0.3108525929881912,
+"reference_s": 2572.46663980032,
+"cues_spoken": 2,
+"cues_followed": 2,
+"cues_blocked": 2,
+"asks": {
+"hang_on": 1,
+"rate_down": 1
+},
+"cue_log": [
+{
+"race_s": 63.9,
+"text": "Stay on their wash.",
+"ask": "hang_on",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1036.9,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"over_pace": 1,
+"fading": 1
+},
+"wall_s": 1.57
+},
+{
+"seed": 4039,
+"arm": "agent_v7_roleplay",
+"setting": {
+"periodic_s": 300.0,
+"model": "roleplay-subagent",
+"coach_version": 7
+},
+"race_time_s": 1983.2567053121666,
+"blown_s": 77.95025027682571,
+"reserve_left": 0.11041334548180218,
+"reference_s": 2026.3704438857435,
+"cues_spoken": 10,
+"cues_followed": 6,
+"cues_blocked": 4,
+"asks": {
+"hang_on": 1,
+"let_go": 1,
+"ease": 6,
+"rate_down": 1,
+"finish": 1
+},
+"cue_log": [
+{
+"race_s": 69.9,
+"text": "Stay on their wash, close the gap, then steady.",
+"ask": "hang_on",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 185.3,
+"text": "Let the pack go. Settle into your own steady pace.",
+"ask": "let_go",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 364.4,
+"text": "Ease a little, settle smooth, hold 1:50 pace.",
+"ask": "ease",
+"pace_s500": 150,
+"line_m": null
+},
+{
+"race_s": 485.6,
+"text": "Ease slightly. Steady effort, not pace, into this current.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 785.6,
+"text": "Back off now, a tenth easier. Long relaxed strokes.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1024.2,
+"text": "Drop the rate two. Longer, cleaner strokes, same effort.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1197.0,
+"text": "Turn done, ease back to steady. Save it for the finish.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1364.4,
+"text": "Ease off now, you are on the limit. Smooth and long.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1807.4,
+"text": "Settle a touch, strong and long. Full sprint soon.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1878.4,
+"text": "Go now. Everything to the line.",
+"ask": "finish",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"over_pace": 8,
+"off_wash": 1,
+"reserve_conflict": 1,
+"fading": 2,
+"sprint_now": 1
+},
+"consultations": 20,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 14,
+"roleplay": {
+"answers": 41,
+"latency_s": 5.0,
+"stand_in": "roleplay-subagent"
+}
+},
+{
+"seed": 4039,
+"arm": "autopilot_pod",
+"setting": {
+"overpace_margin_m": 150.0,
+"fade_pct": -3.0
+},
+"race_time_s": 1988.738583752427,
+"blown_s": 105.36240139702316,
+"reserve_left": 0.08817772078143307,
+"reference_s": 2026.3704438857435,
+"cues_spoken": 4,
+"cues_followed": 3,
+"cues_blocked": 0,
+"asks": {
+"ease": 2,
+"rate_down": 2
+},
+"cue_log": [
+{
+"race_s": 141.7,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 321.6,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1015.4,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1932.8,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"over_pace": 2,
+"fading": 2
+},
+"wall_s": 1.36
+},
+{
+"seed": 4039,
+"arm": "no_coach",
+"setting": {},
+"race_time_s": 1987.448870148406,
+"blown_s": 106.38820245666221,
+"reserve_left": 0.07618394467861399,
+"reference_s": 2026.3704438857435,
+"cues_spoken": 0,
+"cues_followed": 0,
+"cues_blocked": 0,
+"asks": {},
+"cue_log": [],
+"alerts": {},
+"wall_s": 1.18
+},
+{
+"seed": 4039,
+"arm": "pack_rule",
+"setting": {
+"overpace_margin_m": 150.0,
+"fade_pct": -3.0
+},
+"race_time_s": 1988.6905675391695,
+"blown_s": 106.55638290334056,
+"reserve_left": 0.08547321146636927,
+"reference_s": 2026.3704438857435,
+"cues_spoken": 5,
+"cues_followed": 4,
+"cues_blocked": 0,
+"asks": {
+"hang_on": 1,
+"let_go": 1,
+"ease": 1,
+"rate_down": 2
+},
+"cue_log": [
+{
+"race_s": 63.6,
+"text": "Stay on their wash.",
+"ask": "hang_on",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 141.7,
+"text": "Let them go. Settle to your pace.",
+"ask": "let_go",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 321.6,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1016.4,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1929.4,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"over_pace": 2,
+"fading": 2
+},
+"wall_s": 1.45
+},
+{
+"seed": 4040,
+"arm": "agent_v7_roleplay",
+"setting": {
+"periodic_s": 300.0,
+"model": "roleplay-subagent",
+"coach_version": 7
+},
+"race_time_s": 3367.987874785428,
+"blown_s": 35.292851889257804,
+"reserve_left": 0.053262728303857844,
+"reference_s": 3383.4905171517444,
+"cues_spoken": 12,
+"cues_followed": 10,
+"cues_blocked": 1,
+"asks": {
+"let_go": 1,
+"ease": 4,
+"push": 5,
+"rate_down": 1,
+"finish": 1
+},
+"cue_log": [
+{
+"race_s": 70.9,
+"text": "Let the pack go. Settle into your own steady rhythm.",
+"ask": "let_go",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 363.3,
+"text": "Ease a touch. Long smooth strokes, hold this rhythm.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 937.6,
+"text": "Ease slightly. Settle at 3:04 pace, smooth and long.",
+"ask": "ease",
+"pace_s500": 184,
+"line_m": null
+},
+{
+"race_s": 1028.7,
+"text": "Ease a little on this leg, save it for the return.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1636.7,
+"text": "Lift a little into this current. Aim for 3:01 pace.",
+"ask": "push",
+"pace_s500": 181,
+"line_m": null
+},
+{
+"race_s": 2008.9,
+"text": "After the turn, into the current: lift it, hold 2:59.",
+"ask": "push",
+"pace_s500": 179,
+"line_m": null
+},
+{
+"race_s": 2384.3,
+"text": "Lengthen out: drop the rate two, keep the pressure on.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 2684.1,
+"text": "Turn into the current: lift it, hold 3:00 pace.",
+"ask": "push",
+"pace_s500": 180,
+"line_m": null
+},
+{
+"race_s": 2994.6,
+"text": "Start building now. Lift to 3:00 pace, sprint comes soon.",
+"ask": "push",
+"pace_s500": 180,
+"line_m": null
+},
+{
+"race_s": 3068.6,
+"text": "Last leg. Lift it now, hold 2:28 pace, then sprint.",
+"ask": "push",
+"pace_s500": 148,
+"line_m": null
+},
+{
+"race_s": 3141.6,
+"text": "Go now! Sprint home, empty it by the line.",
+"ask": "finish",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 3207.2,
+"text": "Ease a touch, hold this speed, kick again near the line.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"over_pace": 2,
+"reserve_conflict": 2,
+"finish_window": 1,
+"shaft_over_sustainable": 1,
+"final_450m": 1,
+"pod_creep": 1
+},
+"consultations": 24,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 13,
+"roleplay": {
+"answers": 41,
+"latency_s": 5.0,
+"stand_in": "roleplay-subagent"
+}
+},
+{
+"seed": 4040,
+"arm": "autopilot_pod",
+"setting": {
+"overpace_margin_m": 150.0,
+"fade_pct": -3.0
+},
+"race_time_s": 3346.1843110656228,
+"blown_s": 0.0,
+"reserve_left": 0.06239012106792265,
+"reference_s": 3383.4905171517444,
+"cues_spoken": 5,
+"cues_followed": 4,
+"cues_blocked": 0,
+"asks": {
+"ease": 3,
+"finish": 1,
+"rate_down": 1
+},
+"cue_log": [
+{
+"race_s": 111.2,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 291.7,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 963.5,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 3119.5,
+"text": "Reserve left. Go now.",
+"ask": "finish",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 3276.9,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"over_pace": 3,
+"finish_window": 1,
+"fading": 1
+},
+"wall_s": 2.76
+},
+{
+"seed": 4040,
+"arm": "no_coach",
+"setting": {},
+"race_time_s": 3361.17284228729,
+"blown_s": 0.0,
+"reserve_left": 0.0273687231645356,
+"reference_s": 3383.4905171517444,
+"cues_spoken": 0,
+"cues_followed": 0,
+"cues_blocked": 0,
+"asks": {},
+"cue_log": [],
+"alerts": {},
+"wall_s": 2.34
+},
+{
+"seed": 4040,
+"arm": "pack_rule",
+"setting": {
+"overpace_margin_m": 150.0,
+"fade_pct": -3.0
+},
+"race_time_s": 3348.917443036531,
+"blown_s": 0.0,
+"reserve_left": 0.05264286557845415,
+"reference_s": 3383.4905171517444,
+"cues_spoken": 6,
+"cues_followed": 5,
+"cues_blocked": 2,
+"asks": {
+"hang_on": 1,
+"let_go": 1,
+"ease": 2,
+"finish": 1,
+"rate_down": 1
+},
+"cue_log": [
+{
+"race_s": 63.5,
+"text": "Stay on their wash.",
+"ask": "hang_on",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 291.8,
+"text": "Let them go. Settle to your pace.",
+"ask": "let_go",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 522.5,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 770.2,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 3122.6,
+"text": "Reserve left. Go now.",
+"ask": "finish",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 3256.0,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"over_pace": 4,
+"finish_window": 1,
+"fading": 1
+},
+"wall_s": 2.99
+},
+{
+"seed": 4041,
+"arm": "agent_v7_roleplay",
+"setting": {
+"periodic_s": 300.0,
+"model": "roleplay-subagent",
+"coach_version": 7
+},
+"race_time_s": 3057.7930387903407,
+"blown_s": 0.0,
+"reserve_left": 0.5096949590230163,
+"reference_s": 3111.4713004211353,
+"cues_spoken": 13,
+"cues_followed": 12,
+"cues_blocked": 1,
+"asks": {
+"let_go": 1,
+"hang_on": 2,
+"ease": 3,
+"push": 4,
+"rate_down": 2,
+"finish": 1
+},
+"cue_log": [
+{
+"race_s": 70.6,
+"text": "Let the pack go. Settle to your own steady pace.",
+"ask": "let_go",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 155.7,
+"text": "Stay on their wash at this effort, smooth and relaxed.",
+"ask": "hang_on",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 282.9,
+"text": "Close the gap after the turn, sit right on their wash.",
+"ask": "hang_on",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 582.7,
+"text": "Ease a touch, just under this effort, long and steady.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 867.6,
+"text": "Ease off a little more, lighter pull, keep the rate.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1044.6,
+"text": "Settle to 2:36 pace into this current, save energy.",
+"ask": "ease",
+"pace_s500": 156,
+"line_m": null
+},
+{
+"race_s": 1306.8,
+"text": "Lift the effort a touch, firm steady pull.",
+"ask": "push",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1781.3,
+"text": "Lengthen out, drop the rate two, same effort.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 2097.9,
+"text": "Three k to go, lift the effort a touch now.",
+"ask": "push",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 2363.7,
+"text": "Drop the rate two, longer reach, same pressure.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 2640.9,
+"text": "Lift now, build the effort toward the finish.",
+"ask": "push",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 2728.9,
+"text": "One k left, more pressure now, hold it to the sprint.",
+"ask": "push",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 2879.4,
+"text": "Five hundred to go, sprint home now, empty the tank.",
+"ask": "finish",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"over_pace": 1,
+"over_pace_pod": 2,
+"reserve_conflict": 1,
+"fading": 2,
+"fading_deep": 3
+},
+"consultations": 21,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 14,
+"roleplay": {
+"answers": 41,
+"latency_s": 5.0,
+"stand_in": "roleplay-subagent"
+}
+},
+{
+"seed": 4041,
+"arm": "autopilot_pod",
+"setting": {
+"overpace_margin_m": 150.0,
+"fade_pct": -3.0
+},
+"race_time_s": 3062.329953600919,
+"blown_s": 0.0,
+"reserve_left": 0.6152357772942593,
+"reference_s": 3111.4713004211353,
+"cues_spoken": 5,
+"cues_followed": 5,
+"cues_blocked": 0,
+"asks": {
+"ease": 4,
+"rate_down": 1
+},
+"cue_log": [
+{
+"race_s": 111.8,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 291.5,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 478.1,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 686.1,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1203.5,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"over_pace": 4,
+"fading": 1
+},
+"wall_s": 2.21
+},
+{
+"seed": 4041,
+"arm": "no_coach",
+"setting": {},
+"race_time_s": 3063.269586792552,
+"blown_s": 0.0,
+"reserve_left": 0.6295383226956298,
+"reference_s": 3111.4713004211353,
+"cues_spoken": 0,
+"cues_followed": 0,
+"cues_blocked": 0,
+"asks": {},
+"cue_log": [],
+"alerts": {},
+"wall_s": 2.49
+},
+{
+"seed": 4041,
+"arm": "pack_rule",
+"setting": {
+"overpace_margin_m": 150.0,
+"fade_pct": -3.0
+},
+"race_time_s": 3085.780288217995,
+"blown_s": 0.0,
+"reserve_left": 0.6057248745729397,
+"reference_s": 3111.4713004211353,
+"cues_spoken": 5,
+"cues_followed": 5,
+"cues_blocked": 4,
+"asks": {
+"hang_on": 1,
+"let_go": 1,
+"rate_down": 3
+},
+"cue_log": [
+{
+"race_s": 63.9,
+"text": "Stay on their wash.",
+"ask": "hang_on",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 291.5,
+"text": "Let them go. Settle to your pace.",
+"ask": "let_go",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 533.7,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 736.6,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 916.8,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"over_pace": 4,
+"fading": 3
+},
+"wall_s": 2.24
+}
+]

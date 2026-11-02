@@ -52,7 +52,7 @@ from .sim.paddler import PaddlerParams
 from .sim.twin import (CoastalWater, Pack, PaddlerTwin, RaceSetup, Traits, draw_setup, draw_traits,
                        even_effort, oracle_effort, twin_cp_test, water_forecast)
 
-__all__ = ["PREREGISTERED", "HELDOUT_ROUND3", "HELDOUT_ROUND3_EXTENSION", "HELDOUT_TIERED", "HELDOUT_PACK", "Preparation", "draw_preparation", "Arm", "NoCoach", "FixedPlan",
+__all__ = ["PREREGISTERED", "HELDOUT_ROUND3", "HELDOUT_ROUND3_EXTENSION", "HELDOUT_TIERED", "HELDOUT_PACK", "HELDOUT_PACK_ROLEPLAY", "Preparation", "draw_preparation", "Arm", "NoCoach", "FixedPlan",
            "Autopilot", "PodAutopilot", "LineRule", "PackRule", "AgentArm", "TieredAgentArm", "shaft_athlete", "run_episode", "baseline_arms", "paired", "holm",
            "CountingProvider", "HONESTY_STAND_IN"]
 
@@ -207,6 +207,26 @@ HELDOUT_PACK: Dict[str, Any] = {
             "check (episodes_dev_pack_superseded); the coach (version 7) was not changed",
         ],
     }],
+}
+
+
+# Confirming the drafting result without the model API (owner's instruction, 2026-11-02):
+# Claude subagents role-play the coach's model; written down before any role-played race.
+HELDOUT_PACK_ROLEPLAY: Dict[str, Any] = {
+    "date": "2026-11-02",
+    "seeds": list(range(4012, 4042)),
+    "coach": ("coach version 7 (drafting section, the same prompt and tools as the API arm); every model "
+              "call answered by a Claude subagent (Opus) that sees exactly the model's input for that call "
+              "(experiments/roleplay_race.py), one subagent per race, told to decide each wake-up from its "
+              "packet alone and to use nothing but the driver; each call takes a fixed 5 s of race time "
+              "(the API coach's measured median was 4.6-5.3 s)"),
+    "arms": "no_coach, autopilot_pod (150 m, -3 %), pack_rule, agent_v7_roleplay",
+    "primary": ("on the 30 seeds: role-played coach minus pack_rule and minus no_coach, paired, Wilcoxon, "
+                "bootstrap 95% interval, Holm over the two"),
+    "secondary": ("pooled with the 12 API-coached races (labelled as mixed); a fidelity check role-plays 3 of "
+                  "those 12 races (4000, 4004, 4008) to compare race times and cues with the API coach"),
+    "limits": ("a role-player is not the deployed model: it is a Claude Code agent, it remembers earlier "
+               "wake-ups of its race, and its latency is fixed"),
 }
 
 
