@@ -54,13 +54,27 @@ def _prep(a: argparse.Namespace) -> ct.Preparation:
     return ct.draw_preparation(a.seed, coastal=a.coastal, pack=a.pack)
 
 
+def _tool_line(t: Dict[str, Any]) -> str:
+    """One tool as a compact line: name(param: type [one of ...], ...): description."""
+    sch = t.get("input_schema", {}) or {}
+    req = set(sch.get("required", []))
+    parts = []
+    for name, spec in (sch.get("properties") or {}).items():
+        typ = spec.get("type", "any")
+        if spec.get("enum"):
+            typ += " one of " + "|".join(map(str, spec["enum"]))
+        if spec.get("description"):
+            typ += f" ({spec['description']})"
+        parts.append(f"{name}{'' if name in req else '?'}: {typ}")
+    return f"{t['name']}({', '.join(parts)}): {t.get('description', '')}"
+
+
 def _packet(system: str, messages: List[Any], tools: List[Dict[str, Any]], first: bool,
             n_calls: int) -> Dict[str, Any]:
     out: Dict[str, Any] = {"model_call": n_calls}
     if first:
         out["system_prompt"] = system
-        out["tools"] = [{"name": t["name"], "description": t.get("description", ""),
-                         "input_schema": t.get("input_schema", {})} for t in tools]
+        out["tools"] = [_tool_line(t) for t in tools]
     last = messages[-1]
     rounds = sum(1 for m in messages if m.role == "assistant")
     out["round_in_this_wake_up"] = rounds + 1
@@ -98,9 +112,12 @@ def _run(a: argparse.Namespace) -> None:
                 return v
             return str(v.get("text", "") if isinstance(v, dict) else v)
         pk = _packet(system, messages, tools, first=st["i"] == 0, n_calls=st["i"] + 1)
+        if st["i"] == 0:
+            with open(os.path.join(d, "tools.txt"), "w") as f:
+                f.write("\n".join(_tool_line(t) for t in tools) + "\n")
         with open(os.path.join(d, "packet.json"), "w") as f:
             json.dump(pk, f)
-        sys.stdout.write(json.dumps(pk, indent=1) + "\n")
+        sys.stdout.write(json.dumps(pk, separators=(",", ":")) + "\n")
         sys.stdout.flush()
         os._exit(3)                      # paused: waiting for the role-player's answer
 
@@ -115,7 +132,7 @@ def _run(a: argparse.Namespace) -> None:
 
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
-    ap.add_argument("cmd", choices=["start", "answer", "show", "collect"])
+    ap.add_argument("cmd", choices=["start", "answer", "show", "tools", "collect"])
     ap.add_argument("answer_json", nargs="?", default=None)
     ap.add_argument("--seed", type=int, default=None)
     ap.add_argument("--tag", required=True)
@@ -143,6 +160,10 @@ def main(argv=None) -> int:
     d = _dir(a.tag, a.seed)
     if os.path.exists(os.path.join(d, "result.json")):
         print("RACE FINISHED: this race is already done.")
+        return 0
+    if a.cmd == "tools":
+        p = os.path.join(d, "tools.txt")
+        print(open(p).read() if os.path.exists(p) else "start the race first")
         return 0
     if a.cmd == "show":
         p = os.path.join(d, "packet.json")
