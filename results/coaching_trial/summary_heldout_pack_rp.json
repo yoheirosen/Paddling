@@ -1,0 +1,130 @@
+{
+ "roleplay": {
+  "n": 5,
+  "comparisons": {
+   "pack_rule": {
+    "n": 5,
+    "mean_d": -9.939042798466744,
+    "median_d": -0.05790368521866185,
+    "n_a_faster": 4,
+    "n_b_faster": 1,
+    "ci95": [
+     -29.441136792391536,
+     -0.0295177414547652
+    ],
+    "wilcoxon_p": 0.125
+   },
+   "no_coach": {
+    "n": 5,
+    "mean_d": -11.175257487715589,
+    "median_d": -0.05790368521866185,
+    "n_a_faster": 3,
+    "n_b_faster": 0,
+    "ci95": [
+     -31.918896315748952,
+     -0.011580737043732369
+    ],
+    "wilcoxon_p": 0.25
+   },
+   "autopilot_pod": {
+    "n": 5,
+    "mean_d": 2.37893041584548,
+    "median_d": -0.04541828033688944,
+    "n_a_faster": 3,
+    "n_b_faster": 2,
+    "ci95": [
+     -0.4803115993041501,
+     7.651614750248063
+    ],
+    "wilcoxon_p": 0.8125
+   }
+  },
+  "holm": {
+   "pack_rule": 0.25,
+   "no_coach": 0.25
+  },
+  "asks": {
+   "ease": 8,
+   "let_go": 3,
+   "hang_on": 6,
+   "push": 10,
+   "finish": 3
+  }
+ },
+ "pooled": {
+  "vs_pack_rule": {
+   "n": 17,
+   "mean_d": -10.710719822503934,
+   "median_d": -0.25894320859924846,
+   "n_a_faster": 11,
+   "n_b_faster": 4,
+   "ci95": [
+    -18.600867532598222,
+    -3.9322161976359493
+   ],
+   "wilcoxon_p": 0.017058718531494516
+  },
+  "vs_no_coach": {
+   "n": 17,
+   "mean_d": -8.691861036205303,
+   "median_d": -0.39909051859876854,
+   "n_a_faster": 11,
+   "n_b_faster": 3,
+   "ci95": [
+    -17.550457914335013,
+    -1.1429257493785876
+   ],
+   "wilcoxon_p": 0.04132685891250041
+  }
+ },
+ "fidelity": [
+  {
+   "seed": 4000,
+   "roleplay_vs_no_coach_s": -5.72813919329883,
+   "api_vs_no_coach_s": -1.3643087852556164,
+   "roleplay_asks": {
+    "ease": 5,
+    "let_go": 1,
+    "rate_down": 2,
+    "push": 1
+   },
+   "api_asks": {
+    "ease": 5,
+    "hold": 1,
+    "rate_down": 4,
+    "push": 1
+   }
+  },
+  {
+   "seed": 4004,
+   "roleplay_vs_no_coach_s": 85.63503793054178,
+   "api_vs_no_coach_s": -17.125794931464952,
+   "roleplay_asks": {
+    "let_go": 2,
+    "ease": 10,
+    "push": 3,
+    "rate_down": 1,
+    "finish": 1
+   },
+   "api_asks": {
+    "ease": 5,
+    "rate_down": 1,
+    "finish": 1
+   }
+  },
+  {
+   "seed": 4008,
+   "roleplay_vs_no_coach_s": -45.4012668547889,
+   "api_vs_no_coach_s": -45.146530854015964,
+   "roleplay_asks": {
+    "let_go": 1,
+    "ease": 4,
+    "finish": 1
+   },
+   "api_asks": {
+    "ease": 5,
+    "rate_down": 1
+   }
+  }
+ ]
+}
