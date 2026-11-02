@@ -428,6 +428,15 @@ beforehand. Held-out check on the same 30 fresh seeds as the larger check (3010�
 written down before those results were read: tiered coach minus line rule and minus
 the version-4 coach, paired, Holm over the two (`coaching_trial.HELDOUT_TIERED`).
 
+**Result of the tiered coach's check (30 held-out races, no failed model calls, ~USD
+10.9).** Against the line rule: 8.1 s faster (95 % interval −19.9 to +3.2 s; Holm p
+1.0; faster in 16 of 30). Against the version-4 coach: 3.2 s faster (−10.0 to +3.4 s;
+Holm p 1.0). Against no coach (secondary): 24.8 s faster (8.1–45.1 s; faster in 22 of
+30). On these races the order of the means is tiered coach (−24.8 s), version-4 coach
+(−21.6 s), line rule (−16.7 s) against no coach, but none of the differences between
+those three is detectable with 30 races. The tiered coach mostly let the rule act: it
+overruled 0.3 rule cues a race and added 3.7 cues of its own.
+
 ### Drafting a pack, and its held-out check (written down 2026-11-02, before the run)
 
 The twin can carry a pack of boats (`sim/twin.py` `Pack`, planted): a little faster

@@ -1,6 +1,115 @@
 [
 {
 "seed": 3010,
+"arm": "agent_tiered",
+"setting": {
+"periodic_s": 300.0,
+"model": "claude-opus-5-5",
+"coach_version": 5
+},
+"race_time_s": 2442.8802895503295,
+"blown_s": 269.01915406130973,
+"reserve_left": 0.1662512445963846,
+"reference_s": 2420.1918220330285,
+"cues_spoken": 9,
+"cues_followed": 6,
+"cues_blocked": 2,
+"asks": {
+"ease": 3,
+"rate_down": 5,
+"line_in": 1
+},
+"cue_log": [
+{
+"race_s": 111.6,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 415.6,
+"text": "Ease slightly, settle at 146 pace, long race left.",
+"ask": "ease",
+"pace_s500": 146,
+"line_m": null
+},
+{
+"race_s": 625.9,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1013.8,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1149.9,
+"text": "Stream against us. Get inside, hug the shore.",
+"ask": "line_in",
+"pace_s500": null,
+"line_m": 60.0
+},
+{
+"race_s": 1424.6,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1858.1,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 2075.5,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 2373.7,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"over_pace": 2,
+"fading": 7
+},
+"consultations": 12,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 1,
+"rule_cues": 8,
+"rule_suppressed": 0,
+"mutes": 0,
+"wall_s": 95.34,
+"model_usage": {
+"calls": 17,
+"errors": 0,
+"input_tokens": 17246,
+"output_tokens": 7654,
+"cache_create_tokens": 12799,
+"cache_read_tokens": 80852,
+"latency_median_s": 4.9856302270000015,
+"latency_p90_s": 8.27353395199998
+},
+"model_usd_estimate": 0.3022
+},
+{
+"seed": 3010,
 "arm": "agent_v4",
 "setting": {
 "periodic_s": 300.0,
@@ -319,6 +428,111 @@
 },
 {
 "seed": 3011,
+"arm": "agent_tiered",
+"setting": {
+"periodic_s": 300.0,
+"model": "claude-opus-5-5",
+"coach_version": 5
+},
+"race_time_s": 2093.677369956238,
+"blown_s": 244.800363048549,
+"reserve_left": 0.051364779340183936,
+"reference_s": 1944.5637841725888,
+"cues_spoken": 8,
+"cues_followed": 4,
+"cues_blocked": 64,
+"asks": {
+"line_in": 1,
+"ease": 1,
+"hold": 3,
+"line_out": 1,
+"rate_down": 2
+},
+"cue_log": [
+{
+"race_s": 60.9,
+"text": "Stream against us. Get inside, hug the shore.",
+"ask": "line_in",
+"pace_s500": null,
+"line_m": 60.0
+},
+{
+"race_s": 364.6,
+"text": "Ease slightly, settle into steady rhythm, hold this line.",
+"ask": "ease",
+"pace_s500": 174,
+"line_m": null
+},
+{
+"race_s": 521.9,
+"text": "Speed is holding. Keep this.",
+"ask": "hold",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 829.8,
+"text": "Settle here, steady effort, no surges.",
+"ask": "hold",
+"pace_s500": 184,
+"line_m": null
+},
+{
+"race_s": 1075.4,
+"text": "Stream's with us now. Angle out to 350 metres.",
+"ask": "line_out",
+"pace_s500": null,
+"line_m": 350
+},
+{
+"race_s": 1248.1,
+"text": "Speed is holding. Keep this.",
+"ask": "hold",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1400.5,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1899.7,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"over_pace": 2,
+"reserve_conflict": 3,
+"fading": 4
+},
+"consultations": 9,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 5,
+"rule_cues": 5,
+"rule_suppressed": 3,
+"mutes": 2,
+"wall_s": 113.13,
+"model_usage": {
+"calls": 18,
+"errors": 0,
+"input_tokens": 13061,
+"output_tokens": 9730,
+"cache_create_tokens": 19900,
+"cache_read_tokens": 90668,
+"latency_median_s": 6.431353338000008,
+"latency_p90_s": 8.369816944999911
+},
+"model_usd_estimate": 0.3645
+},
+{
+"seed": 3011,
 "arm": "agent_v4",
 "setting": {
 "periodic_s": 300.0,
@@ -618,6 +832,100 @@
 "cue_log": [],
 "alerts": {},
 "wall_s": 1.11
+},
+{
+"seed": 3012,
+"arm": "agent_tiered",
+"setting": {
+"periodic_s": 300.0,
+"model": "claude-opus-5-5",
+"coach_version": 5
+},
+"race_time_s": 2720.3091130513976,
+"blown_s": 0.0,
+"reserve_left": 0.558687774871192,
+"reference_s": 2746.910619606029,
+"cues_spoken": 7,
+"cues_followed": 6,
+"cues_blocked": 61,
+"asks": {
+"line_in": 2,
+"ease": 5
+},
+"cue_log": [
+{
+"race_s": 60.5,
+"text": "Stream against us. Get inside, hug the shore.",
+"ask": "line_in",
+"pace_s500": null,
+"line_m": 60.0
+},
+{
+"race_s": 290.7,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 470.6,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 808.8,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1366.8,
+"text": "Stream against us. Get inside, hug the shore.",
+"ask": "line_in",
+"pace_s500": null,
+"line_m": 60.0
+},
+{
+"race_s": 2271.5,
+"text": "Settle a touch, hold 1:54, save it for the sprint.",
+"ask": "ease",
+"pace_s500": 174,
+"line_m": null
+},
+{
+"race_s": 2573.5,
+"text": "Settle back to steady rhythm. Sprint only the last 150.",
+"ask": "ease",
+"pace_s500": 172,
+"line_m": null
+}
+],
+"alerts": {
+"over_pace": 4,
+"fading": 1
+},
+"consultations": 11,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 2,
+"rule_cues": 5,
+"rule_suppressed": 1,
+"mutes": 1,
+"wall_s": 103.36,
+"model_usage": {
+"calls": 15,
+"errors": 0,
+"input_tokens": 16681,
+"output_tokens": 8358,
+"cache_create_tokens": 14100,
+"cache_read_tokens": 69188,
+"latency_median_s": 6.766706343999886,
+"latency_p90_s": 10.05767337899988
+},
+"model_usd_estimate": 0.3182
 },
 {
 "seed": 3012,
@@ -942,6 +1250,116 @@
 },
 {
 "seed": 3013,
+"arm": "agent_tiered",
+"setting": {
+"periodic_s": 300.0,
+"model": "claude-opus-5-5",
+"coach_version": 5
+},
+"race_time_s": 2156.5759913947845,
+"blown_s": 315.3039474228807,
+"reserve_left": 0.0619648996620588,
+"reference_s": 2088.765962436391,
+"cues_spoken": 9,
+"cues_followed": 5,
+"cues_blocked": 1,
+"asks": {
+"ease": 3,
+"line_in": 3,
+"rate_down": 2,
+"push": 1
+},
+"cue_log": [
+{
+"race_s": 111.8,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 417.5,
+"text": "Settle a touch, hold 2:42 pace from here",
+"ask": "ease",
+"pace_s500": 162,
+"line_m": null
+},
+{
+"race_s": 718.5,
+"text": "Settle a touch, long smooth strokes, hold 163",
+"ask": "ease",
+"pace_s500": 163,
+"line_m": null
+},
+{
+"race_s": 959.4,
+"text": "Stream against us. Get inside, hug the shore.",
+"ask": "line_in",
+"pace_s500": null,
+"line_m": 60.0
+},
+{
+"race_s": 1083.2,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1390.4,
+"text": "Head inside now, sixty metres off shore. Weaker stream there.",
+"ask": "line_in",
+"pace_s500": null,
+"line_m": 60
+},
+{
+"race_s": 1691.6,
+"text": "Angle inshore now, to sixty metres. Weaker stream there.",
+"ask": "line_in",
+"pace_s500": null,
+"line_m": 60
+},
+{
+"race_s": 1989.3,
+"text": "Four hundred to go. Lift the effort now, build to the line.",
+"ask": "push",
+"pace_s500": 172,
+"line_m": null
+},
+{
+"race_s": 2093.0,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"over_pace": 1,
+"fading": 2
+},
+"consultations": 10,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 6,
+"rule_cues": 4,
+"rule_suppressed": 0,
+"mutes": 0,
+"wall_s": 106.0,
+"model_usage": {
+"calls": 23,
+"errors": 0,
+"input_tokens": 13676,
+"output_tokens": 8383,
+"cache_create_tokens": 23034,
+"cache_read_tokens": 116838,
+"latency_median_s": 4.1793914849999965,
+"latency_p90_s": 6.946352514999944
+},
+"model_usd_estimate": 0.3609
+},
+{
+"seed": 3013,
 "arm": "agent_v4",
 "setting": {
 "periodic_s": 300.0,
@@ -1215,6 +1633,140 @@
 "cue_log": [],
 "alerts": {},
 "wall_s": 1.54
+},
+{
+"seed": 3014,
+"arm": "agent_tiered",
+"setting": {
+"periodic_s": 300.0,
+"model": "claude-opus-5-5",
+"coach_version": 5
+},
+"race_time_s": 3044.852736459972,
+"blown_s": 240.97764412921325,
+"reserve_left": 0.10008594853842623,
+"reference_s": 3010.0978825665075,
+"cues_spoken": 12,
+"cues_followed": 9,
+"cues_blocked": 63,
+"asks": {
+"line_in": 1,
+"ease": 3,
+"rate_down": 4,
+"line_out": 1,
+"push": 3
+},
+"cue_log": [
+{
+"race_s": 60.4,
+"text": "Stream against us. Get inside, hug the shore.",
+"ask": "line_in",
+"pace_s500": null,
+"line_m": 60.0
+},
+{
+"race_s": 369.6,
+"text": "Ease slightly, settle into a steady 158 pace.",
+"ask": "ease",
+"pace_s500": 158,
+"line_m": null
+},
+{
+"race_s": 739.7,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 926.1,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1027.3,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1106.9,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1415.6,
+"text": "Settle to sixty strokes, longer pull, same effort.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1588.7,
+"text": "Stream's with us now. Angle out to 400 metres.",
+"ask": "line_out",
+"pace_s500": null,
+"line_m": 400
+},
+{
+"race_s": 2186.7,
+"text": "Reserve's building. Lift a touch, hold 142 to the finish.",
+"ask": "push",
+"pace_s500": 142,
+"line_m": null
+},
+{
+"race_s": 2485.4,
+"text": "Reserve is building. Lift the effort now, hold 138 to the finish.",
+"ask": "push",
+"pace_s500": 138,
+"line_m": null
+},
+{
+"race_s": 2784.3,
+"text": "Under 900 to go, plenty left. Lift now, build to line.",
+"ask": "push",
+"pace_s500": 136,
+"line_m": null
+},
+{
+"race_s": 2949.1,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"over_pace": 3,
+"fading": 3,
+"finish_window": 1,
+"sprint_call": 1
+},
+"consultations": 14,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 7,
+"rule_cues": 6,
+"rule_suppressed": 0,
+"mutes": 1,
+"wall_s": 145.88,
+"model_usage": {
+"calls": 24,
+"errors": 0,
+"input_tokens": 21071,
+"output_tokens": 11659,
+"cache_create_tokens": 18475,
+"cache_read_tokens": 123522,
+"latency_median_s": 5.744516981000061,
+"latency_p90_s": 9.25188772499996
+},
+"model_usd_estimate": 0.4345
 },
 {
 "seed": 3014,
@@ -1569,6 +2121,126 @@
 },
 {
 "seed": 3015,
+"arm": "agent_tiered",
+"setting": {
+"periodic_s": 300.0,
+"model": "claude-opus-5-5",
+"coach_version": 5
+},
+"race_time_s": 3366.5162244732237,
+"blown_s": 139.71092618428443,
+"reserve_left": 0.24238825122173246,
+"reference_s": 3301.489662043096,
+"cues_spoken": 10,
+"cues_followed": 6,
+"cues_blocked": 63,
+"asks": {
+"line_in": 1,
+"ease": 2,
+"rate_down": 4,
+"line_out": 1,
+"hold": 1,
+"finish": 1
+},
+"cue_log": [
+{
+"race_s": 62.0,
+"text": "Stream against us. Get inside, hug the shore.",
+"ask": "line_in",
+"pace_s500": null,
+"line_m": 60.0
+},
+{
+"race_s": 368.5,
+"text": "Ease a touch, settle to steady, long race left.",
+"ask": "ease",
+"pace_s500": 180,
+"line_m": null
+},
+{
+"race_s": 669.6,
+"text": "Ease slightly, settle into a steady 1:58 pace",
+"ask": "ease",
+"pace_s500": 178,
+"line_m": null
+},
+{
+"race_s": 785.9,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 965.5,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1145.9,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1459.4,
+"text": "Rate down to 55, longer stroke, same effort.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1750.1,
+"text": "Stream with us now. Angle out to 350 metres.",
+"ask": "line_out",
+"pace_s500": null,
+"line_m": 350
+},
+{
+"race_s": 2010.3,
+"text": "Speed is holding. Keep this.",
+"ask": "hold",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 3215.9,
+"text": "Five hundred to go. Build now, empty everything by the line.",
+"ask": "finish",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"over_pace": 1,
+"fading": 3,
+"reserve_conflict": 1
+},
+"consultations": 13,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 7,
+"rule_cues": 5,
+"rule_suppressed": 0,
+"mutes": 1,
+"wall_s": 154.81,
+"model_usage": {
+"calls": 27,
+"errors": 0,
+"input_tokens": 19517,
+"output_tokens": 12891,
+"cache_create_tokens": 24367,
+"cache_read_tokens": 150596,
+"latency_median_s": 5.576956336999956,
+"latency_p90_s": 8.995531572000118
+},
+"model_usd_estimate": 0.4878
+},
+{
+"seed": 3015,
 "arm": "agent_v4",
 "setting": {
 "periodic_s": 300.0,
@@ -1875,6 +2547,97 @@
 },
 {
 "seed": 3016,
+"arm": "agent_tiered",
+"setting": {
+"periodic_s": 300.0,
+"model": "claude-opus-5-5",
+"coach_version": 5
+},
+"race_time_s": 1898.717760666168,
+"blown_s": 308.40445802613004,
+"reserve_left": 0.12451057629332982,
+"reference_s": 1856.5552226453874,
+"cues_spoken": 6,
+"cues_followed": 6,
+"cues_blocked": 63,
+"asks": {
+"line_in": 1,
+"ease": 2,
+"line_out": 1,
+"rate_down": 2
+},
+"cue_log": [
+{
+"race_s": 60.5,
+"text": "Stream against us. Get inside, hug the shore.",
+"ask": "line_in",
+"pace_s500": null,
+"line_m": 60.0
+},
+{
+"race_s": 365.2,
+"text": "Ease slightly now, settle to steady race effort.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 668.8,
+"text": "Reserve empty. Ease slightly, settle into steady rhythm.",
+"ask": "ease",
+"pace_s500": 166,
+"line_m": null
+},
+{
+"race_s": 1002.4,
+"text": "Stream's with us now. Head out to 350 metres.",
+"ask": "line_out",
+"pace_s500": null,
+"line_m": 350
+},
+{
+"race_s": 1165.8,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1578.3,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"over_pace": 1,
+"reserve_conflict": 1,
+"fading": 2,
+"underpower": 2
+},
+"consultations": 9,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 4,
+"rule_cues": 3,
+"rule_suppressed": 0,
+"mutes": 1,
+"wall_s": 94.86,
+"model_usage": {
+"calls": 17,
+"errors": 0,
+"input_tokens": 12634,
+"output_tokens": 7948,
+"cache_create_tokens": 13535,
+"cache_read_tokens": 88488,
+"latency_median_s": 4.737088717000006,
+"latency_p90_s": 9.287165705000007
+},
+"model_usd_estimate": 0.2949
+},
+{
+"seed": 3016,
 "arm": "agent_v4",
 "setting": {
 "periodic_s": 300.0,
@@ -2176,6 +2939,116 @@
 },
 {
 "seed": 3017,
+"arm": "agent_tiered",
+"setting": {
+"periodic_s": 300.0,
+"model": "claude-opus-5-5",
+"coach_version": 5
+},
+"race_time_s": 3277.865820187414,
+"blown_s": 47.36539451145199,
+"reserve_left": 0.07615586082607761,
+"reference_s": 3362.276148828538,
+"cues_spoken": 9,
+"cues_followed": 9,
+"cues_blocked": 0,
+"asks": {
+"ease": 3,
+"push": 4,
+"line_in": 1,
+"rate_down": 1
+},
+"cue_log": [
+{
+"race_s": 111.3,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 424.9,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 732.7,
+"text": "You're strong. Lift a touch, hold 157 pace.",
+"ask": "push",
+"pace_s500": 157,
+"line_m": null
+},
+{
+"race_s": 1575.3,
+"text": "Stream against us. Get inside, hug the shore.",
+"ask": "line_in",
+"pace_s500": null,
+"line_m": 60.0
+},
+{
+"race_s": 1880.6,
+"text": "Plenty in reserve. Lift effort a touch, hold 2:45.",
+"ask": "push",
+"pace_s500": 165,
+"line_m": null
+},
+{
+"race_s": 2182.3,
+"text": "Plenty left. Lift a touch, hold 2:46 to the finish.",
+"ask": "push",
+"pace_s500": 166,
+"line_m": null
+},
+{
+"race_s": 2480.3,
+"text": "Plenty left. Lift a little, hold it to the sprint.",
+"ask": "push",
+"pace_s500": 163,
+"line_m": null
+},
+{
+"race_s": 2859.9,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 3168.3,
+"text": "Settle a touch now, all-out sprint from 150 to go.",
+"ask": "ease",
+"pace_s500": 172,
+"line_m": null
+}
+],
+"alerts": {
+"over_pace": 2,
+"fading": 1
+},
+"consultations": 14,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 5,
+"rule_cues": 4,
+"rule_suppressed": 0,
+"mutes": 2,
+"wall_s": 130.47,
+"model_usage": {
+"calls": 24,
+"errors": 0,
+"input_tokens": 19778,
+"output_tokens": 10612,
+"cache_create_tokens": 19077,
+"cache_read_tokens": 122316,
+"latency_median_s": 5.119137952999836,
+"latency_p90_s": 8.41421639300006
+},
+"model_usd_estimate": 0.4112
+},
+{
+"seed": 3017,
 "arm": "agent_v4",
 "setting": {
 "periodic_s": 300.0,
@@ -2459,6 +3332,94 @@
 },
 {
 "seed": 3018,
+"arm": "agent_tiered",
+"setting": {
+"periodic_s": 300.0,
+"model": "claude-opus-5-5",
+"coach_version": 5
+},
+"race_time_s": 2686.753641198091,
+"blown_s": 132.48087368903978,
+"reserve_left": 0.1629264040525567,
+"reference_s": 2675.446156475217,
+"cues_spoken": 6,
+"cues_followed": 5,
+"cues_blocked": 61,
+"asks": {
+"line_in": 1,
+"ease": 4,
+"rate_down": 1
+},
+"cue_log": [
+{
+"race_s": 60.4,
+"text": "Stream against us. Get inside, hug the shore.",
+"ask": "line_in",
+"pace_s500": null,
+"line_m": 60.0
+},
+{
+"race_s": 371.7,
+"text": "Ease slightly, settle at 1:47 pace, long race left",
+"ask": "ease",
+"pace_s500": 167,
+"line_m": null
+},
+{
+"race_s": 669.8,
+"text": "Ease slightly, settle into a long steady rhythm.",
+"ask": "ease",
+"pace_s500": 168,
+"line_m": null
+},
+{
+"race_s": 966.5,
+"text": "Ease a touch, settle at one-seventy, smooth strokes",
+"ask": "ease",
+"pace_s500": 170,
+"line_m": null
+},
+{
+"race_s": 1568.2,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1873.8,
+"text": "Reserve's empty. Ease slightly, settle at 170, long strokes.",
+"ask": "ease",
+"pace_s500": 170,
+"line_m": null
+}
+],
+"alerts": {
+"over_pace": 1,
+"fading": 1
+},
+"consultations": 10,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 4,
+"rule_cues": 2,
+"rule_suppressed": 0,
+"mutes": 0,
+"wall_s": 114.26,
+"model_usage": {
+"calls": 19,
+"errors": 0,
+"input_tokens": 13730,
+"output_tokens": 8980,
+"cache_create_tokens": 14309,
+"cache_read_tokens": 97546,
+"latency_median_s": 5.353309455000044,
+"latency_p90_s": 8.948229365000088
+},
+"model_usd_estimate": 0.3256
+},
+{
+"seed": 3018,
 "arm": "agent_v4",
 "setting": {
 "periodic_s": 300.0,
@@ -2692,6 +3653,86 @@
 "cue_log": [],
 "alerts": {},
 "wall_s": 2.18
+},
+{
+"seed": 3019,
+"arm": "agent_tiered",
+"setting": {
+"periodic_s": 300.0,
+"model": "claude-opus-5-5",
+"coach_version": 5
+},
+"race_time_s": 2666.0717310588448,
+"blown_s": 117.0547524341874,
+"reserve_left": 0.015957872250925032,
+"reference_s": 2665.4432589636367,
+"cues_spoken": 5,
+"cues_followed": 4,
+"cues_blocked": 62,
+"asks": {
+"line_in": 1,
+"push": 3,
+"rate_down": 1
+},
+"cue_log": [
+{
+"race_s": 60.6,
+"text": "Stream against us. Get inside, hug the shore.",
+"ask": "line_in",
+"pace_s500": null,
+"line_m": 60.0
+},
+{
+"race_s": 967.9,
+"text": "Plenty left. Lift effort slightly, hold 165 pace.",
+"ask": "push",
+"pace_s500": 165,
+"line_m": null
+},
+{
+"race_s": 1658.8,
+"text": "Reserve is good. Lift a touch, hold 2:40.",
+"ask": "push",
+"pace_s500": 160,
+"line_m": null
+},
+{
+"race_s": 1963.3,
+"text": "Lift a touch, hold 160 pace to the finish.",
+"ask": "push",
+"pace_s500": 160,
+"line_m": null
+},
+{
+"race_s": 2556.5,
+"text": "Settle the rate, long strong strokes to the line",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"fading": 1
+},
+"consultations": 10,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 5,
+"rule_cues": 1,
+"rule_suppressed": 0,
+"mutes": 0,
+"wall_s": 106.28,
+"model_usage": {
+"calls": 18,
+"errors": 0,
+"input_tokens": 13483,
+"output_tokens": 8809,
+"cache_create_tokens": 12701,
+"cache_read_tokens": 92759,
+"latency_median_s": 5.25607088400011,
+"latency_p90_s": 10.160842352999907
+},
+"model_usd_estimate": 0.3122
 },
 {
 "seed": 3019,
@@ -2962,6 +4003,97 @@
 },
 {
 "seed": 3020,
+"arm": "agent_tiered",
+"setting": {
+"periodic_s": 300.0,
+"model": "claude-opus-5-5",
+"coach_version": 5
+},
+"race_time_s": 2399.2702511020716,
+"blown_s": 0.0,
+"reserve_left": 0.21787831262961102,
+"reference_s": 2392.874233246482,
+"cues_spoken": 6,
+"cues_followed": 6,
+"cues_blocked": 63,
+"asks": {
+"line_in": 1,
+"ease": 1,
+"line_out": 1,
+"push": 2,
+"finish": 1
+},
+"cue_log": [
+{
+"race_s": 60.4,
+"text": "Stream against us. Get inside, hug the shore.",
+"ask": "line_in",
+"pace_s500": null,
+"line_m": 60.0
+},
+{
+"race_s": 356.0,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1519.2,
+"text": "Stream's with us now. Angle out to 300 metres.",
+"ask": "line_out",
+"pace_s500": null,
+"line_m": 300
+},
+{
+"race_s": 1817.0,
+"text": "Reserve's there. Lift a little, hold 150 to the finish.",
+"ask": "push",
+"pace_s500": 150,
+"line_m": null
+},
+{
+"race_s": 2113.5,
+"text": "Plenty left. Lift the effort now, hold 146 to the finish.",
+"ask": "push",
+"pace_s500": 146,
+"line_m": null
+},
+{
+"race_s": 2190.9,
+"text": "Reserve left. Go now.",
+"ask": "finish",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"over_pace": 2,
+"line_out_retry": 2,
+"finish_window": 1
+},
+"consultations": 9,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 5,
+"rule_cues": 3,
+"rule_suppressed": 0,
+"mutes": 1,
+"wall_s": 121.65,
+"model_usage": {
+"calls": 24,
+"errors": 0,
+"input_tokens": 12706,
+"output_tokens": 10122,
+"cache_create_tokens": 19431,
+"cache_read_tokens": 134267,
+"latency_median_s": 5.502277528999912,
+"latency_p90_s": 6.850164142999802
+},
+"model_usd_estimate": 0.3773
+},
+{
+"seed": 3020,
 "arm": "agent_v4",
 "setting": {
 "periodic_s": 300.0,
@@ -3220,6 +4352,95 @@
 "cue_log": [],
 "alerts": {},
 "wall_s": 1.58
+},
+{
+"seed": 3021,
+"arm": "agent_tiered",
+"setting": {
+"periodic_s": 300.0,
+"model": "claude-opus-5-5",
+"coach_version": 5
+},
+"race_time_s": 1922.1131126305486,
+"blown_s": 0.0,
+"reserve_left": 0.2157707976501462,
+"reference_s": 1930.1816167587972,
+"cues_spoken": 6,
+"cues_followed": 6,
+"cues_blocked": 0,
+"asks": {
+"ease": 4,
+"rate_down": 1,
+"hold": 1
+},
+"cue_log": [
+{
+"race_s": 111.1,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 327.4,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 507.8,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 574.0,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 880.3,
+"text": "Settle to 172 pace, long smooth strokes, save it",
+"ask": "ease",
+"pace_s500": 172,
+"line_m": null
+},
+{
+"race_s": 1885.5,
+"text": "Speed is holding. Keep this.",
+"ask": "hold",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"over_pace": 3,
+"fading": 1,
+"reserve_conflict": 1
+},
+"consultations": 11,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 1,
+"rule_cues": 5,
+"rule_suppressed": 0,
+"mutes": 1,
+"wall_s": 92.06,
+"model_usage": {
+"calls": 17,
+"errors": 0,
+"input_tokens": 15888,
+"output_tokens": 7463,
+"cache_create_tokens": 9993,
+"cache_read_tokens": 86187,
+"latency_median_s": 4.645430226999906,
+"latency_p90_s": 9.820608985000035
+},
+"model_usd_estimate": 0.28
 },
 {
 "seed": 3021,
@@ -3482,6 +4703,138 @@
 "cue_log": [],
 "alerts": {},
 "wall_s": 1.42
+},
+{
+"seed": 3022,
+"arm": "agent_tiered",
+"setting": {
+"periodic_s": 300.0,
+"model": "claude-opus-5-5",
+"coach_version": 5
+},
+"race_time_s": 3230.5115422203326,
+"blown_s": 113.184013175796,
+"reserve_left": 0.03827054672191431,
+"reference_s": 3233.780916298064,
+"cues_spoken": 12,
+"cues_followed": 10,
+"cues_blocked": 63,
+"asks": {
+"line_in": 2,
+"ease": 4,
+"rate_down": 4,
+"push": 1,
+"finish": 1
+},
+"cue_log": [
+{
+"race_s": 61.2,
+"text": "Stream against us. Get inside, hug the shore.",
+"ask": "line_in",
+"pace_s500": null,
+"line_m": 60.0
+},
+{
+"race_s": 367.2,
+"text": "Ease slightly, settle into a steady rhythm",
+"ask": "ease",
+"pace_s500": 164,
+"line_m": null
+},
+{
+"race_s": 666.3,
+"text": "Settle a touch, long smooth strokes, hold 2:46",
+"ask": "ease",
+"pace_s500": 166,
+"line_m": null
+},
+{
+"race_s": 877.0,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 982.1,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1082.5,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1386.4,
+"text": "Reserve empty, long way left. Settle to 2:43 pace.",
+"ask": "ease",
+"pace_s500": 163,
+"line_m": null
+},
+{
+"race_s": 1616.9,
+"text": "Stream against us. Get inside, hug the shore.",
+"ask": "line_in",
+"pace_s500": null,
+"line_m": 60.0
+},
+{
+"race_s": 2029.9,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 2273.1,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 2882.8,
+"text": "Lift a touch now, settle at 164, sprint comes later",
+"ask": "push",
+"pace_s500": 164,
+"line_m": null
+},
+{
+"race_s": 3176.1,
+"text": "Final sprint now, empty the tank to the line!",
+"ask": "finish",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"over_pace": 2,
+"fading": 5
+},
+"consultations": 14,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 5,
+"rule_cues": 7,
+"rule_suppressed": 0,
+"mutes": 0,
+"wall_s": 131.26,
+"model_usage": {
+"calls": 22,
+"errors": 0,
+"input_tokens": 21263,
+"output_tokens": 10661,
+"cache_create_tokens": 16275,
+"cache_read_tokens": 108724,
+"latency_median_s": 5.818170466000083,
+"latency_p90_s": 9.458645230000002
+},
+"model_usd_estimate": 0.4014
 },
 {
 "seed": 3022,
@@ -3779,6 +5132,132 @@
 "cue_log": [],
 "alerts": {},
 "wall_s": 2.24
+},
+{
+"seed": 3023,
+"arm": "agent_tiered",
+"setting": {
+"periodic_s": 300.0,
+"model": "claude-opus-5-5",
+"coach_version": 5
+},
+"race_time_s": 2977.277251129148,
+"blown_s": 0.0,
+"reserve_left": 0.23718413923930765,
+"reference_s": 2963.0678298114713,
+"cues_spoken": 11,
+"cues_followed": 10,
+"cues_blocked": 1,
+"asks": {
+"ease": 3,
+"rate_down": 3,
+"line_in": 1,
+"hold": 1,
+"push": 3
+},
+"cue_log": [
+{
+"race_s": 69.1,
+"text": "Settle into race pace, ease to 2:24",
+"ask": "ease",
+"pace_s500": 144,
+"line_m": null
+},
+{
+"race_s": 366.1,
+"text": "Settle a touch, long smooth strokes, hold 141",
+"ask": "ease",
+"pace_s500": 141,
+"line_m": null
+},
+{
+"race_s": 494.3,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 674.2,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 977.2,
+"text": "Ease a touch, longer strokes, settle at 2:26.",
+"ask": "ease",
+"pace_s500": 146,
+"line_m": null
+},
+{
+"race_s": 1281.9,
+"text": "Settle the rate two beats, longer stroke, steady effort.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1418.9,
+"text": "Stream against us. Get inside, hug the shore.",
+"ask": "line_in",
+"pace_s500": null,
+"line_m": 60.0
+},
+{
+"race_s": 1906.7,
+"text": "Speed is holding. Keep this.",
+"ask": "hold",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 2213.8,
+"text": "You have a little in hand. Lift slightly, hold 152.",
+"ask": "push",
+"pace_s500": 152,
+"line_m": null
+},
+{
+"race_s": 2512.1,
+"text": "Lift a touch now, hold it to the sprint.",
+"ask": "push",
+"pace_s500": 150,
+"line_m": null
+},
+{
+"race_s": 2813.8,
+"text": "Lift it now, build steadily to the line",
+"ask": "push",
+"pace_s500": 147,
+"line_m": null
+}
+],
+"alerts": {
+"over_pace": 1,
+"fading": 2,
+"reserve_conflict": 1
+},
+"consultations": 12,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 7,
+"rule_cues": 4,
+"rule_suppressed": 0,
+"mutes": 0,
+"wall_s": 138.66,
+"model_usage": {
+"calls": 28,
+"errors": 0,
+"input_tokens": 17388,
+"output_tokens": 11109,
+"cache_create_tokens": 40559,
+"cache_read_tokens": 191442,
+"latency_median_s": 4.908427895999921,
+"latency_p90_s": 7.601017335000051
+},
+"model_usd_estimate": 0.5328
 },
 {
 "seed": 3023,
@@ -4114,6 +5593,103 @@
 },
 {
 "seed": 3024,
+"arm": "agent_tiered",
+"setting": {
+"periodic_s": 300.0,
+"model": "claude-opus-5-5",
+"coach_version": 5
+},
+"race_time_s": 1826.5837049686852,
+"blown_s": 237.0445715921202,
+"reserve_left": 0.15072591123286377,
+"reference_s": 1784.5577508107244,
+"cues_spoken": 7,
+"cues_followed": 5,
+"cues_blocked": 2,
+"asks": {
+"line_out": 1,
+"ease": 2,
+"rate_down": 2,
+"line_in": 1,
+"finish": 1
+},
+"cue_log": [
+{
+"race_s": 67.4,
+"text": "Head out to 380 metres, stronger stream there.",
+"ask": "line_out",
+"pace_s500": null,
+"line_m": 380
+},
+{
+"race_s": 366.5,
+"text": "Reserve empty. Ease slightly, settle at 142 pace.",
+"ask": "ease",
+"pace_s500": 142,
+"line_m": null
+},
+{
+"race_s": 460.3,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 551.4,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 640.1,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 846.9,
+"text": "Stream against us. Get inside, hug the shore.",
+"ask": "line_in",
+"pace_s500": null,
+"line_m": 60.0
+},
+{
+"race_s": 1750.7,
+"text": "Last 200 metres. Sprint now, long hard strokes to the line.",
+"ask": "finish",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"over_pace": 2,
+"fading": 3
+},
+"consultations": 9,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 3,
+"rule_cues": 4,
+"rule_suppressed": 0,
+"mutes": 0,
+"wall_s": 82.31,
+"model_usage": {
+"calls": 16,
+"errors": 0,
+"input_tokens": 12945,
+"output_tokens": 6765,
+"cache_create_tokens": 10349,
+"cache_read_tokens": 82492,
+"latency_median_s": 4.367666995000036,
+"latency_p90_s": 8.085578422000026
+},
+"model_usd_estimate": 0.2553
+},
+{
+"seed": 3024,
 "arm": "agent_v4",
 "setting": {
 "periodic_s": 300.0,
@@ -4442,6 +6018,145 @@
 "cue_log": [],
 "alerts": {},
 "wall_s": 1.79
+},
+{
+"seed": 3025,
+"arm": "agent_tiered",
+"setting": {
+"periodic_s": 300.0,
+"model": "claude-opus-5-5",
+"coach_version": 5
+},
+"race_time_s": 3356.3479355545205,
+"blown_s": 196.5807098385669,
+"reserve_left": 0.06035210694448948,
+"reference_s": 3589.2303678282096,
+"cues_spoken": 13,
+"cues_followed": 10,
+"cues_blocked": 1,
+"asks": {
+"ease": 5,
+"rate_down": 6,
+"line_in": 1,
+"hold": 1
+},
+"cue_log": [
+{
+"race_s": 70.8,
+"text": "Settle now, ease to steady race pace",
+"ask": "ease",
+"pace_s500": 146,
+"line_m": null
+},
+{
+"race_s": 368.2,
+"text": "Settle a touch, long smooth strokes, hold 146.",
+"ask": "ease",
+"pace_s500": 146,
+"line_m": null
+},
+{
+"race_s": 441.7,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 552.8,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 732.5,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1041.1,
+"text": "Reserve empty. Settle a touch, hold 145 steady.",
+"ask": "ease",
+"pace_s500": 145,
+"line_m": null
+},
+{
+"race_s": 1432.4,
+"text": "Stream against us. Get inside, hug the shore.",
+"ask": "line_in",
+"pace_s500": null,
+"line_m": 60.0
+},
+{
+"race_s": 1556.5,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1858.9,
+"text": "Speed is holding. Keep this.",
+"ask": "hold",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 2466.6,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 2646.3,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 2888.0,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 3067.7,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"over_pace": 3,
+"fading": 6,
+"reserve_conflict": 1
+},
+"consultations": 17,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 3,
+"rule_cues": 10,
+"rule_suppressed": 0,
+"mutes": 0,
+"wall_s": 152.83,
+"model_usage": {
+"calls": 25,
+"errors": 0,
+"input_tokens": 25539,
+"output_tokens": 12397,
+"cache_create_tokens": 14594,
+"cache_read_tokens": 128391,
+"latency_median_s": 6.367111022999779,
+"latency_p90_s": 8.267155126000034
+},
+"model_usd_estimate": 0.4487
 },
 {
 "seed": 3025,
@@ -4795,6 +6510,109 @@
 },
 {
 "seed": 3026,
+"arm": "agent_tiered",
+"setting": {
+"periodic_s": 300.0,
+"model": "claude-opus-5-5",
+"coach_version": 5
+},
+"race_time_s": 2393.2127562077017,
+"blown_s": 0.0,
+"reserve_left": 0.21583827565480518,
+"reference_s": 2427.002090199407,
+"cues_spoken": 8,
+"cues_followed": 4,
+"cues_blocked": 63,
+"asks": {
+"line_in": 1,
+"ease": 4,
+"line_out": 2,
+"push": 1
+},
+"cue_log": [
+{
+"race_s": 61.9,
+"text": "Stream against us. Get inside, hug the shore.",
+"ask": "line_in",
+"pace_s500": null,
+"line_m": 60.0
+},
+{
+"race_s": 367.5,
+"text": "Ease slightly, settle into a long steady rhythm",
+"ask": "ease",
+"pace_s500": 158,
+"line_m": null
+},
+{
+"race_s": 669.5,
+"text": "Ease a touch, settle at 2:42 pace",
+"ask": "ease",
+"pace_s500": 162,
+"line_m": null
+},
+{
+"race_s": 817.4,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1123.2,
+"text": "Reserve nearly gone. Ease slightly, settle at 2:40.",
+"ask": "ease",
+"pace_s500": 160,
+"line_m": null
+},
+{
+"race_s": 1278.5,
+"text": "Stream's with us now. Head out to 400 metres.",
+"ask": "line_out",
+"pace_s500": null,
+"line_m": 400
+},
+{
+"race_s": 1572.0,
+"text": "Stream's with us now. Angle out to 300 metres.",
+"ask": "line_out",
+"pace_s500": null,
+"line_m": 300
+},
+{
+"race_s": 2169.8,
+"text": "Reserve's there, under 900 to go. Lift now, hold 131.",
+"ask": "push",
+"pace_s500": 131,
+"line_m": null
+}
+],
+"alerts": {
+"over_pace": 2,
+"fading": 1
+},
+"consultations": 9,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 6,
+"rule_cues": 2,
+"rule_suppressed": 0,
+"mutes": 0,
+"wall_s": 93.58,
+"model_usage": {
+"calls": 18,
+"errors": 0,
+"input_tokens": 12676,
+"output_tokens": 7724,
+"cache_create_tokens": 14984,
+"cache_read_tokens": 93153,
+"latency_median_s": 4.9335606270001335,
+"latency_p90_s": 8.044875447000095
+},
+"model_usd_estimate": 0.2987
+},
+{
+"seed": 3026,
 "arm": "agent_v4",
 "setting": {
 "periodic_s": 300.0,
@@ -5081,6 +6899,85 @@
 },
 {
 "seed": 3027,
+"arm": "agent_tiered",
+"setting": {
+"periodic_s": 300.0,
+"model": "claude-opus-5-5",
+"coach_version": 5
+},
+"race_time_s": 2479.560885013035,
+"blown_s": 0.0,
+"reserve_left": 0.5331595112305879,
+"reference_s": 2479.0328511523394,
+"cues_spoken": 5,
+"cues_followed": 5,
+"cues_blocked": 1,
+"asks": {
+"ease": 4,
+"push": 1
+},
+"cue_log": [
+{
+"race_s": 68.3,
+"text": "Settle into race pace, too hot now",
+"ask": "ease",
+"pace_s500": 158,
+"line_m": null
+},
+{
+"race_s": 290.7,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 470.7,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 739.1,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 2179.8,
+"text": "Lift now, 1k to go, hold it to the line",
+"ask": "push",
+"pace_s500": 148,
+"line_m": null
+}
+],
+"alerts": {
+"over_pace": 4
+},
+"consultations": 10,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 2,
+"rule_cues": 3,
+"rule_suppressed": 0,
+"mutes": 0,
+"wall_s": 86.88,
+"model_usage": {
+"calls": 17,
+"errors": 0,
+"input_tokens": 14402,
+"output_tokens": 6978,
+"cache_create_tokens": 13387,
+"cache_read_tokens": 85631,
+"latency_median_s": 4.592724592999957,
+"latency_p90_s": 9.204175991000056
+},
+"model_usd_estimate": 0.2812
+},
+{
+"seed": 3027,
 "arm": "agent_v4",
 "setting": {
 "periodic_s": 300.0,
@@ -5315,6 +7212,89 @@
 "cue_log": [],
 "alerts": {},
 "wall_s": 2.39
+},
+{
+"seed": 3028,
+"arm": "agent_tiered",
+"setting": {
+"periodic_s": 300.0,
+"model": "claude-opus-5-5",
+"coach_version": 5
+},
+"race_time_s": 3168.7545100712887,
+"blown_s": 0.0,
+"reserve_left": 0.12475443427849713,
+"reference_s": 3195.54590059409,
+"cues_spoken": 5,
+"cues_followed": 4,
+"cues_blocked": 61,
+"asks": {
+"line_in": 1,
+"ease": 2,
+"line_out": 1,
+"push": 1
+},
+"cue_log": [
+{
+"race_s": 60.4,
+"text": "Stream against us. Get inside, hug the shore.",
+"ask": "line_in",
+"pace_s500": null,
+"line_m": 60.0
+},
+{
+"race_s": 367.9,
+"text": "Ease a touch, settle to steady race effort.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 526.8,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1733.4,
+"text": "Stream's with us now. Angle out to the channel.",
+"ask": "line_out",
+"pace_s500": null,
+"line_m": 400
+},
+{
+"race_s": 2931.6,
+"text": "800 to go. Lift the effort now, build to the line.",
+"ask": "push",
+"pace_s500": 141,
+"line_m": null
+}
+],
+"alerts": {
+"over_pace": 3,
+"pod_low": 2,
+"reserve_conflict": 1
+},
+"consultations": 11,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 3,
+"rule_cues": 2,
+"rule_suppressed": 2,
+"mutes": 1,
+"wall_s": 106.88,
+"model_usage": {
+"calls": 20,
+"errors": 0,
+"input_tokens": 15471,
+"output_tokens": 9109,
+"cache_create_tokens": 15163,
+"cache_read_tokens": 103170,
+"latency_median_s": 5.50384159500004,
+"latency_p90_s": 8.217319729999872
+},
+"model_usd_estimate": 0.3405
 },
 {
 "seed": 3028,
@@ -5669,6 +7649,141 @@
 },
 {
 "seed": 3029,
+"arm": "agent_tiered",
+"setting": {
+"periodic_s": 300.0,
+"model": "claude-opus-5-5",
+"coach_version": 5
+},
+"race_time_s": 2455.766805291129,
+"blown_s": 133.9880624441574,
+"reserve_left": 0.07400630649016487,
+"reference_s": 2383.7789423586955,
+"cues_spoken": 12,
+"cues_followed": 10,
+"cues_blocked": 2,
+"asks": {
+"line_out": 1,
+"ease": 3,
+"rate_down": 3,
+"line_in": 2,
+"push": 2,
+"finish": 1
+},
+"cue_log": [
+{
+"race_s": 66.9,
+"text": "Move out to 350 metres, stream's stronger there",
+"ask": "line_out",
+"pace_s500": null,
+"line_m": 350
+},
+{
+"race_s": 366.1,
+"text": "Ease a touch, settle to long steady strokes",
+"ask": "ease",
+"pace_s500": 143,
+"line_m": null
+},
+{
+"race_s": 665.2,
+"text": "Reserve empty. Ease slightly, settle at 146 pace.",
+"ask": "ease",
+"pace_s500": 146,
+"line_m": null
+},
+{
+"race_s": 726.1,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1031.5,
+"text": "Reserve empty. Ease slightly, longer strokes, settle at 146.",
+"ask": "ease",
+"pace_s500": 146,
+"line_m": null
+},
+{
+"race_s": 1133.3,
+"text": "Stream against us. Get inside, hug the shore.",
+"ask": "line_in",
+"pace_s500": null,
+"line_m": 60.0
+},
+{
+"race_s": 1447.3,
+"text": "Stream's against us now. Angle inshore to 80 metres.",
+"ask": "line_in",
+"pace_s500": null,
+"line_m": 80
+},
+{
+"race_s": 1509.4,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1815.3,
+"text": "Reserve is building. Lift the effort a touch, hold it home.",
+"ask": "push",
+"pace_s500": 158,
+"line_m": null
+},
+{
+"race_s": 2114.8,
+"text": "Plenty left. Lift the effort now, hold it home.",
+"ask": "push",
+"pace_s500": 150,
+"line_m": null
+},
+{
+"race_s": 2198.1,
+"text": "Reserve left. Go now.",
+"ask": "finish",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 2373.4,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"over_pace": 1,
+"fading": 3,
+"line_drift_in": 1,
+"finish_window": 1
+},
+"consultations": 12,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 8,
+"rule_cues": 5,
+"rule_suppressed": 0,
+"mutes": 0,
+"wall_s": 141.21,
+"model_usage": {
+"calls": 24,
+"errors": 0,
+"input_tokens": 17143,
+"output_tokens": 11973,
+"cache_create_tokens": 19734,
+"cache_read_tokens": 129885,
+"latency_median_s": 5.05498539600012,
+"latency_p90_s": 9.802833502999874
+},
+"model_usd_estimate": 0.4327
+},
+{
+"seed": 3029,
 "arm": "agent_v4",
 "setting": {
 "periodic_s": 300.0,
@@ -5956,6 +8071,133 @@
 "cue_log": [],
 "alerts": {},
 "wall_s": 2.02
+},
+{
+"seed": 3030,
+"arm": "agent_tiered",
+"setting": {
+"periodic_s": 300.0,
+"model": "claude-opus-5-5",
+"coach_version": 5
+},
+"race_time_s": 2726.2698257278944,
+"blown_s": 245.39817730087756,
+"reserve_left": 0.03675985092780351,
+"reference_s": 2560.3856838769807,
+"cues_spoken": 11,
+"cues_followed": 7,
+"cues_blocked": 64,
+"asks": {
+"line_in": 1,
+"ease": 2,
+"hold": 1,
+"rate_down": 6,
+"push": 1
+},
+"cue_log": [
+{
+"race_s": 61.0,
+"text": "Stream against us. Get inside, hug the shore.",
+"ask": "line_in",
+"pace_s500": null,
+"line_m": 60.0
+},
+{
+"race_s": 366.3,
+"text": "Reserve empty. Ease to steady, settle on 183 pace.",
+"ask": "ease",
+"pace_s500": 183,
+"line_m": null
+},
+{
+"race_s": 720.7,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 824.5,
+"text": "Speed is holding. Keep this.",
+"ask": "hold",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 980.7,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1399.9,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1579.6,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1806.9,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 2111.8,
+"text": "Plenty left. Lift effort now, hold it to the finish.",
+"ask": "push",
+"pace_s500": 156,
+"line_m": null
+},
+{
+"race_s": 2404.9,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 2594.4,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"over_pace": 2,
+"reserve_conflict": 1,
+"fading": 6,
+"go_channel": 1
+},
+"consultations": 14,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 5,
+"rule_cues": 9,
+"rule_suppressed": 0,
+"mutes": 1,
+"wall_s": 148.39,
+"model_usage": {
+"calls": 30,
+"errors": 0,
+"input_tokens": 21029,
+"output_tokens": 12073,
+"cache_create_tokens": 23710,
+"cache_read_tokens": 164948,
+"latency_median_s": 5.3441193570001815,
+"latency_p90_s": 6.815090283000245
+},
+"model_usd_estimate": 0.4771
 },
 {
 "seed": 3030,
@@ -6290,6 +8532,117 @@
 },
 {
 "seed": 3031,
+"arm": "agent_tiered",
+"setting": {
+"periodic_s": 300.0,
+"model": "claude-opus-5-5",
+"coach_version": 5
+},
+"race_time_s": 2431.8436523811706,
+"blown_s": 146.95082272900316,
+"reserve_left": 0.08243520513589311,
+"reference_s": 2399.7413334404364,
+"cues_spoken": 9,
+"cues_followed": 7,
+"cues_blocked": 0,
+"asks": {
+"ease": 4,
+"rate_down": 1,
+"push": 3,
+"finish": 1
+},
+"cue_log": [
+{
+"race_s": 111.1,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 416.1,
+"text": "Ease slightly, settle at 155 pace for the long haul.",
+"ask": "ease",
+"pace_s500": 155,
+"line_m": null
+},
+{
+"race_s": 526.4,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 831.7,
+"text": "Reserve's empty and you're fading. Ease to 161 pace.",
+"ask": "ease",
+"pace_s500": 161,
+"line_m": null
+},
+{
+"race_s": 1137.6,
+"text": "Ease slightly, drop two beats, long strong strokes",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1544.0,
+"text": "Reserve rebuilding. Lift a touch, settle at 150.",
+"ask": "push",
+"pace_s500": 150,
+"line_m": null
+},
+{
+"race_s": 1842.6,
+"text": "Plenty left. Lift effort now, hold 144 to the finish.",
+"ask": "push",
+"pace_s500": 144,
+"line_m": null
+},
+{
+"race_s": 2141.2,
+"text": "Plenty left, 1 km to go. Lift the pace now.",
+"ask": "push",
+"pace_s500": 138,
+"line_m": null
+},
+{
+"race_s": 2213.1,
+"text": "Reserve left. Go now.",
+"ask": "finish",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"over_pace": 1,
+"fading": 1,
+"finish_window": 1
+},
+"consultations": 11,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 6,
+"rule_cues": 3,
+"rule_suppressed": 0,
+"mutes": 1,
+"wall_s": 113.72,
+"model_usage": {
+"calls": 21,
+"errors": 0,
+"input_tokens": 14803,
+"output_tokens": 9327,
+"cache_create_tokens": 16770,
+"cache_read_tokens": 108120,
+"latency_median_s": 4.765758872999868,
+"latency_p90_s": 7.37798200799989
+},
+"model_usd_estimate": 0.3512
+},
+{
+"seed": 3031,
 "arm": "agent_v4",
 "setting": {
 "periodic_s": 300.0,
@@ -6526,6 +8879,96 @@
 "cue_log": [],
 "alerts": {},
 "wall_s": 2.12
+},
+{
+"seed": 3032,
+"arm": "agent_tiered",
+"setting": {
+"periodic_s": 300.0,
+"model": "claude-opus-5-5",
+"coach_version": 5
+},
+"race_time_s": 2658.386777915618,
+"blown_s": 0.0,
+"reserve_left": 0.47455998721938353,
+"reference_s": 2692.064214751322,
+"cues_spoken": 6,
+"cues_followed": 3,
+"cues_blocked": 1,
+"asks": {
+"line_out": 1,
+"ease": 2,
+"line_in": 1,
+"push": 1,
+"rate_down": 1
+},
+"cue_log": [
+{
+"race_s": 68.5,
+"text": "Angle out to 350 metres, stronger stream outside",
+"ask": "line_out",
+"pace_s500": null,
+"line_m": 350
+},
+{
+"race_s": 461.5,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1071.6,
+"text": "Ease a touch, just off this effort, smooth and long.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1234.8,
+"text": "Stream against us. Get inside, hug the shore.",
+"ask": "line_in",
+"pace_s500": null,
+"line_m": 60.0
+},
+{
+"race_s": 2442.5,
+"text": "640 to go. Lift now, build steadily to the line.",
+"ask": "push",
+"pace_s500": 170,
+"line_m": null
+},
+{
+"race_s": 2604.2,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"over_pace": 3,
+"fading": 1
+},
+"consultations": 11,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 3,
+"rule_cues": 3,
+"rule_suppressed": 1,
+"mutes": 1,
+"wall_s": 119.69,
+"model_usage": {
+"calls": 19,
+"errors": 0,
+"input_tokens": 15362,
+"output_tokens": 10033,
+"cache_create_tokens": 13232,
+"cache_read_tokens": 97617,
+"latency_median_s": 6.113233003000005,
+"latency_p90_s": 10.146012177000102
+},
+"model_usd_estimate": 0.3478
 },
 {
 "seed": 3032,
@@ -6814,6 +9257,104 @@
 },
 {
 "seed": 3033,
+"arm": "agent_tiered",
+"setting": {
+"periodic_s": 300.0,
+"model": "claude-opus-5-5",
+"coach_version": 5
+},
+"race_time_s": 1943.975490032748,
+"blown_s": 0.0,
+"reserve_left": 0.17262158539195524,
+"reference_s": 1960.2227316156632,
+"cues_spoken": 7,
+"cues_followed": 7,
+"cues_blocked": 63,
+"asks": {
+"line_in": 1,
+"ease": 3,
+"line_out": 1,
+"hold": 1,
+"rate_down": 1
+},
+"cue_log": [
+{
+"race_s": 60.2,
+"text": "Stream against us. Get inside, hug the shore.",
+"ask": "line_in",
+"pace_s500": null,
+"line_m": 60.0
+},
+{
+"race_s": 366.6,
+"text": "Ease slightly, settle into a steady, sustainable effort.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 667.5,
+"text": "Ease slightly, settle at 1:58 pace, long smooth strokes.",
+"ask": "ease",
+"pace_s500": 178,
+"line_m": null
+},
+{
+"race_s": 968.6,
+"text": "Ease a touch, settle to steady breathing for the turn.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1078.4,
+"text": "Stream's with us now. Head out to 400 metres.",
+"ask": "line_out",
+"pace_s500": null,
+"line_m": 400
+},
+{
+"race_s": 1301.8,
+"text": "Speed is holding. Keep this.",
+"ask": "hold",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1886.5,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"over_pace": 1,
+"reserve_conflict": 1,
+"fading": 1
+},
+"consultations": 8,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 6,
+"rule_cues": 3,
+"rule_suppressed": 0,
+"mutes": 1,
+"wall_s": 91.9,
+"model_usage": {
+"calls": 17,
+"errors": 0,
+"input_tokens": 11161,
+"output_tokens": 7508,
+"cache_create_tokens": 15325,
+"cache_read_tokens": 88186,
+"latency_median_s": 5.194856068000263,
+"latency_p90_s": 8.045732935999695
+},
+"model_usd_estimate": 0.2891
+},
+{
+"seed": 3033,
 "arm": "agent_v4",
 "setting": {
 "periodic_s": 300.0,
@@ -7095,6 +9636,128 @@
 "cue_log": [],
 "alerts": {},
 "wall_s": 1.53
+},
+{
+"seed": 3034,
+"arm": "agent_tiered",
+"setting": {
+"periodic_s": 300.0,
+"model": "claude-opus-5-5",
+"coach_version": 5
+},
+"race_time_s": 2573.5298103019177,
+"blown_s": 284.5027495735288,
+"reserve_left": 0.13539431688239334,
+"reference_s": 2506.358881482281,
+"cues_spoken": 10,
+"cues_followed": 5,
+"cues_blocked": 3,
+"asks": {
+"line_out": 1,
+"ease": 2,
+"rate_down": 3,
+"line_in": 1,
+"hold": 1,
+"push": 2
+},
+"cue_log": [
+{
+"race_s": 65.8,
+"text": "Angle out to 400 metres, stronger stream out there",
+"ask": "line_out",
+"pace_s500": null,
+"line_m": 400
+},
+{
+"race_s": 366.4,
+"text": "Ease slightly, settle into a steady 1:52 pace",
+"ask": "ease",
+"pace_s500": 152,
+"line_m": null
+},
+{
+"race_s": 474.4,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 781.9,
+"text": "Ease a touch, longer strokes, settle at 1:53",
+"ask": "ease",
+"pace_s500": 153,
+"line_m": null
+},
+{
+"race_s": 1201.2,
+"text": "Stream against us. Get inside, hug the shore.",
+"ask": "line_in",
+"pace_s500": null,
+"line_m": 60.0
+},
+{
+"race_s": 1384.6,
+"text": "Speed is holding. Keep this.",
+"ask": "hold",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1656.2,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1965.9,
+"text": "You've got more in you. Lift effort, hold 162.",
+"ask": "push",
+"pace_s500": 162,
+"line_m": null
+},
+{
+"race_s": 2261.6,
+"text": "Plenty left. Lift it now, hold 2:40 to the finish.",
+"ask": "push",
+"pace_s500": 160,
+"line_m": null
+},
+{
+"race_s": 2418.0,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"over_pace": 1,
+"fading": 3,
+"reserve_conflict": 1,
+"finish_window": 1,
+"sprint_go": 1
+},
+"consultations": 11,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 7,
+"rule_cues": 5,
+"rule_suppressed": 1,
+"mutes": 1,
+"wall_s": 153.44,
+"model_usage": {
+"calls": 26,
+"errors": 0,
+"input_tokens": 15715,
+"output_tokens": 13125,
+"cache_create_tokens": 27696,
+"cache_read_tokens": 144161,
+"latency_median_s": 5.6633604509997895,
+"latency_p90_s": 9.082004090999817
+},
+"model_usd_estimate": 0.4927
 },
 {
 "seed": 3034,
@@ -7414,6 +10077,104 @@
 },
 {
 "seed": 3035,
+"arm": "agent_tiered",
+"setting": {
+"periodic_s": 300.0,
+"model": "claude-opus-5-5",
+"coach_version": 5
+},
+"race_time_s": 1902.072230981667,
+"blown_s": 123.97134368553269,
+"reserve_left": 0.06895253140973735,
+"reference_s": 1864.5069938622032,
+"cues_spoken": 7,
+"cues_followed": 3,
+"cues_blocked": 64,
+"asks": {
+"line_in": 1,
+"ease": 1,
+"rate_down": 3,
+"push": 2
+},
+"cue_log": [
+{
+"race_s": 61.9,
+"text": "Stream against us. Get inside, hug the shore.",
+"ask": "line_in",
+"pace_s500": null,
+"line_m": 60.0
+},
+{
+"race_s": 366.2,
+"text": "Ease slightly, settle at 2:40 pace, long race left.",
+"ask": "ease",
+"pace_s500": 160,
+"line_m": null
+},
+{
+"race_s": 476.2,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 678.3,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1256.1,
+"text": "Lift a touch, settle at this harder effort",
+"ask": "push",
+"pace_s500": 154,
+"line_m": null
+},
+{
+"race_s": 1553.6,
+"text": "Plenty left. Lift effort now, hold this to the sprint.",
+"ask": "push",
+"pace_s500": 151,
+"line_m": null
+},
+{
+"race_s": 1757.5,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"over_pace": 1,
+"fading": 3,
+"pod_near_empty": 1,
+"finish_now": 1
+},
+"consultations": 8,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 6,
+"rule_cues": 4,
+"rule_suppressed": 0,
+"mutes": 2,
+"wall_s": 115.22,
+"model_usage": {
+"calls": 20,
+"errors": 0,
+"input_tokens": 11582,
+"output_tokens": 9568,
+"cache_create_tokens": 21655,
+"cache_read_tokens": 113109,
+"latency_median_s": 5.235983766000118,
+"latency_p90_s": 8.213796075000118
+},
+"model_usd_estimate": 0.3686
+},
+{
+"seed": 3035,
 "arm": "agent_v4",
 "setting": {
 "periodic_s": 300.0,
@@ -7674,6 +10435,111 @@
 "cue_log": [],
 "alerts": {},
 "wall_s": 1.31
+},
+{
+"seed": 3036,
+"arm": "agent_tiered",
+"setting": {
+"periodic_s": 300.0,
+"model": "claude-opus-5-5",
+"coach_version": 5
+},
+"race_time_s": 2505.6853003749234,
+"blown_s": 158.41712380029819,
+"reserve_left": 0.08335914897923889,
+"reference_s": 2475.7799244869034,
+"cues_spoken": 8,
+"cues_followed": 6,
+"cues_blocked": 62,
+"asks": {
+"line_in": 2,
+"ease": 3,
+"hold": 1,
+"push": 1,
+"rate_down": 1
+},
+"cue_log": [
+{
+"race_s": 62.0,
+"text": "Stream against us. Get inside, hug the shore.",
+"ask": "line_in",
+"pace_s500": null,
+"line_m": 60.0
+},
+{
+"race_s": 367.4,
+"text": "Ease slightly, settle to 2:41 pace, long strokes.",
+"ask": "ease",
+"pace_s500": 161,
+"line_m": null
+},
+{
+"race_s": 498.6,
+"text": "Speed is holding. Keep this.",
+"ask": "hold",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 560.3,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 740.4,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1259.1,
+"text": "Stream against us. Get inside, hug the shore.",
+"ask": "line_in",
+"pace_s500": null,
+"line_m": 60.0
+},
+{
+"race_s": 2165.5,
+"text": "Five minutes left. Lift the effort a touch, hold 152.",
+"ask": "push",
+"pace_s500": 152,
+"line_m": null
+},
+{
+"race_s": 2291.1,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"over_pace": 3,
+"reserve_conflict": 1,
+"fading": 1
+},
+"consultations": 11,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 2,
+"rule_cues": 6,
+"rule_suppressed": 0,
+"mutes": 0,
+"wall_s": 106.68,
+"model_usage": {
+"calls": 18,
+"errors": 0,
+"input_tokens": 16605,
+"output_tokens": 8824,
+"cache_create_tokens": 13849,
+"cache_read_tokens": 91475,
+"latency_median_s": 5.8710182259997055,
+"latency_p90_s": 8.282568719999745
+},
+"model_usd_estimate": 0.3304
 },
 {
 "seed": 3036,
@@ -7959,6 +10825,122 @@
 "cue_log": [],
 "alerts": {},
 "wall_s": 1.57
+},
+{
+"seed": 3037,
+"arm": "agent_tiered",
+"setting": {
+"periodic_s": 300.0,
+"model": "claude-opus-5-5",
+"coach_version": 5
+},
+"race_time_s": 2417.2718781739363,
+"blown_s": 351.3611751191444,
+"reserve_left": 0.15352673995614344,
+"reference_s": 2395.261233688678,
+"cues_spoken": 10,
+"cues_followed": 8,
+"cues_blocked": 63,
+"asks": {
+"line_in": 2,
+"ease": 3,
+"rate_down": 5
+},
+"cue_log": [
+{
+"race_s": 61.7,
+"text": "Stream against us. Get inside, hug the shore.",
+"ask": "line_in",
+"pace_s500": null,
+"line_m": 60.0
+},
+{
+"race_s": 368.9,
+"text": "Ease a touch, settle at 147 pace",
+"ask": "ease",
+"pace_s500": 147,
+"line_m": null
+},
+{
+"race_s": 672.2,
+"text": "Ease slightly, settle long and smooth at 148.",
+"ask": "ease",
+"pace_s500": 148,
+"line_m": null
+},
+{
+"race_s": 970.9,
+"text": "Reserve's empty. Ease slightly, settle at 1:50 pace.",
+"ask": "ease",
+"pace_s500": 150,
+"line_m": null
+},
+{
+"race_s": 1043.0,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1165.8,
+"text": "Stream against us. Get inside, hug the shore.",
+"ask": "line_in",
+"pace_s500": null,
+"line_m": 60.0
+},
+{
+"race_s": 1510.1,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1690.1,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1995.9,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 2369.4,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"over_pace": 1,
+"fading": 5
+},
+"consultations": 13,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 4,
+"rule_cues": 7,
+"rule_suppressed": 0,
+"mutes": 1,
+"wall_s": 156.42,
+"model_usage": {
+"calls": 23,
+"errors": 0,
+"input_tokens": 19282,
+"output_tokens": 13213,
+"cache_create_tokens": 16082,
+"cache_read_tokens": 121184,
+"latency_median_s": 6.056028205000075,
+"latency_p90_s": 9.985510859999977
+},
+"model_usd_estimate": 0.446
 },
 {
 "seed": 3037,
@@ -8260,6 +11242,79 @@
 },
 {
 "seed": 3038,
+"arm": "agent_tiered",
+"setting": {
+"periodic_s": 300.0,
+"model": "claude-opus-5-5",
+"coach_version": 5
+},
+"race_time_s": 2548.7080128253106,
+"blown_s": 0.0,
+"reserve_left": 0.6329460334411496,
+"reference_s": 2536.4324422559216,
+"cues_spoken": 4,
+"cues_followed": 4,
+"cues_blocked": 61,
+"asks": {
+"line_in": 1,
+"ease": 2,
+"line_out": 1
+},
+"cue_log": [
+{
+"race_s": 62.0,
+"text": "Stream against us. Get inside, hug the shore.",
+"ask": "line_in",
+"pace_s500": null,
+"line_m": 60.0
+},
+{
+"race_s": 368.7,
+"text": "Ease slightly, settle at this rhythm, hold 174.",
+"ask": "ease",
+"pace_s500": 174,
+"line_m": null
+},
+{
+"race_s": 1269.4,
+"text": "Ease slightly, settle long and smooth, hold 2:46",
+"ask": "ease",
+"pace_s500": 166,
+"line_m": null
+},
+{
+"race_s": 1345.5,
+"text": "Stream with us now. Move out to 350 metres.",
+"ask": "line_out",
+"pace_s500": null,
+"line_m": 350
+}
+],
+"alerts": {
+"over_pace": 1
+},
+"consultations": 10,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 3,
+"rule_cues": 1,
+"rule_suppressed": 0,
+"mutes": 0,
+"wall_s": 87.42,
+"model_usage": {
+"calls": 15,
+"errors": 0,
+"input_tokens": 13500,
+"output_tokens": 6869,
+"cache_create_tokens": 8547,
+"cache_read_tokens": 76168,
+"latency_median_s": 5.18249422100007,
+"latency_p90_s": 8.90539801199975
+},
+"model_usd_estimate": 0.2493
+},
+{
+"seed": 3038,
 "arm": "agent_v4",
 "setting": {
 "periodic_s": 300.0,
@@ -8541,6 +11596,109 @@
 "cue_log": [],
 "alerts": {},
 "wall_s": 1.51
+},
+{
+"seed": 3039,
+"arm": "agent_tiered",
+"setting": {
+"periodic_s": 300.0,
+"model": "claude-opus-5-5",
+"coach_version": 5
+},
+"race_time_s": 2060.3365897780427,
+"blown_s": 340.71881076959403,
+"reserve_left": 0.076440471469336,
+"reference_s": 2053.7537129568186,
+"cues_spoken": 8,
+"cues_followed": 8,
+"cues_blocked": 1,
+"asks": {
+"ease": 2,
+"rate_down": 4,
+"line_in": 1,
+"push": 1
+},
+"cue_log": [
+{
+"race_s": 110.2,
+"text": "Too hot for the distance. Ease a little.",
+"ask": "ease",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 414.9,
+"text": "Ease a touch now, settle at 2:41 pace",
+"ask": "ease",
+"pace_s500": 161,
+"line_m": null
+},
+{
+"race_s": 543.0,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 784.4,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 935.5,
+"text": "Stream against us. Get inside, hug the shore.",
+"ask": "line_in",
+"pace_s500": null,
+"line_m": 60.0
+},
+{
+"race_s": 1421.1,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+},
+{
+"race_s": 1726.5,
+"text": "900 to go, you have reserve. Lift effort now.",
+"ask": "push",
+"pace_s500": 166,
+"line_m": null
+},
+{
+"race_s": 1798.4,
+"text": "Fading at this rate. Drop two beats, lengthen.",
+"ask": "rate_down",
+"pace_s500": null,
+"line_m": null
+}
+],
+"alerts": {
+"over_pace": 1,
+"fading": 4
+},
+"consultations": 10,
+"consult_errors": 0,
+"consult_error_example": "",
+"cue_calls": 3,
+"rule_cues": 6,
+"rule_suppressed": 0,
+"mutes": 1,
+"wall_s": 89.62,
+"model_usage": {
+"calls": 18,
+"errors": 0,
+"input_tokens": 14180,
+"output_tokens": 7328,
+"cache_create_tokens": 14531,
+"cache_read_tokens": 91360,
+"latency_median_s": 4.918698658999801,
+"latency_p90_s": 6.288299770999856
+},
+"model_usd_estimate": 0.2942
 },
 {
 "seed": 3039,
