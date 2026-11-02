@@ -451,6 +451,16 @@ faster than the pack rule (faster on 3 of 6). Held-out check on 12 fresh pack se
 (4000–4011): coach minus pack rule and minus no coach, Holm over the two
 (`coaching_trial.HELDOUT_PACK`).
 
+**Result of the drafting check (12 held-out races, no failed model calls, ~USD 4.9).**
+Against the pack rule: 11.0 s faster (95 % interval −19.1 to −4.0 s; Wilcoxon p 0.049,
+Holm p 0.098; faster in 7 of 12). Against no coach: 7.7 s faster (−17.0 to +0.5 s;
+Holm p 0.12). Against the pod autopilot (secondary): 8.2 s faster (−14.8 to −2.6 s).
+Both fixed rules were slower than no coach here (pack rule +3.4 s, pod autopilot
++0.5 s): a rule cannot tell when a wash is worth keeping. The coach mostly cued
+pushes (46) to keep the paddler on the wash and let go once. This is the first lever
+where the reasoning coach beats the rules, but with 12 races it falls just short of
+significance after the correction for two comparisons.
+
 ## Results so far
 
 **Simulated 37-minute OC1 training session** (`demos/demo_oc1_training.py`,
@@ -598,6 +608,12 @@ the other eight sessions: critical power 93 W, reserve 6.4 kJ; stand-in coach):
   ±0.1 m/s, its change ±0.15 m/s, eddies misplaced by ~120 m, 30 % missing, 30 %
   chance of a false one, the inshore width ±25 %). How much line choice is worth on
   the twin follows from these choices.
+* **Drafting is planted** (`sim/twin.py` `Pack`): one pack, steady through the water
+  at 1.00–1.07 times the paddler's even-pace speed, slowing 15 % at its turns; on its
+  wash (6–10 m behind) the paddler's drag falls by 8–16 %; off it, holding on takes the
+  full effort plus a margin to close, and more than ~25 m back the wash is lost; the
+  paddler's willingness to work for the wash is a drawn trait. Real packs surge,
+  split and race each other, and wash riding depends on position and sea state.
 * The twin's **critical-power test reads 10–25 % low** against the paddler at their
   best rate and fresh; this is what the test measures on this model (efficiency
   falls as the reserve drains inside each piece), and it is left in on purpose.
