@@ -194,6 +194,19 @@ HELDOUT_PACK: Dict[str, Any] = {
                 "interval, Holm over the two"),
     "budget_usd": 5.5,
     "power": "12 seeds: only a large difference can be detected",
+    "revisions": [{
+        "date": "2026-11-02",
+        "before_any_held_out_result": True,
+        "kind": "twin correction (found by a test, after registration, before any coached held-out race)",
+        "changes": [
+            "the pack slows at its own turns and feels the current for its own heading (it did neither, so "
+            "a paddler matching its speed lost metres at every turn and dropped off)",
+            "hanging on applies from the start, and off the wash the paddler needs the effort without the "
+            "drag saving, plus a margin to close (before: the drafting effort, so a gap only grew)",
+            "the development round (pack seeds 0-5) ran on the earlier pack and is kept only as a plumbing "
+            "check (episodes_dev_pack_superseded); the coach (version 7) was not changed",
+        ],
+    }],
 }
 
 
