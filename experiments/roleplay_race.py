@@ -128,6 +128,8 @@ def _run(a: argparse.Namespace) -> None:
         if st["i"] == 0:
             with open(os.path.join(d, "tools.txt"), "w") as f:
                 f.write("\n".join(_tool_line(t) for t in tools) + "\n")
+            with open(os.path.join(d, "system.txt"), "w") as f:
+                f.write(system + "\n")
         with open(os.path.join(d, "packet.json"), "w") as f:
             json.dump(pk, f)
         sys.stdout.write(json.dumps(pk, separators=(",", ":")) + "\n")
@@ -160,7 +162,7 @@ def _replay(a: argparse.Namespace, answers: List[Any]) -> Dict[str, Any]:
 
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
-    ap.add_argument("cmd", choices=["start", "answer", "show", "tools", "collect", "verify"])
+    ap.add_argument("cmd", choices=["start", "answer", "show", "tools", "system", "collect", "verify"])
     ap.add_argument("answer_json", nargs="?", default=None)
     ap.add_argument("--seed", type=int, default=None)
     ap.add_argument("--tag", required=True)
@@ -218,6 +220,10 @@ def main(argv=None) -> int:
         return 0
     if a.cmd == "tools":
         p = os.path.join(d, "tools.txt")
+        print(open(p).read() if os.path.exists(p) else "start the race first")
+        return 0
+    if a.cmd == "system":
+        p = os.path.join(d, "system.txt")
         print(open(p).read() if os.path.exists(p) else "start the race first")
         return 0
     if a.cmd == "show":

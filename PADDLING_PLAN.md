@@ -643,6 +643,46 @@ Limits:
 * the incidents and the paddler's responses are planted;
 * the rules do not read the radio, as registered.
 
+### The open coach's later version, and its held-out check (written down 2026-11-03, before any race)
+
+The first open-coach check left one comparison unsettled: against rules written for the
+practice incidents, the coach was 6.0 s faster (Holm p 0.27). The role-played coaches
+had listed what they could not see, and the later version (`RaceCoach` version 9) adds
+it. Its instructions stay goal, means and facts, with no procedures.
+
+What the new version adds:
+* **What a cue did:** after each cue, what the instruments saw:
+  * pod power, boat-model power, stroke rate and GPS speed in the minute before and
+    after;
+  * whether a turn fell inside that window;
+  * for a rudder clear, whether the boat's speed dipped as a back-stroke does.
+* **Memory and timing:** a pinned race plan; wake-ups it sets for itself and can cancel.
+* **Easier reading:**
+  * a table of legs, so legs in the same direction can be compared;
+  * series summarised in race seconds and alerts given in race minutes;
+  * a short list of stream names;
+  * the turn position as a stream, with the finish not counted as a turn.
+* **Calibration:** corrections to critical power and to the reserve size, which
+  recompute both reserves over the race so far.
+* **The paddler:** answers and remarks that follow their state.
+* **One fact:** an emptied reserve forces the paddler well below critical power.
+
+**Practice** (three development races; inputs fixed afterwards: the short stream list, a
+way to cancel wake-ups, the finish no longer counted as a turn):
+* The coaches used the new inputs. They confirmed that a back-stroke had happened (a 33 %
+  dip when the paddler did it, 1 % when not), and found weed by comparing legs in the
+  same direction.
+* In two of the three races they still raised critical power on a few minutes of
+  evidence, and pushed the paddler into a blow-up.
+
+**The check** (`coaching_trial.HELDOUT_OPEN_V9`):
+* 30 fresh races (seeds 5030–5059), drawn as before: every race holds pod drift or a
+  course change.
+* The same arms as before.
+* Primary: coach minus the incident rules, and coach minus no coach, Holm over the two.
+* Run on agentic_experiments with the `maximum()` fix. Every race replays from its
+  answers.
+
 ## Results so far
 
 **Simulated 37-minute OC1 training session** (`demos/demo_oc1_training.py`,

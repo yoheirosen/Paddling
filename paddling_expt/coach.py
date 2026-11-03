@@ -463,10 +463,11 @@ whether the boat's speed dipped as a back-stroke does. A turn changes these numb
 - Memory: you remember nothing between wake-ups. Your plan (set_plan) is shown at the top of \
 every wake-up; your notes (take_note) show the last 15.
 - Timing: wake_me wakes you after a time or at a distance to go, for example when the next cue \
-is allowed.
+is allowed (wake_me with clear=true cancels the pending ones).
 - The course: legs() gives one row per leg (direction, time, GPS speed, pod power, boat-model \
 power, stroke rate, local push; turns left out), so legs in the same direction can be compared. \
-get_metric_series returns a summary of about 30 points in race seconds.
+get_metric_series returns a summary of about 30 points in race seconds; list_available_metrics \
+gives the stream names.
 - The boat computer's assumptions: set_critical_power (critical power and reserve size, at most \
 3 times per race; both reserves are then recomputed over the race so far) and set_race_distance.
 - Names: the live state's names are for reading; watches and your own metrics use the stream \
@@ -483,6 +484,8 @@ estimated from the turns of the out-and-back course; it lags a change.
 - Critical power and the reserve (w_bal_pod_frac from the pod, reserve_left_pct from boat speed) \
 come from a 3- and 12-minute test before the race and can be 10-25 % off.
 - The start is hard (a minute or two above critical power) and then settles.
+- A paddler who runs the reserve empty is forced well below critical power until part of it \
+comes back.
 - Paddlers misjudge themselves: what they say is evidence, not fact.
 
 How you coach is up to you: what to watch, what to plan, when to speak and what to say, when to \
@@ -560,7 +563,7 @@ class RaceCoach:
             allowed += ["ask_paddler", "take_note", "set_race_distance"]
         if panel is not None:
             for name, tool in panel.tools().items():
-                if self.version >= 9 and name in ("get_metric_series", "get_alerts"):
+                if self.version >= 9 and name in ("get_metric_series", "get_alerts", "list_available_metrics"):
                     continue                      # summarised, race-time versions below
                 reg.register(tool.func, name=name, description=tool.description,
                              input_schema=tool.input_schema, writes=tool.writes)
@@ -575,13 +578,16 @@ class RaceCoach:
                              description="Alerts raised by your watches, with the race minute of each.")
                 reg.register(self.wake_me, name="wake_me", writes=True,
                              description="Wake me after in_s seconds or when at_remaining_m metres are left, "
-                                         "with a reason (at most 3 pending).")
+                                         "with a reason (at most 3 pending); clear=true cancels the pending ones.")
+                self._panel_list = panel.tools()["list_available_metrics"].func
+                reg.register(self.list_streams, name="list_available_metrics",
+                             description="The stream names watches and your own metrics can use, with one line each.")
                 reg.register(self.set_plan, name="set_plan", writes=True,
                              description="Set the race plan shown at the top of every wake-up (replaces the old one).")
                 reg.register(self.legs, name="legs",
                              description="One row per leg of the course so far: direction, race minutes, GPS speed, "
                                          "pod power, boat-model power, stroke rate and local push (turns left out).")
-                allowed += ["get_metric_series", "get_alerts", "wake_me", "set_plan", "legs"]
+                allowed += ["get_metric_series", "get_alerts", "wake_me", "set_plan", "legs", "list_available_metrics"]
         self.recalibrations: List[Dict[str, Any]] = []
         if 3 <= self.version < 7:
             reg.register(self.current_forecast, name="current_forecast",
@@ -657,8 +663,12 @@ class RaceCoach:
         return {"ok": True, "n_total": raw.get("n_total"), "alerts": rows}
 
     def wake_me(self, in_s: Optional[float] = None, at_remaining_m: Optional[float] = None,
-                reason: str = "") -> Dict[str, Any]:
+                reason: str = "", clear: bool = False) -> Dict[str, Any]:
         s = self.state.last
+        if clear:
+            n, self.timers = len(self.timers), []
+            if in_s is None and at_remaining_m is None:
+                return {"ok": True, "cleared": n, "pending": []}
         if (in_s is None) == (at_remaining_m is None):
             return {"ok": False, "error": "give exactly one of in_s or at_remaining_m"}
         if len(self.timers) >= 3:
@@ -674,6 +684,23 @@ class RaceCoach:
             due = {"at_remaining_m": round(float(at_remaining_m))}
         self.timers.append({**due, "reason": str(reason)[:200]})
         return {"ok": True, "pending": self.timers}
+
+    def list_streams(self) -> Dict[str, Any]:
+        raw = self._panel_list()
+        rows = raw.get("metrics") if isinstance(raw, dict) else raw
+        out = []
+        for m in rows or []:
+            if not isinstance(m, dict):
+                continue
+            nm = m.get("name") or m.get("metric")
+            desc = str(m.get("description") or m.get("expression") or "")
+            row = {"name": nm, "about": desc[:110]}
+            if m.get("kind") not in (None, "catalog"):
+                row["yours"] = m.get("kind")
+            if m.get("streaming") is False:
+                row["streaming_now"] = False
+            out.append(row)
+        return {"ok": True, "streams": out}
 
     def due_timers(self) -> List[Dict[str, Any]]:
         """Pop the wake-ups now due (called by the race loop each second)."""
@@ -775,6 +802,12 @@ class RaceCoach:
             return round(sum(xs) / len(xs), n) if xs else None
         b0, b1, a0, a1 = el0 - 60.0, el0, el0 + 20.0, min(now_el, el0 + 80.0)
         res = {"window_after_s": [20, round(a1 - el0)]}
+        leg = (getattr(self, "race_info", {}) or {}).get("leg_m")
+        if leg:
+            ds = [h["distance_m"] for h in st.history if h.get("elapsed_s") is not None and b0 <= h["elapsed_s"] <= a1
+                  and h.get("distance_m") is not None]
+            if ds and int(min(ds) // leg) != int(max(ds) // leg):
+                res["turn_inside"] = True
         for k, nm, n in (("shaft_power_w", "pod_power_w", 0), ("power_w", "boat_power_w", 0),
                          ("rate_spm", "rate_spm", 1), ("speed_gps", "speed_gps", 2)):
             x, y = m(b0, b1, k, n), m(a0, a1, k, n)
@@ -969,7 +1002,12 @@ class RaceCoach:
         leg = self.race_info.get("leg_m") if hasattr(self, "race_info") else None
         if leg and last.get("distance_m") is not None:
             done = float(last["distance_m"])
-            state["next_turn_in_m"] = round(leg - (done % leg))
+            nt = leg - (done % leg)
+            rem = last.get("remaining_m")
+            if self.version >= 9 and rem is not None and nt >= rem - 1.0:
+                state["next_turn_in_m"] = "no turn before the finish"
+            else:
+                state["next_turn_in_m"] = round(nt)
             state["leg_number"] = int(done // leg) + 1
         msg: Dict[str, Any] = {"update": why,
                                "events": [{"kind": e["kind"], "detail": e["detail"]} for e in events],

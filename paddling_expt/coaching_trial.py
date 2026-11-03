@@ -269,6 +269,38 @@ HELDOUT_OPEN: Dict[str, Any] = {
                "action; incidents and the paddler's responses are planted"),
 }
 
+
+HELDOUT_OPEN_V9: Dict[str, Any] = {
+    "date": "2026-11-03",
+    "question": ("with the inputs the role-played coaches asked for, does the open coach beat the rules written "
+                 "for the practice incidents, on races it was not tuned on?"),
+    "seeds": list(range(5030, 5060)),
+    "pool": "held_out, as HELDOUT_OPEN (weed, wind shift, talk; at least one of pod drift / course change per race)",
+    "coach": ("the open coach's later version (RaceCoach version 9, OPEN_COACH_SYSTEM_V9): version 8 plus what the "
+              "instruments saw after each cue (and whether a back-stroke happened), a pinned plan, wake-ups it sets "
+              "(and can cancel), a table of legs, series summarised in race seconds, alerts in race minutes, a short "
+              "list of stream names, critical-power and reserve-size corrections that recompute both reserves over "
+              "the race so far, the turn position as a stream (the finish is not a turn), paddler answers and "
+              "remarks that follow their state, and the stated fact that an emptied reserve forces the paddler well "
+              "below critical power. Every model call answered by a Claude subagent (Opus) through "
+              "experiments/roleplay_race.py --incidents held_out --coach-version 9, one per race, the practice "
+              "instructions plus the system command; 5 s of race time per call; woken every 180 s at least. No "
+              "change to the coach, the simulator or the instructions after this registration"),
+    "platform": ("agentic_experiments at 2550e12 (main ea35935 plus the maximum()/minimum() fix for agent-defined "
+                 "metrics, pull request pending); every race replays from its answers"),
+    "arms": "as HELDOUT_OPEN: no_coach; autopilot_pod; incident_rules (0.06 m/s primary; 0.04 and 0.08 reported); "
+            "agent_open_v9_roleplay",
+    "primary": ("on the 30 seeds: open coach minus incident_rules and minus no_coach, race time, paired, Wilcoxon, "
+                "bootstrap 95% interval, Holm over the two"),
+    "secondary": ("as HELDOUT_OPEN: the races with each held-out kind and with weed; per-incident scores from the "
+                  "simulator's truth; the pod autopilot. Descriptive only: the earlier open coach on seeds "
+                  "5000-5029 (different races, not paired)"),
+    "what_counts": "the coach faster than the incident rules overall (Holm p < 0.05), the comparison the earlier "
+                   "version left unsettled (-6.0 s, Holm p 0.27)",
+    "failures": "a race the driver cannot finish is reported and excluded; no race is re-run with other answers",
+    "limits": HELDOUT_OPEN["limits"],
+}
+
 # ── preparations ────────────────────────────────────────────────────────────
 
 @dataclass

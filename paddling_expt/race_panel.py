@@ -189,7 +189,9 @@ class RacePanel:
                 vals[k] = self._held[k]
         vals.update(self._calibration_evidence(float(t), vals))
         if self.leg_m and "distance_m" in vals:
-            vals["next_turn_in_m"] = self.leg_m - (vals["distance_m"] % self.leg_m)
+            nt = self.leg_m - (vals["distance_m"] % self.leg_m)
+            if "remaining_m" not in vals or nt < vals["remaining_m"] - 1.0:   # the finish is not a turn
+                vals["next_turn_in_m"] = nt
             vals["leg_number"] = float(int(vals["distance_m"] // self.leg_m) + 1)
         out = self.service.step(vals, float(t), publish=False)
         self.alerts.extend(out["alerts"])

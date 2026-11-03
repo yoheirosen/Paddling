@@ -667,7 +667,11 @@ class PaddlerTwin:
             self._say("paddler", ["Feeling great! I've got more, I'm going.", "I feel strong, let me go harder."][self._talk_n])
             self._talk_pending = (self.t + 30.0, 0.07)
         elif self.tr.talk == "honest" and self._talk_n < 3 and wf < 0.2:
-            self._say("paddler", "Legs are going. I'm close to the limit.")
+            line = "Legs are going. I'm close to the limit."
+            if getattr(self, "rich_answers", False):        # (the open coach's later version)
+                line = ["Legs are going. I'm close to the limit.", "Really feeling it now. Near my limit.",
+                        "I'm right at my limit."][min(self._talk_n, 2)]
+            self._say("paddler", line)
         elif self.tr.talk == "honest" and not self._talk_good_said and wf > 0.6 and 0.3 <= frac <= 0.6:
             self._say("paddler", "Feeling good. This is steady.")
             self._talk_good_said = True

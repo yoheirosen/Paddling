@@ -195,3 +195,19 @@ def test_the_later_coach_reads_legs_summaries_and_corrects_the_whole_reserve():
     assert 5 <= len(series["points"]) <= 60 and series["race_s"][1] <= 700        # race seconds, not the data clock
     assert cal["ok"] and cal["recomputed_from_start"] and cal["cp_shaft_w"] == 200.0
     assert arm.coach.state.athlete_shaft.w_prime_j == 20000.0
+
+
+def test_the_later_coach_lists_stream_names_short_and_can_cancel_wake_ups():
+    import json
+    calls = [{"name": "define_derived_metric", "arguments": {"name": "mine", "expression": "shaft_power_w * 1.0"}},
+             {"name": "wake_me", "arguments": {"in_s": 60, "reason": "x"}}]
+    script = {0: {"tool_calls": calls},
+              1: {"tool_calls": [{"name": "list_available_metrics", "arguments": {}},
+                                 {"name": "wake_me", "arguments": {"clear": True}}]}}
+    r, arm, seen = _v9_race(7, script)
+    lst, cleared = (json.loads(x) for x in seen[2])
+    names = {row["name"]: row for row in lst["streams"]}
+    assert "shaft_power_w" in names and "yours" not in names["shaft_power_w"]
+    assert names["mine"]["yours"] == "derived" and len(json.dumps(lst)) < 8000
+    assert cleared["cleared"] == 1 and arm.coach.timers == []
+    assert "forced well below critical power" in arm.coach.system
