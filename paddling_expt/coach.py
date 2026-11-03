@@ -54,7 +54,7 @@ from agent_lib.tool_registry import ToolPolicy, ToolRegistry
 from .race import RaceState
 
 _ASKS = ("ease", "push", "hold", "rate_up", "rate_down", "finish", "line_in", "line_out",
-         "hang_on", "let_go", "none")
+         "hang_on", "let_go", "clear_rudder", "reassure", "tell", "none")
 
 __all__ = ["RaceScreen", "CueSink", "make_cue_gate", "RaceCoach", "COACH_SYSTEM", "COACH_PANEL_SYSTEM",
            "stand_in_coach", "make_coach_provider", "replay_race", "format_pace"]
@@ -161,6 +161,7 @@ class CueSink:
         entry = {"t": s.get("t"), "elapsed_s": s.get("elapsed_s"), "distance_m": s.get("distance_m"),
                  "text": action["text"], "ask": action.get("ask", "none"),
                  "pace_s500": action.get("pace_s500"), "line_m": action.get("line_m"),
+                 "distance_left_m": action.get("distance_left_m"),
                  "source_events": action.get("events", []),
                  "source": action.get("source")}
         self.log.append(entry)
@@ -391,6 +392,66 @@ _CUE_SCHEMA = {
 }
 
 
+OPEN_COACH_SYSTEM = """You are coaching one paddler through an outrigger canoe (OC1) race, \
+speaking into their ear over a radio link. What you are there for: their fastest finish.
+
+What you have:
+- Instruments, live every second: the paddle pod (the paddler's effort, as shaft power), GPS \
+(speed and heading over the ground), and what the boat's computer derives from them through a \
+hull model. Each wake-up shows the live state, the last five minutes, your notes and your \
+recent cues. You can read any series further back, compute your own metrics over the live \
+streams, and set your own alerts (watches) so that you are woken when something you care \
+about happens. Otherwise you are woken every few minutes, whenever the paddler says \
+something, and when a radio message comes in.
+- The paddler. You can ask how they feel (ask_paddler) and speak to them (cue). They hear your \
+words but act on the request attached to them: ease, push, hold, rate_up, rate_down, finish \
+(start the final sprint), clear_rudder (a back-stroke that knocks anything caught off the \
+rudder; it costs the boat's momentum), reassure (no change asked: you are telling them they are \
+doing fine), tell (information; distance_left_m sets where they think the finish is), or none. \
+With ease, push or hold you may add a target pace over the ground; they chase it by feel, \
+through turns too, until the change fades. A cue takes 10-20 s to act; paddlers do not always \
+follow one, and a followed change fades over minutes.
+- Notes: you remember nothing between wake-ups. What you write with take_note is shown to you \
+at every later wake-up: a plan, a suspicion to check, what you have tried and what it did.
+- The boat computer's assumptions: set_critical_power (at most 3 times per race) and \
+set_race_distance correct them.
+- Names: the live state's names are for reading; watches and your own metrics use the stream \
+names that list_available_metrics gives.
+
+Facts about the instruments (facts, not instructions):
+- Any instrument can fail or drift.
+- The numbers derived from boat speed (power_w, reserve_left_pct, reserve_runs_out_in_m, \
+sustainable_pace_s500, speed_vs_early_race_same_rate_pct) treat everything that slows the boat \
+as the paddler: current, wind, drag, a tired blade. push_local_mps is the GPS speed minus the \
+speed the pod's power would give in still water; it moves with current and wind and with \
+anything that changes the boat's drag. push_along_mps is the current along the heading, \
+estimated from the turns of the out-and-back course; it lags a change.
+- Critical power and the reserve (w_bal_pod_frac from the pod, reserve_left_pct from boat speed) \
+come from a 3- and 12-minute test before the race and can be 10-25 % off.
+- The start is hard (a minute or two above critical power) and then settles.
+- Paddlers misjudge themselves: what they say is evidence, not fact.
+
+How you coach is up to you: what to watch, what to plan, when to speak and what to say, when to \
+change your mind. Each model call costs a few seconds of race time; when nothing needs doing, \
+stop. The cue gate: at most 12 words, at least 60 s between cues, none in the first minute or \
+the last 100 m, and at most 20 cues per race.
+
+End each wake-up with one line: what you did and why, or "no cue: <reason>"."""
+
+_CUE_SCHEMA_OPEN = {
+    "type": "object",
+    "properties": {
+        "text": {"type": "string", "description": "what the paddler hears, at most 12 words"},
+        "ask": {"type": "string", "enum": ["ease", "push", "hold", "rate_up", "rate_down", "finish",
+                                           "clear_rudder", "reassure", "tell", "none"],
+                "description": "what the paddler should do"},
+        "pace_s500": {"type": "number", "description": "with ease / push / hold: optional target pace, s per 500 m over the ground"},
+        "distance_left_m": {"type": "number", "description": "with tell: how far the finish is from here (m)"},
+    },
+    "required": ["text"],
+}
+
+
 class RaceCoach:
     """The reasoning tier: one consultation per wake-up, through ``run_tool_loop``.
 
@@ -404,7 +465,9 @@ class RaceCoach:
                  cache_system: Optional[bool] = None, version: int = 1) -> None:
         self.provider, self.state, self.gate, self.panel = provider, state, gate, panel
         self.version = int(version)
-        if system is None and panel is not None and self.version >= 2:
+        if system is None and self.version == 8:
+            system = OPEN_COACH_SYSTEM
+        if system is None and panel is not None and 2 <= self.version < 8:
             system = (COACH_PANEL_SYSTEM_V2 + (DRAFT_SECTION if self.version == 7 else "")
                       + (WATER_SECTION if 3 <= self.version < 7 else "")
                       + (WATER_SECTION_V6 if self.version == 6 else WATER_SECTION_V4 if 4 <= self.version < 7 else "")
@@ -419,9 +482,24 @@ class RaceCoach:
         reg.register(self.race_history, name="race_history",
                      description="Recent race history: 30-second means of speed through the water, "
                                  "power, reserve, stroke rate, fade and the push of current and wind.")
-        reg.register(self.cue, name="cue", writes=True, input_schema=_CUE_SCHEMA,
+        reg.register(self.cue, name="cue", writes=True,
+                     input_schema=_CUE_SCHEMA_OPEN if self.version == 8 else _CUE_SCHEMA,
                      description="Speak one short cue (at most 12 words) to the paddler now.")
         allowed = ["race_history", "cue"]
+        self.notes: List[Dict[str, Any]] = []
+        self.cue_attempts: List[Dict[str, Any]] = []
+        self.ask_fn: Optional[Callable[[], Dict[str, Any]]] = None
+        self._asked_t: Optional[float] = None
+        self.distance_changes: List[Dict[str, Any]] = []
+        if self.version == 8:
+            reg.register(self.ask_paddler, name="ask_paddler",
+                         description="Ask the paddler how they feel; they answer with an effort out of 10 and a few words.")
+            reg.register(self.take_note, name="take_note", writes=True,
+                         description="Write a note to yourself (up to 800 characters); every later wake-up "
+                                     "shows your last 15 notes.")
+            reg.register(self.set_race_distance, name="set_race_distance", writes=True,
+                         description="Correct the race distance the boat's computer uses (m, from the start), with the reason.")
+            allowed += ["ask_paddler", "take_note", "set_race_distance"]
         if panel is not None:
             for name, tool in panel.tools().items():
                 reg.register(tool.func, name=name, description=tool.description,
@@ -458,6 +536,33 @@ class RaceCoach:
             allowed.append("set_critical_power")
         self.policy = ToolPolicy(reg, allowed, max_iterations=max_iterations or (5 if panel is not None else 2))
 
+    def ask_paddler(self) -> Dict[str, Any]:
+        if self.ask_fn is None:
+            return {"ok": False, "error": "no paddler on the link"}
+        t = self.state.last.get("t") or 0.0
+        if self._asked_t is not None and t - self._asked_t < 30.0:
+            return {"ok": False, "error": "asked less than 30 s ago; let them paddle"}
+        self._asked_t = t
+        return {"ok": True, **self.ask_fn()}
+
+    def take_note(self, text: str) -> Dict[str, Any]:
+        s = self.state.last
+        self.notes.append({"race_min": round((s.get("elapsed_s") or 0.0) / 60.0, 1),
+                           "at_m": round(s.get("distance_m") or 0.0), "note": str(text)[:800]})
+        return {"ok": True, "n_notes": len(self.notes)}
+
+    def set_race_distance(self, distance_m: float, reason: str = "") -> Dict[str, Any]:
+        st = self.state
+        d = float(distance_m)
+        done = float(st.last.get("distance_m") or 0.0)
+        if not (done + 100.0 <= d <= 2.0 * (st.distance_m or d)):
+            return {"ok": False, "error": f"{d:.0f} m is not ahead of the boat ({done:.0f} m done) or is implausible"}
+        old, st.distance_m = st.distance_m, d
+        entry = {"elapsed_s": st.last.get("elapsed_s"), "old_m": old, "new_m": d, "reason": reason}
+        self.distance_changes.append(entry)
+        record.emit("revision", target="race_distance", **entry)
+        return {"ok": True, "distance_m": d, "remaining_m": round(d - done)}
+
     def race_history(self, minutes: float = 5.0) -> Dict[str, Any]:
         H = [h for h in self.state.history
              if h.get("elapsed_s") is not None
@@ -470,15 +575,26 @@ class RaceCoach:
                 bucket = []
         if bucket:
             rows.append(_mean_row(bucket))
+        if self.version == 8:
+            for r, b in zip(rows, _buckets(H)):
+                r.update(_pod_row(b))
         return {"every_30s": rows}
 
     def cue(self, text: str, ask: str = "none", pace_s500: Optional[float] = None,
-            line_m: Optional[float] = None) -> Dict[str, Any]:
-        res = self.gate.deliver({"text": text, "ask": ask, "pace_s500": pace_s500, "line_m": line_m,
-                                 "events": [e["kind"] for e in self._events], "source": self.caller},
-                                source=self.caller)
-        return {"spoken": bool(res.get("delivered")), "blocked": bool(res.get("blocked")),
-                "reason": res.get("reason")}
+            line_m: Optional[float] = None, distance_left_m: Optional[float] = None) -> Dict[str, Any]:
+        act = {"text": text, "ask": ask, "pace_s500": pace_s500, "line_m": line_m,
+               "events": [e["kind"] for e in self._events], "source": self.caller}
+        if distance_left_m is not None:
+            act["distance_left_m"] = distance_left_m
+        res = self.gate.deliver(act, source=self.caller)
+        out = {"spoken": bool(res.get("delivered")), "blocked": bool(res.get("blocked")),
+               "reason": res.get("reason")}
+        s = self.state.last
+        self.cue_attempts.append({"race_min": round((s.get("elapsed_s") or 0.0) / 60.0, 1), "text": text,
+                                  "ask": ask, "pace_s500": pace_s500, "spoken": out["spoken"],
+                                  **({"blocked_because": out["reason"]} if out["blocked"] else {}),
+                                  "_t": s.get("t")})
+        return out
 
     def set_critical_power(self, cp_w: Optional[float] = None, cp_shaft_w: Optional[float] = None,
                            reason: str = "") -> Dict[str, Any]:
@@ -593,6 +709,47 @@ class RaceCoach:
             out.append({k2: v for k2, v in row.items() if v is not None})
         return out
 
+    def _open_packet(self, events: List[Dict[str, Any]], why: str) -> Dict[str, Any]:
+        s = self.state
+        last = s.last
+        state = s.compact()
+        for k in ("shaft_power_w", "cp_shaft_w", "w_bal_pod_frac", "empties_in_m_pod",
+                  "sustainable_shaft_power_w", "heading_deg", "push_local_mps"):
+            v = last.get(k)
+            if v is not None:
+                state[k] = round(v, 3) if isinstance(v, float) else v
+        leg = self.race_info.get("leg_m") if hasattr(self, "race_info") else None
+        if leg and last.get("distance_m") is not None:
+            done = float(last["distance_m"])
+            state["next_turn_in_m"] = round(leg - (done % leg))
+            state["leg_number"] = int(done // leg) + 1
+        msg: Dict[str, Any] = {"update": why,
+                               "events": [{"kind": e["kind"], "detail": e["detail"]} for e in events],
+                               "state": state, "last_5_min": self._recent_minutes()}
+        t = last.get("t") or 0.0
+        recent = [{k: v for k, v in c.items() if k != "_t"} for c in self.cue_attempts[-5:]]
+        spoken = [c for c in self.cue_attempts if c["spoken"]]
+        msg["your_recent_cues"] = recent
+        if spoken:
+            msg["next_cue_allowed_in_s"] = max(0, round(60.0 - (t - (spoken[-1]["_t"] or t))))
+        msg["cues_left_this_race"] = max(0, 20 - len(spoken))
+        rem = last.get("remaining_m")
+        for k in ("reserve_runs_out_in_m", "empties_in_m_pod"):     # a reserve that lasts past the finish
+            v = state.get(k)
+            if v is not None and rem is not None and v > rem:
+                state[k] = "lasts past the finish"
+        msg["your_notes"] = self.notes[-15:]
+        if not self.consultations:
+            info = getattr(self, "race_info", {}) or {}
+            msg["race"] = {"distance_m": s.distance_m,
+                           "course": (f"out-and-back legs of {info['leg_m']:.0f} m (turn at the end of each leg); "
+                                      "turns cost a few seconds") if info.get("leg_m") else "out-and-back legs",
+                           "calibration": ("critical power and reserve from an all-out 3- and 12-minute test: "
+                                           f"boat {s.athlete.cp_w:.0f} W / {s.athlete.w_prime_j / 1000:.1f} kJ" +
+                                           (f"; shaft (pod) {s.athlete_shaft.cp_w:.0f} W / "
+                                            f"{s.athlete_shaft.w_prime_j / 1000:.1f} kJ" if s.athlete_shaft else ""))}
+        return msg
+
     def consult(self, events: List[Dict[str, Any]], *, why: str = "events") -> Dict[str, Any]:
         self._events = list(events)
         s = self.state
@@ -627,6 +784,8 @@ class RaceCoach:
                     msg["race"]["forecast"] = self.forecast
                     msg["race"]["course"] = (f"along a shore: one leg of {s.distance_m / 2:.0f} m north, "
                                              "then back south to the start")
+        if self.version == 8:
+            msg = self._open_packet(events, why)
         t0 = s.last.get("t")
         res = run_tool_loop(self.provider, system=self.system,
                             messages=[Message(role="user", text=json.dumps(msg))],
@@ -639,6 +798,21 @@ class RaceCoach:
         self.consultations.append(out)
         record.emit("decision", **out)
         return out
+
+
+def _buckets(H: List[Dict[str, Any]], n: int = 6) -> List[List[Dict[str, Any]]]:
+    return [H[i:i + n] for i in range(0, len(H), n)]
+
+
+def _pod_row(bucket: List[Dict[str, Any]]) -> Dict[str, Any]:
+    def m(k, n=2):
+        xs = [b[k] for b in bucket if b.get(k) is not None and math.isfinite(b[k])]
+        return round(sum(xs) / len(xs), n) if xs else None
+    w = m("w_bal_pod_frac", 3)
+    return {k: v for k, v in {"shaft_power_w": m("shaft_power_w", 0),
+                              "reserve_pod_pct": None if w is None else round(100 * w),
+                              "speed_gps": m("speed_gps"), "push_local_mps": m("push_local_mps")}.items()
+            if v is not None}
 
 
 def _mean_row(bucket: List[Dict[str, Any]]) -> Dict[str, Any]:

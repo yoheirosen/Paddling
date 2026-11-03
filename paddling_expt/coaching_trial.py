@@ -49,7 +49,7 @@ from .coach import CueSink, RaceCoach, format_pace, make_cue_gate
 from .race import Athlete, RaceState, calibrate, sustainable_power
 from .race_panel import SCREEN_PROGRAMS, SCREEN_WATCHES, RacePanel
 from .sim.paddler import PaddlerParams
-from .sim.twin import (CoastalWater, Pack, PaddlerTwin, RaceSetup, Traits, draw_setup, draw_traits,
+from .sim.twin import (CoastalWater, Incident, Pack, PaddlerTwin, RaceSetup, Traits, draw_setup, draw_traits,
                        even_effort, oracle_effort, twin_cp_test, water_forecast)
 
 __all__ = ["PREREGISTERED", "HELDOUT_ROUND3", "HELDOUT_ROUND3_EXTENSION", "HELDOUT_TIERED", "HELDOUT_PACK", "HELDOUT_PACK_ROLEPLAY", "Preparation", "draw_preparation", "Arm", "NoCoach", "FixedPlan",
@@ -230,6 +230,45 @@ HELDOUT_PACK_ROLEPLAY: Dict[str, Any] = {
 }
 
 
+
+HELDOUT_OPEN: Dict[str, Any] = {
+    "date": "2026-11-03",
+    "question": ("does an open reasoning coach handle what nobody wrote a rule for, in real time? Open races "
+                 "(sim/incidents.py) with incidents during the race and a paddler who talks"),
+    "seeds": list(range(5000, 5030)),
+    "pool": ("held_out: weed on the rudder and an unforecast wind shift (development kinds, as in practice), the "
+             "paddler's talk (honest / pessimist / optimist), and in every race at least one held-out kind never "
+             "used in development: the paddle pod drifting, or the race committee changing the course by radio"),
+    "coach": ("the open coach (RaceCoach version 8, OPEN_COACH_SYSTEM): goal, means and facts about the "
+              "instruments, no procedures; notes it keeps across wake-ups, ask_paddler, set_race_distance, "
+              "set_critical_power, the panel's tools; no starting watches; woken by its own watches, every 180 s, "
+              "by the paddler's words and by radio. Every model call answered by a Claude subagent (Opus) that "
+              "sees exactly the model's input (experiments/roleplay_race.py --incidents held_out), one subagent "
+              "per race, the same instructions as the three practice races; 5 s of race time per call. No change "
+              "to the coach, the simulator or the instructions after this registration"),
+    "arms": ("no_coach; autopilot_pod (fixed rules written before incidents existed); incident_rules (the pod "
+             "autopilot plus rules written knowing the development incidents: a drag-step detector on the local "
+             "push with threshold 0.06 m/s, the best of 0.04 / 0.06 / 0.08 on 24 development races, and keyword "
+             "replies to the paddler's development remarks; 0.04 and 0.08 reported as sensitivity); "
+             "agent_open_roleplay"),
+    "primary": ("on the 30 seeds: open coach minus incident_rules and minus no_coach, race time, paired, Wilcoxon, "
+                "bootstrap 95% interval, Holm over the two"),
+    "secondary": ("(1) the same comparisons in the races holding each held-out kind (pod drift; course change) and "
+                  "in the races with weed; (2) per incident, from the simulator's truth: weed - seconds with weed, "
+                  "who cleared it, time from onset to the first clearing cue, false clears; pod drift - cues in the "
+                  "direction the faulty reading suggests and against it; course change - paddler told, where the "
+                  "sprint started relative to the true finish, overrun of the finish the paddler believed; talk - "
+                  "self-misjudgements caught in time; (3) the pod autopilot as a further comparison"),
+    "what_counts": ("evidence for the utility of in-race reasoning: the coach faster than the incident rules "
+                    "overall, or clearly better on the held-out kinds, which no rule anticipated; on the "
+                    "development kinds rules written for them are expected to react faster"),
+    "failures": "a race the driver cannot finish is reported and excluded; no race is re-run with other answers",
+    "limits": ("a role-player is not a deployed model (a Claude Code agent; it remembers earlier wake-ups of its "
+               "race; fixed latency); the coach's menu holds the actions the held-out kinds need (tell with a "
+               "distance, set_race_distance) - what is held out is the incident and its diagnosis, not the "
+               "action; incidents and the paddler's responses are planted"),
+}
+
 # ── preparations ────────────────────────────────────────────────────────────
 
 @dataclass
@@ -267,6 +306,7 @@ class Preparation:
         su = dict(d["setup"])
         if su.get("pack"):
             su["pack"] = Pack(**su["pack"])
+        su["incidents"] = [Incident(**i) for i in su.get("incidents", [])]
         if su.get("water"):
             w = dict(su["water"])
             w["eddies"] = [tuple(e) for e in w.get("eddies", [])]
@@ -307,8 +347,15 @@ def shaft_athlete(traits: Traits, seed: int) -> Athlete:
     return calibrate(best, source="3- and 12-minute test on the twin, paddle-pod shaft power")
 
 
-def draw_preparation(seed: int, coastal: bool = False, pack: bool = False) -> Preparation:
+def draw_preparation(seed: int, coastal: bool = False, pack: bool = False,
+                     incidents: Optional[str] = None) -> Preparation:
+    """``incidents``: None (no incidents, a quiet paddler: every registered design), or
+    ``development`` / ``held_out`` for an open race (:mod:`.sim.incidents`)."""
     tr, su = draw_traits(seed), draw_setup(seed, coastal=coastal, pack=pack)
+    if incidents is not None:
+        from .sim.incidents import draw_incidents, draw_talk
+        tr = replace(tr, talk=draw_talk(seed))
+        su.incidents = draw_incidents(seed, su.distance_m, su.leg_m, pool=incidents)
     rows, tw = twin_cp_test(tr, seed=seed)
     prep = ss.prepare_rows(rows, tw.craft, tw.total_kg)
     best = ss.best_efforts(prep["all_rows"], (180, 720))
@@ -336,6 +383,9 @@ class Arm:
 
     def setup(self, ep: "Episode") -> None:
         pass
+
+    def on_messages(self, ep: "Episode", msgs: List[Dict[str, Any]]) -> None:
+        """What the paddler said and radio messages, as they arrive (open races)."""
 
     def on_tick(self, ep: "Episode", t: float, alerts: List[Dict[str, Any]]) -> None:
         pass
@@ -511,14 +561,22 @@ class AgentArm(Arm):
         self._busy, self._pending, self._last_wake = False, [], None
 
     def watches(self) -> List[Dict[str, Any]]:
-        return _screen_watches()
+        return [] if self.coach_version == 8 else _screen_watches()   # the open coach sets its own
 
     def setup(self, ep: "Episode") -> None:
         self.coach = RaceCoach(self.provider, ep.state, ep.gate, panel=ep.panel,
                                max_iterations=self.max_tool_rounds, max_tokens=self.max_tokens,
                                caller="race_coach", version=self.coach_version)
         self.coach.forecast = ep.prep.forecast
+        if self.coach_version == 8:
+            self.coach.ask_fn = ep.twin.answer
+            self.coach.race_info = {"leg_m": ep.prep.setup.leg_m}
         self._leg = None
+
+    def on_messages(self, ep: "Episode", msgs: List[Dict[str, Any]]) -> None:
+        if self.coach_version == 8 and msgs:
+            self._wake(ep, [{"kind": "paddler_says" if m["from"] == "paddler" else "radio",
+                             "detail": f"{m['from']}: {m['text']}"} for m in msgs], "message")
 
     def _wake(self, ep: "Episode", events: List[Dict[str, Any]], why: str) -> None:
         if self._busy:
@@ -538,7 +596,7 @@ class AgentArm(Arm):
 
     def on_tick(self, ep: "Episode", t: float, alerts: List[Dict[str, Any]]) -> None:
         s = ep.state.last
-        if self.coach_version >= 3 and s.get("heading_deg") is not None and s.get("elapsed_s", 0.0) > 60.0:
+        if 3 <= self.coach_version <= 7 and s.get("heading_deg") is not None and s.get("elapsed_s", 0.0) > 60.0:
             leg = 0 if (s["heading_deg"] < 90.0 or s["heading_deg"] > 270.0) else 1
             if leg != self._leg:                 # the start of each leg (after the start) is a natural check-in
                 self._leg = leg
@@ -710,7 +768,8 @@ def run_episode(prep: Preparation, arm: Arm, *, latency_s: Optional[float] = 6.0
     state = RaceState(twin.craft, twin.total_kg, prep.athlete, distance_m=prep.setup.distance_m,
                       start_t=twin.start_t, athlete_shaft=prep.athlete_shaft)
     panel = RacePanel(state, watches=arm.watches(), programs=SCREEN_PROGRAMS)
-    sink = CueSink(state, act=lambda a: twin.cue(a.get("ask", "none"), a.get("pace_s500"), a.get("line_m")))
+    sink = CueSink(state, act=lambda a: twin.cue(a.get("ask", "none"), a.get("pace_s500"), a.get("line_m"),
+                                                 a.get("distance_left_m")))
     gate = make_cue_gate(sink, state, max_words=g["max_words"], quiet_start_s=g["quiet_start_s"],
                          quiet_finish_m=g["quiet_finish_m"], cooldown_s=g["cooldown_s"],
                          max_cues=g["max_cues"])
@@ -718,7 +777,7 @@ def run_episode(prep: Preparation, arm: Arm, *, latency_s: Optional[float] = 6.0
     ep = Episode(prep, twin, state, panel, sink, gate, sched)
     arm.setup(ep)
     series: List[Dict[str, Any]] = []
-    nxt = {"series": 0.0}
+    nxt = {"series": 0.0, "said": 0}
     W0 = prep.traits.paddler.w_prime_j
 
     def tick():
@@ -726,6 +785,9 @@ def run_episode(prep: Preparation, arm: Arm, *, latency_s: Optional[float] = 6.0
         for r in twin.advance(now):
             state.update(r)
         alerts = panel.step(now) if twin.t >= twin.start_t else []
+        if twin.finish_t is None and len(twin.outbox) > nxt["said"]:
+            new, nxt["said"] = twin.outbox[int(nxt["said"]):], len(twin.outbox)
+            arm.on_messages(ep, new)
         if twin.finish_t is None:
             arm.on_tick(ep, now, alerts)
         s = state.last
@@ -761,8 +823,112 @@ def run_episode(prep: Preparation, arm: Arm, *, latency_s: Optional[float] = 6.0
            "alerts": _count(a["watch_id"] for a in panel.alerts),
            "definitions": panel.service.list_definitions(),
            "series": series}
+    if prep.setup.incidents or prep.traits.talk != "quiet":
+        out.update({"incidents": [asdict(i) for i in prep.setup.incidents], "talk": prep.traits.talk,
+                    "incident_log": twin.incident_log, "said": twin.outbox,
+                    "distance_true_m": twin.su.distance_m,
+                    "cue_log_distance": [c.get("distance_left_m") for c in sink.log]})
+        out["incident_score"] = score_incidents(out)
     out.update(arm.summary())
     return out
+
+
+def score_incidents(ep_out: Dict[str, Any]) -> Dict[str, Any]:
+    """What happened to each incident in one open race, from the twin's truth: who cleared
+    the weed and when, which of the paddler's self-misjudgements a cue caught in time,
+    which cues followed a drifting pod, whether the paddler learnt of a course change
+    before their sprint."""
+    log, cues = ep_out.get("incident_log", []), ep_out.get("cue_log", [])
+    T = ep_out.get("race_time_s") or 0.0
+    ev = lambda name: [e for e in log if e["event"] == name]                    # noqa: E731
+    out: Dict[str, Any] = {"false_clears": len(ev("clear_without_weed")),
+                           "questions_asked": len(ev("asked"))}
+    for e in ev("onset"):
+        k, t0 = e["kind"], e["race_s"]
+        after = [c for c in cues if c["race_s"] >= t0]
+        if k == "weed":
+            end = next((x for x in log if x["event"] in ("cleared_by_cue", "self_cleared") and x["race_s"] >= t0), None)
+            first = next((c for c in after if c["ask"] == "clear_rudder"), None)
+            out["weed"] = {"onset_race_s": t0, "size": e.get("size"),
+                           "cleared_by": "never" if end is None else ("cue" if end["event"] == "cleared_by_cue" else "self"),
+                           "seconds_with_weed": round((end["race_s"] if end else T) - t0, 1),
+                           "first_clear_cue_after_s": None if first is None else round(first["race_s"] - t0, 1)}
+        elif k == "wind_shift":
+            out["wind_shift"] = {"onset_race_s": t0, "size": e.get("size")}
+        elif k == "pod_drift":
+            g = float(e.get("size") or 1.0)
+            wrong = "push" if g < 1.0 else "ease"           # what a coach trusting the faulty reading would ask
+            right = "ease" if g < 1.0 else "push"
+            out["pod_drift"] = {"onset_race_s": t0, "gain": g,
+                                "cues_after": len(after),
+                                "cues_as_the_faulty_pod_suggests": sum(1 for c in after if c["ask"] == wrong),
+                                "cues_against_it": sum(1 for c in after if c["ask"] == right)}
+        elif k == "course_change":
+            told = [x for x in ev("told_distance") if x["race_s"] >= t0]
+            kicks = ev("kick_started")
+            out["course_change"] = {"onset_race_s": t0, "old_m": e.get("old_m"), "new_m": e.get("new_m"),
+                                    "paddler_told": bool(told),
+                                    "told_error_m": None if not told else round(told[-1]["believed_m"] - told[-1]["true_m"]),
+                                    "sprint_started_m_from_true_finish": None if not kicks else kicks[0]["true_left_m"],
+                                    "overran_believed_finish": bool(ev("overran_believed_finish"))}
+    talk = {"self_ease": len(ev("self_ease")), "self_push": len(ev("self_push")),
+            "reassured_in_time": len(ev("reassured_in_time")), "reassured_late": len(ev("reassured_late")),
+            "held_in_time": len(ev("held_in_time")), "held_late": len(ev("held_late")),
+            "remarks": sum(1 for e in ev("said") if e.get("who") == "paddler")}
+    out["talk"] = {"kind": ep_out.get("talk"), **talk}
+    return out
+
+
+class IncidentRules(PodAutopilot):
+    """The pod autopilot plus rules written knowing the development incidents (weed,
+    the paddler's self-misjudgements): what a rule can do when the problem is foreseen.
+    It does not read radio messages and has no rule for the held-out kinds."""
+
+    name = "incident_rules"
+
+    def __init__(self, drop_mps: float = 0.08, overpace_margin_m: float = 150.0, fade_pct: float = -3.0) -> None:
+        super().__init__(overpace_margin_m, fade_pct)
+        self.drop = float(drop_mps)
+        self.setting = {"drop_mps": self.drop, "overpace_margin_m": self.margin, "fade_pct": self.fade}
+        self._last_clear = -1e9
+
+    def _say(self, ep: "Episode", text: str, ask: str) -> bool:
+        return bool(ep.gate.deliver({"text": text, "ask": ask, "source": self.name}, source=self.name).get("delivered"))
+
+    def on_tick(self, ep: "Episode", t: float, alerts: List[Dict[str, Any]]) -> None:
+        super().on_tick(ep, t, alerts)
+        H, s = ep.state.history, ep.state.last
+        now = s.get("elapsed_s")
+        if now is None or now < 180.0 or now - self._last_clear < 240.0:
+            return
+        win = [h for h in H if h.get("elapsed_s") is not None and now - 150.0 <= h["elapsed_s"] <= now
+               and h.get("push_local_mps") is not None and h.get("distance_m") is not None]
+        if len(win) < 30:
+            return
+        leg = ep.prep.setup.leg_m
+        if int(win[0]["distance_m"] // leg) != int(win[-1]["distance_m"] // leg):
+            return                                    # a turn inside the window: the push flips, not a drag step
+        before = [h["push_local_mps"] for h in win if h["elapsed_s"] <= now - 30.0]
+        recent = [h["push_local_mps"] for h in win if h["elapsed_s"] >= now - 20.0]
+        if len(before) < 10 or len(recent) < 4:
+            return
+        if float(np.median(before)) - float(np.median(recent)) > self.drop:
+            if self._say(ep, "Something's dragging. One back-stroke, clear the rudder.", "clear_rudder"):
+                self._last_clear = now
+
+    def on_messages(self, ep: "Episode", msgs: List[Dict[str, Any]]) -> None:
+        wb = ep.state.last.get("w_bal_pod_frac")
+        for m in msgs:
+            if m["from"] != "paddler":
+                continue
+            x = m["text"].lower()
+            if any(k in x for k in ("heavy", "rudder", "dragging")):
+                if self._say(ep, "Clear the rudder. One back-stroke.", "clear_rudder"):
+                    self._last_clear = ep.state.last.get("elapsed_s") or 0.0
+            elif any(k in x for k in ("cooked", "can't", "hurts")) and wb is not None and wb > 0.35:
+                self._say(ep, "You are fine, numbers are good. Hold it.", "reassure")
+            elif any(k in x for k in ("great", "harder", "strong")) and wb is not None and wb < 0.45:
+                self._say(ep, "Stay patient. Hold this effort.", "hold")
 
 
 def _count(xs) -> Dict[str, int]:

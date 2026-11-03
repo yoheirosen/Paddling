@@ -5,6 +5,44 @@ Dated entries, newest first. Entries before the move refer to paths under
 
 ---
 
+### Open races and an open coach: what nobody wrote a rule for (2026-11-03)
+
+At the owner's direction ("show the utility of agentic reasoning in real time, not an agent
+pretending to be a deterministic algorithm"), the coach was rebuilt and the test changed.
+
+Open races (`sim/incidents.py`, hooks in `sim/twin.py`), each drawn on its own random stream:
+* weed on the rudder;
+* an unforecast wind shift;
+* the paddle pod drifting;
+* the course changed by radio;
+* a paddler who talks (honest, pessimist, optimist).
+
+The paddler gained new actions: clear the rudder, reassure, and tell (with a distance).
+Scoring of each incident from the simulator's truth is in `coaching_trial.score_incidents`. The
+baseline `IncidentRules` is written knowing the practice incidents.
+
+The open coach (`RaceCoach` version 8, `OPEN_COACH_SYSTEM`):
+* its prompt gives the goal, the means and facts about the instruments, with no procedures;
+* it keeps notes across wake-ups and can ask the paddler how they feel;
+* it can correct the race distance;
+* it sees its own recent cues and the cues it has left;
+* it sets its own watches and starts with none.
+
+Role play gained `--incidents`. The runner `experiments/open_race.py` races the baselines and
+prints the summary and the figure. Three practice races led to input fixes, then the check
+was registered (`coaching_trial.HELDOUT_OPEN`) before any held-out race.
+
+Results on 30 held-out races, with the coach role-played by Claude subagents and no API:
+* 24.8 s faster than no coach (Holm p 0.0007);
+* 6.0 s faster than the incident rules (not significant);
+* on a course changed by radio, the paddler was told in 21 of 22 races and never sprinted for
+  the old finish (16 of 22 did without the coach); 12.1 s faster than the rules in those races;
+* weed: 355 s raced with weed, against 618 s under the rules;
+* the pod drift was found in its notes in 16 of 17 races, with no race-time gain.
+
+Registered races and earlier role plays still reproduce. A platform bug was found and left
+for agentic_experiments: `maximum()` fails in agent-defined metrics.
+
 ### Drafting re-checked with role-played coaching, no API (2026-11-02)
 
 At the owner's instruction the model API is no longer used. `experiments/roleplay_race.py`

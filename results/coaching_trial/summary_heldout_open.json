@@ -1,0 +1,349 @@
+{
+ "n": 30,
+ "comparisons": {
+  "incident_rules": {
+   "n": 30,
+   "mean_d": -6.03291780862578,
+   "median_d": -6.912068688902764,
+   "n_a_faster": 18,
+   "n_b_faster": 12,
+   "ci95": [
+    -16.54079058753841,
+    4.261694543761817
+   ],
+   "wilcoxon_p": 0.2710056286305189
+  },
+  "no_coach": {
+   "n": 30,
+   "mean_d": -24.815907742099853,
+   "median_d": -25.37420699275549,
+   "n_a_faster": 24,
+   "n_b_faster": 6,
+   "ci95": [
+    -37.131915971084034,
+    -12.2946031152558
+   ],
+   "wilcoxon_p": 0.0003449581563472748
+  },
+  "autopilot_pod": {
+   "n": 30,
+   "mean_d": -9.685369546752828,
+   "median_d": -12.216920745868265,
+   "n_a_faster": 21,
+   "n_b_faster": 9,
+   "ci95": [
+    -19.47498238593665,
+    0.5859716855798973
+   ],
+   "wilcoxon_p": 0.047259049490094185
+  }
+ },
+ "holm": {
+  "incident_rules": 0.2710056286305189,
+  "no_coach": 0.0006899163126945496
+ },
+ "races_with_pod_drift": {
+  "n": 17,
+  "vs_incident_rules": {
+   "n": 17,
+   "mean_d": -2.046262639456178,
+   "median_d": -6.8310192966196155,
+   "n_a_faster": 9,
+   "n_b_faster": 8,
+   "ci95": [
+    -16.45441039093628,
+    11.383907598790847
+   ],
+   "wilcoxon_p": 0.8899688720703125
+  },
+  "vs_no_coach": {
+   "n": 17,
+   "mean_d": -26.919478432998,
+   "median_d": -29.606796385166945,
+   "n_a_faster": 13,
+   "n_b_faster": 4,
+   "ci95": [
+    -43.892119473293064,
+    -10.834558704726636
+   ],
+   "wilcoxon_p": 0.007904052734375
+  }
+ },
+ "races_with_course_change": {
+  "n": 22,
+  "vs_incident_rules": {
+   "n": 22,
+   "mean_d": -12.096500730294524,
+   "median_d": -9.501424964228136,
+   "n_a_faster": 15,
+   "n_b_faster": 7,
+   "ci95": [
+    -23.87571681906802,
+    -1.1336123635265718
+   ],
+   "wilcoxon_p": 0.046160221099853516
+  },
+  "vs_no_coach": {
+   "n": 22,
+   "mean_d": -25.826062456334554,
+   "median_d": -27.599970366492016,
+   "n_a_faster": 19,
+   "n_b_faster": 3,
+   "ci95": [
+    -36.86748190671275,
+    -14.231972199787194
+   ],
+   "wilcoxon_p": 0.00021314620971679688
+  }
+ },
+ "races_with_weed": {
+  "n": 24,
+  "vs_incident_rules": {
+   "n": 24,
+   "mean_d": -10.137926113845046,
+   "median_d": -8.899798851380865,
+   "n_a_faster": 16,
+   "n_b_faster": 8,
+   "ci95": [
+    -21.40109001803967,
+    1.2115554619440343
+   ],
+   "wilcoxon_p": 0.10109639167785645
+  },
+  "vs_no_coach": {
+   "n": 24,
+   "mean_d": -29.96376061136243,
+   "median_d": -25.37420699275549,
+   "n_a_faster": 21,
+   "n_b_faster": 3,
+   "ci95": [
+    -42.73773516248101,
+    -17.495400580769388
+   ],
+   "wilcoxon_p": 5.328655242919922e-05
+  }
+ },
+ "vs_incident_rules_by_threshold": {
+  "0.04": -8.60176074326458,
+  "0.06": -6.03291780862578,
+  "0.08": -6.347454269909409
+ },
+ "incidents": {
+  "open_coach": {
+   "weed": {
+    "n": 24,
+    "mean_seconds_with_weed": 355.4,
+    "cleared_by_cue": 18,
+    "cleared_by_paddler": 3,
+    "never_cleared": 3,
+    "median_first_clear_cue_after_s": 89.2,
+    "false_clears": 14
+   },
+   "pod_drift": {
+    "n": 17,
+    "cues_as_faulty_pod_suggests": 45,
+    "cues_against_it": 21
+   },
+   "course_change": {
+    "n": 22,
+    "paddler_told": 21,
+    "overran_believed_finish": 0,
+    "sprint_start_m_from_true_finish": [
+     597,
+     629,
+     393,
+     606,
+     1869,
+     306,
+     343,
+     522,
+     477,
+     337,
+     654,
+     null,
+     560,
+     562,
+     434,
+     705,
+     319,
+     628,
+     525,
+     545,
+     568,
+     628
+    ]
+   },
+   "talk": {
+    "self_ease": 18,
+    "self_push": 8,
+    "reassured_in_time": 1,
+    "reassured_late": 6,
+    "held_in_time": 8,
+    "held_late": 4
+   },
+   "questions_asked": 159
+  },
+  "incident_rules": {
+   "weed": {
+    "n": 24,
+    "mean_seconds_with_weed": 618.1,
+    "cleared_by_cue": 12,
+    "cleared_by_paddler": 4,
+    "never_cleared": 8,
+    "median_first_clear_cue_after_s": 62.6,
+    "false_clears": 3
+   },
+   "pod_drift": {
+    "n": 17,
+    "cues_as_faulty_pod_suggests": 3,
+    "cues_against_it": 0
+   },
+   "course_change": {
+    "n": 22,
+    "paddler_told": 0,
+    "overran_believed_finish": 16,
+    "sprint_start_m_from_true_finish": [
+     null,
+     1683,
+     1521,
+     1650,
+     1867,
+     1597,
+     1630,
+     1803,
+     1506,
+     null,
+     1689,
+     null,
+     1841,
+     1840,
+     1703,
+     null,
+     1599,
+     1904,
+     null,
+     1563,
+     1601,
+     null
+    ]
+   },
+   "talk": {
+    "self_ease": 14,
+    "self_push": 7,
+    "reassured_in_time": 2,
+    "reassured_late": 0,
+    "held_in_time": 6,
+    "held_late": 0
+   },
+   "questions_asked": 0
+  },
+  "autopilot_pod": {
+   "weed": {
+    "n": 24,
+    "mean_seconds_with_weed": 1046.4,
+    "cleared_by_cue": 0,
+    "cleared_by_paddler": 10,
+    "never_cleared": 14,
+    "median_first_clear_cue_after_s": null,
+    "false_clears": 0
+   },
+   "pod_drift": {
+    "n": 17,
+    "cues_as_faulty_pod_suggests": 2,
+    "cues_against_it": 0
+   },
+   "course_change": {
+    "n": 22,
+    "paddler_told": 0,
+    "overran_believed_finish": 16,
+    "sprint_start_m_from_true_finish": [
+     null,
+     1685,
+     1521,
+     1650,
+     1869,
+     1598,
+     1629,
+     1803,
+     1507,
+     null,
+     1688,
+     null,
+     1843,
+     1840,
+     1703,
+     null,
+     1597,
+     1903,
+     null,
+     1564,
+     1604,
+     null
+    ]
+   },
+   "talk": {
+    "self_ease": 16,
+    "self_push": 11,
+    "reassured_in_time": 0,
+    "reassured_late": 0,
+    "held_in_time": 2,
+    "held_late": 1
+   },
+   "questions_asked": 0
+  },
+  "no_coach": {
+   "weed": {
+    "n": 24,
+    "mean_seconds_with_weed": 1057.9,
+    "cleared_by_cue": 0,
+    "cleared_by_paddler": 10,
+    "never_cleared": 14,
+    "median_first_clear_cue_after_s": null,
+    "false_clears": 0
+   },
+   "pod_drift": {
+    "n": 17,
+    "cues_as_faulty_pod_suggests": 0,
+    "cues_against_it": 0
+   },
+   "course_change": {
+    "n": 22,
+    "paddler_told": 0,
+    "overran_believed_finish": 16,
+    "sprint_start_m_from_true_finish": [
+     null,
+     1685,
+     1521,
+     1650,
+     1867,
+     1597,
+     1627,
+     1804,
+     1507,
+     null,
+     1689,
+     null,
+     1843,
+     1841,
+     1702,
+     null,
+     1600,
+     1904,
+     null,
+     1563,
+     1603,
+     null
+    ]
+   },
+   "talk": {
+    "self_ease": 12,
+    "self_push": 14,
+    "reassured_in_time": 0,
+    "reassured_late": 0,
+    "held_in_time": 0,
+    "held_late": 0
+   },
+   "questions_asked": 0
+  }
+ }
+}

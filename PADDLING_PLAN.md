@@ -518,6 +518,131 @@ reliable gain. The parts of the coach's input that the role-players found mislea
 are listed under next steps; they are the same ones that make the early let-go
 look right.
 
+### Open races: what nobody wrote a rule for (written down 2026-11-03, before any held-out race)
+
+**Why.** Every coaching test so far asked the coach to pace a race whose best answer a
+pacing algorithm can compute, and the coach's prompt had grown into that algorithm written
+in English. A model following such rules can at best equal the rules. Reasoning should
+pay off when something happens that nobody planned for, the evidence is ambiguous, or the
+paddler says something. So these races add incidents, a paddler who talks, and an open
+coach.
+
+**The races** (`sim/incidents.py`, planted, drawn per race on their own random stream):
+* **weed on the rudder**: 6–12 % more drag until a back-stroke clears it. Half the
+  paddlers say the boat feels heavy; a third clear it on their own after 2–7 minutes.
+  Left alone it cost 39 s on average in 18 development races (6 to 91 s).
+* **an unforecast wind shift** of 0.12–0.30 m/s along the course; half the time the
+  escort boat radios it;
+* **the paddle pod drifting** to 72–82 % or 120–132 % of the true effort (held out);
+* **the race committee adding or removing a leg** by radio (held out). The paddler
+  learns of it only if told; otherwise they sprint for the old finish.
+* **the paddler's talk**:
+  * an honest paddler says when the legs are going;
+  * a pessimist says they are cooked while they are not, then eases off unless
+    reassured. That often *helps*, because many paddlers start too hard, so the right
+    reply depends on the numbers;
+  * an optimist says they feel great while the reserve is low, then pushes unless held.
+
+**The open coach** (`OPEN_COACH_SYSTEM`):
+* Its prompt gives the goal, the means and facts about the instruments ("any instrument
+  can fail or drift"; "paddlers misjudge themselves"), and no procedures.
+* It keeps notes across wake-ups, can ask the paddler how they feel, and sets its own
+  watches; it starts with none.
+* It is woken by its watches, every 3 minutes, and by what the paddler or the radio says.
+* Each wake-up shows its recent cues and how many cues it has left.
+* Paddler actions on its menu: ease, push, hold, rate up or down, finish, clear the
+  rudder, reassure, and tell (with a distance).
+
+**Practice** (three development races, role-played, before this registration):
+* The coach was 24.7 s faster than no coach.
+* It was 16.5 s slower than rules written knowing the weed. The rules spot the drag step
+  in about a minute; the coach took about four, because the wind hid the signal.
+* In two races it first judged the weed to be the wind. It then found it by comparing
+  speed on matching legs and had it cleared.
+* It corrected the critical power from the race.
+* The practice coaches' input gaps were fixed: the cue cap, the cap on corrections,
+  note length and the names that watches can use.
+
+**The check** (`coaching_trial.HELDOUT_OPEN`):
+* 30 fresh races (seeds 5000–5029). Each holds at least one held-out kind (pod drift or a
+  course change), never used in development.
+* Arms: no coach; the pod autopilot; the incident rules (threshold 0.06 m/s, the best on
+  24 development races); the role-played open coach.
+* Primary: coach minus incident rules and coach minus no coach, Holm over the two.
+* Secondary: the races with each held-out kind, and what happened to each incident (from
+  the simulator's truth).
+* What would show the value of reasoning in the race: faster than the incident rules
+  overall, or clearly better on the kinds no rule anticipated. On the kinds the rules
+  were written for, they are expected to react faster.
+* The coach's menu holds the actions the held-out kinds need (tell with a distance,
+  correcting the race distance). What is held out is the incident and its diagnosis,
+  not the action.
+
+**Result of the open-race check.** 30 held-out races; every race finished, and every race
+replays exactly from the role-player's answers. The coach answered 57 model calls a race
+on average (37 to 78). Figure `coaching_open_race`.
+
+| Open coach minus … | Mean | 95 % interval | Holm p | Coach faster in |
+|---|---|---|---|---|
+| no coach (primary) | −24.8 s | −37.1 to −12.3 | 0.0007 | 24 of 30 |
+| rules written for the practice incidents (primary) | −6.0 s | −16.5 to +4.3 | 0.27 | 18 of 30 |
+| fixed pod rules (secondary) | −9.7 s | −19.5 to +0.6 | p 0.047, uncorrected | 21 of 30 |
+
+Against the incident rules at their other two detection thresholds: −8.6 s and −6.3 s.
+
+* **A course changed by radio** (held out; 22 races).
+  * The coach corrected the race distance and told the paddler in 21 races.
+  * No coached paddler sprinted for the old finish. Under the rules and with no coach,
+    16 of 22 did: on a lengthened course they started their sprint 1.5–1.9 km early.
+  * The coached sprint started 300–700 m from the true finish in 20 of the 21 races
+    with a recorded start.
+  * In these races the coach was 12.1 s faster than the incident rules (−23.9 to −1.1 s).
+* **The paddle pod drifting** (held out; 17 races).
+  * Race time was no different from the rules (−2.0 s, −16.5 to +11.4 s).
+  * The pre-registered cue count does not separate the arms. It counts every cue in the
+    direction the faulty reading points: 45 such cues and 21 against for the coach, 3
+    and 0 for the rules, which cue far less. Many of the coach's cues had other reasons,
+    such as finish pushes.
+  * Exploratory, from its notes: the coach named the pod as faulty in 16 of 17 drift
+    races. It did so by checking the pod against GPS speed on matching legs. It also
+    suspected the pod in 5 of the 13 races without drift.
+* **Weed** (a practice kind; 24 races).
+
+  | | Open coach | Incident rules | No coach |
+  |---|---|---|---|
+  | Mean seconds raced with weed | 355 | 618 | 1058 |
+  | Weed cleared by a cue | 18 | 12 | 0 |
+  | Weed never cleared | 3 | 8 | 14 |
+  | Median time to the first clearing cue | 89 s | 63 s | — |
+  | Back-strokes with no weed to clear (each costs about 3 s) | 14 | 3 | 0 |
+
+  The rules react faster when their detector fires. The coach found weed the detector
+  missed, using the paddler's words or by comparing legs. It also cleared "weed" that
+  was the wind, a blow-up or a tired blade.
+* **The paddler's talk:** little difference. Self-misjudgements caught in time: 9 for
+  the coach, 8 for the rules. Most paddler remarks were fixed phrases.
+* **Blowing up:** an average of 182 s blown up per race with the coach, 223 s with the
+  rules and 237 s with no coach.
+* **Where the coach lost** (exploratory). In the 8 races without a course change it was
+  10.6 s slower than the rules (−6.9 to +28.8 s). It lost 12 of the 30 races to the
+  rules, by up to 58 s. The role-players' own reports name two causes:
+  * pushes made on reserve figures that were wrong, which led to blow-ups;
+  * corrections to critical power made on a few minutes of evidence.
+
+**What it shows.** This is the first check in this project where a reasoning coach
+clearly beats no coach on races it was not tuned on, and is ahead of every fixed rule.
+It is not significantly ahead of rules written for the practice incidents.
+
+The clearest value comes on the incident no rule anticipated: the course changed by
+radio. A rule could be written for it, but only by someone who foresaw it. The coach
+also found instrument faults it was never told about, but that did not turn into race
+time. Its weakest point is acting too confidently on numbers it had no way to check.
+
+Limits:
+* the role-player is a stand-in, not the deployed model;
+* the incidents and the paddler's responses are planted;
+* the rules do not read the radio, as registered.
+
 ## Results so far
 
 **Simulated 37-minute OC1 training session** (`demos/demo_oc1_training.py`,
@@ -671,6 +796,12 @@ the other eight sessions: critical power 93 W, reserve 6.4 kJ; stand-in coach):
   full effort plus a margin to close, and more than ~25 m back the wash is lost; the
   paddler's willingness to work for the wash is a drawn trait. Real packs surge,
   split and race each other, and wash riding depends on position and sea state.
+* **Incidents and the paddler's talk are planted** (`sim/incidents.py`, `sim/twin.py`):
+  how much weed drags and what clearing it costs (half the boat's speed for a moment),
+  how often paddlers notice or clear it themselves, the wind shift's size and onset, the
+  pod's drift, the course change and the paddler's belief about the finish, and how each
+  kind of paddler talks and acts on their own words. The paddler's words are fixed
+  phrases, and they act only on a cue's request, never its words.
 * The twin's **critical-power test reads 10–25 % low** against the paddler at their
   best rate and fresh; this is what the test measures on this model (efficiency
   falls as the reserve drains inside each piece), and it is left in on purpose.
@@ -788,6 +919,23 @@ connectivity.
    * tell the coach when a watch it wrote cannot be evaluated: a missing input makes
      the watch silently false;
    * drop the "check the line" note at each new leg in races with no line to choose;
+   * from the open-race coaches (most often raised):
+     * whether a cue was carried out, from the instruments (a back-stroke shows as a
+       speed dip; an effort change shows on the pod);
+     * a "wake me in N seconds or at N metres" tool. Every coach built timer watches to
+       get past the 60-second gap between cues.
+     * summaries instead of hundreds of raw values from the series tool;
+     * one clock across series, alerts and race time (the series run about 300 s
+       ahead);
+     * a live check of the pod against GPS speed through the hull model (the coaches did
+       it by hand);
+     * a critical-power correction that also rescales the reserve already counted;
+     * turn position as a stream that watches can use;
+     * a pinned plan note that does not scroll out;
+     * a paddler who says more than fixed phrases;
+   * in agentic_experiments (its own pull request, for the owner): `maximum()` in an
+     agent-defined metric is taken for a missing stream name, so the metric never
+     computes. It works in watch conditions.
    * the replay demo on the race panel's watches instead of the old screen;
    * effort from the pod (force) so the reserve does not drift;
    * the current from a tide model when the course does not turn;
