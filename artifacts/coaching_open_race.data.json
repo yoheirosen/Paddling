@@ -1,0 +1,67 @@
+{
+  "n": 3,
+  "diffs": {
+    "incident_rules": [
+      -12.217598639724201,
+      70.74903537074852,
+      -8.889380929146228
+    ],
+    "no_coach": [
+      -26.542234524235027,
+      6.621288406027816,
+      -54.07965514079615
+    ]
+  },
+  "ci95": {
+    "incident_rules": [
+      -12.217598639724201,
+      70.74903537074852
+    ],
+    "no_coach": [
+      -54.07965514079615,
+      6.621288406027816
+    ]
+  },
+  "weed_seconds": {
+    "open_coach": 667.0,
+    "incident_rules": 379.1,
+    "autopilot_pod": 1495.0,
+    "no_coach": 1520.1
+  },
+  "weed_cleared": {
+    "open_coach": "2 by cue, 0 alone",
+    "incident_rules": "2 by cue, 0 alone",
+    "autopilot_pod": "0 by cue, 0 alone",
+    "no_coach": "0 by cue, 0 alone"
+  },
+  "n_weed": 3,
+  "n_course": 0,
+  "n_pod": 0,
+  "held_out": {
+    "open_coach": {
+      "told": 0,
+      "overran": 0,
+      "pod_wrong": 0,
+      "pod_right": 0
+    },
+    "incident_rules": {
+      "told": 0,
+      "overran": 0,
+      "pod_wrong": 0,
+      "pod_right": 0
+    },
+    "autopilot_pod": {
+      "told": 0,
+      "overran": 0,
+      "pod_wrong": 0,
+      "pod_right": 0
+    },
+    "no_coach": {
+      "told": 0,
+      "overran": 0,
+      "pod_wrong": 0,
+      "pod_right": 0
+    }
+  },
+  "note": "simulated races with planted incidents; per-race differences and counts only; no positions"
+}

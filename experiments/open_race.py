@@ -108,6 +108,82 @@ def _incident_table(arms: Dict[str, Dict[int, Dict[str, Any]]], seeds: List[int]
     return out
 
 
+def plot_open_race(data):
+    """Open races: race time against the baselines, and what happened to each incident."""
+    import numpy as np
+    import matplotlib.pyplot as plt
+    fig, axes = plt.subplots(1, 3, figsize=(13.5, 4.4), gridspec_kw={"width_ratios": [1.15, 1, 1]})
+    ax = axes[0]
+    cols = {"incident_rules": "#c46a2b", "no_coach": "#777777"}
+    for i, k in enumerate(("incident_rules", "no_coach")):
+        d = np.asarray(data["diffs"][k], float)
+        rng = np.random.default_rng(i)
+        ax.scatter(i + rng.uniform(-0.15, 0.15, d.size), d, s=16, color=cols[k], alpha=0.6, lw=0)
+        lo, hi = data["ci95"][k]
+        ax.errorbar([i + 0.32], [d.mean()], yerr=[[d.mean() - lo], [hi - d.mean()]], fmt="o", color="k", capsize=4)
+        ax.text(i + 0.38, d.mean(), f" {d.mean():+.1f} s", va="center", fontsize=8)
+    ax.axhline(0, color="0.5", lw=0.8)
+    ax.set_xticks([0, 1])
+    ax.set_xticklabels(["rules written for\nthe practice incidents", "no coach"], fontsize=8)
+    ax.set_xlim(-0.5, 1.9)
+    ax.set_ylabel("open coach minus comparison (s); below 0 = coach faster")
+    ax.set_title(f"race time, {data['n']} held-out races", fontsize=10)
+    ax = axes[1]
+    arms = ["no_coach", "autopilot_pod", "incident_rules", "open_coach"]
+    names = ["no coach", "fixed rules", "incident rules", "open coach"]
+    w = [data["weed_seconds"].get(a) for a in arms]
+    ax.barh(range(4), [x or 0 for x in w], color=["#777777", "#999999", "#c46a2b", "#3b6ea8"])
+    for i, (x, c) in enumerate(zip(w, [data["weed_cleared"].get(a) for a in arms])):
+        ax.text((x or 0) + 10, i, f"{(x or 0):.0f} s; cleared in {c}", va="center", fontsize=8)
+    ax.set_yticks(range(4))
+    ax.set_yticklabels(names, fontsize=8)
+    ax.set_xlabel("mean seconds raced with weed on the rudder")
+    ax.set_title(f"weed (practice kind; {data['n_weed']} races)", fontsize=10)
+    ax.set_xlim(0, max(x or 0 for x in w) * 1.6 + 1)
+    ax = axes[2]
+    rows = [("course changed by radio:\npaddler told the new finish", "told", data["n_course"]),
+            ("course changed:\nsprinted for the wrong finish", "overran", data["n_course"]),
+            ("pod drifting: cues the faulty\nreading called for", "pod_wrong", None),
+            ("pod drifting: cues against\nthe faulty reading", "pod_right", None)]
+    y = np.arange(len(rows))
+    for j, (a, c) in enumerate((("incident_rules", "#c46a2b"), ("open_coach", "#3b6ea8"))):
+        vals = [data["held_out"][a][r[1]] for r in rows]
+        ax.barh(y + (0.2 if j == 0 else -0.2), vals, height=0.38, color=c, label=["incident rules", "open coach"][j])
+        for yy, v in zip(y + (0.2 if j == 0 else -0.2), vals):
+            ax.text(v + 0.2, yy, str(v), va="center", fontsize=7)
+    ax.set_yticks(y)
+    ax.set_yticklabels([r[0] + (f" (of {r[2]})" if r[2] else "") for r in rows], fontsize=7)
+    ax.invert_yaxis()
+    ax.legend(fontsize=7, loc="lower right")
+    ax.set_title(f"held-out kinds (course change {data['n_course']} races, pod drift {data['n_pod']})", fontsize=9)
+    fig.suptitle("Open races (simulated paddler, planted incidents): open coach role-played by Claude subagents",
+                 fontsize=10)
+    fig.tight_layout()
+    return fig
+
+
+def _figure(out: Dict[str, Any], rp, nc, rules, S) -> None:
+    from agent_lib.figure_artifacts import emit
+    inc = out["incidents"]
+    data = {"n": len(S),
+            "diffs": {"incident_rules": [rp[s]["race_time_s"] - rules[s]["race_time_s"] for s in S],
+                      "no_coach": [rp[s]["race_time_s"] - nc[s]["race_time_s"] for s in S]},
+            "ci95": {"incident_rules": out["comparisons"]["incident_rules"]["ci95"],
+                     "no_coach": out["comparisons"]["no_coach"]["ci95"]},
+            "weed_seconds": {a: inc[a]["weed"]["mean_seconds_with_weed"] for a in inc},
+            "weed_cleared": {a: f"{inc[a]['weed']['cleared_by_cue']} by cue, {inc[a]['weed']['cleared_by_paddler']} alone"
+                             for a in inc},
+            "n_weed": inc["open_coach"]["weed"]["n"],
+            "n_course": inc["open_coach"]["course_change"]["n"], "n_pod": inc["open_coach"]["pod_drift"]["n"],
+            "held_out": {a: {"told": inc[a]["course_change"]["paddler_told"],
+                             "overran": inc[a]["course_change"]["overran_believed_finish"],
+                             "pod_wrong": inc[a]["pod_drift"]["cues_as_faulty_pod_suggests"],
+                             "pod_right": inc[a]["pod_drift"]["cues_against_it"]} for a in inc},
+            "note": "simulated races with planted incidents; per-race differences and counts only; no positions"}
+    paths = emit("coaching_open_race", data=data, plot_func=plot_open_race, artifacts_dir=os.path.join(ROOT, "artifacts"))
+    print("figure:", paths)
+
+
 def summary(tag: str, figure: bool = False) -> Dict[str, Any]:
     rp, nc, pod, rules, rows = _load(tag)
     S = sorted(s for s in rp if s in nc and s in rules)
@@ -142,6 +218,8 @@ def summary(tag: str, figure: bool = False) -> Dict[str, Any]:
                                             "no_coach": nc}, S)
         for k, v in out["incidents"].items():
             print(f"  {k}: {json.dumps(v)}")
+        if figure:
+            _figure(out, rp, nc, rules, S)
     with open(os.path.join(OUT, f"summary_{tag}.json"), "w") as f:
         json.dump(out, f, indent=1)
     return out
