@@ -58,9 +58,12 @@ def _prep(a: argparse.Namespace) -> ct.Preparation:
         return ct.Preparation.from_dict(cache[str(a.seed)])
     prep = ct.draw_preparation(a.seed, coastal=a.coastal, pack=a.pack, incidents=inc)
     if inc:                                  # open races are drawn once and kept (the draw takes seconds)
+        cache = json.load(open(path)) if os.path.exists(path) else {}
         cache[str(a.seed)] = prep.to_dict()
-        with open(path, "w") as f:
+        tmp = f"{path}.{os.getpid()}.tmp"     # written whole, then swapped in: parallel role plays never see half a file
+        with open(tmp, "w") as f:
             json.dump(cache, f)
+        os.replace(tmp, path)
     return prep
 
 
