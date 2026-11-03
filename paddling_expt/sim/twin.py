@@ -35,6 +35,15 @@ lists them):
   heading, as a SpeedCoach or the head unit reports them, and (OC1) the paddle pod's
   shaft power with 5 % noise per stroke.
 
+* **incidents** (open races only; :mod:`.incidents` draws them): weed caught on the
+  rudder (extra drag until the paddler clears it, which costs a back-stroke), a wind
+  shift nobody forecast, the paddle pod's reading drifting, the race committee
+  changing the course by radio.  The paddler **talks**: an honest paddler says when
+  the legs are going; a pessimist says they are cooked while they are not and eases
+  off by themselves unless reassured; an optimist says they feel great while the
+  reserve is low and pushes unless held.  Messages go to ``outbox``; ``answer()`` is
+  the paddler's reply when asked how they feel.
+
 So the answers a coach could find are planted: what over- or under-pacing costs, how
 much a lower rate helps a tired paddler, how far a paddler follows a cue.  A result
 on this twin says what coaching is worth *if paddlers respond as modelled*; it is
@@ -53,11 +62,30 @@ from ..boatspeed import power_at_speed
 from ..hydro import Craft
 from .paddler import PaddlerParams, best_rate, efficiency
 
-__all__ = ["Traits", "RaceSetup", "PaddlerTwin", "ASKS", "CoastalWater", "water_forecast", "forecast_stream", "Pack", "draw_traits", "draw_setup",
+__all__ = ["Traits", "RaceSetup", "PaddlerTwin", "ASKS", "Incident", "CoastalWater", "water_forecast", "forecast_stream", "Pack", "draw_traits", "draw_setup",
            "even_effort", "oracle_effort", "twin_cp_test"]
 
 ASKS = ("ease", "push", "hold", "rate_up", "rate_down", "finish", "line_in", "line_out",
-        "hang_on", "let_go", "none")
+        "hang_on", "let_go", "clear_rudder", "reassure", "tell", "none")
+
+
+@dataclass
+class Incident:
+    """Something that happens during a race (planted; :func:`.incidents.draw_incidents`).
+
+    ``kind``: ``weed`` (extra drag ``size``, a fraction, until cleared), ``wind_shift``
+    (a push of ``size`` m/s along the first leg's heading, building over a minute),
+    ``pod_drift`` (the pod's reading drifts to ``size`` x the truth over two minutes),
+    ``course_change`` (the race committee adds ``size`` metres, or removes them if
+    negative).  ``remark_after_s``: the paddler says something this long after the onset
+    (weed), or the escort radios (wind); None = nobody says anything.  ``self_fix_s``:
+    the paddler clears the weed on their own this long after the onset (None = never)."""
+
+    kind: str
+    t_race_s: float
+    size: float
+    remark_after_s: Optional[float] = None
+    self_fix_s: Optional[float] = None
 
 
 @dataclass
@@ -168,6 +196,7 @@ class Traits:
     lateral_mps: float = 0.8            # how fast they move across when changing line
     line_step_m: float = 100.0          # line in / out moves the line by this
     hang_on: float = 0.5                # 0-1: how hard they will work to stay on a pack's wash
+    talk: str = "quiet"                 # quiet | honest | pessimist | optimist (open races)
 
 
 @dataclass
@@ -184,6 +213,7 @@ class RaceSetup:
     plan: Optional[List[Tuple[float, float, float]]] = None   # (seconds, rate, effort): a session, not a race
     water: Optional[CoastalWater] = None   # water that varies across and along the course (else: current_mps)
     pack: Optional[Pack] = None            # other boats to draft (else: alone)
+    incidents: List[Incident] = field(default_factory=list)   # open races: things that happen
 
 
 def draw_traits(seed: int) -> Traits:
@@ -235,7 +265,7 @@ class PaddlerTwin:
     def __init__(self, traits: Traits, setup: RaceSetup, *, seed: int = 0,
                  body_effort: Optional[float] = None, rate_policy: str = "own",
                  noise: bool = True, even: Optional[float] = None) -> None:
-        self.tr, self.su, self.p = traits, setup, traits.paddler
+        self.tr, self.su, self.p = traits, replace(setup), traits.paddler   # own copy: a course change stays here
         self.craft: Craft = CRAFT[setup.craft]
         c = self.craft
         self.total_kg = self.p.body_kg + c.hull_mass_kg + (c.outrigger.mass_kg if c.outrigger else 0.0)
@@ -287,6 +317,21 @@ class PaddlerTwin:
         self._hold: Optional[Tuple[float, float]] = None          # (effort, t set)
         self._pending: List[Tuple[float, str, Optional[float]]] = []
         self.cues: List[Dict[str, Any]] = []
+        # open races: incidents, talk, what the paddler believes about the course
+        self.believed_m = float(self.su.distance_m)
+        self.rng_talk = np.random.default_rng([seed, 6])
+        self.outbox: List[Dict[str, Any]] = []
+        self.incident_log: List[Dict[str, Any]] = []
+        self._inc_started = [False] * len(self.su.incidents)
+        self._scheduled: List[Tuple[float, str, Any]] = []     # (t, what, payload)
+        self._weed = 0.0
+        self._wind: Optional[Tuple[float, float]] = None       # (push m/s along the first leg, t onset)
+        self._pod: Optional[Tuple[float, float]] = None        # (gain at the end, t onset)
+        self._self_eff = (0.0, 0.0)                            # self-ease / self-push (offset, t set)
+        self._talk_pending: Optional[Tuple[float, float]] = None   # (t start, offset)
+        self._talk_next = self.start_t + float(self.rng_talk.uniform(240.0, 480.0))
+        self._talk_n = 0
+        self._talk_good_said = False
         self.log: Dict[str, List[float]] = {k: [] for k in (
             "t", "race_s", "race_m", "effort", "p_shaft", "p_boat", "eta", "rate", "rate_best",
             "fatigue", "w_bal", "v_water", "v_ground", "current_along", "coached")}
@@ -327,9 +372,12 @@ class PaddlerTwin:
         if self.t < self.start_t:
             return 0.55, 52.0
         race_s = self.t - self.start_t
-        if not self.kicking and self.remaining_m <= tr.kick_m:
+        if not self.kicking and self.believed_m - self.race_m <= tr.kick_m:
             self.kicking = True
             self.started_kick_t = self.t
+            if self.su.incidents:
+                self._note("kick_started", true_left_m=round(self.su.distance_m - self.race_m),
+                           believed_left_m=round(self.believed_m - self.race_m), by="own")
         if race_s < tr.start_s:
             e, r = tr.start_effort, tr.habit_rate + 6.0
         elif self.kicking:
@@ -395,6 +443,9 @@ class PaddlerTwin:
             off, t_set = self._effort_off
             e += off * self._decay(t_set)
             coached |= abs(off * self._decay(t_set)) > 0.005
+            so, st = self._self_eff
+            if so:
+                e += so * math.exp(-max(0.0, self.t - st) / 240.0)
         roff, rt = self._rate_off
         r += roff * self._decay(rt)
         coached |= abs(roff * self._decay(rt)) > 0.2
@@ -404,21 +455,77 @@ class PaddlerTwin:
         return max(0.3, e), min(85.0, max(40.0, r)), coached
 
     # ── cues ─────────────────────────────────────────────────────────────
-    def cue(self, ask: str, pace_s500: Optional[float] = None, line_m: Optional[float] = None) -> Dict[str, Any]:
+    def cue(self, ask: str, pace_s500: Optional[float] = None, line_m: Optional[float] = None,
+            distance_left_m: Optional[float] = None) -> Dict[str, Any]:
         """A cue reaches the paddler now.  Returns whether they will follow it (the
-        twin's truth, never shown to a coach)."""
+        twin's truth, never shown to a coach).  ``distance_left_m`` goes with ``tell``:
+        how far the paddler should now believe the finish is."""
         ask = str(ask)
         follow = bool(self.rng_cue.random() < self.tr.compliance)
         entry = {"t": self.t, "ask": ask, "pace_s500": pace_s500, "followed": follow}
         if line_m is not None:
             entry["line_m"] = line_m
+        if distance_left_m is not None:
+            entry["distance_left_m"] = distance_left_m
         self.cues.append(entry)
         if follow and ask in ASKS and ask != "none":
-            self._pending.append((self.t + self.tr.response_s, ask, pace_s500, line_m))
+            self._pending.append((self.t + self.tr.response_s, ask, pace_s500, line_m, distance_left_m))
         return entry
 
-    def _apply(self, ask: str, pace_s500: Optional[float], e_now: float, line_m: Optional[float] = None) -> None:
+    def _note(self, event: str, **kw: Any) -> None:
+        self.incident_log.append({"t": round(self.t, 2), "race_s": round(self.t - self.start_t, 2),
+                                  "race_m": round(self.race_m, 1), "event": event, **kw})
+
+    def _say(self, who: str, text: str, **kw: Any) -> None:
+        self.outbox.append({"t": round(self.t, 2), "race_s": round(self.t - self.start_t, 1),
+                            "from": who, "text": text})
+        self._note("said", who=who, text=text, **kw)
+
+    def answer(self) -> Dict[str, Any]:
+        """The paddler's reply to "how do you feel?" (a 1-10 effort rating and a remark),
+        coloured by how they talk."""
+        wf = self.w / self.p.w_prime_j
+        bias = {"pessimist": 1.5, "optimist": -1.5}.get(self.tr.talk, 0.0)
+        rpe = int(round(min(10.0, max(1.0, 4.0 + 6.0 * (1.0 - wf) + bias + float(self.rng_talk.normal(0.0, 0.7))))))
+        if self._weed > 0 and self.rng_talk.random() < 0.6:
+            says = "The boat feels heavy, like something is dragging."
+        elif self.tr.talk == "pessimist":
+            says = "It is really hurting."
+        elif self.tr.talk == "optimist":
+            says = "All good, I have plenty."
+        else:
+            says = "Close to my limit." if wf < 0.25 else "Hard but holding." if wf < 0.6 else "Steady, feels fine."
+        self._note("asked", rpe=rpe, says=says)
+        return {"effort_out_of_10": rpe, "says": says}
+
+    def _apply(self, ask: str, pace_s500: Optional[float], e_now: float, line_m: Optional[float] = None,
+               distance_left_m: Optional[float] = None) -> None:
         tr, t = self.tr, self.t
+        if ask == "clear_rudder":                   # a back-stroke: the boat checks, the weed comes off
+            self.v *= 0.55
+            self._note("cleared_by_cue" if self._weed > 0 else "clear_without_weed")
+            self._weed = 0.0
+            return
+        if ask == "reassure":
+            if self._talk_pending is not None and self._talk_pending[1] < 0:
+                self._talk_pending = None
+                self._note("reassured_in_time")
+            elif self._self_eff[0] < 0:
+                self._self_eff = (0.0, t)
+                self._note("reassured_late")
+            return
+        if ask == "tell":
+            if distance_left_m is not None and distance_left_m > 0:
+                self.believed_m = self.race_m + float(distance_left_m)
+                self._note("told_distance", believed_m=round(self.believed_m), true_m=self.su.distance_m)
+            return
+        if ask in ("hold", "ease"):                 # holding back a paddler who wants to go
+            if self._talk_pending is not None and self._talk_pending[1] > 0:
+                self._talk_pending = None
+                self._note("held_in_time")
+            elif self._self_eff[0] > 0:
+                self._self_eff = (0.0, t)
+                self._note("held_late")
         if ask == "hang_on":
             self.hanging = True
             self._hang_bonus = (0.08, t)
@@ -446,9 +553,12 @@ class PaddlerTwin:
         elif ask == "hold":
             self._hold, self._pace = (e_now, t), None
         elif ask == "finish":
-            if self.remaining_m <= tr.max_kick_m:
+            if self.believed_m - self.race_m <= tr.max_kick_m:
                 self.kicking = True
                 self.started_kick_t = self.started_kick_t or t
+                if self.su.incidents:
+                    self._note("kick_started", true_left_m=round(self.su.distance_m - self.race_m),
+                               believed_left_m=round(self.believed_m - self.race_m), by="cue")
             else:
                 self._apply("push", None, e_now)
 
@@ -471,14 +581,88 @@ class PaddlerTwin:
                 T *= 1.0 + 0.012 * float(self.rng_feel.normal())
             if self.t + T > until_t:
                 break
-            for when, ask, pace, line in [x for x in self._pending if x[0] <= self.t]:
-                self._apply(ask, pace, e_guess, line)
+            self._open_race_step()
+            for when, ask, pace, line, dist in [x for x in self._pending if x[0] <= self.t]:
+                self._apply(ask, pace, e_guess, line, dist)
             self._pending = [x for x in self._pending if x[0] > self.t]
             e, r, coached = self._choose(fat, T, commit=True)
             rows.append(self._stroke(e, r, T, fat, coached))
             if self.finish_t is not None:
                 break
         return rows
+
+    def _open_race_step(self) -> None:
+        """Incidents starting, scheduled remarks, the paddler's own talk (open races)."""
+        if not self.racing:
+            return
+        race_s = self.t - self.start_t
+        for i, inc in enumerate(self.su.incidents):
+            if self._inc_started[i] or race_s < inc.t_race_s:
+                continue
+            self._inc_started[i] = True
+            if inc.kind == "weed":
+                self._weed = float(inc.size)
+                self._note("onset", kind="weed", size=inc.size)
+                if inc.remark_after_s is not None:
+                    self._scheduled.append((self.t + inc.remark_after_s, "weed_remark", None))
+                if inc.self_fix_s is not None:
+                    self._scheduled.append((self.t + inc.self_fix_s, "self_clear", None))
+            elif inc.kind == "wind_shift":
+                self._wind = (float(inc.size), self.t)
+                self._note("onset", kind="wind_shift", size=inc.size)
+                if inc.remark_after_s is not None:
+                    self._scheduled.append((self.t + inc.remark_after_s, "wind_radio", inc.size))
+            elif inc.kind == "pod_drift":
+                self._pod = (float(inc.size), self.t)
+                self._note("onset", kind="pod_drift", size=inc.size)
+            elif inc.kind == "course_change":
+                old = self.su.distance_m
+                self.su.distance_m = new = float(old + inc.size)
+                self._note("onset", kind="course_change", old_m=old, new_m=new)
+                how = (f"course shortened by one leg, the finish is now at {new:.0f} m" if new < old else
+                       f"course extended by one leg, the finish is now at {new:.0f} m")
+                self._say("race committee (radio)", f"All boats: {how}.")
+        for item in [x for x in self._scheduled if x[0] <= self.t]:
+            self._scheduled.remove(item)
+            _, what, payload = item
+            if what == "weed_remark" and self._weed > 0:
+                self._say("paddler", "Boat feels heavy all of a sudden. Something on the rudder?")
+            elif what == "self_clear" and self._weed > 0:
+                self.v *= 0.55
+                self._weed = 0.0
+                self._note("self_cleared")
+            elif what == "wind_radio":
+                frm = "south" if payload > 0 else "north"
+                self._say("escort boat (radio)", f"Wind is filling in from the {frm}, maybe 8 to 12 knots.")
+        # the paddler's own talk
+        if self.tr.talk == "quiet" or self.kicking or self.finish_t is not None:
+            return
+        if self._talk_pending is not None and self.t >= self._talk_pending[0]:
+            self._self_eff = (self._talk_pending[1], self.t)
+            self._note("self_ease" if self._talk_pending[1] < 0 else "self_push")
+            self._talk_pending = None
+        wf = self.w / self.p.w_prime_j
+        frac = self.race_m / max(1.0, self.su.distance_m)
+        if self.t < self._talk_next or self.blown:
+            return
+        rt = self.rng_talk
+        if self.tr.talk == "pessimist" and self._talk_n < 2 and 0.4 <= wf <= 0.85 and 0.15 <= frac <= 0.8:
+            self._say("paddler", ["I'm cooked. I can't hold this.", "This hurts. I don't think I can keep this up."][self._talk_n])
+            self._talk_pending = (self.t + 30.0, -0.07)
+        elif self.tr.talk == "optimist" and self._talk_n < 2 and wf < 0.35 and 0.15 <= frac <= 0.85:
+            self._say("paddler", ["Feeling great! I've got more, I'm going.", "I feel strong, let me go harder."][self._talk_n])
+            self._talk_pending = (self.t + 30.0, 0.07)
+        elif self.tr.talk == "honest" and self._talk_n < 3 and wf < 0.2:
+            self._say("paddler", "Legs are going. I'm close to the limit.")
+        elif self.tr.talk == "honest" and not self._talk_good_said and wf > 0.6 and 0.3 <= frac <= 0.6:
+            self._say("paddler", "Feeling good. This is steady.")
+            self._talk_good_said = True
+            self._talk_next = self.t + float(rt.uniform(240.0, 480.0))
+            return
+        else:
+            return
+        self._talk_n += 1
+        self._talk_next = self.t + float(rt.uniform(360.0, 720.0))
 
     def _step_rest(self, dt: float) -> None:
         self._refill(0.0, dt)
@@ -504,10 +688,13 @@ class PaddlerTwin:
         return into if self.heading < 90.0 or self.heading > 270.0 else self.su.leg_m - into
 
     def _current_along(self) -> float:
+        wind = 0.0
+        if self._wind is not None:
+            wind = self._wind[0] * min(1.0, max(0.0, (self.t - self._wind[1]) / 60.0))
         if self.su.water is not None:
             v = self.su.water.at(self.y, self._along_pos(), self.t - self.start_t)
-            return v * math.cos(math.radians(self.heading))
-        return self.su.current_mps * math.cos(math.radians(self.heading))
+            return (v + wind) * math.cos(math.radians(self.heading))
+        return (self.su.current_mps + wind) * math.cos(math.radians(self.heading))
 
     def _stroke(self, e: float, rate: float, T: float, fat: float, coached: bool) -> Dict[str, Any]:
         p, cp = self.p, self._cp_eff()
@@ -536,6 +723,8 @@ class PaddlerTwin:
         else:
             self.on_wash = False
         p_eff = eta * P / (1.0 - pk.draft) if self.on_wash else eta * P
+        if self._weed > 0:
+            p_eff /= 1.0 + self._weed                 # weed on the rudder: more drag at every speed
         v_target = float(np.interp(p_eff, *_table_at(self._table, ama)))
         self.v += (v_target - self.v) * (1.0 - math.exp(-T / 6.0))
         along = self._current_along()
@@ -578,6 +767,11 @@ class PaddlerTwin:
             if self.race_m - self._leg_start >= self.su.leg_m:
                 self._leg_start += self.su.leg_m
                 self._turn(t_end)
+            if self.finish_t is None and self.race_m >= self.believed_m:    # no finish line where they thought
+                self.believed_m = self.su.distance_m
+                self.kicking = False
+                self._note("overran_believed_finish")
+                self._say("paddler", "Where's the finish? I thought that was it!")
         else:
             leg = self.su.warmup_leg_m if self.su.plan is None else 1500.0
             if self.total_m - self._wu_leg_start >= leg:
@@ -602,7 +796,10 @@ class PaddlerTwin:
         row = {"t": round(t_end, 3), "v_mean": max(0.0, vg + n(0.06)), "rate_spm": rate + n(0.4),
                "heading_deg": (self.heading + n(4.0)) % 360.0, "distance_m": self.total_m}
         if self.craft.outrigger is not None:          # the paddle pod (single-blade paddle)
-            row["shaft_power_w"] = max(0.0, P * (1.0 + (float(self.rng_pod.normal(0.0, 0.05)) if self.noise else 0.0)))
+            g = 1.0
+            if self._pod is not None:            # the pod's reading drifting (the paddler's effort does not change)
+                g = 1.0 + (self._pod[0] - 1.0) * min(1.0, max(0.0, (t_end - self._pod[1]) / 120.0))
+            row["shaft_power_w"] = max(0.0, g * P * (1.0 + (float(self.rng_pod.normal(0.0, 0.05)) if self.noise else 0.0)))
         if self.su.water is not None:                  # GPS position against the course map
             q = (lambda sd: float(self.rng_pos.normal(0.0, sd))) if self.noise else (lambda sd: 0.0)
             row["line_m"] = max(0.0, self.y + q(3.0))
@@ -653,7 +850,7 @@ def _table_at(table, ama: float):
 
 
 def _race(traits: Traits, setup: RaceSetup, effort: float, rate_policy: str) -> "PaddlerTwin":
-    tw = PaddlerTwin(replace(traits, start_effort=effort, kick_m=0.0), setup,
+    tw = PaddlerTwin(replace(traits, start_effort=effort, kick_m=0.0, talk="quiet"), setup,
                      body_effort=effort, rate_policy=rate_policy, noise=False)
     tw.run_alone()
     return tw
@@ -674,7 +871,7 @@ def even_effort(traits: Traits, setup: RaceSetup) -> float:
     """The paddler's even pace: the highest constant effort (x critical power, no start
     sprint, no kick) that reaches the line without blowing up, at their own rate and
     ignoring the current (which they cannot judge)."""
-    return _highest_unblown(traits, replace(setup, current_mps=0.0, water=None), "own")
+    return _highest_unblown(traits, replace(setup, current_mps=0.0, water=None, incidents=[]), "own")
 
 
 def oracle_effort(traits: Traits, setup: RaceSetup) -> Dict[str, float]:
@@ -682,6 +879,7 @@ def oracle_effort(traits: Traits, setup: RaceSetup) -> Dict[str, float]:
     line without blowing up in this race (current included), holding the best rate for
     its fatigue.  A reference for how much better a well-paced race could go, not a
     bound on what a coach can do (pacing with the current, a kick, can beat it)."""
+    setup = replace(setup, incidents=[])
     e = _highest_unblown(traits, setup, "best")
     tw = _race(traits, setup, e, "best")
     return {"effort": e, "race_time_s": tw.race_time_s, "reserve_left": tw.w / traits.paddler.w_prime_j}

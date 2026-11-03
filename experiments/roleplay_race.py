@@ -49,12 +49,19 @@ def _dir(tag: str, seed: int) -> str:
 
 
 def _prep(a: argparse.Namespace) -> ct.Preparation:
-    name = "preparations_pack.json" if a.pack else "preparations_coastal.json" if a.coastal else "preparations.json"
+    inc = getattr(a, "incidents", None)
+    name = (f"preparations_open_{inc}.json" if inc else "preparations_pack.json" if a.pack
+            else "preparations_coastal.json" if a.coastal else "preparations.json")
     path = os.path.join(OUT, name)
     cache = json.load(open(path)) if os.path.exists(path) else {}
     if str(a.seed) in cache:
         return ct.Preparation.from_dict(cache[str(a.seed)])
-    return ct.draw_preparation(a.seed, coastal=a.coastal, pack=a.pack)
+    prep = ct.draw_preparation(a.seed, coastal=a.coastal, pack=a.pack, incidents=inc)
+    if inc:                                  # open races are drawn once and kept (the draw takes seconds)
+        cache[str(a.seed)] = prep.to_dict()
+        with open(path, "w") as f:
+            json.dump(cache, f)
+    return prep
 
 
 def _tool_line(t: Dict[str, Any]) -> str:
@@ -125,7 +132,7 @@ def _run(a: argparse.Namespace) -> None:
         os._exit(3)                      # paused: waiting for the role-player's answer
 
     prov = FakeProvider(answer, model=a.model_label)
-    arm = ct.AgentArm(prov, label=a.label, coach_version=a.coach_version)
+    arm = ct.AgentArm(prov, label=a.label, coach_version=a.coach_version, periodic_s=a.periodic_s)
     r = ct.run_episode(_prep(a), arm, latency_s=a.latency_s)
     r["roleplay"] = {"answers": len(answers), "latency_s": a.latency_s, "stand_in": a.model_label}
     with open(os.path.join(d, "result.json"), "w") as f:
@@ -143,7 +150,8 @@ def _replay(a: argparse.Namespace, answers: List[Any]) -> Dict[str, Any]:
             return v
         return str(v.get("text", "") if isinstance(v, dict) else v)
 
-    arm = ct.AgentArm(FakeProvider(answer, model=a.model_label), label=a.label, coach_version=a.coach_version)
+    arm = ct.AgentArm(FakeProvider(answer, model=a.model_label), label=a.label, coach_version=a.coach_version,
+                      periodic_s=a.periodic_s)
     return ct.run_episode(_prep(a), arm, latency_s=a.latency_s)
 
 
@@ -155,11 +163,21 @@ def main(argv=None) -> int:
     ap.add_argument("--tag", required=True)
     ap.add_argument("--pack", action="store_true")
     ap.add_argument("--coastal", action="store_true")
-    ap.add_argument("--coach-version", type=int, default=7)
-    ap.add_argument("--label", default="agent_v7_roleplay")
+    ap.add_argument("--incidents", choices=["development", "held_out"], default=None,
+                    help="an open race (incidents and a talking paddler); implies the open coach")
+    ap.add_argument("--coach-version", type=int, default=None)
+    ap.add_argument("--label", default=None)
+    ap.add_argument("--periodic-s", type=float, default=None,
+                    help="wake the coach at least this often (default 300 s; 180 s for the open coach)")
     ap.add_argument("--model-label", default="roleplay-subagent")
     ap.add_argument("--latency-s", type=float, default=5.0)
     a = ap.parse_args(argv)
+    if a.coach_version is None:
+        a.coach_version = 8 if a.incidents else 7
+    if a.periodic_s is None:
+        a.periodic_s = 180.0 if a.coach_version == 8 else 300.0
+    if a.label is None:
+        a.label = "agent_open_roleplay" if a.coach_version == 8 else "agent_v7_roleplay"
     if a.cmd == "collect":
         base = os.path.join(OUT, "roleplay", a.tag)
         done = []
