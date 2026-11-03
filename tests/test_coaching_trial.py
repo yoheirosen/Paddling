@@ -167,7 +167,8 @@ def test_a_role_play_answering_no_cue_every_call_races_exactly_like_no_coach():
     spec.loader.exec_module(rr)
     prep = draw_preparation(1, pack=True)
     rr._prep = lambda a: prep
-    a = argparse.Namespace(model_label="test", label="agent_v7_roleplay", coach_version=7, latency_s=5.0)
+    a = argparse.Namespace(model_label="test", label="agent_v7_roleplay", coach_version=7, latency_s=5.0,
+                           periodic_s=300.0)
     r = rr._replay(a, itertools.repeat({"text": "no cue: holding"}))
     nc = run_episode(prep, NoCoach())
     assert r["cues_spoken"] == 0 and r["consultations"] > 0
