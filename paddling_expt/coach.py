@@ -408,12 +408,15 @@ words but act on the request attached to them: ease, push, hold, rate_up, rate_d
 (start the final sprint), clear_rudder (a back-stroke that knocks anything caught off the \
 rudder; it costs the boat's momentum), reassure (no change asked: you are telling them they are \
 doing fine), tell (information; distance_left_m sets where they think the finish is), or none. \
-With ease, push or hold you may add a target pace over the ground; they chase it by feel. A cue \
-takes 10-20 s to act; paddlers do not always follow one, and a followed change fades over \
-minutes.
+With ease, push or hold you may add a target pace over the ground; they chase it by feel, \
+through turns too, until the change fades. A cue takes 10-20 s to act; paddlers do not always \
+follow one, and a followed change fades over minutes.
 - Notes: you remember nothing between wake-ups. What you write with take_note is shown to you \
 at every later wake-up: a plan, a suspicion to check, what you have tried and what it did.
-- The boat computer's assumptions: set_critical_power and set_race_distance correct them.
+- The boat computer's assumptions: set_critical_power (at most 3 times per race) and \
+set_race_distance correct them.
+- Names: the live state's names are for reading; watches and your own metrics use the stream \
+names that list_available_metrics gives.
 
 Facts about the instruments (facts, not instructions):
 - Any instrument can fail or drift.
@@ -431,7 +434,7 @@ come from a 3- and 12-minute test before the race and can be 10-25 % off.
 How you coach is up to you: what to watch, what to plan, when to speak and what to say, when to \
 change your mind. Each model call costs a few seconds of race time; when nothing needs doing, \
 stop. The cue gate: at most 12 words, at least 60 s between cues, none in the first minute or \
-the last 100 m, and a cap per race.
+the last 100 m, and at most 20 cues per race.
 
 End each wake-up with one line: what you did and why, or "no cue: <reason>"."""
 
@@ -492,7 +495,8 @@ class RaceCoach:
             reg.register(self.ask_paddler, name="ask_paddler",
                          description="Ask the paddler how they feel; they answer with an effort out of 10 and a few words.")
             reg.register(self.take_note, name="take_note", writes=True,
-                         description="Write a note to yourself; every later wake-up shows your notes.")
+                         description="Write a note to yourself (up to 800 characters); every later wake-up "
+                                     "shows your last 15 notes.")
             reg.register(self.set_race_distance, name="set_race_distance", writes=True,
                          description="Correct the race distance the boat's computer uses (m, from the start), with the reason.")
             allowed += ["ask_paddler", "take_note", "set_race_distance"]
@@ -544,7 +548,7 @@ class RaceCoach:
     def take_note(self, text: str) -> Dict[str, Any]:
         s = self.state.last
         self.notes.append({"race_min": round((s.get("elapsed_s") or 0.0) / 60.0, 1),
-                           "at_m": round(s.get("distance_m") or 0.0), "note": str(text)[:400]})
+                           "at_m": round(s.get("distance_m") or 0.0), "note": str(text)[:800]})
         return {"ok": True, "n_notes": len(self.notes)}
 
     def set_race_distance(self, distance_m: float, reason: str = "") -> Dict[str, Any]:
@@ -728,8 +732,13 @@ class RaceCoach:
         msg["your_recent_cues"] = recent
         if spoken:
             msg["next_cue_allowed_in_s"] = max(0, round(60.0 - (t - (spoken[-1]["_t"] or t))))
-            msg["cues_spoken_so_far"] = len(spoken)
-        msg["your_notes"] = self.notes[-12:]
+        msg["cues_left_this_race"] = max(0, 20 - len(spoken))
+        rem = last.get("remaining_m")
+        for k in ("reserve_runs_out_in_m", "empties_in_m_pod"):     # a reserve that lasts past the finish
+            v = state.get(k)
+            if v is not None and rem is not None and v > rem:
+                state[k] = "lasts past the finish"
+        msg["your_notes"] = self.notes[-15:]
         if not self.consultations:
             info = getattr(self, "race_info", {}) or {}
             msg["race"] = {"distance_m": s.distance_m,

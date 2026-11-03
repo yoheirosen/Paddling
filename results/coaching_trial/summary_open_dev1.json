@@ -1,0 +1,203 @@
+{
+ "n": 3,
+ "comparisons": {
+  "incident_rules": {
+   "n": 3,
+   "mean_d": 16.547351933959362,
+   "median_d": -8.889380929146228,
+   "n_a_faster": 2,
+   "n_b_faster": 1,
+   "ci95": [
+    -12.217598639724201,
+    70.74903537074852
+   ],
+   "wilcoxon_p": 1.0
+  },
+  "no_coach": {
+   "n": 3,
+   "mean_d": -24.666867086334452,
+   "median_d": -26.542234524235027,
+   "n_a_faster": 2,
+   "n_b_faster": 1,
+   "ci95": [
+    -54.07965514079615,
+    6.621288406027816
+   ],
+   "wilcoxon_p": 0.5
+  },
+  "autopilot_pod": {
+   "n": 3,
+   "mean_d": 0.7461269486019168,
+   "median_d": -8.829691281437135,
+   "n_a_faster": 2,
+   "n_b_faster": 1,
+   "ci95": [
+    -14.931461859360297,
+    25.999533986603183
+   ],
+   "wilcoxon_p": 1.0
+  }
+ },
+ "holm": {
+  "incident_rules": 1.0,
+  "no_coach": 1.0
+ },
+ "races_with_weed": {
+  "n": 3,
+  "vs_incident_rules": {
+   "n": 3,
+   "mean_d": 16.547351933959362,
+   "median_d": -8.889380929146228,
+   "n_a_faster": 2,
+   "n_b_faster": 1,
+   "ci95": [
+    -12.217598639724201,
+    70.74903537074852
+   ],
+   "wilcoxon_p": 1.0
+  },
+  "vs_no_coach": {
+   "n": 3,
+   "mean_d": -24.666867086334452,
+   "median_d": -26.542234524235027,
+   "n_a_faster": 2,
+   "n_b_faster": 1,
+   "ci95": [
+    -54.07965514079615,
+    6.621288406027816
+   ],
+   "wilcoxon_p": 0.5
+  }
+ },
+ "vs_incident_rules_by_threshold": {
+  "0.04": 16.539997210793143,
+  "0.06": 16.547351933959362,
+  "0.08": 17.344383834856973
+ },
+ "incidents": {
+  "open_coach": {
+   "weed": {
+    "n": 3,
+    "mean_seconds_with_weed": 667.0,
+    "cleared_by_cue": 2,
+    "cleared_by_paddler": 0,
+    "never_cleared": 1,
+    "median_first_clear_cue_after_s": 239.95,
+    "false_clears": 0
+   },
+   "pod_drift": {
+    "n": 0,
+    "cues_as_faulty_pod_suggests": 0,
+    "cues_against_it": 0
+   },
+   "course_change": {
+    "n": 0,
+    "paddler_told": 0,
+    "overran_believed_finish": 0,
+    "sprint_start_m_from_true_finish": []
+   },
+   "talk": {
+    "self_ease": 4,
+    "self_push": 0,
+    "reassured_in_time": 0,
+    "reassured_late": 1,
+    "held_in_time": 0,
+    "held_late": 0
+   },
+   "questions_asked": 23
+  },
+  "incident_rules": {
+   "weed": {
+    "n": 3,
+    "mean_seconds_with_weed": 379.1,
+    "cleared_by_cue": 2,
+    "cleared_by_paddler": 0,
+    "never_cleared": 1,
+    "median_first_clear_cue_after_s": 54.95,
+    "false_clears": 1
+   },
+   "pod_drift": {
+    "n": 0,
+    "cues_as_faulty_pod_suggests": 0,
+    "cues_against_it": 0
+   },
+   "course_change": {
+    "n": 0,
+    "paddler_told": 0,
+    "overran_believed_finish": 0,
+    "sprint_start_m_from_true_finish": []
+   },
+   "talk": {
+    "self_ease": 3,
+    "self_push": 0,
+    "reassured_in_time": 1,
+    "reassured_late": 0,
+    "held_in_time": 0,
+    "held_late": 0
+   },
+   "questions_asked": 0
+  },
+  "autopilot_pod": {
+   "weed": {
+    "n": 3,
+    "mean_seconds_with_weed": 1495.0,
+    "cleared_by_cue": 0,
+    "cleared_by_paddler": 0,
+    "never_cleared": 3,
+    "median_first_clear_cue_after_s": null,
+    "false_clears": 0
+   },
+   "pod_drift": {
+    "n": 0,
+    "cues_as_faulty_pod_suggests": 0,
+    "cues_against_it": 0
+   },
+   "course_change": {
+    "n": 0,
+    "paddler_told": 0,
+    "overran_believed_finish": 0,
+    "sprint_start_m_from_true_finish": []
+   },
+   "talk": {
+    "self_ease": 4,
+    "self_push": 0,
+    "reassured_in_time": 0,
+    "reassured_late": 0,
+    "held_in_time": 0,
+    "held_late": 0
+   },
+   "questions_asked": 0
+  },
+  "no_coach": {
+   "weed": {
+    "n": 3,
+    "mean_seconds_with_weed": 1520.1,
+    "cleared_by_cue": 0,
+    "cleared_by_paddler": 0,
+    "never_cleared": 3,
+    "median_first_clear_cue_after_s": null,
+    "false_clears": 0
+   },
+   "pod_drift": {
+    "n": 0,
+    "cues_as_faulty_pod_suggests": 0,
+    "cues_against_it": 0
+   },
+   "course_change": {
+    "n": 0,
+    "paddler_told": 0,
+    "overran_believed_finish": 0,
+    "sprint_start_m_from_true_finish": []
+   },
+   "talk": {
+    "self_ease": 2,
+    "self_push": 0,
+    "reassured_in_time": 0,
+    "reassured_late": 0,
+    "held_in_time": 0,
+    "held_late": 0
+   },
+   "questions_asked": 0
+  }
+ }
+}

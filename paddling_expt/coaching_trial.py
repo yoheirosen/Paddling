@@ -230,6 +230,45 @@ HELDOUT_PACK_ROLEPLAY: Dict[str, Any] = {
 }
 
 
+
+HELDOUT_OPEN: Dict[str, Any] = {
+    "date": "2026-11-03",
+    "question": ("does an open reasoning coach handle what nobody wrote a rule for, in real time? Open races "
+                 "(sim/incidents.py) with incidents during the race and a paddler who talks"),
+    "seeds": list(range(5000, 5030)),
+    "pool": ("held_out: weed on the rudder and an unforecast wind shift (development kinds, as in practice), the "
+             "paddler's talk (honest / pessimist / optimist), and in every race at least one held-out kind never "
+             "used in development: the paddle pod drifting, or the race committee changing the course by radio"),
+    "coach": ("the open coach (RaceCoach version 8, OPEN_COACH_SYSTEM): goal, means and facts about the "
+              "instruments, no procedures; notes it keeps across wake-ups, ask_paddler, set_race_distance, "
+              "set_critical_power, the panel's tools; no starting watches; woken by its own watches, every 180 s, "
+              "by the paddler's words and by radio. Every model call answered by a Claude subagent (Opus) that "
+              "sees exactly the model's input (experiments/roleplay_race.py --incidents held_out), one subagent "
+              "per race, the same instructions as the three practice races; 5 s of race time per call. No change "
+              "to the coach, the simulator or the instructions after this registration"),
+    "arms": ("no_coach; autopilot_pod (fixed rules written before incidents existed); incident_rules (the pod "
+             "autopilot plus rules written knowing the development incidents: a drag-step detector on the local "
+             "push with threshold 0.06 m/s, the best of 0.04 / 0.06 / 0.08 on 24 development races, and keyword "
+             "replies to the paddler's development remarks; 0.04 and 0.08 reported as sensitivity); "
+             "agent_open_roleplay"),
+    "primary": ("on the 30 seeds: open coach minus incident_rules and minus no_coach, race time, paired, Wilcoxon, "
+                "bootstrap 95% interval, Holm over the two"),
+    "secondary": ("(1) the same comparisons in the races holding each held-out kind (pod drift; course change) and "
+                  "in the races with weed; (2) per incident, from the simulator's truth: weed - seconds with weed, "
+                  "who cleared it, time from onset to the first clearing cue, false clears; pod drift - cues in the "
+                  "direction the faulty reading suggests and against it; course change - paddler told, where the "
+                  "sprint started relative to the true finish, overrun of the finish the paddler believed; talk - "
+                  "self-misjudgements caught in time; (3) the pod autopilot as a further comparison"),
+    "what_counts": ("evidence for the utility of in-race reasoning: the coach faster than the incident rules "
+                    "overall, or clearly better on the held-out kinds, which no rule anticipated; on the "
+                    "development kinds rules written for them are expected to react faster"),
+    "failures": "a race the driver cannot finish is reported and excluded; no race is re-run with other answers",
+    "limits": ("a role-player is not a deployed model (a Claude Code agent; it remembers earlier wake-ups of its "
+               "race; fixed latency); the coach's menu holds the actions the held-out kinds need (tell with a "
+               "distance, set_race_distance) - what is held out is the incident and its diagnosis, not the "
+               "action; incidents and the paddler's responses are planted"),
+}
+
 # ── preparations ────────────────────────────────────────────────────────────
 
 @dataclass
