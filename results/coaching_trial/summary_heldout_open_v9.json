@@ -1,0 +1,337 @@
+{
+ "n": 30,
+ "comparisons": {
+  "incident_rules": {
+   "n": 30,
+   "mean_d": 0.6531107967470159,
+   "median_d": 0.46122326606041497,
+   "n_a_faster": 14,
+   "n_b_faster": 16,
+   "ci95": [
+    -8.708908159842624,
+    10.425505585086261
+   ],
+   "wilcoxon_p": 0.9515264742076397
+  },
+  "no_coach": {
+   "n": 30,
+   "mean_d": -13.738303467026396,
+   "median_d": -9.639259169272918,
+   "n_a_faster": 22,
+   "n_b_faster": 8,
+   "ci95": [
+    -27.56889699224598,
+    0.0985812318495736
+   ],
+   "wilcoxon_p": 0.024786051362752914
+  },
+  "autopilot_pod": {
+   "n": 30,
+   "mean_d": -6.404810435343832,
+   "median_d": -4.311414499609327,
+   "n_a_faster": 17,
+   "n_b_faster": 13,
+   "ci95": [
+    -17.794681665900285,
+    4.69752849189882
+   ],
+   "wilcoxon_p": 0.25343610532581806
+  }
+ },
+ "holm": {
+  "incident_rules": 0.9515264742076397,
+  "no_coach": 0.04957210272550583
+ },
+ "races_with_pod_drift": {
+  "n": 23,
+  "vs_incident_rules": {
+   "n": 23,
+   "mean_d": 3.8557424616197533,
+   "median_d": 0.7599847467035943,
+   "n_a_faster": 10,
+   "n_b_faster": 13,
+   "ci95": [
+    -6.390812256988402,
+    14.887208967024211
+   ],
+   "wilcoxon_p": 0.6433901786804199
+  },
+  "vs_no_coach": {
+   "n": 23,
+   "mean_d": -11.027199810162085,
+   "median_d": -8.859530994489432,
+   "n_a_faster": 16,
+   "n_b_faster": 7,
+   "ci95": [
+    -27.83643891081221,
+    5.4642961049986924
+   ],
+   "wilcoxon_p": 0.11864614486694336
+  }
+ },
+ "races_with_course_change": {
+  "n": 19,
+  "vs_incident_rules": {
+   "n": 19,
+   "mean_d": -6.572754243543375,
+   "median_d": -7.71123429170575,
+   "n_a_faster": 11,
+   "n_b_faster": 8,
+   "ci95": [
+    -18.03918775694836,
+    6.330288807329072
+   ],
+   "wilcoxon_p": 0.24125289916992188
+  },
+  "vs_no_coach": {
+   "n": 19,
+   "mean_d": -18.43913093141922,
+   "median_d": -15.331538451944198,
+   "n_a_faster": 15,
+   "n_b_faster": 4,
+   "ci95": [
+    -36.97828904138883,
+    0.4076944769095616
+   ],
+   "wilcoxon_p": 0.02298736572265625
+  }
+ },
+ "races_with_weed": {
+  "n": 22,
+  "vs_incident_rules": {
+   "n": 22,
+   "mean_d": -2.2071084091451727,
+   "median_d": -7.620507356226653,
+   "n_a_faster": 12,
+   "n_b_faster": 10,
+   "ci95": [
+    -13.805689895869714,
+    10.143752538300859
+   ],
+   "wilcoxon_p": 0.7023849487304688
+  },
+  "vs_no_coach": {
+   "n": 22,
+   "mean_d": -18.330138891609923,
+   "median_d": -13.540205673639093,
+   "n_a_faster": 16,
+   "n_b_faster": 6,
+   "ci95": [
+    -35.232423397271724,
+    -1.0475016786666662
+   ],
+   "wilcoxon_p": 0.02513885498046875
+  }
+ },
+ "vs_incident_rules_by_threshold": {
+  "0.04": 0.19370817922418457,
+  "0.06": 0.6531107967470159,
+  "0.08": 0.682077613160277
+ },
+ "incidents": {
+  "open_coach": {
+   "weed": {
+    "n": 22,
+    "mean_seconds_with_weed": 236.1,
+    "cleared_by_cue": 20,
+    "cleared_by_paddler": 1,
+    "never_cleared": 1,
+    "median_first_clear_cue_after_s": 82.4,
+    "false_clears": 9
+   },
+   "pod_drift": {
+    "n": 23,
+    "cues_as_faulty_pod_suggests": 60,
+    "cues_against_it": 37
+   },
+   "course_change": {
+    "n": 19,
+    "paddler_told": 18,
+    "overran_believed_finish": 1,
+    "sprint_start_m_from_true_finish": [
+     258,
+     647,
+     438,
+     479,
+     191,
+     1546,
+     526,
+     494,
+     579,
+     1391,
+     454,
+     503,
+     449,
+     690,
+     477,
+     475,
+     232,
+     627,
+     502
+    ]
+   },
+   "talk": {
+    "self_ease": 15,
+    "self_push": 8,
+    "reassured_in_time": 6,
+    "reassured_late": 4,
+    "held_in_time": 8,
+    "held_late": 6
+   },
+   "questions_asked": 147
+  },
+  "incident_rules": {
+   "weed": {
+    "n": 22,
+    "mean_seconds_with_weed": 737.4,
+    "cleared_by_cue": 7,
+    "cleared_by_paddler": 5,
+    "never_cleared": 10,
+    "median_first_clear_cue_after_s": 55.4,
+    "false_clears": 2
+   },
+   "pod_drift": {
+    "n": 23,
+    "cues_as_faulty_pod_suggests": 2,
+    "cues_against_it": 1
+   },
+   "course_change": {
+    "n": 19,
+    "paddler_told": 0,
+    "overran_believed_finish": 10,
+    "sprint_start_m_from_true_finish": [
+     null,
+     null,
+     1259,
+     null,
+     null,
+     1545,
+     1710,
+     1781,
+     null,
+     1580,
+     null,
+     null,
+     1768,
+     null,
+     null,
+     1985,
+     1279,
+     1635,
+     1540
+    ]
+   },
+   "talk": {
+    "self_ease": 7,
+    "self_push": 2,
+    "reassured_in_time": 9,
+    "reassured_late": 0,
+    "held_in_time": 12,
+    "held_late": 0
+   },
+   "questions_asked": 0
+  },
+  "autopilot_pod": {
+   "weed": {
+    "n": 22,
+    "mean_seconds_with_weed": 1040.8,
+    "cleared_by_cue": 0,
+    "cleared_by_paddler": 7,
+    "never_cleared": 15,
+    "median_first_clear_cue_after_s": null,
+    "false_clears": 0
+   },
+   "pod_drift": {
+    "n": 23,
+    "cues_as_faulty_pod_suggests": 1,
+    "cues_against_it": 1
+   },
+   "course_change": {
+    "n": 19,
+    "paddler_told": 0,
+    "overran_believed_finish": 10,
+    "sprint_start_m_from_true_finish": [
+     null,
+     null,
+     1260,
+     null,
+     null,
+     1546,
+     1736,
+     1781,
+     null,
+     1392,
+     null,
+     null,
+     1713,
+     null,
+     null,
+     1985,
+     1278,
+     1634,
+     1540
+    ]
+   },
+   "talk": {
+    "self_ease": 16,
+    "self_push": 13,
+    "reassured_in_time": 0,
+    "reassured_late": 0,
+    "held_in_time": 0,
+    "held_late": 4
+   },
+   "questions_asked": 0
+  },
+  "no_coach": {
+   "weed": {
+    "n": 22,
+    "mean_seconds_with_weed": 1047.7,
+    "cleared_by_cue": 0,
+    "cleared_by_paddler": 7,
+    "never_cleared": 15,
+    "median_first_clear_cue_after_s": null,
+    "false_clears": 0
+   },
+   "pod_drift": {
+    "n": 23,
+    "cues_as_faulty_pod_suggests": 0,
+    "cues_against_it": 0
+   },
+   "course_change": {
+    "n": 19,
+    "paddler_told": 0,
+    "overran_believed_finish": 10,
+    "sprint_start_m_from_true_finish": [
+     null,
+     null,
+     1261,
+     null,
+     null,
+     1545,
+     1557,
+     1781,
+     null,
+     1391,
+     null,
+     null,
+     1714,
+     null,
+     null,
+     1660,
+     1278,
+     1634,
+     1541
+    ]
+   },
+   "talk": {
+    "self_ease": 15,
+    "self_push": 16,
+    "reassured_in_time": 0,
+    "reassured_late": 0,
+    "held_in_time": 0,
+    "held_late": 0
+   },
+   "questions_asked": 0
+  }
+ }
+}
