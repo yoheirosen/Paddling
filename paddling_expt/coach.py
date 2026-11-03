@@ -438,6 +438,60 @@ the last 100 m, and at most 20 cues per race.
 
 End each wake-up with one line: what you did and why, or "no cue: <reason>"."""
 
+OPEN_COACH_SYSTEM_V9 = """You are coaching one paddler through an outrigger canoe (OC1) race, \
+speaking into their ear over a radio link. What you are there for: their fastest finish.
+
+What you have:
+- Instruments, live every second: the paddle pod (the paddler's effort, as shaft power), GPS \
+(speed and heading over the ground), and what the boat's computer derives from them through a \
+hull model. Each wake-up shows the live state, the last five minutes, your notes and your \
+recent cues. You can read any series further back, compute your own metrics over the live \
+streams, and set your own alerts (watches) so that you are woken when something you care \
+about happens. Otherwise you are woken every few minutes, whenever the paddler says \
+something, and when a radio message comes in.
+- The paddler. You can ask how they feel (ask_paddler) and speak to them (cue). They hear your \
+words but act on the request attached to them: ease, push, hold, rate_up, rate_down, finish \
+(start the final sprint), clear_rudder (a back-stroke that knocks anything caught off the \
+rudder; it costs the boat's momentum), reassure (no change asked: you are telling them they are \
+doing fine), tell (information; distance_left_m sets where they think the finish is), or none. \
+With ease, push or hold you may add a target pace over the ground; they chase it by feel, \
+through turns too, until the change fades. A cue takes 10-20 s to act; paddlers do not always \
+follow one, and a followed change fades over minutes.
+- What the instruments saw after each cue: your recent cues show the pod's power, the boat-model \
+power, stroke rate and GPS speed in the minute before and the minute after, and for clear_rudder \
+whether the boat's speed dipped as a back-stroke does. A turn changes these numbers too.
+- Memory: you remember nothing between wake-ups. Your plan (set_plan) is shown at the top of \
+every wake-up; your notes (take_note) show the last 15.
+- Timing: wake_me wakes you after a time or at a distance to go, for example when the next cue \
+is allowed.
+- The course: legs() gives one row per leg (direction, time, GPS speed, pod power, boat-model \
+power, stroke rate, local push; turns left out), so legs in the same direction can be compared. \
+get_metric_series returns a summary of about 30 points in race seconds.
+- The boat computer's assumptions: set_critical_power (critical power and reserve size, at most \
+3 times per race; both reserves are then recomputed over the race so far) and set_race_distance.
+- Names: the live state's names are for reading; watches and your own metrics use the stream \
+names that list_available_metrics gives.
+
+Facts about the instruments (facts, not instructions):
+- Any instrument can fail or drift.
+- The numbers derived from boat speed (power_w, reserve_left_pct, reserve_runs_out_in_m, \
+sustainable_pace_s500, speed_vs_early_race_same_rate_pct) treat everything that slows the boat \
+as the paddler: current, wind, drag, a tired blade. push_local_mps is the GPS speed minus the \
+speed the pod's power would give in still water; it moves with current and wind and with \
+anything that changes the boat's drag. push_along_mps is the current along the heading, \
+estimated from the turns of the out-and-back course; it lags a change.
+- Critical power and the reserve (w_bal_pod_frac from the pod, reserve_left_pct from boat speed) \
+come from a 3- and 12-minute test before the race and can be 10-25 % off.
+- The start is hard (a minute or two above critical power) and then settles.
+- Paddlers misjudge themselves: what they say is evidence, not fact.
+
+How you coach is up to you: what to watch, what to plan, when to speak and what to say, when to \
+change your mind. Each model call costs a few seconds of race time; when nothing needs doing, \
+stop. The cue gate: at most 12 words, at least 60 s between cues, none in the first minute or \
+the last 100 m, and at most 20 cues per race.
+
+End each wake-up with one line: what you did and why, or "no cue: <reason>"."""
+
 _CUE_SCHEMA_OPEN = {
     "type": "object",
     "properties": {
@@ -467,6 +521,8 @@ class RaceCoach:
         self.version = int(version)
         if system is None and self.version == 8:
             system = OPEN_COACH_SYSTEM
+        if system is None and self.version == 9:
+            system = OPEN_COACH_SYSTEM_V9
         if system is None and panel is not None and 2 <= self.version < 8:
             system = (COACH_PANEL_SYSTEM_V2 + (DRAFT_SECTION if self.version == 7 else "")
                       + (WATER_SECTION if 3 <= self.version < 7 else "")
@@ -483,7 +539,7 @@ class RaceCoach:
                      description="Recent race history: 30-second means of speed through the water, "
                                  "power, reserve, stroke rate, fade and the push of current and wind.")
         reg.register(self.cue, name="cue", writes=True,
-                     input_schema=_CUE_SCHEMA_OPEN if self.version == 8 else _CUE_SCHEMA,
+                     input_schema=_CUE_SCHEMA_OPEN if self.version >= 8 else _CUE_SCHEMA,
                      description="Speak one short cue (at most 12 words) to the paddler now.")
         allowed = ["race_history", "cue"]
         self.notes: List[Dict[str, Any]] = []
@@ -491,7 +547,9 @@ class RaceCoach:
         self.ask_fn: Optional[Callable[[], Dict[str, Any]]] = None
         self._asked_t: Optional[float] = None
         self.distance_changes: List[Dict[str, Any]] = []
-        if self.version == 8:
+        self.plan: Optional[Dict[str, Any]] = None
+        self.timers: List[Dict[str, Any]] = []
+        if self.version >= 8:
             reg.register(self.ask_paddler, name="ask_paddler",
                          description="Ask the paddler how they feel; they answer with an effort out of 10 and a few words.")
             reg.register(self.take_note, name="take_note", writes=True,
@@ -502,9 +560,28 @@ class RaceCoach:
             allowed += ["ask_paddler", "take_note", "set_race_distance"]
         if panel is not None:
             for name, tool in panel.tools().items():
+                if self.version >= 9 and name in ("get_metric_series", "get_alerts"):
+                    continue                      # summarised, race-time versions below
                 reg.register(tool.func, name=name, description=tool.description,
                              input_schema=tool.input_schema, writes=tool.writes)
                 allowed.append(name)
+            if self.version >= 9:
+                self._panel_series = panel.tools()["get_metric_series"].func
+                self._panel_alerts = panel.tools()["get_alerts"].func
+                reg.register(self.get_metric_series, name="get_metric_series",
+                             description="A metric over a time window as a summary (mean, min, max, first, last) "
+                                         "and about 30 averaged points, all in race seconds.")
+                reg.register(self.get_alerts, name="get_alerts",
+                             description="Alerts raised by your watches, with the race minute of each.")
+                reg.register(self.wake_me, name="wake_me", writes=True,
+                             description="Wake me after in_s seconds or when at_remaining_m metres are left, "
+                                         "with a reason (at most 3 pending).")
+                reg.register(self.set_plan, name="set_plan", writes=True,
+                             description="Set the race plan shown at the top of every wake-up (replaces the old one).")
+                reg.register(self.legs, name="legs",
+                             description="One row per leg of the course so far: direction, race minutes, GPS speed, "
+                                         "pod power, boat-model power, stroke rate and local push (turns left out).")
+                allowed += ["get_metric_series", "get_alerts", "wake_me", "set_plan", "legs"]
         self.recalibrations: List[Dict[str, Any]] = []
         if 3 <= self.version < 7:
             reg.register(self.current_forecast, name="current_forecast",
@@ -529,12 +606,183 @@ class RaceCoach:
                          description="The forecast's stream along the current heading (m/s, + helps) at each "
                                      "given distance from shore, here or at another position along the course.")
             allowed.append("stream_by_line")
-        if self.version >= 2:
+        if self.version >= 9:
+            reg.register(self.set_calibration, name="set_critical_power", writes=True,
+                         description="Correct critical power (boat cp_w and/or pod cp_shaft_w, W) and/or the "
+                                     "reserve size (w_prime_kj / w_prime_shaft_kj), with the reason; both reserves "
+                                     "are recomputed over the race so far.")
+            allowed.append("set_critical_power")
+        elif self.version >= 2:
             reg.register(self.set_critical_power, name="set_critical_power", writes=True,
                          description="Correct the critical power the reserve models use from now on "
                                      "(boat power cp_w and/or shaft power cp_shaft_w, in W), with the reason.")
             allowed.append("set_critical_power")
         self.policy = ToolPolicy(reg, allowed, max_iterations=max_iterations or (5 if panel is not None else 2))
+
+    # ── the open coach's later tools (version 9) ───────────────────────────
+    def _race_s(self, t_data: Optional[float]) -> Optional[float]:
+        st = self.state.start_t if self.state.start_t is not None else 0.0
+        return None if t_data is None else float(t_data) - float(st)
+
+    def get_metric_series(self, metric: str, window_s: float = 120.0, ago_s: float = 0.0,
+                          start_race_s: float = 0.0, end_race_s: float = 0.0, points: int = 30) -> Dict[str, Any]:
+        st = float(self.state.start_t or 0.0)
+        raw = self._panel_series(metric=metric, window_s=window_s, ago_s=ago_s,
+                                 start_s=(start_race_s + st) if start_race_s else 0.0,
+                                 end_s=(end_race_s + st) if end_race_s else 0.0)
+        vals = [float(v) for v in (raw.get("values") or []) if v is not None and math.isfinite(float(v))]
+        out = {k: (round(raw[k], 3) if isinstance(raw.get(k), float) else raw.get(k))
+               for k in ("metric", "available", "n", "mean", "min", "max", "first", "last") if k in raw}
+        t0, t1 = self._race_s(raw.get("t_start")), self._race_s(raw.get("t_end"))
+        if t0 is not None and t1 is not None:
+            out["race_s"] = [round(t0), round(t1)]
+        if vals and t0 is not None and t1 is not None:
+            k = max(1, math.ceil(len(vals) / max(5, min(60, int(points or 30)))))
+            dt = (t1 - t0) / max(1, len(vals) - 1)
+            out["points"] = [{"race_s": round(t0 + (i + (len(vals[i:i + k]) - 1) / 2.0) * dt),
+                              "mean": round(sum(vals[i:i + k]) / len(vals[i:i + k]), 3)}
+                             for i in range(0, len(vals), k)]
+        return out
+
+    def get_alerts(self, since_race_s: Optional[float] = None, watch_id: str = "", limit: int = 10) -> Dict[str, Any]:
+        st = float(self.state.start_t or 0.0)
+        raw = self._panel_alerts(since_s=(since_race_s + st) if since_race_s is not None else None,
+                                 watch_id=watch_id, limit=limit)
+        rows = []
+        for a in raw.get("alerts", []):
+            rows.append({"watch_id": a.get("watch_id"), "race_min": round((a.get("t_data_s", st) - st) / 60.0, 2),
+                         "message": a.get("message"),
+                         "values": {k: (round(v, 3) if isinstance(v, float) else v)
+                                    for k, v in (a.get("values") or {}).items()}})
+        return {"ok": True, "n_total": raw.get("n_total"), "alerts": rows}
+
+    def wake_me(self, in_s: Optional[float] = None, at_remaining_m: Optional[float] = None,
+                reason: str = "") -> Dict[str, Any]:
+        s = self.state.last
+        if (in_s is None) == (at_remaining_m is None):
+            return {"ok": False, "error": "give exactly one of in_s or at_remaining_m"}
+        if len(self.timers) >= 3:
+            return {"ok": False, "error": "3 wake-ups already pending", "pending": self.timers}
+        if in_s is not None:
+            if not 10.0 <= float(in_s) <= 1800.0:
+                return {"ok": False, "error": "in_s must be 10-1800"}
+            due = {"at_race_s": round((s.get("elapsed_s") or 0.0) + float(in_s), 1)}
+        else:
+            rem = s.get("remaining_m")
+            if rem is None or not 50.0 <= float(at_remaining_m) < float(rem):
+                return {"ok": False, "error": f"at_remaining_m must be 50 m or more and less than the {rem} m left"}
+            due = {"at_remaining_m": round(float(at_remaining_m))}
+        self.timers.append({**due, "reason": str(reason)[:200]})
+        return {"ok": True, "pending": self.timers}
+
+    def due_timers(self) -> List[Dict[str, Any]]:
+        """Pop the wake-ups now due (called by the race loop each second)."""
+        s = self.state.last
+        el, rem = s.get("elapsed_s"), s.get("remaining_m")
+        due, keep = [], []
+        for w in self.timers:
+            if (("at_race_s" in w and el is not None and el >= w["at_race_s"])
+                    or ("at_remaining_m" in w and rem is not None and rem <= w["at_remaining_m"])):
+                due.append(w)
+            else:
+                keep.append(w)
+        self.timers = keep
+        return due
+
+    def set_plan(self, text: str) -> Dict[str, Any]:
+        s = self.state.last
+        self.plan = {"race_min": round((s.get("elapsed_s") or 0.0) / 60.0, 1), "plan": str(text)[:1200]}
+        return {"ok": True}
+
+    def legs(self) -> Dict[str, Any]:
+        leg = (getattr(self, "race_info", {}) or {}).get("leg_m")
+        if not leg:
+            return {"ok": False, "error": "the course's leg length is not known"}
+        rows: Dict[int, List[Dict[str, Any]]] = {}
+        for h in self.state.history:
+            d, el = h.get("distance_m"), h.get("elapsed_s")
+            if d is None or el is None or el < 90.0 or (d % leg) < 40.0:
+                continue                                  # the start and the 40 m after each turn left out
+            rows.setdefault(int(d // leg), []).append(h)
+        def m(b, k, n=2):
+            xs = [x[k] for x in b if x.get(k) is not None and math.isfinite(x[k])]
+            return round(sum(xs) / len(xs), n) if xs else None
+        out = []
+        for i in sorted(rows)[-12:]:
+            b = rows[i]
+            out.append({"leg": i + 1, "direction": "out" if i % 2 == 0 else "back",
+                        "race_min": [round(b[0]["elapsed_s"] / 60.0, 1), round(b[-1]["elapsed_s"] / 60.0, 1)],
+                        "speed_gps": m(b, "speed_gps"), "pod_power_w": m(b, "shaft_power_w", 0),
+                        "boat_power_w": m(b, "power_w", 0), "rate_spm": m(b, "rate_spm", 1),
+                        "push_local_mps": m(b, "push_local_mps")})
+        return {"ok": True, "leg_m": leg, "legs": out}
+
+    def set_calibration(self, cp_w: Optional[float] = None, cp_shaft_w: Optional[float] = None,
+                        w_prime_kj: Optional[float] = None, w_prime_shaft_kj: Optional[float] = None,
+                        reason: str = "") -> Dict[str, Any]:
+        st = self.state
+        a, sh = st.athlete, st.athlete_shaft
+        checks = [(cp_w, a.cp_w, "cp_w", 0.8, 1.6), (cp_shaft_w, sh.cp_w if sh else None, "cp_shaft_w", 0.8, 1.6),
+                  (None if w_prime_kj is None else 1000.0 * float(w_prime_kj), a.w_prime_j, "w_prime_kj", 0.5, 2.0),
+                  (None if w_prime_shaft_kj is None else 1000.0 * float(w_prime_shaft_kj),
+                   sh.w_prime_j if sh else None, "w_prime_shaft_kj", 0.5, 2.0)]
+        for v, base, nm, lo, hi in checks:
+            if v is not None and (base is None or not lo * base <= float(v) <= hi * base):
+                return {"ok": False, "error": f"{nm} is outside {lo}-{hi} x the test value"}
+        if all(v is None for v, *_ in checks):
+            return {"ok": False, "error": "nothing to change"}
+        if len(self.recalibrations) >= 3:
+            return {"ok": False, "error": "at most 3 recalibrations per race"}
+        out = st.recalibrate(cp_w=cp_w, cp_shaft_w=cp_shaft_w,
+                             w_prime_j=None if w_prime_kj is None else 1000.0 * float(w_prime_kj),
+                             w_prime_shaft_j=None if w_prime_shaft_kj is None else 1000.0 * float(w_prime_shaft_kj),
+                             recompute=True)
+        entry = {"t": st.last.get("t"), "elapsed_s": st.last.get("elapsed_s"), "reason": reason, **out}
+        self.recalibrations.append(entry)
+        record.emit("revision", target="calibration", **entry)
+        return {"ok": True, **out}
+
+    def _seen_after(self, c: Dict[str, Any]) -> Any:
+        """What the instruments showed after a spoken cue (version 9)."""
+        if "_seen" in c:
+            return c["_seen"]
+        if not c.get("spoken"):
+            return None
+        st = self.state
+        now_el = st.last.get("elapsed_s") or 0.0
+        el0 = c.get("_el")
+        if el0 is None:
+            return None
+        if c["ask"] == "clear_rudder":
+            t0 = c.get("_t")
+            if now_el < el0 + 25.0:
+                return f"too early to tell ({round(el0 + 25.0 - now_el)} s)"
+            before = sorted(v for t, v in st.speed_trace if t0 - 15.0 <= t <= t0)
+            after = [v for t, v in st.speed_trace if t0 + 3.0 <= t <= t0 + 40.0]
+            if not before or not after:
+                res = "not measurable"
+            else:
+                base = before[len(before) // 2]
+                dip = 1.0 - min(after) / max(1e-6, base)
+                res = {"speed_dip_pct": round(100.0 * dip), "back_stroke_seen": bool(dip >= 0.25)}
+            c["_seen"] = res
+            return res
+        if now_el < el0 + 30.0:
+            return f"too early to tell ({round(el0 + 30.0 - now_el)} s)"
+        def m(lo, hi, k, n=0):
+            xs = [h[k] for h in st.history if h.get("elapsed_s") is not None and lo <= h["elapsed_s"] <= hi
+                  and h.get(k) is not None and math.isfinite(h[k])]
+            return round(sum(xs) / len(xs), n) if xs else None
+        b0, b1, a0, a1 = el0 - 60.0, el0, el0 + 20.0, min(now_el, el0 + 80.0)
+        res = {"window_after_s": [20, round(a1 - el0)]}
+        for k, nm, n in (("shaft_power_w", "pod_power_w", 0), ("power_w", "boat_power_w", 0),
+                         ("rate_spm", "rate_spm", 1), ("speed_gps", "speed_gps", 2)):
+            x, y = m(b0, b1, k, n), m(a0, a1, k, n)
+            if x is not None and y is not None:
+                res[nm] = [x, y]
+        if now_el >= el0 + 80.0:
+            c["_seen"] = res
+        return res
 
     def ask_paddler(self) -> Dict[str, Any]:
         if self.ask_fn is None:
@@ -575,7 +823,7 @@ class RaceCoach:
                 bucket = []
         if bucket:
             rows.append(_mean_row(bucket))
-        if self.version == 8:
+        if self.version >= 8:
             for r, b in zip(rows, _buckets(H)):
                 r.update(_pod_row(b))
         return {"every_30s": rows}
@@ -593,7 +841,7 @@ class RaceCoach:
         self.cue_attempts.append({"race_min": round((s.get("elapsed_s") or 0.0) / 60.0, 1), "text": text,
                                   "ask": ask, "pace_s500": pace_s500, "spoken": out["spoken"],
                                   **({"blocked_because": out["reason"]} if out["blocked"] else {}),
-                                  "_t": s.get("t")})
+                                  "_t": s.get("t"), "_el": s.get("elapsed_s")})
         return out
 
     def set_critical_power(self, cp_w: Optional[float] = None, cp_shaft_w: Optional[float] = None,
@@ -727,7 +975,20 @@ class RaceCoach:
                                "events": [{"kind": e["kind"], "detail": e["detail"]} for e in events],
                                "state": state, "last_5_min": self._recent_minutes()}
         t = last.get("t") or 0.0
-        recent = [{k: v for k, v in c.items() if k != "_t"} for c in self.cue_attempts[-5:]]
+        if self.version >= 9:
+            if self.plan:
+                msg = {"your_plan": self.plan, **msg}
+            recent = []
+            for c in self.cue_attempts[-5:]:
+                row = {k: v for k, v in c.items() if not k.startswith("_")}
+                seen = self._seen_after(c)
+                if seen is not None:
+                    row["instruments_after"] = seen
+                recent.append(row)
+            if self.timers:
+                msg["your_wake_ups"] = self.timers
+        else:
+            recent = [{k: v for k, v in c.items() if not k.startswith("_")} for c in self.cue_attempts[-5:]]
         spoken = [c for c in self.cue_attempts if c["spoken"]]
         msg["your_recent_cues"] = recent
         if spoken:
@@ -784,7 +1045,7 @@ class RaceCoach:
                     msg["race"]["forecast"] = self.forecast
                     msg["race"]["course"] = (f"along a shore: one leg of {s.distance_m / 2:.0f} m north, "
                                              "then back south to the start")
-        if self.version == 8:
+        if self.version >= 8:
             msg = self._open_packet(events, why)
         t0 = s.last.get("t")
         res = run_tool_loop(self.provider, system=self.system,

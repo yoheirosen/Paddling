@@ -45,6 +45,8 @@ RACE_CATALOG = (
     _m("elapsed_s", 1.0, "Race time since the start (s)."),
     _m("distance_m", 1.0, "Distance raced since the start (m)."),
     _m("remaining_m", 1.0, "Distance to the finish (m)."),
+    _m("next_turn_in_m", 1.0, "Distance to the next turn (m), when the course's leg length is known."),
+    _m("leg_number", 1.0, "Which leg of the out-and-back course (1 = the first leg out)."),
     _m("rate_spm", 30.0, "Stroke rate, strokes per minute (30-s median).", "rate, technique"),
     _m("speed_gps", 30.0, "Speed over the ground from GPS (m/s, 30-s mean): what the paddler's display shows."),
     _m("pace_gps_s500", 30.0, "Pace over the ground, s per 500 m (30-s mean): what the paddler's display shows."),
@@ -151,6 +153,7 @@ class RacePanel:
                                      forward_to_producer=False, warm_s=0.0)
         self.alerts: List[Dict[str, Any]] = []
         self.definitions: List[Dict[str, Any]] = []
+        self.leg_m: Optional[float] = None       # set when the course's leg length is known
         self._held: Dict[str, float] = {}
         from collections import deque
         self._hist = deque()                 # (t, power, fade or None, w_bal_frac)
@@ -185,6 +188,9 @@ class RacePanel:
             elif k in self._held:
                 vals[k] = self._held[k]
         vals.update(self._calibration_evidence(float(t), vals))
+        if self.leg_m and "distance_m" in vals:
+            vals["next_turn_in_m"] = self.leg_m - (vals["distance_m"] % self.leg_m)
+            vals["leg_number"] = float(int(vals["distance_m"] // self.leg_m) + 1)
         out = self.service.step(vals, float(t), publish=False)
         self.alerts.extend(out["alerts"])
         return out["alerts"]

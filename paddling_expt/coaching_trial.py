@@ -561,20 +561,23 @@ class AgentArm(Arm):
         self._busy, self._pending, self._last_wake = False, [], None
 
     def watches(self) -> List[Dict[str, Any]]:
-        return [] if self.coach_version == 8 else _screen_watches()   # the open coach sets its own
+        return [] if self.coach_version >= 8 else _screen_watches()   # the open coach sets its own
 
     def setup(self, ep: "Episode") -> None:
         self.coach = RaceCoach(self.provider, ep.state, ep.gate, panel=ep.panel,
                                max_iterations=self.max_tool_rounds, max_tokens=self.max_tokens,
                                caller="race_coach", version=self.coach_version)
         self.coach.forecast = ep.prep.forecast
-        if self.coach_version == 8:
+        if self.coach_version >= 8:
             self.coach.ask_fn = ep.twin.answer
             self.coach.race_info = {"leg_m": ep.prep.setup.leg_m}
+        if self.coach_version >= 9:
+            ep.panel.leg_m = ep.prep.setup.leg_m
+            ep.twin.rich_answers = True
         self._leg = None
 
     def on_messages(self, ep: "Episode", msgs: List[Dict[str, Any]]) -> None:
-        if self.coach_version == 8 and msgs:
+        if self.coach_version >= 8 and msgs:
             self._wake(ep, [{"kind": "paddler_says" if m["from"] == "paddler" else "radio",
                              "detail": f"{m['from']}: {m['text']}"} for m in msgs], "message")
 
@@ -605,8 +608,13 @@ class AgentArm(Arm):
                           if self.coach_version >= 5 else
                           "; plan this leg: the line to hold (give line_m) and the pace" if self.coach_version >= 4 else ""))
                 alerts = list(alerts) + [{"watch_id": "new_leg", "message": msg, "values": {}}]
+        if self.coach_version >= 9 and self.coach is not None:
+            for w in self.coach.due_timers():
+                alerts = list(alerts) + [{"watch_id": "wake_me", "message": "your wake-up: " + (w.get("reason") or ""),
+                                          "values": {}}]
         if alerts:
-            self._wake(ep, [{"kind": a["watch_id"], "detail": _alert_detail(a)} for a in alerts], "alerts")
+            fmt = (lambda a: _alert_detail_race(a, ep.state.start_t)) if self.coach_version >= 9 else _alert_detail
+            self._wake(ep, [{"kind": a["watch_id"], "detail": fmt(a)} for a in alerts], "alerts")
         elif (self.periodic_s and s.get("elapsed_s", 0.0) > 60.0
               and (self._last_wake is None or t - self._last_wake >= self.periodic_s)):
             self._wake(ep, [], "periodic")
@@ -732,6 +740,19 @@ class TieredAgentArm(AgentArm):
 def _alert_detail(a: Dict[str, Any]) -> str:
     vals = ", ".join(f"{k}={v:.3g}" for k, v in (a.get("values") or {}).items() if v is not None)
     return f"{a.get('message', '')} ({vals})" if vals else str(a.get("message", ""))
+
+
+def _alert_detail_race(a: Dict[str, Any], start_t: Optional[float]) -> str:
+    """An alert for the open coach's later version: plain numbers and the race minute."""
+    def f(v: float) -> str:
+        return f"{v:.0f}" if abs(v) >= 100 else f"{v:.3f}".rstrip("0").rstrip(".")
+    vals = ", ".join(f"{k}={f(float(v))}" for k, v in (a.get("values") or {}).items()
+                     if isinstance(v, (int, float)) and v == v)
+    when = ""
+    if a.get("t_data_s") is not None and start_t is not None:
+        when = f" at race minute {(a['t_data_s'] - start_t) / 60.0:.1f}"
+    msg = str(a.get("message", ""))
+    return f"{msg}{when}" + (f" ({vals})" if vals else "")
 
 
 def baseline_arms() -> List[Arm]:

@@ -175,9 +175,9 @@ def main(argv=None) -> int:
     if a.coach_version is None:
         a.coach_version = 8 if a.incidents else 7
     if a.periodic_s is None:
-        a.periodic_s = 180.0 if a.coach_version == 8 else 300.0
+        a.periodic_s = 180.0 if a.coach_version >= 8 else 300.0
     if a.label is None:
-        a.label = "agent_open_roleplay" if a.coach_version == 8 else "agent_v7_roleplay"
+        a.label = {8: "agent_open_roleplay", 9: "agent_open_v9_roleplay"}.get(a.coach_version, "agent_v7_roleplay")
     if a.cmd == "collect":
         base = os.path.join(OUT, "roleplay", a.tag)
         done = []
