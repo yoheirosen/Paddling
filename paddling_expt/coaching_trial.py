@@ -269,6 +269,38 @@ HELDOUT_OPEN: Dict[str, Any] = {
                "action; incidents and the paddler's responses are planted"),
 }
 
+
+HELDOUT_OPEN_V9: Dict[str, Any] = {
+    "date": "2026-11-03",
+    "question": ("with the inputs the role-played coaches asked for, does the open coach beat the rules written "
+                 "for the practice incidents, on races it was not tuned on?"),
+    "seeds": list(range(5030, 5060)),
+    "pool": "held_out, as HELDOUT_OPEN (weed, wind shift, talk; at least one of pod drift / course change per race)",
+    "coach": ("the open coach's later version (RaceCoach version 9, OPEN_COACH_SYSTEM_V9): version 8 plus what the "
+              "instruments saw after each cue (and whether a back-stroke happened), a pinned plan, wake-ups it sets "
+              "(and can cancel), a table of legs, series summarised in race seconds, alerts in race minutes, a short "
+              "list of stream names, critical-power and reserve-size corrections that recompute both reserves over "
+              "the race so far, the turn position as a stream (the finish is not a turn), paddler answers and "
+              "remarks that follow their state, and the stated fact that an emptied reserve forces the paddler well "
+              "below critical power. Every model call answered by a Claude subagent (Opus) through "
+              "experiments/roleplay_race.py --incidents held_out --coach-version 9, one per race, the practice "
+              "instructions plus the system command; 5 s of race time per call; woken every 180 s at least. No "
+              "change to the coach, the simulator or the instructions after this registration"),
+    "platform": ("agentic_experiments at 2550e12 (main ea35935 plus the maximum()/minimum() fix for agent-defined "
+                 "metrics, pull request pending); every race replays from its answers"),
+    "arms": "as HELDOUT_OPEN: no_coach; autopilot_pod; incident_rules (0.06 m/s primary; 0.04 and 0.08 reported); "
+            "agent_open_v9_roleplay",
+    "primary": ("on the 30 seeds: open coach minus incident_rules and minus no_coach, race time, paired, Wilcoxon, "
+                "bootstrap 95% interval, Holm over the two"),
+    "secondary": ("as HELDOUT_OPEN: the races with each held-out kind and with weed; per-incident scores from the "
+                  "simulator's truth; the pod autopilot. Descriptive only: the earlier open coach on seeds "
+                  "5000-5029 (different races, not paired)"),
+    "what_counts": "the coach faster than the incident rules overall (Holm p < 0.05), the comparison the earlier "
+                   "version left unsettled (-6.0 s, Holm p 0.27)",
+    "failures": "a race the driver cannot finish is reported and excluded; no race is re-run with other answers",
+    "limits": HELDOUT_OPEN["limits"],
+}
+
 # ── preparations ────────────────────────────────────────────────────────────
 
 @dataclass
@@ -561,20 +593,23 @@ class AgentArm(Arm):
         self._busy, self._pending, self._last_wake = False, [], None
 
     def watches(self) -> List[Dict[str, Any]]:
-        return [] if self.coach_version == 8 else _screen_watches()   # the open coach sets its own
+        return [] if self.coach_version >= 8 else _screen_watches()   # the open coach sets its own
 
     def setup(self, ep: "Episode") -> None:
         self.coach = RaceCoach(self.provider, ep.state, ep.gate, panel=ep.panel,
                                max_iterations=self.max_tool_rounds, max_tokens=self.max_tokens,
                                caller="race_coach", version=self.coach_version)
         self.coach.forecast = ep.prep.forecast
-        if self.coach_version == 8:
+        if self.coach_version >= 8:
             self.coach.ask_fn = ep.twin.answer
             self.coach.race_info = {"leg_m": ep.prep.setup.leg_m}
+        if self.coach_version >= 9:
+            ep.panel.leg_m = ep.prep.setup.leg_m
+            ep.twin.rich_answers = True
         self._leg = None
 
     def on_messages(self, ep: "Episode", msgs: List[Dict[str, Any]]) -> None:
-        if self.coach_version == 8 and msgs:
+        if self.coach_version >= 8 and msgs:
             self._wake(ep, [{"kind": "paddler_says" if m["from"] == "paddler" else "radio",
                              "detail": f"{m['from']}: {m['text']}"} for m in msgs], "message")
 
@@ -605,8 +640,13 @@ class AgentArm(Arm):
                           if self.coach_version >= 5 else
                           "; plan this leg: the line to hold (give line_m) and the pace" if self.coach_version >= 4 else ""))
                 alerts = list(alerts) + [{"watch_id": "new_leg", "message": msg, "values": {}}]
+        if self.coach_version >= 9 and self.coach is not None:
+            for w in self.coach.due_timers():
+                alerts = list(alerts) + [{"watch_id": "wake_me", "message": "your wake-up: " + (w.get("reason") or ""),
+                                          "values": {}}]
         if alerts:
-            self._wake(ep, [{"kind": a["watch_id"], "detail": _alert_detail(a)} for a in alerts], "alerts")
+            fmt = (lambda a: _alert_detail_race(a, ep.state.start_t)) if self.coach_version >= 9 else _alert_detail
+            self._wake(ep, [{"kind": a["watch_id"], "detail": fmt(a)} for a in alerts], "alerts")
         elif (self.periodic_s and s.get("elapsed_s", 0.0) > 60.0
               and (self._last_wake is None or t - self._last_wake >= self.periodic_s)):
             self._wake(ep, [], "periodic")
@@ -732,6 +772,19 @@ class TieredAgentArm(AgentArm):
 def _alert_detail(a: Dict[str, Any]) -> str:
     vals = ", ".join(f"{k}={v:.3g}" for k, v in (a.get("values") or {}).items() if v is not None)
     return f"{a.get('message', '')} ({vals})" if vals else str(a.get("message", ""))
+
+
+def _alert_detail_race(a: Dict[str, Any], start_t: Optional[float]) -> str:
+    """An alert for the open coach's later version: plain numbers and the race minute."""
+    def f(v: float) -> str:
+        return f"{v:.0f}" if abs(v) >= 100 else f"{v:.3f}".rstrip("0").rstrip(".")
+    vals = ", ".join(f"{k}={f(float(v))}" for k, v in (a.get("values") or {}).items()
+                     if isinstance(v, (int, float)) and v == v)
+    when = ""
+    if a.get("t_data_s") is not None and start_t is not None:
+        when = f" at race minute {(a['t_data_s'] - start_t) / 60.0:.1f}"
+    msg = str(a.get("message", ""))
+    return f"{msg}{when}" + (f" ({vals})" if vals else "")
 
 
 def baseline_arms() -> List[Arm]:

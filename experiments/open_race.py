@@ -165,7 +165,7 @@ def plot_open_race(data):
     ax.set_title("held-out kinds, never used in development", fontsize=10)
     ax.text(0.0, -0.2, f"* exploratory, read from the coach's notes; such a note also appears in "
             f"{data['pod_diag_false']} of {data['n_no_pod']} races without drift", transform=ax.transAxes, fontsize=6.5)
-    fig.suptitle("Open races (simulated paddler, planted incidents): open coach role-played by Claude subagents",
+    fig.suptitle(data.get("title", "Open races (simulated paddler, planted incidents): open coach role-played"),
                  fontsize=10)
     return fig
 
@@ -209,8 +209,12 @@ def _figure(out: Dict[str, Any], rp, nc, rules, S, tag: str = "") -> None:
                          for a in inc},
             "n_no_pod": len(nopod),
             "pod_diag_false": sum(pod_diagnosis_from_notes(tag, s) for s in nopod),
-            "note": "simulated races with planted incidents; per-race differences and counts only; no positions"}
-    paths = emit("coaching_open_race", data=data, plot_func=plot_open_race, artifacts_dir=os.path.join(ROOT, "artifacts"))
+            "note": "simulated races with planted incidents; per-race differences and counts only; no positions",
+            "title": ("Open races (simulated paddler, planted incidents): open coach role-played by Claude subagents"
+                      if tag == "heldout_open" else
+                      "Open races, the later open coach (simulated paddler, planted incidents; role-played)")}
+    name = "coaching_open_race" if tag == "heldout_open" else f"coaching_{tag}"
+    paths = emit(name, data=data, plot_func=plot_open_race, artifacts_dir=os.path.join(ROOT, "artifacts"))
     print("figure:", paths)
 
 

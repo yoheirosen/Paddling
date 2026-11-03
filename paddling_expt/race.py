@@ -45,7 +45,7 @@ from __future__ import annotations
 
 import math
 from collections import deque
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from typing import Any, Deque, Dict, List, Optional
 
 import numpy as np
@@ -212,6 +212,7 @@ class RaceState:
         self.travelled = 0.0
         self.recent: Deque[tuple] = deque()          # (t, rate, v_gps, v_water, power, push_along)
         self.history: List[Dict[str, Any]] = []      # one compact row per ~5 s, for tools / plots
+        self.speed_trace: Deque[tuple] = deque()     # (t, GPS speed) per stroke over the last 15 min
         self._next_hist = -1e9
         self.last: Dict[str, Any] = {}
 
@@ -283,6 +284,9 @@ class RaceState:
                 acc = self._ref.setdefault(band, [0.0, 0])
                 acc[0] += v_water
                 acc[1] += 1
+        self.speed_trace.append((t, float(v)))
+        while self.speed_trace and self.speed_trace[0][0] < t - 900.0:
+            self.speed_trace.popleft()
         self.recent.append((t, rate or float("nan"), float(v), v_water, P, along))
         while self.recent and self.recent[0][0] < t - self.smooth_s:
             self.recent.popleft()
@@ -362,16 +366,53 @@ class RaceState:
                 snap["eta_s"] = snap["elapsed_s"] + rem / max(0.3, v_gps)
         return snap
 
-    def recalibrate(self, cp_w: Optional[float] = None, cp_shaft_w: Optional[float] = None) -> Dict[str, Any]:
-        """Change the critical power the reserve models use from now on (an agent's
-        revision of the calibration, e.g. when the race shows the test read it low)."""
+    def recalibrate(self, cp_w: Optional[float] = None, cp_shaft_w: Optional[float] = None, *,
+                    w_prime_j: Optional[float] = None, w_prime_shaft_j: Optional[float] = None,
+                    recompute: bool = False) -> Dict[str, Any]:
+        """Change the critical power (and optionally the reserve size, W') the reserve
+        models use (an agent's revision of the calibration, e.g. when the race shows the
+        test read it low).  By default the change applies from now on; ``recompute``
+        re-runs both reserves over the race so far from the 5-second record, so the
+        reserve already counted matches the corrected calibration."""
         out = {"cp_w_before": self.cp_w, "cp_shaft_w_before": self.cp_shaft_w}
         if cp_w is not None:
             self.cp_w = float(cp_w)
         if cp_shaft_w is not None and self.athlete_shaft is not None:
             self.cp_shaft_w = float(cp_shaft_w)
-        out.update({"cp_w": self.cp_w, "cp_shaft_w": self.cp_shaft_w})
+        if w_prime_j is not None:
+            out["w_prime_j_before"] = self.athlete.w_prime_j
+            self.athlete = replace(self.athlete, w_prime_j=float(w_prime_j))
+        if w_prime_shaft_j is not None and self.athlete_shaft is not None:
+            out["w_prime_shaft_j_before"] = self.athlete_shaft.w_prime_j
+            self.athlete_shaft = replace(self.athlete_shaft, w_prime_j=float(w_prime_shaft_j))
+        if recompute:
+            self._recompute_reserves()
+            out["recomputed_from_start"] = True
+        out.update({"cp_w": self.cp_w, "cp_shaft_w": self.cp_shaft_w,
+                    "w_prime_kj": round(self.athlete.w_prime_j / 1000.0, 2),
+                    "w_prime_shaft_kj": (round(self.athlete_shaft.w_prime_j / 1000.0, 2)
+                                         if self.athlete_shaft else None),
+                    "reserve_boat_pct_now": round(100.0 * self.w_bal / self.athlete.w_prime_j),
+                    "reserve_pod_pct_now": (round(100.0 * self.w_bal_shaft / self.athlete_shaft.w_prime_j)
+                                            if self.athlete_shaft and self.w_bal_shaft is not None else None)})
         return out
+
+    def _recompute_reserves(self) -> None:
+        """Re-run both W' balances from the start over the 5-second record."""
+        H = [h for h in self.history if h.get("elapsed_s") is not None]
+        wb, ws = float(self.athlete.w_prime_j), (float(self.athlete_shaft.w_prime_j) if self.athlete_shaft else None)
+        prev = None
+        for h in H:
+            dt = 0.0 if prev is None else max(0.0, h["elapsed_s"] - prev)
+            prev = h["elapsed_s"]
+            if h.get("power_w") is not None:
+                wb = max(0.0, w_balance_step(wb, float(h["power_w"]), dt, self.cp_w, self.athlete.w_prime_j))
+            if ws is not None and h.get("shaft_power_w") is not None:
+                ws = max(0.0, w_balance_step(ws, float(h["shaft_power_w"]), dt, self.cp_shaft_w,
+                                             self.athlete_shaft.w_prime_j))
+        self.w_bal = wb
+        if ws is not None:
+            self.w_bal_shaft = ws
 
     def compact(self) -> Dict[str, Any]:
         """The current state, rounded for a model's context."""

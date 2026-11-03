@@ -5,6 +5,37 @@ Dated entries, newest first. Entries before the move refer to paths under
 
 ---
 
+### The open coach's later version and its held-out check (2026-11-03)
+
+The first open-coach check's role-players listed what they could not see. The later version
+(`RaceCoach` version 9, `OPEN_COACH_SYSTEM_V9`) adds it. Its instructions are still goal,
+means and facts.
+* After each cue it sees what the instruments recorded: pod and boat power, rate and GPS
+  speed before and after, whether a turn fell in between, and a back-stroke's speed dip.
+* It has a pinned plan, wake-ups it sets and cancels (`wake_me`), a table of legs, series
+  summarised in race seconds, alerts in race minutes, and a short list of streams.
+* Corrections to critical power and to the reserve size recompute both reserves from the
+  start (`RaceState.recalibrate`).
+* The turn position is a stream (`race_panel.RACE_CATALOG`).
+* The paddler's answers follow their state (`twin.rich_answers`, set by the coach arm for version 9), drawing the
+  same random numbers as before.
+
+Three practice races came first, then the check was registered before any held-out race
+(`coaching_trial.HELDOUT_OPEN_V9`, seeds 5030–5059). The check ran on agentic_experiments
+with its `maximum()` fix (that repository's pull request #234).
+
+Results on 30 held-out races, role-played by Claude subagents, no API:
+* +0.7 s against the incident rules (Holm p 0.95);
+* 13.7 s faster than no coach (Holm p 0.0496);
+* weed: 236 s raced with weed, against 737 s under the rules (20 of 22 cleared by a cue);
+* a course changed by radio: the paddler was told in 18 of 19 races, and 1 of 19 sprinted
+  for the old finish (10 of 19 under the rules);
+* the coach left the paddler blown up longer than the rules did (178 s against 137 s).
+  Its losses follow pushes and critical-power raises made on numbers it could not check.
+
+Every race replays from its answers. The figure is `coaching_heldout_open_v9`: the summary
+names the figure after the tag, so the first check's figure keeps its name.
+
 ### Open races and an open coach: what nobody wrote a rule for (2026-11-03)
 
 At the owner's direction ("show the utility of agentic reasoning in real time, not an agent

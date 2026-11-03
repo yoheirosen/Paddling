@@ -141,3 +141,73 @@ def test_set_race_distance_corrects_the_computer_and_refuses_the_implausible():
     assert c.set_race_distance(done - 50.0)["ok"] is False
     out = c.set_race_distance(done + 1000.0, reason="course shortened by radio")
     assert out["ok"] and c.state.distance_m == done + 1000.0
+
+
+def _v9_race(seed, script, compliance=None):
+    """Race the open coach's later version with a scripted stand-in: ``script`` maps a
+    model-call index to an answer; every other call answers "no cue"."""
+    from dataclasses import replace as _r
+    prep = ct.draw_preparation(seed, incidents="development")
+    if compliance is not None:
+        prep.traits = _r(prep.traits, compliance=compliance)
+    seen = []
+
+    def answer(system, messages, tools):
+        seen.append(messages[-1].text if len(messages) == 1 else [tr.content for tr in messages[-1].tool_results])
+        return script.get(len(seen) - 1, "no cue: fine")
+    arm = ct.AgentArm(FakeProvider(answer), coach_version=9, periodic_s=180.0, label="v9_test")
+    r = ct.run_episode(prep, arm, latency_s=5.0)
+    return r, arm, seen
+
+
+def test_the_later_open_coach_keeps_a_plan_wakes_itself_and_sees_what_a_cue_did():
+    import json
+    script = {0: {"tool_calls": [{"name": "set_plan", "arguments": {"text": "even to 1 km to go"}},
+                                 {"name": "wake_me", "arguments": {"in_s": 70, "reason": "check the ease"}},
+                                 {"name": "cue", "arguments": {"text": "Ease a touch.", "ask": "ease"}}]}}
+    r, arm, seen = _v9_race(7, script)
+    packets = [json.loads(x) for x in seen if isinstance(x, str)]
+    woke = next(p for p in packets if any(e["kind"] == "wake_me" for e in p["events"]))
+    assert woke["your_plan"]["plan"] == "even to 1 km to go"
+    after = woke["your_recent_cues"][0]["instruments_after"]
+    assert set(after) >= {"pod_power_w", "rate_spm", "speed_gps"} and len(after["pod_power_w"]) == 2
+    assert "next_turn_in_m" in packets[0]["state"] and "your_notes" in packets[0]
+    assert arm.coach.system.startswith("You are coaching one paddler") and "wake_me" in arm.coach.system
+
+
+def test_a_back_stroke_shows_on_the_instruments_only_when_the_paddler_makes_it():
+    script = {0: {"tool_calls": [{"name": "cue", "arguments": {"text": "Clear the rudder.", "ask": "clear_rudder"}}]}}
+    _, done, _ = _v9_race(7, script, compliance=1.0)
+    _, ignored, _ = _v9_race(7, script, compliance=0.0)
+    assert done.coach.cue_attempts[0]["_seen"]["back_stroke_seen"] is True
+    assert ignored.coach.cue_attempts[0]["_seen"]["back_stroke_seen"] is False
+
+
+def test_the_later_coach_reads_legs_summaries_and_corrects_the_whole_reserve():
+    import json
+    calls = [{"name": "legs", "arguments": {}},
+             {"name": "get_metric_series", "arguments": {"metric": "shaft_power_w", "window_s": 600}},
+             {"name": "set_critical_power", "arguments": {"cp_shaft_w": 200, "w_prime_shaft_kj": 20, "reason": "test"}}]
+    r, arm, seen = _v9_race(7, {3: {"tool_calls": calls}})
+    res = [json.loads(x) for x in seen[4]]
+    legs, series, cal = res
+    assert legs["ok"] and legs["legs"][0]["direction"] == "out" and "pod_power_w" in legs["legs"][0]
+    assert 5 <= len(series["points"]) <= 60 and series["race_s"][1] <= 700        # race seconds, not the data clock
+    assert cal["ok"] and cal["recomputed_from_start"] and cal["cp_shaft_w"] == 200.0
+    assert arm.coach.state.athlete_shaft.w_prime_j == 20000.0
+
+
+def test_the_later_coach_lists_stream_names_short_and_can_cancel_wake_ups():
+    import json
+    calls = [{"name": "define_derived_metric", "arguments": {"name": "mine", "expression": "shaft_power_w * 1.0"}},
+             {"name": "wake_me", "arguments": {"in_s": 60, "reason": "x"}}]
+    script = {0: {"tool_calls": calls},
+              1: {"tool_calls": [{"name": "list_available_metrics", "arguments": {}},
+                                 {"name": "wake_me", "arguments": {"clear": True}}]}}
+    r, arm, seen = _v9_race(7, script)
+    lst, cleared = (json.loads(x) for x in seen[2])
+    names = {row["name"]: row for row in lst["streams"]}
+    assert "shaft_power_w" in names and "yours" not in names["shaft_power_w"]
+    assert names["mine"]["yours"] == "derived" and len(json.dumps(lst)) < 8000
+    assert cleared["cleared"] == 1 and arm.coach.timers == []
+    assert "forced well below critical power" in arm.coach.system

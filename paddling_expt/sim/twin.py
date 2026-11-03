@@ -487,11 +487,25 @@ class PaddlerTwin:
         wf = self.w / self.p.w_prime_j
         bias = {"pessimist": 1.5, "optimist": -1.5}.get(self.tr.talk, 0.0)
         rpe = int(round(min(10.0, max(1.0, 4.0 + 6.0 * (1.0 - wf) + bias + float(self.rng_talk.normal(0.0, 0.7))))))
-        if self._weed > 0 and self.rng_talk.random() < 0.6:
+        talk = self.tr.talk
+        if self._weed > 0 and self.rng_talk.random() < 0.6:     # the same draws whatever the wording
             says = "The boat feels heavy, like something is dragging."
-        elif self.tr.talk == "pessimist":
+        elif getattr(self, "rich_answers", False):              # (the open coach's later version)
+            if self.blown:
+                says = {"pessimist": "I'm gone. I need a minute.", "optimist": "Just a breather, I'm fine."}.get(
+                    talk, "I've blown up. I need a minute.")
+            elif talk == "pessimist":
+                says = ("It is really hurting." if wf > 0.6 else "Hurting. Not sure I can hold this."
+                        if wf > 0.3 else "I'm done. I can't hold this.")
+            elif talk == "optimist":
+                says = ("All good, I have plenty." if wf > 0.4 else "Feeling good, I could go harder."
+                        if wf > 0.15 else "Starting to feel it, but I'm fine.")
+            else:
+                says = ("Close to my limit." if wf < 0.25 else "Hard but holding." if wf < 0.6
+                        else "Steady, feels fine.")
+        elif talk == "pessimist":
             says = "It is really hurting."
-        elif self.tr.talk == "optimist":
+        elif talk == "optimist":
             says = "All good, I have plenty."
         else:
             says = "Close to my limit." if wf < 0.25 else "Hard but holding." if wf < 0.6 else "Steady, feels fine."
@@ -653,7 +667,11 @@ class PaddlerTwin:
             self._say("paddler", ["Feeling great! I've got more, I'm going.", "I feel strong, let me go harder."][self._talk_n])
             self._talk_pending = (self.t + 30.0, 0.07)
         elif self.tr.talk == "honest" and self._talk_n < 3 and wf < 0.2:
-            self._say("paddler", "Legs are going. I'm close to the limit.")
+            line = "Legs are going. I'm close to the limit."
+            if getattr(self, "rich_answers", False):        # (the open coach's later version)
+                line = ["Legs are going. I'm close to the limit.", "Really feeling it now. Near my limit.",
+                        "I'm right at my limit."][min(self._talk_n, 2)]
+            self._say("paddler", line)
         elif self.tr.talk == "honest" and not self._talk_good_said and wf > 0.6 and 0.3 <= frac <= 0.6:
             self._say("paddler", "Feeling good. This is steady.")
             self._talk_good_said = True

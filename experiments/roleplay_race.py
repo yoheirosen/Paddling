@@ -58,9 +58,12 @@ def _prep(a: argparse.Namespace) -> ct.Preparation:
         return ct.Preparation.from_dict(cache[str(a.seed)])
     prep = ct.draw_preparation(a.seed, coastal=a.coastal, pack=a.pack, incidents=inc)
     if inc:                                  # open races are drawn once and kept (the draw takes seconds)
+        cache = json.load(open(path)) if os.path.exists(path) else {}
         cache[str(a.seed)] = prep.to_dict()
-        with open(path, "w") as f:
+        tmp = f"{path}.{os.getpid()}.tmp"     # written whole, then swapped in: parallel role plays never see half a file
+        with open(tmp, "w") as f:
             json.dump(cache, f)
+        os.replace(tmp, path)
     return prep
 
 
@@ -125,6 +128,8 @@ def _run(a: argparse.Namespace) -> None:
         if st["i"] == 0:
             with open(os.path.join(d, "tools.txt"), "w") as f:
                 f.write("\n".join(_tool_line(t) for t in tools) + "\n")
+            with open(os.path.join(d, "system.txt"), "w") as f:
+                f.write(system + "\n")
         with open(os.path.join(d, "packet.json"), "w") as f:
             json.dump(pk, f)
         sys.stdout.write(json.dumps(pk, separators=(",", ":")) + "\n")
@@ -157,7 +162,7 @@ def _replay(a: argparse.Namespace, answers: List[Any]) -> Dict[str, Any]:
 
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
-    ap.add_argument("cmd", choices=["start", "answer", "show", "tools", "collect", "verify"])
+    ap.add_argument("cmd", choices=["start", "answer", "show", "tools", "system", "collect", "verify"])
     ap.add_argument("answer_json", nargs="?", default=None)
     ap.add_argument("--seed", type=int, default=None)
     ap.add_argument("--tag", required=True)
@@ -175,9 +180,9 @@ def main(argv=None) -> int:
     if a.coach_version is None:
         a.coach_version = 8 if a.incidents else 7
     if a.periodic_s is None:
-        a.periodic_s = 180.0 if a.coach_version == 8 else 300.0
+        a.periodic_s = 180.0 if a.coach_version >= 8 else 300.0
     if a.label is None:
-        a.label = "agent_open_roleplay" if a.coach_version == 8 else "agent_v7_roleplay"
+        a.label = {8: "agent_open_roleplay", 9: "agent_open_v9_roleplay"}.get(a.coach_version, "agent_v7_roleplay")
     if a.cmd == "collect":
         base = os.path.join(OUT, "roleplay", a.tag)
         done = []
@@ -215,6 +220,10 @@ def main(argv=None) -> int:
         return 0
     if a.cmd == "tools":
         p = os.path.join(d, "tools.txt")
+        print(open(p).read() if os.path.exists(p) else "start the race first")
+        return 0
+    if a.cmd == "system":
+        p = os.path.join(d, "system.txt")
         print(open(p).read() if os.path.exists(p) else "start the race first")
         return 0
     if a.cmd == "show":
