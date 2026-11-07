@@ -146,9 +146,9 @@ def summary(tag: str, figure: bool) -> Dict[str, Any]:
     out["race_time"] = comps
     print(f"experimenting coach on {len(S)} races: race time")
     for k, c in comps.items():
-        print(f"  coach minus {k:16s} {c['mean_diff']:+6.1f} s  95% CI [{c['ci95'][0]:+.1f}, {c['ci95'][1]:+.1f}]"
+        print(f"  coach minus {k:16s} {c['mean_d']:+6.1f} s  95% CI [{c['ci95'][0]:+.1f}, {c['ci95'][1]:+.1f}]"
               f"  p {c['wilcoxon_p']}" + (f"  Holm {c['holm_p']}" if "holm_p" in c else "")
-              + f"  coach faster in {sum(1 for a, b in zip(t(rp), t({'scheduled_tests': sched, 'incident_rules': rules, 'no_coach': nc}[k])) if a < b)}/{len(S)}")
+              + f"  coach faster in {c['n_a_faster']}/{c['n']}")
     CPM = "cp_error_pct_mean"
     lc = {k: ct.paired(le(rp, CPM), le(d, CPM)) for k, d in (("scheduled_tests", sched), ("incident_rules", rules),
                                                              ("no_coach", nc))}
@@ -162,7 +162,7 @@ def summary(tag: str, figure: bool) -> Dict[str, Any]:
                                   (("open_coach", rp), ("scheduled_tests", sched), ("incident_rules", rules), ("no_coach", nc))}
     print("learning: mean error of the computer's critical power (% of the truth)", out["cp_error_means"])
     for k, c in lc.items():
-        print(f"  coach minus {k:16s} {c['mean_diff']:+6.2f} % of critical power  95% CI [{c['ci95'][0]:+.2f}, {c['ci95'][1]:+.2f}]"
+        print(f"  coach minus {k:16s} {c['mean_d']:+6.2f} % of critical power  95% CI [{c['ci95'][0]:+.2f}, {c['ci95'][1]:+.2f}]"
               f"  p {c['wilcoxon_p']}" + (f"  Holm {c['holm_p']}" if "holm_p" in c else ""))
     print("  mean error of the pod's reserve reading (points):", out["reserve_error_means"])
     cpm = {}
@@ -181,8 +181,8 @@ def summary(tag: str, figure: bool) -> Dict[str, Any]:
             c1 = ct.paired([rp[s]["race_time_s"] for s in K], [sched[s]["race_time_s"] for s in K])
             c2 = ct.paired([rp[s]["race_time_s"] for s in K], [rules[s]["race_time_s"] for s in K])
             out[f"races_with_{kind}"] = {"n": len(K), "vs_scheduled_tests": c1, "vs_incident_rules": c2}
-            print(f"  races with {kind} ({len(K)}): coach minus scheduled tests {c1['mean_diff']:+.1f} s "
-                  f"[{c1['ci95'][0]:+.1f}, {c1['ci95'][1]:+.1f}]; minus incident rules {c2['mean_diff']:+.1f} s")
+            print(f"  races with {kind} ({len(K)}): coach minus scheduled tests {c1['mean_d']:+.1f} s "
+                  f"[{c1['ci95'][0]:+.1f}, {c1['ci95'][1]:+.1f}]; minus incident rules {c2['mean_d']:+.1f} s")
     pr = ct.HELDOUT_EXPERIMENTER["scheduled_tests_primary"]
     sens = {}
     for hrr in HR_RISES:
