@@ -1,0 +1,1 @@
+[{"tool_calls": [{"name": "list_available_metrics", "arguments": {}}, {"name": "cue", "arguments": {"text": "Strong start. Settle now, long race, ease into race rhythm.", "ask": "ease"}}]}]
