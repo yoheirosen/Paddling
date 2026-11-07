@@ -1,0 +1,1 @@
+[{"tool_calls": [{"name": "list_available_metrics", "arguments": {}}, {"name": "test_cost", "arguments": {"effort_pct": 6, "seconds": 120}}]}]
