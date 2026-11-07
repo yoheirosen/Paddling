@@ -239,3 +239,21 @@ def test_measure_at_a_fixed_share_and_the_reserve_across_a_belief_range(prep):
     rng = c._open_packet([], "periodic")["state"]["reserve_pod_pct_across_your_cp_range"]
     lo, hi = list(rng.values())
     assert lo <= hi
+
+
+def test_a_new_piece_replaces_a_running_one_from_the_effort_being_held(prep):
+    tw = PaddlerTwin(replace(prep.traits, compliance=1.0), prep.setup, seed=prep.seed, even=prep.even,
+                     body_effort=0.9)
+    _until(tw, 900.0)
+    tw.cue("ease", pace_s500=200.0)                    # a pace target: paused while pieces run
+    _until(tw, 960.0)
+    tw.cue("piece", segments=[{"seconds": 200, "effort_pct": -10}])
+    _until(tw, 1060.0)
+    L = tw.truth()
+    e1 = float(L["effort"][-20:].mean())
+    tw.cue("piece", segments=[{"seconds": 120, "effort_pct": 6}])
+    _until(tw, 1140.0)
+    L = tw.truth()
+    e2 = float(L["effort"][-20:].mean())
+    assert e2 / e1 == pytest.approx(1.06, abs=0.03)
+    assert "piece_replaced" in [e["event"] for e in tw.incident_log]

@@ -536,8 +536,10 @@ through turns too, until the change fades. A cue takes 4-15 s to act; paddlers d
 follow one, and a followed change fades over minutes.
 - Experiments. A cue with ask 'piece' asks for a short test piece: up to 3 segments, each a change \
 of effort (effort_pct, against what they are doing when it starts) and/or of stroke rate (rate_spm), \
-held by the clock for its seconds; for example 150 s at +6 % then 120 s at 0. test_cost prices a \
-piece by the boat computer's numbers. measure() reads any stretches of the race you name in race \
+held by the clock for its seconds; for example 150 s at +6 % then 120 s at 0. effort_pct is against \
+the effort they hold when the piece starts (a piece already running counts, and the new piece \
+replaces it); a pace target pauses while a piece runs. test_cost prices a piece by the boat \
+computer's numbers. measure() reads any stretches of the race you name in race \
 seconds: means with their uncertainty, the heart-rate trend, and a fit through the hull model that \
 splits speed into the share of pod power that reaches the boat (scaled by drag, the pod's gain and \
 blade efficiency) and a push of current and wind (which flips with direction on this course). \

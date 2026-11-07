@@ -306,7 +306,7 @@ HELDOUT_EXPERIMENTER: Dict[str, Any] = {
     "seeds": list(range(5060, 5090)),
     "pool": "held_out",
     "coach": "RaceCoach version 10 (OPEN_COACH_SYSTEM_V10), role-played by Claude subagents, 5 s per model call",
-    "scheduled_tests_primary": {"hr_rise_bpm_min": 0.6, "k_change": 0.07},   # set from the development tuning
+    "scheduled_tests_primary": {"hr_rise_bpm_min": 0.6, "k_change": 0.07},   # 24 development races (seeds 101-124)
     "arms": ["no_coach", "incident_rules (drop 0.06)", "scheduled_tests (primary setting)", "the experimenting coach"],
     "primary": {"race_time": ["coach minus scheduled_tests", "coach minus incident_rules"],
                 "learning": ["cp_error_pct_mean: coach minus scheduled_tests", "cp_error_pct_mean: coach minus incident_rules"],

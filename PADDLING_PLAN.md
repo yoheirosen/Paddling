@@ -773,6 +773,120 @@ Limits:
 * the incidents and the paddler's responses are planted;
 * the rules do not read the radio, as registered.
 
+### A coach that runs experiments, and its held-out check (written down 2026-11-07, before any held-out race)
+
+**Why.** In both open-coach checks the coach found problems well: weed, a course changed by
+radio, a drifting pod. It lost race time when it pushed the paddler, or raised its estimate
+of their critical power (the effort they can hold for a long time), on numbers it had no way
+to check. A reasoning coach should not have to guess: it can test. This version gives the
+coach the means to run small experiments during the race, and to keep what it has learned.
+
+**What the coach can now do** (`RaceCoach` version 10, `OPEN_COACH_SYSTEM_V10`; goal, means and
+facts only, no procedures):
+* **Ask for a test piece**: up to three segments, each a change of effort or stroke rate held
+  by the clock (for example 150 s at +6 %, then 120 s back). A piece is one cue.
+* **Measure any stretch of the race** (`measure`): means with their uncertainty, the
+  heart-rate trend, and a fit through the hull model. The fit splits speed over the ground
+  into two parts:
+  * the share of pod power that reaches the boat, which drag, the pod's gain and blade
+    efficiency all scale;
+  * a push of current and wind, which flips sign between the out and back legs.
+* **Price a piece** (`test_cost`): metres gained while it lasts, the reserve it spends, and
+  the net seconds at the finish once the reserve is repaid.
+* **Keep beliefs** (`set_belief`): a value, a range and the evidence, shown at every wake-up.
+  Beliefs about critical power, the reserve's size and the pod's gain set the boat
+  computer, which recomputes both reserves over the race so far. Other beliefs (the
+  paddler's honesty, their best stroke rate) are the coach's own notes.
+
+**A new instrument: a heart-rate strap.** Heart rate gives a test something to read:
+* below critical power it levels off at a steady effort;
+* above it, it keeps climbing as the reserve drains;
+* it falls back as the reserve refills.
+
+This is the textbook shape, and it is planted. Its level differs between paddlers and
+creeps up over a race. The strap is drawn on its own random streams, so it changes nothing
+else in a race, and every arm races with it.
+
+**What the coach is scored on.**
+* Race time.
+* How well the boat computer knew the paddler (the learning measures,
+  `coaching_trial.score_learning`, the same for every arm, because every arm's corrections
+  go through the boat computer):
+  * the mean error of its critical power over the race, against the true critical power,
+    which falls slowly as the paddler tires;
+  * the mean error of the reserve read from the pod;
+  * the error of the pod's gain in races where it drifts.
+
+  The reserve error turned out to depend on the pacing as well: a paddler kept below
+  critical power keeps both the reading and the truth near full. So the critical-power
+  error is the co-primary learning measure.
+
+**A new comparison: the same tests, on a schedule, without reasoning** (`ScheduledTests`).
+These are the incident rules plus two tests:
+* a three-minute steady hold once per leg, read by fixed thresholds on the heart-rate
+  trend;
+* an out-leg against back-leg hull fit after every turn, with a rudder clear and then a pod
+  correction when the share moves.
+
+What the coach can show over this arm is what reasoning adds: choosing which test, when, and
+what its result means.
+
+**Tuning the scheduled tests** (24 development races, seeds 101–124):
+* With the pod check's threshold at 7 %, the scheduled tests were 4.3–4.8 s faster than the
+  incident rules at every heart-rate threshold (0.4, 0.6, 0.9 beats per minute per
+  minute). At 10 % they gained nothing.
+* They left the paddler blown up longer than the incident rules did: 145 s a race against
+  116 s.
+* Primary setting: 0.6 and 7 %, the middle of a flat range.
+
+**Practice** (three development races, role-played, seeds 21–23):
+
+| Race | Experimenting coach | Incident rules | Scheduled tests | No coach |
+|---|---|---|---|---|
+| 21 | 3229 s | 3308 s | 3263 s | 3323 s |
+| 22 | 1855 s | 1852 s | 1852 s | 1890 s |
+| 23 | 2658 s | 2665 s | 2684 s | 2678 s |
+
+* The coaches read heart rate as intended. In one race: falling at 203–208 W, flat at
+  212 W, climbing at 216–219 W. They used the hull fit to correct the boat computer's
+  critical power, which disagreed with the pod's.
+* They found weed by speed per pod watt and confirmed the clear.
+* Their critical-power estimates were no better than the pre-race test's (about 2 % off).
+* The fixed heart-rate rule moved critical power on noise: 3–5 % off.
+
+Fixed after practice, before registration:
+* The paddler's handling of test pieces (a bug): a pace target kept raising the effort
+  under a piece, and a piece started during another took that inflated effort as its
+  base (+6 % gave +25 %). Now a pace target pauses during a piece, and a new piece
+  replaces a running one from the effort being held. One practice race (23) used a piece
+  started during another, so it no longer replays to the same time.
+* Inputs the coaches asked for:
+  * each piece's readings by segment;
+  * the pod's reserve at both ends of the coach's critical-power belief;
+  * measuring at a fixed share of pod power;
+  * wake-ups cancelled one at a time;
+  * the distance since the last turn as a stream;
+  * facts on pace targets, on which metrics can read past values, and on current and
+    wind flipping with direction.
+
+**The check** (`coaching_trial.HELDOUT_EXPERIMENTER`):
+* 30 fresh races (seeds 5060–5089), drawn as before: every race holds pod drift or a
+  course change, kinds never used in practice.
+* Arms: no coach; the incident rules (threshold 0.06 m/s); the scheduled tests (primary
+  setting); the experimenting coach, role-played by Claude subagents at 5 s per model call.
+* Co-primary outcomes, each tested paired (Wilcoxon, bootstrap 95 % interval) with Holm's
+  correction over its two comparisons:
+  * race time, coach minus scheduled tests and coach minus incident rules;
+  * the mean critical-power error, coach minus scheduled tests and coach minus incident
+    rules.
+* Secondary:
+  * coach minus no coach;
+  * the reserve error;
+  * critical-power error at halfway and three quarters;
+  * pod-gain error in drift races;
+  * races with each incident kind and the incident table;
+  * the scheduled tests at their other heart-rate thresholds.
+
 ## Results so far
 
 **Simulated 37-minute OC1 training session** (`demos/demo_oc1_training.py`,
@@ -978,6 +1092,12 @@ the other eight sessions: critical power 93 W, reserve 6.4 kJ; stand-in coach):
   Its live current estimate needs the course to turn, and on a single heading
   (a point-to-point race) it cannot separate current from speed. A known push (a
   tide model or the pod's water speed) can be passed in instead.
+* **The heart-rate strap is planted physiology.** Heart rate follows effort with a lag of
+  30-50 s, levels off below critical power, and above it climbs with the share of the
+  reserve spent (reaching the maximum as it empties). It also creeps up 1-3 beats per 10
+  minutes and reads with 1.5 beats of noise. This is the textbook shape, not measured on
+  the paddler. Real heart rate also moves with heat, hydration and nerves, which the twin
+  leaves out, so a heart-rate test in the twin is cleaner than on the water.
 * **Role-played coaching is a stand-in, not the deployed model.** In the drafting
   check (above), Claude subagents answered every model call, with the same prompt,
   tools and live state, and a fixed 5 s of race time per call. Each role-player

@@ -506,7 +506,7 @@ class PaddlerTwin:
                 self._pace = None             # a pace they cannot hold is given up
             if self._pace is not None:
                 v_t, e_p, t_set, e0 = self._pace
-                if commit and self.v_disp is not None:
+                if commit and self.v_disp is not None and self._piece is None:   # paused under a piece
                     e_p += self.tr.pace_gain * (v_t - self.v_disp) / v_t * T / 10.0
                     e_p = min(1.12 * e0, max(0.85 * e0, e_p))   # chased by feel, within reason
                     self._pace = (v_t, e_p, t_set, e0)
@@ -614,7 +614,18 @@ class PaddlerTwin:
                          "rate_spm": float(sg.get("rate_spm", 0.0) or 0.0),
                          "_x": 1.0 + (float(self.rng_piece.normal(0.0, 0.02)) if self.noise else 0.0)}
                         for sg in segments]
-                self._piece = {"t0": t, "segments": segs, "e0": None, "r0": None}
+                e0 = r0 = None
+                old = self._piece
+                if old is not None and old["e0"] is not None:      # a piece already running: start from its effort
+                    el, acc = t - old["t0"], 0.0
+                    for sg in old["segments"]:
+                        if el < acc + sg["seconds"]:
+                            e0 = old["e0"] * (1.0 + sg["effort_pct"] / 100.0) * sg["_x"]
+                            r0 = old["r0"] + sg["rate_spm"]
+                            break
+                        acc += sg["seconds"]
+                    self._note("piece_replaced")
+                self._piece = {"t0": t, "segments": segs, "e0": e0, "r0": r0}
                 self._note("piece_started", segments=[{k: v for k, v in sg.items() if not k.startswith("_")}
                                                       for sg in segs])
             return
