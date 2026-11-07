@@ -215,6 +215,9 @@ def _figure(tag, rp, sched, rules, nc, S, out):
         "cp_error_mean": {nm: [d[s].get("learning", {}).get("cp_error_pct_mean") for s in S]
                           for nm, d in (("no coach", nc), ("incident rules", rules), ("scheduled tests", sched),
                                         ("experimenting coach", rp))},
+        "pod_gain_error": {nm: [x for x in (d[s].get("learning", {}).get("pod_gain_error") for s in S) if x is not None]
+                           for nm, d in (("no coach", nc), ("incident rules", rules), ("scheduled tests", sched),
+                                         ("experimenting coach", rp))},
         "cp_error": {nm: [out["learning_secondary"][k]["cp_error_pct_start"], out["learning_secondary"][k]["cp_error_pct_half"],
                           out["learning_secondary"][k]["cp_error_pct_three_quarters"]]
                      for nm, k in (("incident rules", "incident_rules"), ("scheduled tests", "scheduled_tests"),
@@ -229,7 +232,7 @@ def plot_experimenter(data):
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
     import numpy as np
-    fig, axes = plt.subplots(1, 3, figsize=(15, 4.8))
+    fig, axes = plt.subplots(1, 4, figsize=(19, 4.8))
     ax = axes[0]
     labels = {"scheduled_tests": "scheduled tests\n(fixed rules)", "incident_rules": "rules written for\nthe practice incidents"}
     for i, (k, d) in enumerate(data["diffs"].items()):
@@ -267,6 +270,20 @@ def plot_experimenter(data):
     ax.set_title("the computer's critical power through the race", fontsize=10)
     ax.legend(fontsize=8, frameon=False)
     ax.set_ylim(bottom=0)
+    ax = axes[3]
+    names = list(data.get("pod_gain_error", {}))
+    for i, nm in enumerate(names):
+        d = [100.0 * x for x in data["pod_gain_error"][nm]]
+        if not d:
+            continue
+        x = i + 0.12 * np.random.default_rng(20 + i).uniform(-1, 1, len(d))
+        ax.plot(x, d, "o", color=cols[i], alpha=0.5, ms=4)
+        ax.plot([i - 0.25, i + 0.25], [np.mean(d)] * 2, color="k", lw=2)
+        ax.text(i + 0.28, np.mean(d), f"{np.mean(d):.0f} %", va="center", fontsize=9)
+    ax.set_xticks(range(len(names)))
+    ax.set_xticklabels([n.replace(" ", "\n", 1) for n in names], fontsize=9)
+    ax.set_ylabel("error of the paddle sensor's correction (% of effort)")
+    ax.set_title("races where the paddle sensor drifted", fontsize=10)
     fig.suptitle(data.get("title", ""), fontsize=10)
     fig.tight_layout()
     return fig

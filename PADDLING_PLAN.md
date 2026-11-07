@@ -887,6 +887,97 @@ Fixed after practice, before registration:
   * races with each incident kind and the incident table;
   * the scheduled tests at their other heart-rate thresholds.
 
+**Result of the experimenting coach's check.**
+* 30 held-out races. Every race finished, and every race replays exactly from the
+  role-player's answers.
+* Five races were interrupted by a container restart and resumed from their saved
+  answers.
+* The coach answered 76 model calls a race on average. It ran 4 test pieces a race, in 28
+  of the 30 races (8 of them stroke-rate tests), and set 7.6 beliefs a race.
+* Figure `coaching_heldout_experimenter`.
+
+Race time (co-primary):
+
+| Experimenting coach minus … | Mean | 95 % interval | Holm p | Coach faster in |
+|---|---|---|---|---|
+| the same tests on a schedule | +5.6 s | −12.2 to +22.5 | 0.86 | 13 of 30 |
+| rules written for the practice incidents | +3.1 s | −16.0 to +20.6 | 0.86 | 13 of 30 |
+| no coach (secondary) | −14.3 s | −32.4 to +2.7 | p 0.08, uncorrected | 20 of 30 |
+
+Against the scheduled tests at their other heart-rate thresholds the coach was +5.8 s
+and +5.1 s.
+
+How well each arm knew the paddler's critical power (co-primary): the mean error of the
+critical power the boat computer used, over the race.
+
+| | Mean error | Coach minus it | Holm p |
+|---|---|---|---|
+| experimenting coach | 2.5 % | | |
+| the same tests on a schedule | 5.9 % | −3.4 points (−5.5 to −1.6) | 0.007 |
+| rules (never change it) | 2.0 % | +0.5 points (+0.1 to +1.0) | 0.03 |
+
+* The coach knew critical power better than fixed rules running the same tests, but
+  slightly worse than leaving the pre-race test alone.
+* Leaving it alone gains over a race in this simulator: the true critical power falls as
+  the paddler tires, towards the test's low estimate (4.3 % off at the start, 1.1 % at
+  three quarters).
+* Of the coach's 75 changes to critical power, 50 moved it towards the truth and 25 away.
+* Of its 39 raises, 24 went above the truth.
+* The paddler was blown up for 204 s a race with the coach, 189 s with the scheduled
+  tests, 180 s with the incident rules and 192 s with no coach.
+
+What the coach learnt well (secondary):
+* **The paddle sensor's drift** (25 races): its correction was 5 % off the true gain on
+  average. The scheduled tests' correction was 16 % off, and with no correction (rules, no
+  coach) the reading was 25 % off. The coach found the drift by comparing the sensor with
+  GPS speed, the hull model and heart rate. In most races it confirmed the correction on
+  legs in both directions.
+* **The reserve:** the reading of the paddler's reserve was 20 points from the truth on
+  average with the coach, against 35 for every other arm.
+* **Weed** (23 races): 346 s raced with weed, against 386 s for the scheduled tests (whose
+  sensor check also clears weed), 807 s for the incident rules and 1236 s with no coach.
+  Weed was cleared by a cue in 20 races, and 20 back-strokes had no weed to clear.
+* **A course changed by radio** (17 races):
+  * The coach corrected the distance and told the paddler in all 17.
+  * The paddler took in the first message in only 6 of the 17. In the earlier checks they
+    took it in 19 of 22 and 16 of 19 times.
+  * Each miss was traced to the paddler's random draw for following a cue. It is chance,
+    not a code change, but it decided the outcome: 7 coached paddlers still sprinted for
+    the old finish, against 11 of 17 under every other arm.
+  * The coach was 6.2 s faster than the incident rules in these races (not significant).
+* By race kind, coach minus scheduled tests: +9.4 s with pod drift, −3.9 s with a course
+  change, +1.1 s with weed. None was significant.
+
+**What it shows.**
+* The coach used its abilities to learn about the instruments and the water. It found and
+  corrected a drifting sensor far better than any fixed rule, and read the reserve far
+  closer to the truth.
+* That knowledge did not turn into race time.
+* Critical power is where the coach most needed to experiment, and its experiments misled
+  it there. A heart rate that climbs slowly just above critical power, or that sits at its
+  maximum once the reserve is empty, looks flat. The coach read flat as "below critical
+  power", raised its estimate, pushed, and the paddler blew up.
+* The same fixed rules running the same tests did worse still on critical power (5.9 %),
+  so reading a noisy test is hard for rules and coach alike. The coach was only better at
+  it.
+
+Faults found during the run (left alone, as registered):
+* The instructions never say that heart rate stops at a maximum; at least five coaches
+  read a plateau at the maximum as a steady state below critical power.
+* In agentic_experiments, a metric the coach writes over past values whose last line is an
+  assignment (`hr_slope = slope(w) * 60`) is accepted but never produces a value. The
+  warning says only "produced NO value". Several coaches lost their own metrics this way.
+* The sensor correction takes one constant from one race second, so a drift that ramps
+  cannot be entered.
+* The coach cannot see whether the paddler took in a message.
+* Every input repeats all the coach's notes, and long inputs were cut off in the
+  role-player's terminal.
+
+Limits:
+* the role-player stands in for the deployed model;
+* the incidents, the heart rate and the paddler are planted;
+* the rules do not read the radio, as registered.
+
 ## Results so far
 
 **Simulated 37-minute OC1 training session** (`demos/demo_oc1_training.py`,
@@ -1173,19 +1264,22 @@ connectivity.
      carried out, wake-ups it sets itself, summarised series on one clock, a pinned
      plan, legs to compare, turn position as a stream, critical-power corrections that
      recompute the reserves, and a paddler who says more than fixed phrases.
-   * still open, from the later open coach's held-out races (most often raised):
-     * the coach's main loss: pushes and critical-power raises made on numbers it
-       cannot check. Candidates: show each reserve with its uncertainty, or let the
-       coach test a figure (a short controlled piece) before it acts on it;
-     * a way to tell, after a blow-up, a pod reading high from a tired blade or weed;
-     * a pod offset the coach can set once it has diagnosed drift;
-     * the wind as a live input, and boat power that does not count the wind as
-       effort;
-     * the time until the next cue counted at the moment of the cue;
-     * a live check of the pod against GPS speed through the hull model (the coaches
-       still do it by hand);
-     * the role-play terminal shows the whole first input; a wake-up set with a new race
-       distance uses that distance.
+   * built in the experimenting coach: test pieces, measuring stretches through the hull
+     model, a heart-rate strap, beliefs that set the boat computer (including a pod
+     correction), the reserve across a belief's range, the next cue's time, the first
+     input read on request, wake-ups that use a new race distance.
+   * still open, from the experimenting coach's held-out races (most often raised first):
+     * critical power from heart rate: say that heart rate stops at a maximum, and give
+       a heart-rate trend corrected for the slow creep, so a plateau at the maximum and
+       a slow climb just above critical power are not read as "below it";
+     * in agentic_experiments: a coach's own metric whose last line is an assignment is
+       accepted but never computes (make it take the last assigned value, or refuse it
+       with a clear reason);
+     * a pod correction that can follow a drift as it grows;
+     * whether the paddler took in a message (where they think the finish is);
+     * shorter inputs: the notes repeated in full at every wake-up crowd out the latest
+       cue results;
+     * whether a cue or piece was taken up, sooner than the 30-second means show it.
    * in agentic_experiments: `maximum()` in an agent-defined metric was taken for a
      missing stream name, so the metric never computed. Fixed in that repository's pull
      request #234, which waits for the owner.

@@ -5,6 +5,61 @@ Dated entries, newest first. Entries before the move refer to paths under
 
 ---
 
+### A coach that runs experiments, and its held-out check (2026-11-07)
+
+At the owner's direction ("what does an agent unlock if we give it the abilities it needs?";
+fully open, no gate), the coach was given the means to experiment, and the check scored
+what it learnt as well as race time.
+
+* **The paddler twin:**
+  * a short test piece (ask `piece`: up to three segments of effort or rate change, by
+    the clock; a new piece replaces a running one, and a pace target pauses during a
+    piece);
+  * a heart-rate strap (`enable_heart_rate`, on its own random streams, so nothing else
+    in a race changes).
+* **The race state:** a pod gain correction (`RaceState.set_pod_gain`) and the pod's reserve
+  at any critical power (`pod_reserve_at`).
+* **The coach** (`RaceCoach` version 10, `OPEN_COACH_SYSTEM_V10`):
+  * `measure` (stretches of the race; means with uncertainty, the heart-rate trend, a
+    hull-model split of speed into the share of pod power reaching the boat and the push,
+    or speed at a fixed share);
+  * `test_cost`;
+  * `set_belief` (the computer's critical power, reserve size and pod gain);
+  * each piece's readings by segment; wake-ups cancelled one at a time; the next cue's
+    time as a race second.
+* **Scheduled tests** (`coaching_trial.ScheduledTests`): the same tests on a fixed schedule,
+  read by fixed rules.
+* **Learning measures** for every arm (`coaching_trial.score_learning`).
+* **Runner:** `experiments/experimenter_race.py`.
+
+Three practice races came first. They turned up a twin bug in overlapping pieces (+6 %
+gave +25 %), now fixed. The check was then registered (`coaching_trial.HELDOUT_EXPERIMENTER`,
+seeds 5060–5089) before any held-out race.
+
+Results on 30 held-out races, role-played by Claude subagents, no API:
+* race time: +5.6 s against the scheduled tests and +3.1 s against the incident rules
+  (Holm p 0.86 for both); 14.3 s faster than no coach (p 0.08);
+* critical-power error over the race: 2.5 % for the coach, 5.9 % for the scheduled tests
+  (Holm p 0.007) and 2.0 % for rules that never change it (Holm p 0.03, against the coach);
+* secondary:
+  * the pod drift correction was 5 % off for the coach, 16 % for the scheduled tests and
+    25 % uncorrected;
+  * the reserve reading was 20 points from the truth for the coach, against 35 for every
+    other arm.
+
+The coach learnt the instruments well, and its critical-power experiments misled it: 24 of
+its 39 raises went above the truth. Faults found during the run (left alone, as
+registered):
+* the prompt never says heart rate has a maximum;
+* in agentic_experiments, a coach metric whose last line is an assignment never
+  computes;
+* the pod correction is one constant;
+* message uptake is invisible to the coach.
+
+The paddler took in only 6 of 17 first messages about a changed course. This was traced to
+the paddler's random cue draws, not to a code change. Every earlier recorded race still
+replays. One practice race no longer does, after the piece fix.
+
 ### The open coach's later version and its held-out check (2026-11-03)
 
 The first open-coach check's role-players listed what they could not see. The later version
