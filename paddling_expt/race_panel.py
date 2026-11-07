@@ -47,6 +47,7 @@ RACE_CATALOG = (
     _m("remaining_m", 1.0, "Distance to the finish (m)."),
     _m("next_turn_in_m", 1.0, "Distance to the next turn (m), when the course's leg length is known."),
     _m("leg_number", 1.0, "Which leg of the out-and-back course (1 = the first leg out)."),
+    _m("into_leg_m", 1.0, "Distance since the last turn (m), when the course's leg length is known: 30-s means mix both directions for about the first 130 m."),
     _m("rate_spm", 30.0, "Stroke rate, strokes per minute (30-s median).", "rate, technique"),
     _m("speed_gps", 30.0, "Speed over the ground from GPS (m/s, 30-s mean): what the paddler's display shows."),
     _m("pace_gps_s500", 30.0, "Pace over the ground, s per 500 m (30-s mean): what the paddler's display shows."),
@@ -67,6 +68,8 @@ RACE_CATALOG = (
     _m("push_known", 1.0, "1 once headings cover enough directions to fit the push, else 0."),
     _m("pct_best_at_rate", 30.0, "Power as % of the paddler's best at this rate (needs a rate envelope from past sessions)."),
     _m("shaft_power_w", 30.0, "The paddler's own power at the paddle shaft from the paddle pod (W, 30-s mean): effort, independent of how efficiently the blade moves the boat.", "effort, fatigue"),
+    _m("shaft_power_raw_w", 30.0, "The pod's own reading (W, 30-s mean) before any correction of its gain; present once a correction is set.", "effort, instruments"),
+    _m("heart_rate_bpm", 15.0, "Heart rate from a chest strap (beats per minute, 15-s mean), when the paddler wears one.", "effort, physiology"),
     _m("cp_shaft_w", 1.0, "Critical power at the shaft from the same pre-race test, measured by the pod (W)."),
     _m("w_bal_pod_frac", 1.0, "Reserve above critical power left, 0-1, from the pod's shaft power (does not drift when the blade work gets less efficient, unlike w_bal_frac).", "pacing"),
     _m("empties_in_m_pod", 1.0, "Distance until the pod's reserve runs out at the current shaft power (m); absent at or below critical power.", "pacing"),
@@ -193,6 +196,7 @@ class RacePanel:
             if "remaining_m" not in vals or nt < vals["remaining_m"] - 1.0:   # the finish is not a turn
                 vals["next_turn_in_m"] = nt
             vals["leg_number"] = float(int(vals["distance_m"] // self.leg_m) + 1)
+            vals["into_leg_m"] = vals["distance_m"] % self.leg_m
         out = self.service.step(vals, float(t), publish=False)
         self.alerts.extend(out["alerts"])
         return out["alerts"]

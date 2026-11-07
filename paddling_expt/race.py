@@ -215,6 +215,10 @@ class RaceState:
         self.speed_trace: Deque[tuple] = deque()     # (t, GPS speed) per stroke over the last 15 min
         self._next_hist = -1e9
         self.last: Dict[str, Any] = {}
+        # the heart-rate strap (when the boat has one) and a correction of the pod's reading
+        self.recent_hr: Deque[tuple] = deque()       # (t, bpm) over 15 s
+        self.pod_gain = 1.0                          # the pod's reading / the true shaft power
+        self.pod_gain_since: Optional[float] = None  # elapsed_s from which the correction applies
 
     # ── per stroke ───────────────────────────────────────────────────────
     def update(self, row: Dict[str, Any]) -> Dict[str, Any]:
@@ -254,10 +258,19 @@ class RaceState:
         a = self.athlete
         self.w_bal = max(0.0, w_balance_step(self.w_bal, P, dt, self.cp_w, a.w_prime_j))
         Ps = row.get("shaft_power_w")
+        Ps_raw = Ps
+        if Ps is not None and self.pod_gain != 1.0 and self.t0 is not None and (
+                self.pod_gain_since is None or t - self.t0 >= self.pod_gain_since):
+            Ps = float(Ps) / self.pod_gain
+        hr = row.get("heart_rate_bpm")
+        if hr is not None:
+            self.recent_hr.append((t, float(hr)))
+            while self.recent_hr and self.recent_hr[0][0] < t - 15.0:
+                self.recent_hr.popleft()
         if Ps is not None and self.athlete_shaft is not None:
             self.w_bal_shaft = max(0.0, w_balance_step(self.w_bal_shaft, float(Ps), dt, self.cp_shaft_w,
                                                        self.athlete_shaft.w_prime_j))
-            self.recent_shaft.append((t, float(Ps)))
+            self.recent_shaft.append((t, float(Ps), float(Ps_raw)))
             while self.recent_shaft and self.recent_shaft[0][0] < t - self.smooth_s:
                 self.recent_shaft.popleft()
             self._local.append((t, float(v), float(Ps)))
@@ -296,7 +309,7 @@ class RaceState:
                 "elapsed_s", "distance_m", "rate_spm", "speed_gps", "speed_water", "power_w",
                 "w_bal_frac", "push_along_mps", "sustainable_power_w", "pace_gap_s500",
                 "empties_in_m", "eta_s", "fade_pct", "shaft_power_w", "w_bal_pod_frac",
-                "line_m", "along_m", "push_local_mps")})
+                "line_m", "along_m", "push_local_mps", "heart_rate_bpm", "shaft_power_raw_w")})
             self._next_hist = t + 5.0
         self.last = snap
         return snap
@@ -330,9 +343,14 @@ class RaceState:
             ps = sum(x[2] for x in self._local) / len(self._local)
             snap["eta_est"] = self.eta_est
             snap["push_local_mps"] = vg - _speed_for(self.craft, self.total_kg, self.eta_est * ps, self.ama_kg)
+        if self.recent_hr:
+            snap["heart_rate_bpm"] = sum(x[1] for x in self.recent_hr) / len(self.recent_hr)
         if self.athlete_shaft is not None and self.recent_shaft:
             Ps = sum(x[1] for x in self.recent_shaft) / len(self.recent_shaft)
             snap["shaft_power_w"] = Ps
+            if self.pod_gain != 1.0:
+                snap["shaft_power_raw_w"] = sum(x[2] for x in self.recent_shaft) / len(self.recent_shaft)
+                snap["pod_gain"] = self.pod_gain
             snap["cp_shaft_w"] = self.cp_shaft_w
             snap["w_bal_pod_frac"] = self.w_bal_shaft / self.athlete_shaft.w_prime_j
             if self.distance_m:
@@ -396,6 +414,48 @@ class RaceState:
                     "reserve_pod_pct_now": (round(100.0 * self.w_bal_shaft / self.athlete_shaft.w_prime_j)
                                             if self.athlete_shaft and self.w_bal_shaft is not None else None)})
         return out
+
+    def set_pod_gain(self, gain: float, since_elapsed_s: Optional[float] = None) -> Dict[str, Any]:
+        """Correct the paddle pod's reading: from ``since_elapsed_s`` (race seconds; None = the
+        whole race) shaft power is the reading divided by ``gain``.  The 5-second record and
+        both reserves are recomputed, so the reserve already counted uses corrected power."""
+        out = {"pod_gain_before": self.pod_gain, "since_before": self.pod_gain_since}
+        self.pod_gain, self.pod_gain_since = float(gain), (None if since_elapsed_s is None else float(since_elapsed_s))
+        for h in self.history:
+            raw = h.get("shaft_power_raw_w")
+            if raw is None:
+                raw = h.get("shaft_power_w")
+                h["shaft_power_raw_w"] = raw
+            if raw is None or h.get("elapsed_s") is None:
+                continue
+            on = self.pod_gain_since is None or h["elapsed_s"] >= self.pod_gain_since
+            h["shaft_power_w"] = raw / self.pod_gain if on else raw
+        t_now = self.last.get("t")
+        if t_now is not None and self.t0 is not None:
+            self.recent_shaft = deque((tt, (raw / self.pod_gain if (self.pod_gain_since is None
+                                                                    or tt - self.t0 >= self.pod_gain_since) else raw), raw)
+                                      for tt, _, raw in self.recent_shaft)
+        self._recompute_reserves()
+        out.update({"pod_gain": self.pod_gain, "since_race_s": self.pod_gain_since,
+                    "reserve_pod_pct_now": (round(100.0 * self.w_bal_shaft / self.athlete_shaft.w_prime_j)
+                                            if self.athlete_shaft and self.w_bal_shaft is not None else None)})
+        return out
+
+    def pod_reserve_at(self, cp_shaft_w: float, w_prime_shaft_j: Optional[float] = None) -> Optional[float]:
+        """The pod's reserve now (0-1) had the race been counted with this critical power
+        (and reserve size): the reserve at either end of a belief's range."""
+        if self.athlete_shaft is None:
+            return None
+        W0 = float(w_prime_shaft_j or self.athlete_shaft.w_prime_j)
+        ws, prev = W0, None
+        for h in self.history:
+            if h.get("elapsed_s") is None:
+                continue
+            dt = 0.0 if prev is None else max(0.0, h["elapsed_s"] - prev)
+            prev = h["elapsed_s"]
+            if h.get("shaft_power_w") is not None:
+                ws = max(0.0, w_balance_step(ws, float(h["shaft_power_w"]), dt, float(cp_shaft_w), W0))
+        return ws / W0
 
     def _recompute_reserves(self) -> None:
         """Re-run both W' balances from the start over the 5-second record."""

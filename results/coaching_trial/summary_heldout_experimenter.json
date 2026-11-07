@@ -1,0 +1,440 @@
+{
+ "tag": "heldout_experimenter",
+ "n": 30,
+ "seeds": [
+  5060,
+  5061,
+  5062,
+  5063,
+  5064,
+  5065,
+  5066,
+  5067,
+  5068,
+  5069,
+  5070,
+  5071,
+  5072,
+  5073,
+  5074,
+  5075,
+  5076,
+  5077,
+  5078,
+  5079,
+  5080,
+  5081,
+  5082,
+  5083,
+  5084,
+  5085,
+  5086,
+  5087,
+  5088,
+  5089
+ ],
+ "race_time": {
+  "scheduled_tests": {
+   "n": 30,
+   "mean_d": 5.562141860732928,
+   "median_d": 4.180418270870177,
+   "n_a_faster": 13,
+   "n_b_faster": 17,
+   "ci95": [
+    -12.21389859477672,
+    22.465119251617974
+   ],
+   "wilcoxon_p": 0.42795460671186447,
+   "holm_p": 0.8559092134237289
+  },
+  "incident_rules": {
+   "n": 30,
+   "mean_d": 3.0929628397666873,
+   "median_d": 6.626983643187941,
+   "n_a_faster": 13,
+   "n_b_faster": 17,
+   "ci95": [
+    -15.9642605061688,
+    20.596913623316425
+   ],
+   "wilcoxon_p": 0.46454504504799843,
+   "holm_p": 0.8559092134237289
+  },
+  "no_coach": {
+   "n": 30,
+   "mean_d": -14.295853764691067,
+   "median_d": -13.88755654225065,
+   "n_a_faster": 20,
+   "n_b_faster": 10,
+   "ci95": [
+    -32.36251956659731,
+    2.6991906827648435
+   ],
+   "wilcoxon_p": 0.08406547829508781
+  }
+ },
+ "cp_error": {
+  "scheduled_tests": {
+   "n": 30,
+   "mean_d": -3.4226666666666663,
+   "median_d": -1.0350000000000001,
+   "n_a_faster": 21,
+   "n_b_faster": 9,
+   "ci95": [
+    -5.535675000000001,
+    -1.6086500000000004
+   ],
+   "wilcoxon_p": 0.003475155681371689,
+   "holm_p": 0.006950311362743378
+  },
+  "incident_rules": {
+   "n": 30,
+   "mean_d": 0.5036666666666667,
+   "median_d": 0.20999999999999996,
+   "n_a_faster": 11,
+   "n_b_faster": 19,
+   "ci95": [
+    0.10899999999999999,
+    1.0093333333333334
+   ],
+   "wilcoxon_p": 0.02922656987610373,
+   "holm_p": 0.02922656987610373
+  },
+  "no_coach": {
+   "n": 30,
+   "mean_d": 0.5066666666666667,
+   "median_d": 0.18500000000000005,
+   "n_a_faster": 11,
+   "n_b_faster": 19,
+   "ci95": [
+    0.11332500000000001,
+    1.0070166666666664
+   ],
+   "wilcoxon_p": 0.02923084030737362
+  }
+ },
+ "cp_error_means": {
+  "open_coach": 2.51,
+  "scheduled_tests": 5.93,
+  "incident_rules": 2.0,
+  "no_coach": 2.0
+ },
+ "reserve_error_means": {
+  "open_coach": 19.69,
+  "scheduled_tests": 34.82,
+  "incident_rules": 35.42,
+  "no_coach": 35.27
+ },
+ "learning_secondary": {
+  "open_coach": {
+   "cp_error_pct_start": 4.34,
+   "cp_error_pct_half": 1.84,
+   "cp_error_pct_three_quarters": 2.37,
+   "pod_gain_error_drift_races": 0.0481,
+   "blown_s": 203.7
+  },
+  "scheduled_tests": {
+   "cp_error_pct_start": 4.34,
+   "cp_error_pct_half": 5.6,
+   "cp_error_pct_three_quarters": 8.79,
+   "pod_gain_error_drift_races": 0.159,
+   "blown_s": 189.4
+  },
+  "incident_rules": {
+   "cp_error_pct_start": 4.34,
+   "cp_error_pct_half": 1.45,
+   "cp_error_pct_three_quarters": 1.13,
+   "pod_gain_error_drift_races": 0.2537,
+   "blown_s": 180.2
+  }
+ },
+ "races_with_pod_drift": {
+  "n": 25,
+  "vs_scheduled_tests": {
+   "n": 25,
+   "mean_d": 9.41356218301201,
+   "median_d": 7.1344210157083126,
+   "n_a_faster": 10,
+   "n_b_faster": 15,
+   "ci95": [
+    -10.902053639861593,
+    28.243801623700705
+   ],
+   "wilcoxon_p": 0.25210392475128174
+  },
+  "vs_incident_rules": {
+   "n": 25,
+   "mean_d": 7.772197470171522,
+   "median_d": 9.133535889111954,
+   "n_a_faster": 9,
+   "n_b_faster": 16,
+   "ci95": [
+    -14.156145585363939,
+    26.85058125127137
+   ],
+   "wilcoxon_p": 0.17295855283737183
+  }
+ },
+ "races_with_course_change": {
+  "n": 17,
+  "vs_scheduled_tests": {
+   "n": 17,
+   "mean_d": -3.8622869282898913,
+   "median_d": -2.7660961444184977,
+   "n_a_faster": 9,
+   "n_b_faster": 8,
+   "ci95": [
+    -31.314136583212452,
+    23.04512280771918
+   ],
+   "wilcoxon_p": 0.7819061279296875
+  },
+  "vs_incident_rules": {
+   "n": 17,
+   "mean_d": -6.154974231242598,
+   "median_d": -3.8818151887362546,
+   "n_a_faster": 10,
+   "n_b_faster": 7,
+   "ci95": [
+    -36.193033380957374,
+    22.064796431560953
+   ],
+   "wilcoxon_p": 0.7118988037109375
+  }
+ },
+ "races_with_weed": {
+  "n": 23,
+  "vs_scheduled_tests": {
+   "n": 23,
+   "mean_d": 1.1198583725676756,
+   "median_d": -0.30810974526139034,
+   "n_a_faster": 12,
+   "n_b_faster": 11,
+   "ci95": [
+    -19.303622827668654,
+    21.27717159601537
+   ],
+   "wilcoxon_p": 0.8229274749755859
+  },
+  "vs_incident_rules": {
+   "n": 23,
+   "mean_d": -2.316731067701727,
+   "median_d": 0.3709025331718294,
+   "n_a_faster": 11,
+   "n_b_faster": 12,
+   "ci95": [
+    -24.968967875901058,
+    17.379849106685864
+   ],
+   "wilcoxon_p": 0.8932116031646729
+  }
+ },
+ "vs_scheduled_tests_by_threshold": {
+  "0.4": 5.8,
+  "0.6": 5.6,
+  "0.9": 5.1
+ },
+ "incidents": {
+  "open_coach": {
+   "weed": {
+    "n": 23,
+    "mean_seconds_with_weed": 345.8,
+    "cleared_by_cue": 20,
+    "cleared_by_paddler": 0,
+    "never_cleared": 3,
+    "median_first_clear_cue_after_s": 86.5,
+    "false_clears": 20
+   },
+   "pod_drift": {
+    "n": 25,
+    "cues_as_faulty_pod_suggests": 30,
+    "cues_against_it": 13
+   },
+   "course_change": {
+    "n": 17,
+    "paddler_told": 13,
+    "overran_believed_finish": 7,
+    "sprint_start_m_from_true_finish": [
+     657,
+     null,
+     334,
+     291,
+     1466,
+     1506,
+     1621,
+     502,
+     542,
+     1826,
+     1652,
+     1694,
+     1867,
+     1647,
+     469,
+     1378,
+     null
+    ]
+   },
+   "talk": {
+    "self_ease": 16,
+    "self_push": 8,
+    "reassured_in_time": 5,
+    "reassured_late": 2,
+    "held_in_time": 10,
+    "held_late": 3
+   },
+   "questions_asked": 87
+  },
+  "scheduled_tests": {
+   "weed": {
+    "n": 23,
+    "mean_seconds_with_weed": 386.3,
+    "cleared_by_cue": 17,
+    "cleared_by_paddler": 4,
+    "never_cleared": 2,
+    "median_first_clear_cue_after_s": 71.0,
+    "false_clears": 25
+   },
+   "pod_drift": {
+    "n": 25,
+    "cues_as_faulty_pod_suggests": 2,
+    "cues_against_it": 1
+   },
+   "course_change": {
+    "n": 17,
+    "paddler_told": 0,
+    "overran_believed_finish": 11,
+    "sprint_start_m_from_true_finish": [
+     1949,
+     null,
+     null,
+     null,
+     1468,
+     1756,
+     1622,
+     null,
+     1598,
+     1826,
+     1942,
+     1694,
+     1865,
+     1647,
+     null,
+     1378,
+     null
+    ]
+   },
+   "talk": {
+    "self_ease": 14,
+    "self_push": 7,
+    "reassured_in_time": 4,
+    "reassured_late": 0,
+    "held_in_time": 7,
+    "held_late": 6
+   },
+   "questions_asked": 0
+  },
+  "incident_rules": {
+   "weed": {
+    "n": 23,
+    "mean_seconds_with_weed": 807.1,
+    "cleared_by_cue": 8,
+    "cleared_by_paddler": 5,
+    "never_cleared": 10,
+    "median_first_clear_cue_after_s": 59.4,
+    "false_clears": 3
+   },
+   "pod_drift": {
+    "n": 25,
+    "cues_as_faulty_pod_suggests": 0,
+    "cues_against_it": 0
+   },
+   "course_change": {
+    "n": 17,
+    "paddler_told": 0,
+    "overran_believed_finish": 11,
+    "sprint_start_m_from_true_finish": [
+     1950,
+     null,
+     null,
+     null,
+     1468,
+     1505,
+     1620,
+     null,
+     1600,
+     1826,
+     1968,
+     1696,
+     1867,
+     1648,
+     null,
+     1379,
+     null
+    ]
+   },
+   "talk": {
+    "self_ease": 12,
+    "self_push": 3,
+    "reassured_in_time": 8,
+    "reassured_late": 0,
+    "held_in_time": 10,
+    "held_late": 0
+   },
+   "questions_asked": 0
+  },
+  "no_coach": {
+   "weed": {
+    "n": 23,
+    "mean_seconds_with_weed": 1235.8,
+    "cleared_by_cue": 0,
+    "cleared_by_paddler": 7,
+    "never_cleared": 16,
+    "median_first_clear_cue_after_s": null,
+    "false_clears": 0
+   },
+   "pod_drift": {
+    "n": 25,
+    "cues_as_faulty_pod_suggests": 0,
+    "cues_against_it": 0
+   },
+   "course_change": {
+    "n": 17,
+    "paddler_told": 0,
+    "overran_believed_finish": 11,
+    "sprint_start_m_from_true_finish": [
+     1949,
+     null,
+     null,
+     null,
+     1469,
+     1506,
+     1622,
+     null,
+     1599,
+     1825,
+     1651,
+     1694,
+     1867,
+     1647,
+     null,
+     1379,
+     null
+    ]
+   },
+   "talk": {
+    "self_ease": 17,
+    "self_push": 15,
+    "reassured_in_time": 0,
+    "reassured_late": 0,
+    "held_in_time": 0,
+    "held_late": 0
+   },
+   "questions_asked": 0
+  }
+ },
+ "coach_use": {
+  "pieces_per_race": 4.0,
+  "beliefs_set_per_race": 7.57,
+  "model_calls_per_race": 76.3
+ }
+}
