@@ -441,6 +441,22 @@ class RaceState:
                                             if self.athlete_shaft and self.w_bal_shaft is not None else None)})
         return out
 
+    def pod_reserve_at(self, cp_shaft_w: float, w_prime_shaft_j: Optional[float] = None) -> Optional[float]:
+        """The pod's reserve now (0-1) had the race been counted with this critical power
+        (and reserve size): the reserve at either end of a belief's range."""
+        if self.athlete_shaft is None:
+            return None
+        W0 = float(w_prime_shaft_j or self.athlete_shaft.w_prime_j)
+        ws, prev = W0, None
+        for h in self.history:
+            if h.get("elapsed_s") is None:
+                continue
+            dt = 0.0 if prev is None else max(0.0, h["elapsed_s"] - prev)
+            prev = h["elapsed_s"]
+            if h.get("shaft_power_w") is not None:
+                ws = max(0.0, w_balance_step(ws, float(h["shaft_power_w"]), dt, float(cp_shaft_w), W0))
+        return ws / W0
+
     def _recompute_reserves(self) -> None:
         """Re-run both W' balances from the start over the 5-second record."""
         H = [h for h in self.history if h.get("elapsed_s") is not None]

@@ -149,17 +149,22 @@ def summary(tag: str, figure: bool) -> Dict[str, Any]:
         print(f"  coach minus {k:16s} {c['mean_diff']:+6.1f} s  95% CI [{c['ci95'][0]:+.1f}, {c['ci95'][1]:+.1f}]"
               f"  p {c['wilcoxon_p']}" + (f"  Holm {c['holm_p']}" if "holm_p" in c else "")
               + f"  coach faster in {sum(1 for a, b in zip(t(rp), t({'scheduled_tests': sched, 'incident_rules': rules, 'no_coach': nc}[k])) if a < b)}/{len(S)}")
-    lc = {k: ct.paired(le(rp), le(d)) for k, d in (("scheduled_tests", sched), ("incident_rules", rules), ("no_coach", nc))}
+    CPM = "cp_error_pct_mean"
+    lc = {k: ct.paired(le(rp, CPM), le(d, CPM)) for k, d in (("scheduled_tests", sched), ("incident_rules", rules),
+                                                             ("no_coach", nc))}
     h2 = ct.holm({k: lc[k]["wilcoxon_p"] for k in ("scheduled_tests", "incident_rules")})
     for k in ("scheduled_tests", "incident_rules"):
         lc[k]["holm_p"] = h2[k]
-    out["reserve_error"] = lc
+    out["cp_error"] = lc
+    out["cp_error_means"] = {nm: round(float(np.mean(le(d, CPM))), 2) for nm, d in
+                             (("open_coach", rp), ("scheduled_tests", sched), ("incident_rules", rules), ("no_coach", nc))}
     out["reserve_error_means"] = {nm: round(float(np.mean(le(d))), 2) for nm, d in
                                   (("open_coach", rp), ("scheduled_tests", sched), ("incident_rules", rules), ("no_coach", nc))}
-    print("learning: mean error of the pod's reserve reading (percentage points)", out["reserve_error_means"])
+    print("learning: mean error of the computer's critical power (% of the truth)", out["cp_error_means"])
     for k, c in lc.items():
-        print(f"  coach minus {k:16s} {c['mean_diff']:+6.2f} pts  95% CI [{c['ci95'][0]:+.2f}, {c['ci95'][1]:+.2f}]"
+        print(f"  coach minus {k:16s} {c['mean_diff']:+6.2f} % of critical power  95% CI [{c['ci95'][0]:+.2f}, {c['ci95'][1]:+.2f}]"
               f"  p {c['wilcoxon_p']}" + (f"  Holm {c['holm_p']}" if "holm_p" in c else ""))
+    print("  mean error of the pod's reserve reading (points):", out["reserve_error_means"])
     cpm = {}
     for nm, d in (("open_coach", rp), ("scheduled_tests", sched), ("incident_rules", rules)):
         cpm[nm] = {k: round(float(np.mean(le(d, k))), 2) for k in ("cp_error_pct_start", "cp_error_pct_half", "cp_error_pct_three_quarters")}
@@ -207,7 +212,7 @@ def _figure(tag, rp, sched, rules, nc, S, out):
         "diffs": {"scheduled_tests": [rp[s]["race_time_s"] - sched[s]["race_time_s"] for s in S],
                   "incident_rules": [rp[s]["race_time_s"] - rules[s]["race_time_s"] for s in S]},
         "ci95": {k: out["race_time"][k]["ci95"] for k in ("scheduled_tests", "incident_rules")},
-        "reserve_error": {nm: [d[s].get("learning", {}).get("reserve_error_pts") for s in S]
+        "cp_error_mean": {nm: [d[s].get("learning", {}).get("cp_error_pct_mean") for s in S]
                           for nm, d in (("no coach", nc), ("incident rules", rules), ("scheduled tests", sched),
                                         ("experimenting coach", rp))},
         "cp_error": {nm: [out["learning_secondary"][k]["cp_error_pct_start"], out["learning_secondary"][k]["cp_error_pct_half"],
@@ -241,18 +246,18 @@ def plot_experimenter(data):
     ax.set_ylabel("coach minus comparison (s); below 0 = coach faster")
     ax.set_title("race time, held-out races", fontsize=10)
     ax = axes[1]
-    names = list(data["reserve_error"])
+    names = list(data["cp_error_mean"])
     cols = ["#777777", "#c46a2b", "#6a8f3b", "#3b6ea8"]
     for i, nm in enumerate(names):
-        d = [x for x in data["reserve_error"][nm] if x is not None]
+        d = [x for x in data["cp_error_mean"][nm] if x is not None]
         x = i + 0.12 * np.random.default_rng(10 + i).uniform(-1, 1, len(d))
         ax.plot(x, d, "o", color=cols[i], alpha=0.5, ms=4)
         ax.plot([i - 0.25, i + 0.25], [np.mean(d)] * 2, color="k", lw=2)
         ax.text(i + 0.28, np.mean(d), f"{np.mean(d):.1f}", va="center", fontsize=9)
     ax.set_xticks(range(len(names)))
     ax.set_xticklabels([n.replace(" ", "\n", 1) for n in names], fontsize=9)
-    ax.set_ylabel("mean |reserve read from the pod - true reserve| (points)")
-    ax.set_title("how well each arm knew the paddler's reserve", fontsize=10)
+    ax.set_ylabel("mean critical-power error over the race (% of the truth)")
+    ax.set_title("how well each arm knew the paddler's critical power", fontsize=10)
     ax = axes[2]
     for i, (nm, v) in enumerate(data["cp_error"].items()):
         ax.plot([0, 1, 2], v, "o-", color=cols[i + 1], label=nm)

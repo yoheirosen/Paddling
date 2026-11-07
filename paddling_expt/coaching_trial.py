@@ -309,9 +309,9 @@ HELDOUT_EXPERIMENTER: Dict[str, Any] = {
     "scheduled_tests_primary": {"hr_rise_bpm_min": 0.6, "k_change": 0.07},   # set from the development tuning
     "arms": ["no_coach", "incident_rules (drop 0.06)", "scheduled_tests (primary setting)", "the experimenting coach"],
     "primary": {"race_time": ["coach minus scheduled_tests", "coach minus incident_rules"],
-                "learning": ["reserve_error_pts: coach minus scheduled_tests", "reserve_error_pts: coach minus incident_rules"],
+                "learning": ["cp_error_pct_mean: coach minus scheduled_tests", "cp_error_pct_mean: coach minus incident_rules"],
                 "test": "paired Wilcoxon signed-rank, bootstrap 95 % interval; Holm within each family"},
-    "secondary": ["coach minus no_coach", "critical power error at halfway and three quarters",
+    "secondary": ["coach minus no_coach", "reserve_error_pts", "critical power error at halfway and three quarters",
                   "pod gain error in pod-drift races", "races with each incident kind", "the incident table",
                   "scheduled tests at the other heart-rate thresholds"],
     "failures": "a race the driver cannot finish is reported and excluded; no race is re-run with other answers",
@@ -934,11 +934,14 @@ def score_learning(series: List[Dict[str, Any]], distance_m: float) -> Dict[str,
     the simulator's truth (the experimenting coach's design; every arm is scored the same way,
     since every arm's corrections go through the boat computer):
 
-    * ``reserve_error_pts``: mean |reserve read from the pod - true reserve|, in percentage
-      points of the reserve, from 3 minutes in to the finish (the co-primary learning measure);
-    * ``cp_error_pct_start`` / ``_half`` / ``_three_quarters``: |critical power the computer uses
-      - the true (fatigue-adjusted) critical power| in % of the truth, at the start, halfway and
+    * ``cp_error_pct_mean``: mean |critical power the computer uses - the true (fatigue-adjusted)
+      critical power|, in % of the truth, from 3 minutes in to the finish (the co-primary
+      learning measure: what tests can reveal);
+    * ``cp_error_pct_start`` / ``_half`` / ``_three_quarters``: the same at the start, halfway and
       three quarters of the way;
+    * ``reserve_error_pts``: mean |reserve read from the pod - true reserve|, in percentage
+      points, from 3 minutes in (it also depends on the pacing: a paddler kept below critical
+      power keeps both near full);
     * ``pod_gain_error`` (races with pod drift): mean |gain the computer applies - true gain|
       from 3 minutes after the drift began."""
     rows = [r for r in series if r.get("cp_true") is not None and r.get("race_s", 0) >= 0]
@@ -948,6 +951,8 @@ def score_learning(series: List[Dict[str, Any]], distance_m: float) -> Dict[str,
     late = [r for r in rows if r["race_s"] >= 180.0 and math.isfinite(r.get("reserve_pod_est", float("nan")))]
     if late:
         out["reserve_error_pts"] = round(100.0 * float(np.mean([abs(r["reserve_pod_est"] - r["reserve_true"]) for r in late])), 2)
+        out["cp_error_pct_mean"] = round(100.0 * float(np.mean([abs(r["cp_pod_est"] - r["cp_true"]) / r["cp_true"]
+                                                               for r in late])), 2)
 
     def cp_err(frac):
         r = min(rows, key=lambda x: abs(x["race_m"] - frac * distance_m))

@@ -47,6 +47,7 @@ RACE_CATALOG = (
     _m("remaining_m", 1.0, "Distance to the finish (m)."),
     _m("next_turn_in_m", 1.0, "Distance to the next turn (m), when the course's leg length is known."),
     _m("leg_number", 1.0, "Which leg of the out-and-back course (1 = the first leg out)."),
+    _m("into_leg_m", 1.0, "Distance since the last turn (m), when the course's leg length is known: 30-s means mix both directions for about the first 130 m."),
     _m("rate_spm", 30.0, "Stroke rate, strokes per minute (30-s median).", "rate, technique"),
     _m("speed_gps", 30.0, "Speed over the ground from GPS (m/s, 30-s mean): what the paddler's display shows."),
     _m("pace_gps_s500", 30.0, "Pace over the ground, s per 500 m (30-s mean): what the paddler's display shows."),
@@ -195,6 +196,7 @@ class RacePanel:
             if "remaining_m" not in vals or nt < vals["remaining_m"] - 1.0:   # the finish is not a turn
                 vals["next_turn_in_m"] = nt
             vals["leg_number"] = float(int(vals["distance_m"] // self.leg_m) + 1)
+            vals["into_leg_m"] = vals["distance_m"] % self.leg_m
         out = self.service.step(vals, float(t), publish=False)
         self.alerts.extend(out["alerts"])
         return out["alerts"]

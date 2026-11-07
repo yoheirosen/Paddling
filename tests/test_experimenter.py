@@ -209,3 +209,33 @@ def test_the_role_play_driver_points_the_experimenting_coach_to_its_instructions
     finally:
         import shutil
         shutil.rmtree(os.path.join(here, "results", "coaching_trial", "roleplay", tag), ignore_errors=True)
+
+
+def test_after_a_piece_the_coach_sees_each_segment_and_can_cancel_one_wake_up(prep):
+    tw, st, c = _coach(prep)
+    tw.tr = replace(tw.tr, compliance=1.0)
+    _until(tw, 700.0, st)
+    c.cue("Ninety seconds harder, then back.", ask="piece",
+          segments=[{"seconds": 90, "effort_pct": 8}, {"seconds": 90, "effort_pct": 0}])
+    _until(tw, 720.0, st)
+    assert "piece running" in str(c._seen_after(c.cue_attempts[-1]))
+    _until(tw, 920.0, st)
+    seen = c._seen_after(c.cue_attempts[-1])
+    assert len(seen["segments"]) == 2 and "pod_power_w" in seen["before"]
+    assert c.wake_me(in_s=60, reason="check the piece")["ok"] and c.wake_me(in_s=120, reason="finish plan")["ok"]
+    out = c.wake_me(cancel="piece")
+    assert out["cancelled"] == 1 and [w["reason"] for w in c.timers] == ["finish plan"]
+    assert "set_at_race_s" in c.timers[0]
+
+
+def test_measure_at_a_fixed_share_and_the_reserve_across_a_belief_range(prep):
+    tw, st, c = _coach(prep)
+    _until(tw, 900.0, st)
+    res = c.measure([{"start_race_s": 500, "end_race_s": 800}], share=0.65)
+    row = res["at_fixed_share"]["windows"][0]
+    assert "gps_minus_that_mps" in row
+    cp = st.cp_shaft_w
+    c.set_belief("critical_power_pod_w", cp, low=0.95 * cp, high=1.05 * cp, evidence="test")
+    rng = c._open_packet([], "periodic")["state"]["reserve_pod_pct_across_your_cp_range"]
+    lo, hi = list(rng.values())
+    assert lo <= hi

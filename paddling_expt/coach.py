@@ -559,7 +559,11 @@ power, stroke rate, heart rate, local push; turns left out). get_metric_series r
 about 30 points in race seconds; list_available_metrics gives the stream names. set_race_distance \
 corrects the course length the boat's computer uses.
 - Names: the live state's names are for reading; watches and your own metrics use the stream \
-names that list_available_metrics gives.
+names that list_available_metrics gives. A watch condition or a derived metric is one expression \
+over the current values (arithmetic, comparisons, and / or, maximum(a, b), minimum(a, b)); a \
+program metric can also read past values with window(name, seconds).
+- After a piece, your recent cues show each segment's readings against the minute before. With a \
+critical_power_pod_w belief that has a range, the live state shows the pod's reserve at both ends.
 
 Facts (facts, not instructions):
 - Any instrument can fail or drift.
@@ -581,6 +585,9 @@ few beats over a race.
 - A paddler who runs the reserve empty is forced well below critical power until part of it \
 comes back.
 - Paddlers misjudge themselves: what they say is evidence, not fact.
+- A pace target is chased by feel within about -15 % to +12 % of the effort when it was given; \
+ease or push adds to it; hold or a new target replaces it.
+- On this course current and wind both push along the course, so each flips sign with direction.
 
 How you coach is up to you: what to watch, what to test, what to plan, when to speak and what to \
 say, when to change your mind. Each model call costs a few seconds of race time; when nothing \
@@ -610,7 +617,10 @@ _MEASURE_SCHEMA = {
     "type": "object",
     "properties": {"windows": {"type": "array", "description": "1-4 stretches of the race, each {start_race_s, end_race_s}",
                                "items": {"type": "object", "properties": {"start_race_s": {"type": "number"},
-                                                                          "end_race_s": {"type": "number"}}}}},
+                                                                          "end_race_s": {"type": "number"}}}},
+                   "share": {"type": "number", "description": "optional: hold the share of pod power reaching the "
+                                                              "boat at this value (e.g. from a clean earlier fit) "
+                                                              "and give each window's GPS speed against it"}},
     "required": ["windows"],
 }
 
@@ -626,7 +636,8 @@ def _speed_tab(state):
     _speed_for(st.craft, st.total_kg, 100.0, st.ama_kg)          # builds the cached table
     return _SPEED_TABLES[(id(st.craft), round(st.total_kg, 3), round(st.ama_kg, 2))]
 
-def measure_windows(state: RaceState, leg: Optional[float], windows: List[Dict[str, Any]]) -> Dict[str, Any]:
+def measure_windows(state: RaceState, leg: Optional[float], windows: List[Dict[str, Any]],
+                    share: Optional[float] = None) -> Dict[str, Any]:
     """Read stretches of the race (race seconds) from the 5-second record: means with
     standard errors (effective n = seconds / 30, the record being 30-s means), the
     heart-rate trend, and a hull-model fit of speed over the ground = still-water speed at
@@ -696,6 +707,25 @@ def measure_windows(state: RaceState, leg: Optional[float], windows: List[Dict[s
     ans: Dict[str, Any] = {"ok": True, "windows": out}
     if fit_rows:
         ans["hull_fit"] = hull_fit(st, fit_rows)
+    if share is not None:
+        try:
+            k = float(share)
+        except (TypeError, ValueError):
+            return {**ans, "fixed_share_error": "share must be a number"}
+        if not 0.3 <= k <= 1.1:
+            return {**ans, "fixed_share_error": "share must be 0.3-1.1"}
+        Ptab, Vtab = _speed_tab(st)
+        rows = []
+        for w in out:
+            if "pod_power_w" in w and "speed_gps" in w:
+                v_still = float(np.interp(k * w["pod_power_w"][0], Ptab, Vtab))
+                rows.append({"window": w["window"], "direction": w.get("direction"),
+                             "still_water_speed_at_this_share": round(v_still, 3),
+                             "gps_minus_that_mps": round(w["speed_gps"][0] - v_still, 3)})
+        ans["at_fixed_share"] = {"share": k, "windows": rows,
+                                 "note": "GPS speed minus the still-water speed this share of pod power gives: "
+                                         "the push of current and wind if the share is right; drag or a pod "
+                                         "change shows as a drop in both directions"}
     return ans
 
 def hull_fit(state: RaceState, rows: List[tuple]) -> Dict[str, Any]:
@@ -814,8 +844,10 @@ class RaceCoach:
                 reg.register(self.get_alerts, name="get_alerts",
                              description="Alerts raised by your watches, with the race minute of each.")
                 reg.register(self.wake_me, name="wake_me", writes=True,
-                             description="Wake me after in_s seconds or when at_remaining_m metres are left, "
-                                         "with a reason (at most 3 pending); clear=true cancels the pending ones.")
+                             description=("Wake me after in_s seconds or when at_remaining_m metres are left, "
+                                          "with a reason (at most 3 pending); clear=true cancels the pending ones"
+                                          + ("; cancel='text' cancels those whose reason contains the text."
+                                             if self.version >= 10 else ".")))
                 self._panel_list = panel.tools()["list_available_metrics"].func
                 reg.register(self.list_streams, name="list_available_metrics",
                              description="The stream names watches and your own metrics can use, with one line each.")
@@ -918,8 +950,13 @@ class RaceCoach:
         return {"ok": True, "n_total": raw.get("n_total"), "alerts": rows}
 
     def wake_me(self, in_s: Optional[float] = None, at_remaining_m: Optional[float] = None,
-                reason: str = "", clear: bool = False) -> Dict[str, Any]:
+                reason: str = "", clear: bool = False, cancel: str = "") -> Dict[str, Any]:
         s = self.state.last
+        if cancel and self.version >= 10:
+            keep = [w for w in self.timers if cancel.lower() not in str(w.get("reason", "")).lower()]
+            n, self.timers = len(self.timers) - len(keep), keep
+            if in_s is None and at_remaining_m is None:
+                return {"ok": True, "cancelled": n, "pending": self.timers}
         if clear:
             n, self.timers = len(self.timers), []
             if in_s is None and at_remaining_m is None:
@@ -939,7 +976,10 @@ class RaceCoach:
             if rem is None or not 50.0 <= float(at_remaining_m) < float(rem):
                 return {"ok": False, "error": f"at_remaining_m must be 50 m or more and less than the {rem} m left"}
             due = {"at_remaining_m": round(float(at_remaining_m))}
-        self.timers.append({**due, "reason": str(reason)[:200]})
+        w = {**due, "reason": str(reason)[:200]}
+        if self.version >= 10:
+            w["set_at_race_s"] = round(s.get("elapsed_s") or 0.0)
+        self.timers.append(w)
         return {"ok": True, "pending": self.timers}
 
     def list_streams(self) -> Dict[str, Any]:
@@ -1029,8 +1069,9 @@ class RaceCoach:
         return {"ok": True, **out}
 
     # ── the experimenting coach's tools (version 10) ───────────────────────
-    def measure(self, windows: List[Dict[str, Any]]) -> Dict[str, Any]:
-        return measure_windows(self.state, (getattr(self, "race_info", {}) or {}).get("leg_m"), windows)
+    def measure(self, windows: List[Dict[str, Any]], share: Optional[float] = None) -> Dict[str, Any]:
+        return measure_windows(self.state, (getattr(self, "race_info", {}) or {}).get("leg_m"), windows,
+                               share=share)
 
     def test_cost(self, effort_pct: float, seconds: float, rate_spm: float = 0.0) -> Dict[str, Any]:
         from .race import _speed_for, w_balance_step
@@ -1135,6 +1176,8 @@ class RaceCoach:
                 res = {"speed_dip_pct": round(100.0 * dip), "back_stroke_seen": bool(dip >= 0.25)}
             c["_seen"] = res
             return res
+        if self.version >= 10 and c["ask"] == "piece":
+            return self._piece_seen(c)
         if now_el < el0 + 30.0:
             return f"too early to tell ({round(el0 + 30.0 - now_el)} s)"
         def m(lo, hi, k, n=0):
@@ -1153,14 +1196,52 @@ class RaceCoach:
                 ("rate_spm", "rate_spm", 1), ("speed_gps", "speed_gps", 2))
         if self.version >= 10:
             keys = keys + (("heart_rate_bpm", "heart_rate_bpm", 0),)
-            if c["ask"] == "piece":
-                return {"piece": "use measure() over the piece's segments", "started_race_s": c.get("race_s")}
         for k, nm, n in keys:
             x, y = m(b0, b1, k, n), m(a0, a1, k, n)
             if x is not None and y is not None:
                 res[nm] = [x, y]
         if now_el >= el0 + 80.0:
             c["_seen"] = res
+        return res
+
+    def _piece_seen(self, c: Dict[str, Any]) -> Any:
+        """A test piece: the instruments in each segment against the minute before the cue
+        (segments counted from 15 s after the cue: paddlers take 4-15 s to act)."""
+        st = self.state
+        now_el = st.last.get("elapsed_s") or 0.0
+        el0 = c.get("_el") or 0.0
+        segs = c.get("segments") or []
+        ends, acc = [], el0 + 15.0
+        for sg in segs:
+            try:
+                acc += float(sg.get("seconds", 0.0))
+            except (TypeError, ValueError):
+                return None
+            ends.append(acc)
+        if not ends or now_el < ends[-1] + 5.0:
+            return f"piece running: segments end at race s {[round(e) for e in ends]}"
+
+        def m(lo, hi, k, n=0):
+            xs = [h[k] for h in st.history if h.get("elapsed_s") is not None and lo <= h["elapsed_s"] <= hi
+                  and h.get(k) is not None and math.isfinite(h[k])]
+            return round(sum(xs) / len(xs), n) if xs else None
+        keys = (("shaft_power_w", "pod_power_w", 0), ("speed_gps", "speed_gps", 2),
+                ("rate_spm", "rate_spm", 1), ("heart_rate_bpm", "heart_rate_bpm", 0))
+        res: Dict[str, Any] = {"before": {nm: m(el0 - 60.0, el0, k, n) for k, nm, n in keys}, "segments": []}
+        start = el0 + 15.0
+        for sg, end in zip(segs, ends):
+            lo = start + min(30.0, 0.25 * (end - start))         # the 30-s means need time to move
+            row = {"race_s": [round(start), round(end)], "asked": {k: sg.get(k) for k in ("effort_pct", "rate_spm") if sg.get(k)}}
+            row.update({nm: m(lo, end, k, n) for k, nm, n in keys})
+            res["segments"].append(row)
+            start = end
+        leg = (getattr(self, "race_info", {}) or {}).get("leg_m")
+        if leg:
+            ds = [h["distance_m"] for h in st.history if h.get("elapsed_s") is not None
+                  and el0 - 60.0 <= h["elapsed_s"] <= ends[-1] and h.get("distance_m") is not None]
+            if ds and int(min(ds) // leg) != int(max(ds) // leg):
+                res["turn_inside"] = True
+        c["_seen"] = res
         return res
 
     def ask_paddler(self) -> Dict[str, Any]:
@@ -1375,6 +1456,16 @@ class RaceCoach:
                 if v is not None:
                     state[nm] = round(v, 3 if k == "pod_gain" else 0)
             if self.beliefs:
+                cpb = self.beliefs.get("critical_power_pod_w") or {}
+                try:
+                    lo_hi = [float(cpb["low"]), float(cpb["high"])]
+                except (KeyError, TypeError, ValueError):
+                    lo_hi = None
+                if lo_hi:
+                    r_lo, r_hi = s.pod_reserve_at(lo_hi[0]), s.pod_reserve_at(lo_hi[1])
+                    if r_lo is not None and r_hi is not None:
+                        state["reserve_pod_pct_across_your_cp_range"] = {
+                            f"at_{lo_hi[0]:.0f}_w": round(100 * r_lo), f"at_{lo_hi[1]:.0f}_w": round(100 * r_hi)}
                 msg = {"your_beliefs": self.beliefs, **msg}
         if self.version >= 9:
             if self.plan:
