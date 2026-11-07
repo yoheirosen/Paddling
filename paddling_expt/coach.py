@@ -39,6 +39,8 @@ from __future__ import annotations
 
 import json
 import math
+
+import numpy as np
 from typing import Any, Callable, Dict, List, Optional
 
 from agent_lib.providers.fake_provider import FakeProvider
@@ -54,7 +56,7 @@ from agent_lib.tool_registry import ToolPolicy, ToolRegistry
 from .race import RaceState
 
 _ASKS = ("ease", "push", "hold", "rate_up", "rate_down", "finish", "line_in", "line_out",
-         "hang_on", "let_go", "clear_rudder", "reassure", "tell", "none")
+         "hang_on", "let_go", "clear_rudder", "reassure", "tell", "piece", "none")
 
 __all__ = ["RaceScreen", "CueSink", "make_cue_gate", "RaceCoach", "COACH_SYSTEM", "COACH_PANEL_SYSTEM",
            "stand_in_coach", "make_coach_provider", "replay_race", "format_pace"]
@@ -162,6 +164,7 @@ class CueSink:
                  "text": action["text"], "ask": action.get("ask", "none"),
                  "pace_s500": action.get("pace_s500"), "line_m": action.get("line_m"),
                  "distance_left_m": action.get("distance_left_m"),
+                 "segments": action.get("segments"),
                  "source_events": action.get("events", []),
                  "source": action.get("source")}
         self.log.append(entry)
@@ -194,6 +197,9 @@ def make_cue_gate(sink: CueSink, state: RaceState, *, max_words: int = 12,
         line = a.get("line_m")
         if line is not None and not (40.0 <= float(line) <= 600.0):
             return f"line_m {line} is outside 40-600 m from shore"
+        if ask == "piece":
+            from .sim.twin import check_piece
+            return check_piece(a.get("segments"))
         return None
 
     def quiet(a):
@@ -509,6 +515,234 @@ _CUE_SCHEMA_OPEN = {
 }
 
 
+OPEN_COACH_SYSTEM_V10 = """You are coaching one paddler through an outrigger canoe (OC1) race, \
+speaking into their ear over a radio link. What you are there for: their fastest finish.
+
+What you have:
+- Instruments, live every second: the paddle pod (the paddler's effort, as shaft power), GPS \
+(speed and heading over the ground), a heart-rate chest strap, and what the boat's computer derives \
+from them through a hull model. Each wake-up shows the live state, the last five minutes, your \
+beliefs, plan and notes, and your recent cues. You can read any series further back, compute your \
+own metrics over the live streams, and set your own alerts (watches) so that you are woken when \
+something you care about happens. Otherwise you are woken every few minutes, whenever the paddler \
+says something, and when a radio message comes in.
+- The paddler. You can ask how they feel (ask_paddler) and speak to them (cue). They hear your \
+words but act on the request attached to them: ease, push, hold, rate_up, rate_down, finish \
+(start the final sprint), clear_rudder (a back-stroke that knocks anything caught off the \
+rudder; it costs the boat's momentum), reassure (no change asked: you are telling them they are \
+doing fine), tell (information; distance_left_m sets where they think the finish is), piece (below), \
+or none. With ease, push or hold you may add a target pace over the ground; they chase it by feel, \
+through turns too, until the change fades. A cue takes 4-15 s to act; paddlers do not always \
+follow one, and a followed change fades over minutes.
+- Experiments. A cue with ask 'piece' asks for a short test piece: up to 3 segments, each a change \
+of effort (effort_pct, against what they are doing when it starts) and/or of stroke rate (rate_spm), \
+held by the clock for its seconds; for example 150 s at +6 % then 120 s at 0. test_cost prices a \
+piece by the boat computer's numbers. measure() reads any stretches of the race you name in race \
+seconds: means with their uncertainty, the heart-rate trend, and a fit through the hull model that \
+splits speed into the share of pod power that reaches the boat (scaled by drag, the pod's gain and \
+blade efficiency) and a push of current and wind (which flips with direction on this course). \
+Whether a test is worth its cost, and what its result means, is your call.
+- What the instruments saw after each cue: your recent cues show the pod's power, the boat-model \
+power, stroke rate, heart rate and GPS speed in the minute before and the minute after, and for \
+clear_rudder whether the boat's speed dipped as a back-stroke does. A turn changes these numbers too.
+- Beliefs: set_belief records what you believe, with a range and the evidence, shown at every \
+wake-up. The beliefs critical_power_pod_w, reserve_size_pod_kj, critical_power_boat_w, \
+reserve_size_boat_kj and pod_gain (the pod's reading divided by the true effort, from a race second \
+you give) set the boat computer, which then recomputes both reserves over the race so far. Any \
+other name (how honest the paddler is, their best stroke rate, how they take cues, ...) is for you.
+- Memory: you remember nothing between wake-ups. Your plan (set_plan) is shown at the top of every \
+wake-up; your notes (take_note) show the last 15.
+- Timing: wake_me wakes you after a time or at a distance to go (wake_me with clear=true cancels \
+the pending ones).
+- The course: legs() gives one row per leg (direction, time, GPS speed, pod power, boat-model \
+power, stroke rate, heart rate, local push; turns left out). get_metric_series returns a summary of \
+about 30 points in race seconds; list_available_metrics gives the stream names. set_race_distance \
+corrects the course length the boat's computer uses.
+- Names: the live state's names are for reading; watches and your own metrics use the stream \
+names that list_available_metrics gives.
+
+Facts (facts, not instructions):
+- Any instrument can fail or drift.
+- The numbers derived from boat speed (power_w, reserve_left_pct, reserve_runs_out_in_m, \
+sustainable_pace_s500, speed_vs_early_race_same_rate_pct) treat everything that slows the boat \
+as the paddler: current, wind, drag, a tired blade. push_local_mps is the GPS speed minus the \
+speed the pod's power would give in still water; it moves with current and wind and with \
+anything that changes the boat's drag. push_along_mps is the current along the heading, \
+estimated from the turns of the out-and-back course; it lags a change.
+- Current and wind add to speed over the ground; drag, a drifting pod and blade efficiency scale \
+how much speed a pod watt gives. A back-stroke clears weed; it does not change a drifting pod.
+- Critical power and the reserve (w_bal_pod_frac from the pod, reserve_left_pct from boat speed) \
+come from a 3- and 12-minute test before the race and can be 10-25 % off.
+- Heart rate follows a change of effort over about a minute. At a steady effort below critical \
+power it levels off; above critical power it keeps climbing as the reserve drains, and it falls \
+back as the reserve refills. Its level at a given effort differs between paddlers and creeps up a \
+few beats over a race.
+- The start is hard (a minute or two above critical power) and then settles.
+- A paddler who runs the reserve empty is forced well below critical power until part of it \
+comes back.
+- Paddlers misjudge themselves: what they say is evidence, not fact.
+
+How you coach is up to you: what to watch, what to test, what to plan, when to speak and what to \
+say, when to change your mind. Each model call costs a few seconds of race time; when nothing \
+needs doing, stop. The cue gate: at most 12 words, at least 60 s between cues, none in the first \
+minute or the last 100 m, and at most 20 cues per race (a piece counts as one cue).
+
+End each wake-up with one line: what you did and why, or "no cue: <reason>"."""
+
+_CUE_SCHEMA_V10 = {
+    "type": "object",
+    "properties": {
+        "text": {"type": "string", "description": "what the paddler hears, at most 12 words"},
+        "ask": {"type": "string", "enum": ["ease", "push", "hold", "rate_up", "rate_down", "finish",
+                                           "clear_rudder", "reassure", "tell", "piece", "none"],
+                "description": "what the paddler should do"},
+        "pace_s500": {"type": "number", "description": "with ease / push / hold: optional target pace, s per 500 m over the ground"},
+        "distance_left_m": {"type": "number", "description": "with tell: how far the finish is from here (m)"},
+        "segments": {"type": "array", "description": "with piece: 1-3 segments [{seconds 20-300, effort_pct -25..25, rate_spm -10..10}], at most 480 s in all",
+                     "items": {"type": "object", "properties": {"seconds": {"type": "number"},
+                                                                "effort_pct": {"type": "number"},
+                                                                "rate_spm": {"type": "number"}}}},
+    },
+    "required": ["text"],
+}
+
+_MEASURE_SCHEMA = {
+    "type": "object",
+    "properties": {"windows": {"type": "array", "description": "1-4 stretches of the race, each {start_race_s, end_race_s}",
+                               "items": {"type": "object", "properties": {"start_race_s": {"type": "number"},
+                                                                          "end_race_s": {"type": "number"}}}}},
+    "required": ["windows"],
+}
+
+_BELIEF_COMPUTER = ("critical_power_pod_w", "reserve_size_pod_kj", "critical_power_boat_w",
+                    "reserve_size_boat_kj", "pod_gain")
+
+
+# ── measuring stretches of a race (the experimenting coach; the scheduled-test rules) ──
+
+def _speed_tab(state):
+    from .race import _SPEED_TABLES, _speed_for
+    st = state
+    _speed_for(st.craft, st.total_kg, 100.0, st.ama_kg)          # builds the cached table
+    return _SPEED_TABLES[(id(st.craft), round(st.total_kg, 3), round(st.ama_kg, 2))]
+
+def measure_windows(state: RaceState, leg: Optional[float], windows: List[Dict[str, Any]]) -> Dict[str, Any]:
+    """Read stretches of the race (race seconds) from the 5-second record: means with
+    standard errors (effective n = seconds / 30, the record being 30-s means), the
+    heart-rate trend, and a hull-model fit of speed over the ground = still-water speed at
+    (share x pod power) + push, the push flipping sign between the out and back legs."""
+    st = state
+    if not isinstance(windows, list) or not 1 <= len(windows) <= 4:
+        return {"ok": False, "error": "give 1-4 windows, each {start_race_s, end_race_s}"}
+    H = [h for h in st.history if h.get("elapsed_s") is not None]
+    now = H[-1]["elapsed_s"] if H else 0.0
+    out, fit_rows = [], []
+    for w in windows:
+        try:
+            a, b = float(w["start_race_s"]), float(w["end_race_s"])
+        except (KeyError, TypeError, ValueError):
+            return {"ok": False, "error": "each window needs start_race_s and end_race_s (numbers)"}
+        if b - a < 30.0 or a < 0 or a > now:
+            out.append({"window": [a, b], "error": "a window must be at least 30 s long and already raced"})
+            continue
+        rows = [h for h in H if a <= h["elapsed_s"] <= b]
+        turn = False
+        if leg:
+            legs_in = {int(h["distance_m"] // leg) for h in rows if h.get("distance_m") is not None}
+            turn = len(legs_in) > 1
+            rows = [h for h in rows if h.get("distance_m") is None or (h["distance_m"] % leg) >= 130.0]
+        if len(rows) < 4:
+            out.append({"window": [a, b], "error": "too little clean data (turns and the 30 s after them are left out)"})
+            continue
+        secs = rows[-1]["elapsed_s"] - rows[0]["elapsed_s"] + 5.0
+        n_eff = max(1.0, secs / 30.0)
+
+        def ms(k, nd=1):
+            xs = np.array([h[k] for h in rows if h.get(k) is not None and math.isfinite(h[k])], float)
+            if xs.size < 3:
+                return None
+            return [round(float(xs.mean()), nd), round(float(xs.std(ddof=1) / math.sqrt(n_eff)), nd + 1)]
+        res: Dict[str, Any] = {"window": [round(a), round(b)], "clean_seconds": round(secs)}
+        if leg:
+            dirs = sorted({"out" if int(h["distance_m"] // leg) % 2 == 0 else "back" for h in rows
+                           if h.get("distance_m") is not None})
+            res["direction"] = dirs[0] if len(dirs) == 1 else "both"
+            if turn:
+                res["turn_inside"] = True
+        for k, nm, nd in (("shaft_power_w", "pod_power_w", 0), ("shaft_power_raw_w", "pod_reading_raw_w", 0),
+                          ("power_w", "boat_power_w", 0), ("speed_gps", "speed_gps", 3),
+                          ("speed_water", "speed_water", 3), ("rate_spm", "rate_spm", 1),
+                          ("heart_rate_bpm", "heart_rate_bpm", 1)):
+            v = ms(k, nd)
+            if v is not None:
+                res[nm] = v
+        if "pod_reading_raw_w" in res and res["pod_reading_raw_w"] == res.get("pod_power_w"):
+            res.pop("pod_reading_raw_w")
+        hr = [(h["elapsed_s"], h["heart_rate_bpm"]) for h in rows if h.get("heart_rate_bpm") is not None]
+        if len(hr) >= 6:
+            x = np.array([p[0] for p in hr]) / 60.0
+            y = np.array([p[1] for p in hr])
+            A = np.vstack([x - x.mean(), np.ones_like(x)]).T
+            coef, *_ = np.linalg.lstsq(A, y, rcond=None)
+            resid = y - A @ coef
+            sxx = float(((x - x.mean()) ** 2).sum())
+            se = float(np.sqrt((resid ** 2).sum() / max(1, len(y) - 2) / max(1e-9, sxx)) * math.sqrt(len(y) / n_eff))
+            res["heart_rate_trend_bpm_per_min"] = [round(float(coef[0]), 2), round(se, 2)]
+        res["mean_values_are"] = "[mean, standard error]"
+        out.append(res)
+        if "pod_power_w" in res and "speed_gps" in res and res.get("direction") in ("out", "back"):
+            fit_rows.append((res["pod_power_w"][0], res["pod_power_w"][1], res["speed_gps"][0],
+                             res["speed_gps"][1], 1.0 if res["direction"] == "out" else -1.0))
+    ans: Dict[str, Any] = {"ok": True, "windows": out}
+    if fit_rows:
+        ans["hull_fit"] = hull_fit(st, fit_rows)
+    return ans
+
+def hull_fit(state: RaceState, rows: List[tuple]) -> Dict[str, Any]:
+    """Speed over the ground = still-water speed at (k x pod power) + s x push, s = +1 out, -1 back."""
+    Ptab, Vtab = _speed_tab(state)
+    P = np.array([r[0] for r in rows]); Pse = np.array([r[1] for r in rows])
+    V = np.array([r[2] for r in rows]); Vse = np.array([r[3] for r in rows])
+    S = np.array([r[4] for r in rows])
+    ks = np.linspace(0.30, 1.10, 401)
+
+    def solve(Pm, Vm):                                # (B, W) -> best k, push per draw
+        Vk = np.interp(ks[None, :, None] * Pm[:, None, :], Ptab, Vtab)          # (B, K, W)
+        if len(set(S.tolist())) > 1 or len(S) > 1:
+            u = ((Vm[:, None, :] - Vk) * S).mean(axis=2)                           # (B, K)
+            sse = ((Vm[:, None, :] - Vk - u[:, :, None] * S) ** 2).sum(axis=2)
+        else:
+            u = np.zeros(Vk.shape[:2]); sse = np.zeros(Vk.shape[:2])
+        j = sse.argmin(axis=1)
+        return ks[j], u[np.arange(len(j)), j], sse
+    kd, ud, sse0 = solve(P[None, :], V[None, :])
+    k_ref = state.eta_est
+    out: Dict[str, Any] = {"windows_used": len(rows)}
+    one_dir = len(set(S.tolist())) == 1
+    if len(rows) == 1:
+        if k_ref:
+            u1 = float(V[0] - np.interp(k_ref * P[0], Ptab, Vtab)) * S[0]
+            out.update({"note": "one stretch: the split needs a second stretch (the other direction, or another effort)",
+                        "push_if_share_is_the_computers_mps": round(u1, 3), "computers_share": round(k_ref, 3)})
+        return out
+    rng = np.random.default_rng(int(1000 * float(P.sum() + V.sum())) % (2 ** 32))
+    B = 300
+    Pb = P[None, :] + rng.normal(size=(B, len(P))) * Pse[None, :]
+    Vb = V[None, :] + rng.normal(size=(B, len(V))) * Vse[None, :]
+    kb, ub, _ = solve(Pb, Vb)
+    lo, hi = np.percentile(kb, [10, 90]); ulo, uhi = np.percentile(ub, [10, 90])
+    out.update({"share_of_pod_power_reaching_boat": [round(float(kd[0]), 3), round(float(lo), 3), round(float(hi), 3)],
+                "push_along_out_direction_mps": [round(float(ud[0]), 3), round(float(ulo), 3), round(float(uhi), 3)],
+                "values_are": "[best, 10th percentile, 90th percentile]",
+                "computers_running_share": None if k_ref is None else round(k_ref, 3)})
+    if one_dir:
+        out["note"] = ("all stretches in one direction: the split rests on the speed change between efforts "
+                       "(weak unless the efforts differ a lot)")
+    if kd[0] <= ks[0] + 1e-9 or kd[0] >= ks[-1] - 1e-9:
+        out["warning"] = "the fit hit the edge of its range: these stretches do not fit one share and one push"
+    return out
+
+
 class RaceCoach:
     """The reasoning tier: one consultation per wake-up, through ``run_tool_loop``.
 
@@ -526,6 +760,8 @@ class RaceCoach:
             system = OPEN_COACH_SYSTEM
         if system is None and self.version == 9:
             system = OPEN_COACH_SYSTEM_V9
+        if system is None and self.version >= 10:
+            system = OPEN_COACH_SYSTEM_V10
         if system is None and panel is not None and 2 <= self.version < 8:
             system = (COACH_PANEL_SYSTEM_V2 + (DRAFT_SECTION if self.version == 7 else "")
                       + (WATER_SECTION if 3 <= self.version < 7 else "")
@@ -542,7 +778,8 @@ class RaceCoach:
                      description="Recent race history: 30-second means of speed through the water, "
                                  "power, reserve, stroke rate, fade and the push of current and wind.")
         reg.register(self.cue, name="cue", writes=True,
-                     input_schema=_CUE_SCHEMA_OPEN if self.version >= 8 else _CUE_SCHEMA,
+                     input_schema=(_CUE_SCHEMA_V10 if self.version >= 10 else
+                                   _CUE_SCHEMA_OPEN if self.version >= 8 else _CUE_SCHEMA),
                      description="Speak one short cue (at most 12 words) to the paddler now.")
         allowed = ["race_history", "cue"]
         self.notes: List[Dict[str, Any]] = []
@@ -612,13 +849,31 @@ class RaceCoach:
                          description="The forecast's stream along the current heading (m/s, + helps) at each "
                                      "given distance from shore, here or at another position along the course.")
             allowed.append("stream_by_line")
-        if self.version >= 9:
+        self.beliefs: Dict[str, Dict[str, Any]] = {}
+        self.belief_log: List[Dict[str, Any]] = []
+        self._first_cal: Dict[str, Optional[float]] = {}
+        if self.version >= 10:
+            reg.register(self.measure, name="measure", input_schema=_MEASURE_SCHEMA,
+                         description="Read 1-4 stretches of the race (race seconds): means with uncertainty of pod "
+                                     "power, boat-model power, GPS speed, stroke rate and heart rate, the heart-rate "
+                                     "trend, and a hull-model fit splitting speed into the share of pod power reaching "
+                                     "the boat and the push of current and wind.")
+            reg.register(self.test_cost, name="test_cost",
+                         description="Price a piece by the boat computer's numbers: metres gained or lost while it "
+                                     "lasts, reserve spent, and the net seconds at the finish once the reserve is "
+                                     "repaid (with critical power 10 % lower or higher too).")
+            reg.register(self.set_belief, name="set_belief", writes=True,
+                         description="Record a belief: name, value, low, high, evidence. critical_power_pod_w, "
+                                     "reserve_size_pod_kj, critical_power_boat_w, reserve_size_boat_kj and pod_gain "
+                                     "(with since_race_s) also set the boat computer; other names are for you.")
+            allowed += ["measure", "test_cost", "set_belief"]
+        elif self.version >= 9:
             reg.register(self.set_calibration, name="set_critical_power", writes=True,
                          description="Correct critical power (boat cp_w and/or pod cp_shaft_w, W) and/or the "
                                      "reserve size (w_prime_kj / w_prime_shaft_kj), with the reason; both reserves "
                                      "are recomputed over the race so far.")
             allowed.append("set_critical_power")
-        elif self.version >= 2:
+        elif 2 <= self.version < 9:
             reg.register(self.set_critical_power, name="set_critical_power", writes=True,
                          description="Correct the critical power the reserve models use from now on "
                                      "(boat power cp_w and/or shaft power cp_shaft_w, in W), with the reason.")
@@ -679,6 +934,8 @@ class RaceCoach:
             due = {"at_race_s": round((s.get("elapsed_s") or 0.0) + float(in_s), 1)}
         else:
             rem = s.get("remaining_m")
+            if self.version >= 10 and self.state.distance_m:      # after a course change in the same turn
+                rem = max(0.0, float(self.state.distance_m) - float(self.state.travelled))
             if rem is None or not 50.0 <= float(at_remaining_m) < float(rem):
                 return {"ok": False, "error": f"at_remaining_m must be 50 m or more and less than the {rem} m left"}
             due = {"at_remaining_m": round(float(at_remaining_m))}
@@ -742,6 +999,8 @@ class RaceCoach:
                         "speed_gps": m(b, "speed_gps"), "pod_power_w": m(b, "shaft_power_w", 0),
                         "boat_power_w": m(b, "power_w", 0), "rate_spm": m(b, "rate_spm", 1),
                         "push_local_mps": m(b, "push_local_mps")})
+            if self.version >= 10:
+                out[-1]["heart_rate_bpm"] = m(b, "heart_rate_bpm", 0)
         return {"ok": True, "leg_m": leg, "legs": out}
 
     def set_calibration(self, cp_w: Optional[float] = None, cp_shaft_w: Optional[float] = None,
@@ -768,6 +1027,88 @@ class RaceCoach:
         self.recalibrations.append(entry)
         record.emit("revision", target="calibration", **entry)
         return {"ok": True, **out}
+
+    # ── the experimenting coach's tools (version 10) ───────────────────────
+    def measure(self, windows: List[Dict[str, Any]]) -> Dict[str, Any]:
+        return measure_windows(self.state, (getattr(self, "race_info", {}) or {}).get("leg_m"), windows)
+
+    def test_cost(self, effort_pct: float, seconds: float, rate_spm: float = 0.0) -> Dict[str, Any]:
+        from .race import _speed_for, w_balance_step
+        st = self.state
+        last = st.last
+        Ps, k = last.get("shaft_power_w"), st.eta_est
+        if Ps is None or k is None or st.athlete_shaft is None:
+            return {"ok": False, "error": "not enough race yet to price a piece"}
+        secs = float(seconds)
+        if not 10.0 <= secs <= 480.0 or not -25.0 <= float(effort_pct) <= 25.0:
+            return {"ok": False, "error": "effort_pct -25..25, seconds 10-480"}
+        P1 = Ps * (1.0 + float(effort_pct) / 100.0)
+        v0 = _speed_for(st.craft, st.total_kg, k * Ps, st.ama_kg)
+        v1 = _speed_for(st.craft, st.total_kg, k * P1, st.ama_kg)
+        rem = max(0.0, float(st.distance_m or 0.0) - float(st.travelled))
+        out: Dict[str, Any] = {"ok": True, "metres_gained_during": round((v1 - v0) * secs, 1)}
+        for nm, f in (("as_calibrated", 1.0), ("cp_10pct_lower", 0.9), ("cp_10pct_higher", 1.1)):
+            cp = st.cp_shaft_w * f
+            w0 = st.w_bal_shaft if f == 1.0 else min(st.athlete_shaft.w_prime_j, max(0.0, st.w_bal_shaft))
+            wa, wb = w0, w0
+            for _ in range(int(secs)):
+                wa = w_balance_step(wa, Ps, 1.0, cp, st.athlete_shaft.w_prime_j)
+                wb = w_balance_step(wb, P1, 1.0, cp, st.athlete_shaft.w_prime_j)
+            dW = wa - wb                                   # extra reserve spent by the piece (J)
+            T_rem = rem / max(0.5, v0) if rem > 0 else 0.0
+            if T_rem > 0:
+                dP = dW / T_rem                            # repaid as lower power over the rest of the race
+                v_low = _speed_for(st.craft, st.total_kg, k * max(1.0, Ps - dP), st.ama_kg)
+                lost_s = T_rem * (v0 / max(0.3, v_low) - 1.0)
+            else:
+                lost_s = 0.0
+            gained_s = (v1 - v0) * secs / max(0.3, v0)
+            out[nm] = {"extra_reserve_spent_kj": round(dW / 1000.0, 2), "net_seconds_at_finish": round(lost_s - gained_s, 1)}
+        out["note"] = ("net_seconds_at_finish > 0 costs time. By the boat computer's numbers; a rate change's cost "
+                       "depends on blade efficiency, which only a measurement shows" if rate_spm else
+                       "net_seconds_at_finish > 0 costs time. By the boat computer's numbers.")
+        return out
+
+    def set_belief(self, name: str, value: Any, low: Any = None, high: Any = None, evidence: str = "",
+                   since_race_s: Optional[float] = None) -> Dict[str, Any]:
+        st = self.state
+        name = str(name).strip()[:40]
+        if not name:
+            return {"ok": False, "error": "a belief needs a name"}
+        if name not in self.beliefs and len(self.beliefs) >= 12:
+            return {"ok": False, "error": "at most 12 beliefs; reuse a name"}
+        el = st.last.get("elapsed_s") or 0.0
+        res: Dict[str, Any] = {"ok": True}
+        if name in _BELIEF_COMPUTER:
+            try:
+                v = float(value)
+            except (TypeError, ValueError):
+                return {"ok": False, "error": f"{name} needs a number"}
+            sh = st.athlete_shaft
+            if name == "pod_gain":
+                if not 0.5 <= v <= 2.0:
+                    return {"ok": False, "error": "pod_gain must be 0.5-2.0"}
+                since = None if since_race_s is None else max(0.0, float(since_race_s))
+                res["computer"] = st.set_pod_gain(v, since)
+            else:
+                base = {"critical_power_pod_w": sh.cp_w if sh else None, "critical_power_boat_w": st.athlete.cp_w,
+                        "reserve_size_pod_kj": sh.w_prime_j / 1000.0 if sh else None,
+                        "reserve_size_boat_kj": st.athlete.w_prime_j / 1000.0}[name]
+                first = self._first_cal.setdefault(name, base)
+                if first is None or not 0.6 * first <= v <= 1.6 * first:
+                    return {"ok": False, "error": f"{name} must be 0.6-1.6 x the pre-race test ({first})"}
+                kw = {"critical_power_pod_w": {"cp_shaft_w": v}, "critical_power_boat_w": {"cp_w": v},
+                      "reserve_size_pod_kj": {"w_prime_shaft_j": 1000.0 * v},
+                      "reserve_size_boat_kj": {"w_prime_j": 1000.0 * v}}[name]
+                res["computer"] = st.recalibrate(recompute=True, **kw)
+        b = {"value": value, "low": low, "high": high, "evidence": str(evidence)[:300],
+             "set_at_race_s": round(el)}
+        if since_race_s is not None:
+            b["since_race_s"] = since_race_s
+        self.beliefs[name] = b
+        self.belief_log.append({"name": name, **b})
+        record.emit("revision", target="belief", name=name, value=value, race_s=round(el))
+        return res
 
     def _seen_after(self, c: Dict[str, Any]) -> Any:
         """What the instruments showed after a spoken cue (version 9)."""
@@ -808,8 +1149,13 @@ class RaceCoach:
                   and h.get("distance_m") is not None]
             if ds and int(min(ds) // leg) != int(max(ds) // leg):
                 res["turn_inside"] = True
-        for k, nm, n in (("shaft_power_w", "pod_power_w", 0), ("power_w", "boat_power_w", 0),
-                         ("rate_spm", "rate_spm", 1), ("speed_gps", "speed_gps", 2)):
+        keys = (("shaft_power_w", "pod_power_w", 0), ("power_w", "boat_power_w", 0),
+                ("rate_spm", "rate_spm", 1), ("speed_gps", "speed_gps", 2))
+        if self.version >= 10:
+            keys = keys + (("heart_rate_bpm", "heart_rate_bpm", 0),)
+            if c["ask"] == "piece":
+                return {"piece": "use measure() over the piece's segments", "started_race_s": c.get("race_s")}
+        for k, nm, n in keys:
             x, y = m(b0, b1, k, n), m(a0, a1, k, n)
             if x is not None and y is not None:
                 res[nm] = [x, y]
@@ -862,17 +1208,23 @@ class RaceCoach:
         return {"every_30s": rows}
 
     def cue(self, text: str, ask: str = "none", pace_s500: Optional[float] = None,
-            line_m: Optional[float] = None, distance_left_m: Optional[float] = None) -> Dict[str, Any]:
+            line_m: Optional[float] = None, distance_left_m: Optional[float] = None,
+            segments: Optional[List[Dict[str, Any]]] = None) -> Dict[str, Any]:
         act = {"text": text, "ask": ask, "pace_s500": pace_s500, "line_m": line_m,
                "events": [e["kind"] for e in self._events], "source": self.caller}
         if distance_left_m is not None:
             act["distance_left_m"] = distance_left_m
+        if segments is not None:
+            act["segments"] = segments
         res = self.gate.deliver(act, source=self.caller)
         out = {"spoken": bool(res.get("delivered")), "blocked": bool(res.get("blocked")),
                "reason": res.get("reason")}
         s = self.state.last
         self.cue_attempts.append({"race_min": round((s.get("elapsed_s") or 0.0) / 60.0, 1), "text": text,
                                   "ask": ask, "pace_s500": pace_s500, "spoken": out["spoken"],
+                                  **({"race_s": round(s.get("elapsed_s") or 0.0), "segments": segments}
+                                     if self.version >= 10 and segments else
+                                     {"race_s": round(s.get("elapsed_s") or 0.0)} if self.version >= 10 else {}),
                                   **({"blocked_because": out["reason"]} if out["blocked"] else {}),
                                   "_t": s.get("t"), "_el": s.get("elapsed_s")})
         return out
@@ -987,6 +1339,8 @@ class RaceCoach:
                    "reserve_boat_pct": None if m("w_bal_frac", 3) is None else round(100 * m("w_bal_frac", 3)),
                    "push_along_mps": m("push_along_mps", 2), "push_local_mps": m("push_local_mps", 2),
                    "line_m": m("line_m", 0), "along_m": m("along_m", 0)}
+            if self.version >= 10:
+                row["heart_rate_bpm"] = m("heart_rate_bpm", 0)
             out.append({k2: v for k2, v in row.items() if v is not None})
         return out
 
@@ -1013,6 +1367,15 @@ class RaceCoach:
                                "events": [{"kind": e["kind"], "detail": e["detail"]} for e in events],
                                "state": state, "last_5_min": self._recent_minutes()}
         t = last.get("t") or 0.0
+        if self.version >= 10:
+            state["race_s"] = round(last.get("elapsed_s") or 0.0)
+            for k, nm in (("heart_rate_bpm", "heart_rate_bpm"), ("pod_gain", "pod_gain_set"),
+                          ("shaft_power_raw_w", "pod_reading_raw_w")):
+                v = last.get(k)
+                if v is not None:
+                    state[nm] = round(v, 3 if k == "pod_gain" else 0)
+            if self.beliefs:
+                msg = {"your_beliefs": self.beliefs, **msg}
         if self.version >= 9:
             if self.plan:
                 msg = {"your_plan": self.plan, **msg}
@@ -1029,7 +1392,11 @@ class RaceCoach:
             recent = [{k: v for k, v in c.items() if not k.startswith("_")} for c in self.cue_attempts[-5:]]
         spoken = [c for c in self.cue_attempts if c["spoken"]]
         msg["your_recent_cues"] = recent
-        if spoken:
+        if spoken and self.version >= 10:
+            nxt = (spoken[-1]["_el"] or 0.0) + 60.0
+            el_now = last.get("elapsed_s") or 0.0
+            msg["next_cue_allowed_at_race_s"] = round(nxt + 0.5) if nxt > el_now else "now"
+        elif spoken:
             msg["next_cue_allowed_in_s"] = max(0, round(60.0 - (t - (spoken[-1]["_t"] or t))))
         msg["cues_left_this_race"] = max(0, 20 - len(spoken))
         rem = last.get("remaining_m")

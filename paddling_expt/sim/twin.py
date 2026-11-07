@@ -66,7 +66,41 @@ __all__ = ["Traits", "RaceSetup", "PaddlerTwin", "ASKS", "Incident", "CoastalWat
            "even_effort", "oracle_effort", "twin_cp_test"]
 
 ASKS = ("ease", "push", "hold", "rate_up", "rate_down", "finish", "line_in", "line_out",
-        "hang_on", "let_go", "clear_rudder", "reassure", "tell", "none")
+        "hang_on", "let_go", "clear_rudder", "reassure", "tell", "piece", "none")
+
+# A test piece (ask "piece"): up to 3 segments, each a change of effort (% of what the paddler
+# is doing when it starts) and/or stroke rate, held for its seconds by the clock.
+PIECE_LIMITS = {"max_segments": 3, "seconds": (20.0, 300.0), "total_s": 480.0,
+                "effort_pct": (-25.0, 25.0), "rate_spm": (-10.0, 10.0)}
+
+
+def check_piece(segments: Any) -> Optional[str]:
+    """None if ``segments`` is a valid test piece, else what is wrong."""
+    if not isinstance(segments, (list, tuple)) or not segments:
+        return "a piece needs segments: [{seconds, effort_pct, rate_spm}, ...]"
+    L = PIECE_LIMITS
+    if len(segments) > L["max_segments"]:
+        return f"at most {L['max_segments']} segments"
+    tot = 0.0
+    for sg in segments:
+        if not isinstance(sg, dict):
+            return "each segment is {seconds, effort_pct, rate_spm}"
+        try:
+            sec = float(sg.get("seconds", 0.0))
+            ep = float(sg.get("effort_pct", 0.0) or 0.0)
+            rs = float(sg.get("rate_spm", 0.0) or 0.0)
+        except (TypeError, ValueError):
+            return "segment values must be numbers"
+        if not L["seconds"][0] <= sec <= L["seconds"][1]:
+            return f"segment seconds must be {L['seconds'][0]:.0f}-{L['seconds'][1]:.0f}"
+        if not L["effort_pct"][0] <= ep <= L["effort_pct"][1]:
+            return f"effort_pct must be {L['effort_pct'][0]:.0f} to +{L['effort_pct'][1]:.0f}"
+        if not L["rate_spm"][0] <= rs <= L["rate_spm"][1]:
+            return f"rate_spm must be {L['rate_spm'][0]:.0f} to +{L['rate_spm'][1]:.0f}"
+        tot += sec
+    if tot > L["total_s"]:
+        return f"a piece lasts at most {L['total_s']:.0f} s"
+    return None
 
 
 @dataclass
@@ -332,9 +366,48 @@ class PaddlerTwin:
         self._talk_next = self.start_t + float(self.rng_talk.uniform(240.0, 480.0))
         self._talk_n = 0
         self._talk_good_said = False
+        # test pieces and the heart-rate strap (the experimenting coach's races; off otherwise)
+        self._piece: Optional[Dict[str, Any]] = None
+        self.rng_piece = np.random.default_rng([seed, 8])
+        self.heart_rate = False
+        self.hr: Optional[float] = None
+        self._hr_par: Optional[Dict[str, float]] = None
+        self._seed = seed
         self.log: Dict[str, List[float]] = {k: [] for k in (
             "t", "race_s", "race_m", "effort", "p_shaft", "p_boat", "eta", "rate", "rate_best",
             "fatigue", "w_bal", "v_water", "v_ground", "current_along", "coached")}
+
+    def enable_heart_rate(self) -> None:
+        """Give the paddler a heart-rate strap: rows carry ``heart_rate_bpm``.  Drawn on its own
+        random streams, so nothing else in the race changes.  Planted physiology (textbook
+        shape): heart rate follows effort with a lag of about a minute; at a steady effort below
+        critical power it levels off; the share of the reserve spent adds the slow climb seen
+        above critical power (it reaches the maximum as the reserve empties, and falls back as
+        the reserve refills); it creeps up a little over a race."""
+        rng = np.random.default_rng([self._seed, 19])
+        cp_hr = float(rng.uniform(158.0, 176.0))
+        self._hr_par = {"low": float(rng.uniform(100.0, 115.0)), "cp": cp_hr,
+                        "max": cp_hr + float(rng.uniform(10.0, 20.0)), "tau_s": float(rng.uniform(30.0, 50.0)),
+                        "drift_per_10min": float(rng.uniform(1.0, 3.0)), "noise_bpm": 1.5}
+        self.rng_hr = np.random.default_rng([self._seed, 7])
+        self.heart_rate = True
+        self.hr = self._hr_par["low"]
+
+    def _hr_step(self, P: float, T: float) -> float:
+        hp = self._hr_par
+        cp = self._cp_eff()
+        x = P / max(1e-6, cp)
+        x_c = min(1.0, x)
+        if x_c >= 0.5:
+            ss = hp["low"] + (hp["cp"] - hp["low"]) * (x_c - 0.5) / 0.5
+        else:
+            ss = hp["low"] - 60.0 * (0.5 - x_c)
+        ss += (hp["max"] - hp["cp"]) * (1.0 - self.w / self.p.w_prime_j)
+        if self.t >= self.start_t:
+            ss += hp["drift_per_10min"] * (self.t - self.start_t) / 600.0
+        ss = min(ss, hp["max"])
+        self.hr += (ss - self.hr) * (1.0 - math.exp(-T / hp["tau_s"]))
+        return self.hr
 
     # ── the paddler's choices ────────────────────────────────────────────
     @property
@@ -452,11 +525,29 @@ class PaddlerTwin:
         holding = self._hold is not None and self._decay(self._hold[1]) >= 0.5
         if self.noise and not holding:
             e += self.wander
+        pc = self._piece
+        if pc is not None:
+            if not self.racing or self.kicking or self.blown:
+                if commit:
+                    self._note("piece_abandoned", why="blown" if self.blown else "sprint" if self.kicking else "over")
+                    self._piece = None
+            else:
+                if pc["e0"] is None:
+                    pc["e0"], pc["r0"] = e, r
+                el, acc = self.t - pc["t0"], 0.0
+                for sg in pc["segments"]:
+                    if el < acc + sg["seconds"]:
+                        e_p = pc["e0"] * (1.0 + sg["effort_pct"] / 100.0) * sg["_x"]
+                        return max(0.3, e_p), min(85.0, max(40.0, pc["r0"] + sg["rate_spm"])), True
+                    acc += sg["seconds"]
+                if commit:
+                    self._note("piece_done")
+                    self._piece = None
         return max(0.3, e), min(85.0, max(40.0, r)), coached
 
     # ── cues ─────────────────────────────────────────────────────────────
     def cue(self, ask: str, pace_s500: Optional[float] = None, line_m: Optional[float] = None,
-            distance_left_m: Optional[float] = None) -> Dict[str, Any]:
+            distance_left_m: Optional[float] = None, segments: Optional[List[Dict[str, Any]]] = None) -> Dict[str, Any]:
         """A cue reaches the paddler now.  Returns whether they will follow it (the
         twin's truth, never shown to a coach).  ``distance_left_m`` goes with ``tell``:
         how far the paddler should now believe the finish is."""
@@ -467,9 +558,11 @@ class PaddlerTwin:
             entry["line_m"] = line_m
         if distance_left_m is not None:
             entry["distance_left_m"] = distance_left_m
+        if segments is not None:
+            entry["segments"] = segments
         self.cues.append(entry)
         if follow and ask in ASKS and ask != "none":
-            self._pending.append((self.t + self.tr.response_s, ask, pace_s500, line_m, distance_left_m))
+            self._pending.append((self.t + self.tr.response_s, ask, pace_s500, line_m, distance_left_m, segments))
         return entry
 
     def _note(self, event: str, **kw: Any) -> None:
@@ -513,8 +606,18 @@ class PaddlerTwin:
         return {"effort_out_of_10": rpe, "says": says}
 
     def _apply(self, ask: str, pace_s500: Optional[float], e_now: float, line_m: Optional[float] = None,
-               distance_left_m: Optional[float] = None) -> None:
+               distance_left_m: Optional[float] = None, segments: Optional[List[Dict[str, Any]]] = None) -> None:
         tr, t = self.tr, self.t
+        if ask == "piece":
+            if segments and check_piece(segments) is None and not self.kicking and not self.blown:
+                segs = [{"seconds": float(sg["seconds"]), "effort_pct": float(sg.get("effort_pct", 0.0) or 0.0),
+                         "rate_spm": float(sg.get("rate_spm", 0.0) or 0.0),
+                         "_x": 1.0 + (float(self.rng_piece.normal(0.0, 0.02)) if self.noise else 0.0)}
+                        for sg in segments]
+                self._piece = {"t0": t, "segments": segs, "e0": None, "r0": None}
+                self._note("piece_started", segments=[{k: v for k, v in sg.items() if not k.startswith("_")}
+                                                      for sg in segs])
+            return
         if ask == "clear_rudder":                   # a back-stroke: the boat checks, the weed comes off
             self.v *= 0.55
             self._note("cleared_by_cue" if self._weed > 0 else "clear_without_weed")
@@ -596,8 +699,8 @@ class PaddlerTwin:
             if self.t + T > until_t:
                 break
             self._open_race_step()
-            for when, ask, pace, line, dist in [x for x in self._pending if x[0] <= self.t]:
-                self._apply(ask, pace, e_guess, line, dist)
+            for when, ask, pace, line, dist, segs in [x for x in self._pending if x[0] <= self.t]:
+                self._apply(ask, pace, e_guess, line, dist, segs)
             self._pending = [x for x in self._pending if x[0] > self.t]
             e, r, coached = self._choose(fat, T, commit=True)
             rows.append(self._stroke(e, r, T, fat, coached))
@@ -755,6 +858,7 @@ class PaddlerTwin:
         vg = max(0.0, v_fwd + along)
         d = vg * T
         self._refill(P, T)
+        hr_now = self._hr_step(P, T) if self.heart_rate else None
         if self.noise:
             self.wander += (-self.wander * T / self.tr.wander_tau_s
                             + self.tr.wander_sd * math.sqrt(2.0 * T / self.tr.wander_tau_s)
@@ -818,6 +922,9 @@ class PaddlerTwin:
             if self._pod is not None:            # the pod's reading drifting (the paddler's effort does not change)
                 g = 1.0 + (self._pod[0] - 1.0) * min(1.0, max(0.0, (t_end - self._pod[1]) / 120.0))
             row["shaft_power_w"] = max(0.0, g * P * (1.0 + (float(self.rng_pod.normal(0.0, 0.05)) if self.noise else 0.0)))
+        if hr_now is not None:                         # the heart-rate strap
+            row["heart_rate_bpm"] = hr_now + (float(self.rng_hr.normal(0.0, self._hr_par["noise_bpm"])) if self.noise else 0.0)
+            lg.setdefault("hr", []).append(float(hr_now))
         if self.su.water is not None:                  # GPS position against the course map
             q = (lambda sd: float(self.rng_pos.normal(0.0, sd))) if self.noise else (lambda sd: 0.0)
             row["line_m"] = max(0.0, self.y + q(3.0))

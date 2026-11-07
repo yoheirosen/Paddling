@@ -83,11 +83,14 @@ def _tool_line(t: Dict[str, Any]) -> str:
 
 
 def _packet(system: str, messages: List[Any], tools: List[Dict[str, Any]], first: bool,
-            n_calls: int) -> Dict[str, Any]:
+            n_calls: int, inline_first: bool = True) -> Dict[str, Any]:
     out: Dict[str, Any] = {"model_call": n_calls}
-    if first:
+    if first and inline_first:
         out["system_prompt"] = system
         out["tools"] = [_tool_line(t) for t in tools]
+    elif first:
+        out["read_first"] = ("your instructions and tools are not repeated here: read them with the "
+                             "'system' and 'tools' commands before answering")
     last = messages[-1]
     rounds = sum(1 for m in messages if m.role == "assistant")
     out["round_in_this_wake_up"] = rounds + 1
@@ -124,7 +127,8 @@ def _run(a: argparse.Namespace) -> None:
             if isinstance(v, dict) and v.get("tool_calls"):
                 return v
             return str(v.get("text", "") if isinstance(v, dict) else v)
-        pk = _packet(system, messages, tools, first=st["i"] == 0, n_calls=st["i"] + 1)
+        pk = _packet(system, messages, tools, first=st["i"] == 0, n_calls=st["i"] + 1,
+                     inline_first=a.coach_version < 10)
         if st["i"] == 0:
             with open(os.path.join(d, "tools.txt"), "w") as f:
                 f.write("\n".join(_tool_line(t) for t in tools) + "\n")
@@ -182,7 +186,8 @@ def main(argv=None) -> int:
     if a.periodic_s is None:
         a.periodic_s = 180.0 if a.coach_version >= 8 else 300.0
     if a.label is None:
-        a.label = {8: "agent_open_roleplay", 9: "agent_open_v9_roleplay"}.get(a.coach_version, "agent_v7_roleplay")
+        a.label = {8: "agent_open_roleplay", 9: "agent_open_v9_roleplay",
+                   10: "agent_experimenter_roleplay"}.get(a.coach_version, "agent_v7_roleplay")
     if a.cmd == "collect":
         base = os.path.join(OUT, "roleplay", a.tag)
         done = []

@@ -301,6 +301,23 @@ HELDOUT_OPEN_V9: Dict[str, Any] = {
     "limits": HELDOUT_OPEN["limits"],
 }
 
+HELDOUT_EXPERIMENTER: Dict[str, Any] = {
+    "written": "2026-11-07, before any held-out race of the experimenting coach",
+    "seeds": list(range(5060, 5090)),
+    "pool": "held_out",
+    "coach": "RaceCoach version 10 (OPEN_COACH_SYSTEM_V10), role-played by Claude subagents, 5 s per model call",
+    "scheduled_tests_primary": {"hr_rise_bpm_min": 0.6, "k_change": 0.07},   # set from the development tuning
+    "arms": ["no_coach", "incident_rules (drop 0.06)", "scheduled_tests (primary setting)", "the experimenting coach"],
+    "primary": {"race_time": ["coach minus scheduled_tests", "coach minus incident_rules"],
+                "learning": ["reserve_error_pts: coach minus scheduled_tests", "reserve_error_pts: coach minus incident_rules"],
+                "test": "paired Wilcoxon signed-rank, bootstrap 95 % interval; Holm within each family"},
+    "secondary": ["coach minus no_coach", "critical power error at halfway and three quarters",
+                  "pod gain error in pod-drift races", "races with each incident kind", "the incident table",
+                  "scheduled tests at the other heart-rate thresholds"],
+    "failures": "a race the driver cannot finish is reported and excluded; no race is re-run with other answers",
+    "limits": "the role-player stands in for the deployed model; incidents, heart rate and the paddler are planted",
+}
+
 # ── preparations ────────────────────────────────────────────────────────────
 
 @dataclass
@@ -583,6 +600,7 @@ class AgentArm(Arm):
     def __init__(self, provider: Any, *, periodic_s: float = 300.0, max_tool_rounds: int = 5,
                  max_tokens: int = 4000, label: str = "agent", coach_version: int = 1) -> None:
         self.coach_version = int(coach_version)
+        self.heart_rate = self.coach_version >= 10          # the experimenting coach's paddler wears a strap
         self.provider, self.periodic_s = provider, float(periodic_s)
         self.max_tool_rounds, self.max_tokens = int(max_tool_rounds), int(max_tokens)
         self.name = label
@@ -656,9 +674,14 @@ class AgentArm(Arm):
         if c is None:
             return {}
         errs = [x["error"] for x in c.consultations if x.get("error")]
-        return {"consultations": len(c.consultations),
-                "consult_errors": len(errs), "consult_error_example": errs[0][:200] if errs else "",
-                "cue_calls": sum(1 for x in c.consultations if x.get("cued"))}
+        out = {"consultations": len(c.consultations),
+               "consult_errors": len(errs), "consult_error_example": errs[0][:200] if errs else "",
+               "cue_calls": sum(1 for x in c.consultations if x.get("cued"))}
+        if self.coach_version >= 10:
+            out["belief_log"] = c.belief_log
+            out["pieces"] = [{k: v for k, v in x.items() if not k.startswith("_")}
+                             for x in c.cue_attempts if x.get("ask") == "piece"]
+        return out
 
 
 class _RuleGate:
@@ -811,9 +834,12 @@ class Episode:
 
 def run_episode(prep: Preparation, arm: Arm, *, latency_s: Optional[float] = 6.0,
                 record_path: Optional[str] = None, series_every_s: float = 15.0,
-                max_race_s: float = 3 * 3600.0) -> Dict[str, Any]:
+                max_race_s: float = 3 * 3600.0, heart_rate: bool = False) -> Dict[str, Any]:
     """Race ``arm`` on this preparation; returns the scored episode.  ``latency_s``:
-    race time per model call (``None`` = its measured wall-clock time)."""
+    race time per model call (``None`` = its measured wall-clock time).  ``heart_rate``
+    (or an arm with ``heart_rate = True``): the paddler wears a heart-rate strap, and the
+    series records the boat computer's critical power, reserve and pod gain against the
+    truth (the learning measures); the race itself is unchanged."""
     g = PREREGISTERED["gate"]
     twin = PaddlerTwin(prep.traits, prep.setup, seed=prep.seed, even=prep.even)
     if prep.athlete_shaft is None:
@@ -822,7 +848,9 @@ def run_episode(prep: Preparation, arm: Arm, *, latency_s: Optional[float] = 6.0
                       start_t=twin.start_t, athlete_shaft=prep.athlete_shaft)
     panel = RacePanel(state, watches=arm.watches(), programs=SCREEN_PROGRAMS)
     sink = CueSink(state, act=lambda a: twin.cue(a.get("ask", "none"), a.get("pace_s500"), a.get("line_m"),
-                                                 a.get("distance_left_m")))
+                                                 a.get("distance_left_m"), a.get("segments")))
+    if heart_rate or getattr(arm, "heart_rate", False):
+        twin.enable_heart_rate()
     gate = make_cue_gate(sink, state, max_words=g["max_words"], quiet_start_s=g["quiet_start_s"],
                          quiet_finish_m=g["quiet_finish_m"], cooldown_s=g["cooldown_s"],
                          max_cues=g["max_cues"])
@@ -832,6 +860,7 @@ def run_episode(prep: Preparation, arm: Arm, *, latency_s: Optional[float] = 6.0
     series: List[Dict[str, Any]] = []
     nxt = {"series": 0.0, "said": 0}
     W0 = prep.traits.paddler.w_prime_j
+    learn = bool(twin.heart_rate)
 
     def tick():
         now = sched.now()
@@ -846,12 +875,24 @@ def run_episode(prep: Preparation, arm: Arm, *, latency_s: Optional[float] = 6.0
         s = state.last
         if s.get("elapsed_s") is not None and now >= nxt["series"] and twin.log["t"]:
             L = twin.log
-            series.append({"race_s": round(now - twin.start_t, 1), "race_m": round(twin.race_m, 1),
-                           "reserve_true": round(twin.w / W0, 3),
-                           "reserve_est": round(s.get("w_bal_frac", float("nan")), 3),
-                           "effort": round(L["effort"][-1], 3), "rate": round(L["rate"][-1], 1),
-                           "rate_best": round(L["rate_best"][-1], 1),
-                           "v_water": round(L["v_water"][-1], 3), "blown": bool(twin.blown)})
+            row = {"race_s": round(now - twin.start_t, 1), "race_m": round(twin.race_m, 1),
+                   "reserve_true": round(twin.w / W0, 3),
+                   "reserve_est": round(s.get("w_bal_frac", float("nan")), 3),
+                   "effort": round(L["effort"][-1], 3), "rate": round(L["rate"][-1], 1),
+                   "rate_best": round(L["rate_best"][-1], 1),
+                   "v_water": round(L["v_water"][-1], 3), "blown": bool(twin.blown)}
+            if learn:                               # what the boat computer believes against the truth
+                g = 1.0
+                if twin._pod is not None:
+                    g = 1.0 + (twin._pod[0] - 1.0) * min(1.0, max(0.0, (twin.t - twin._pod[1]) / 120.0))
+                row.update({"reserve_pod_est": round(s.get("w_bal_pod_frac", float("nan")), 3),
+                            "cp_pod_est": round(state.cp_shaft_w or float("nan"), 1),
+                            "w_prime_pod_est": round(state.athlete_shaft.w_prime_j if state.athlete_shaft else float("nan")),
+                            "cp_true": round(twin._cp_eff(), 1), "pod_gain_true": round(g, 3),
+                            "pod_gain_est": round(state.pod_gain, 3)})
+                if twin.heart_rate:
+                    row["hr"] = round(twin.hr, 1)
+            series.append(row)
             nxt["series"] = now + series_every_s
         if twin.finish_t is None and now < twin.start_t + max_race_s:
             sched.after(1.0, tick)
@@ -882,7 +923,44 @@ def run_episode(prep: Preparation, arm: Arm, *, latency_s: Optional[float] = 6.0
                     "distance_true_m": twin.su.distance_m,
                     "cue_log_distance": [c.get("distance_left_m") for c in sink.log]})
         out["incident_score"] = score_incidents(out)
+    if learn:
+        out["learning"] = score_learning(series, prep.setup.distance_m)
     out.update(arm.summary())
+    return out
+
+
+def score_learning(series: List[Dict[str, Any]], distance_m: float) -> Dict[str, Any]:
+    """How well the boat computer knew the paddler and its instruments over the race, against
+    the simulator's truth (the experimenting coach's design; every arm is scored the same way,
+    since every arm's corrections go through the boat computer):
+
+    * ``reserve_error_pts``: mean |reserve read from the pod - true reserve|, in percentage
+      points of the reserve, from 3 minutes in to the finish (the co-primary learning measure);
+    * ``cp_error_pct_start`` / ``_half`` / ``_three_quarters``: |critical power the computer uses
+      - the true (fatigue-adjusted) critical power| in % of the truth, at the start, halfway and
+      three quarters of the way;
+    * ``pod_gain_error`` (races with pod drift): mean |gain the computer applies - true gain|
+      from 3 minutes after the drift began."""
+    rows = [r for r in series if r.get("cp_true") is not None and r.get("race_s", 0) >= 0]
+    if not rows:
+        return {}
+    out: Dict[str, Any] = {}
+    late = [r for r in rows if r["race_s"] >= 180.0 and math.isfinite(r.get("reserve_pod_est", float("nan")))]
+    if late:
+        out["reserve_error_pts"] = round(100.0 * float(np.mean([abs(r["reserve_pod_est"] - r["reserve_true"]) for r in late])), 2)
+
+    def cp_err(frac):
+        r = min(rows, key=lambda x: abs(x["race_m"] - frac * distance_m))
+        return round(100.0 * abs(r["cp_pod_est"] - r["cp_true"]) / r["cp_true"], 2)
+    out["cp_error_pct_start"] = cp_err(0.0)
+    out["cp_error_pct_half"] = cp_err(0.5)
+    out["cp_error_pct_three_quarters"] = cp_err(0.75)
+    drift = [r for r in rows if abs(r.get("pod_gain_true", 1.0) - 1.0) > 1e-6]
+    if drift:
+        t0 = drift[0]["race_s"]
+        after = [r for r in rows if r["race_s"] >= t0 + 180.0]
+        if after:
+            out["pod_gain_error"] = round(float(np.mean([abs(r["pod_gain_est"] - r["pod_gain_true"]) for r in after])), 4)
     return out
 
 
@@ -982,6 +1060,122 @@ class IncidentRules(PodAutopilot):
                 self._say(ep, "You are fine, numbers are good. Hold it.", "reassure")
             elif any(k in x for k in ("great", "harder", "strong")) and wb is not None and wb < 0.45:
                 self._say(ep, "Stay patient. Hold this effort.", "hold")
+
+
+class ScheduledTests(IncidentRules):
+    """The incident rules plus the experimenting coach's tests on a fixed schedule, read by
+    fixed rules (no model): what scheduled experiments give without reasoning.
+
+    * Critical power by heart rate, once per leg from the second: when at least ~4 minutes of
+      the leg are left, "hold this effort" for three minutes; heart rate over its last 2.5
+      minutes rising faster than ``hr_rise`` bpm/min means the effort is above critical
+      power (critical power is set to 97 % of it if it was higher); not rising means at or
+      below (critical power is raised to it if it was lower).  Discarded if another cue
+      was spoken inside the window.
+    * The pod against GPS through the hull model (out leg against back leg) after every turn
+      from the third leg: the first fit is the reference share; a later share more than
+      ``k_change`` off it gets a rudder clear first, and if the next fit is still off, the
+      pod's gain is corrected from the leg where the change began.
+    It reads no radio messages (as the incident rules)."""
+
+    name = "scheduled_tests"
+    heart_rate = True
+
+    def __init__(self, drop_mps: float = 0.06, hr_rise_bpm_min: float = 0.6, k_change: float = 0.07,
+                 overpace_margin_m: float = 150.0, fade_pct: float = -3.0) -> None:
+        super().__init__(drop_mps, overpace_margin_m, fade_pct)
+        self.hr_rise, self.k_change = float(hr_rise_bpm_min), float(k_change)
+        self.setting.update({"hr_rise_bpm_min": self.hr_rise, "k_change": self.k_change})
+        self._hold: Optional[float] = None
+        self._tested_legs: set = set()
+        self._fit_legs: set = set()
+        self._k0: Optional[float] = None
+        self._off_since_leg: Optional[int] = None
+        self._cleared_for_k = False
+        self.log: List[Dict[str, Any]] = []
+
+    def on_tick(self, ep: "Episode", t: float, alerts: List[Dict[str, Any]]) -> None:
+        super().on_tick(ep, t, alerts)
+        st, s = ep.state, ep.state.last
+        el, d = s.get("elapsed_s"), s.get("distance_m")
+        leg = ep.prep.setup.leg_m
+        if el is None or d is None or not leg:
+            return
+        li, into = int(d // leg), d % leg
+        v = max(1.0, s.get("speed_gps") or 1.0)
+        rem = s.get("remaining_m") or 0.0
+        # critical power by heart rate
+        if self._hold is None:
+            if (li >= 1 and li not in self._tested_legs and into >= 100.0 and (leg - into) / v >= 230.0
+                    and rem > 1200.0 and el > 300.0):
+                if ep.gate.deliver({"text": "Hold this effort, steady, for three minutes.", "ask": "hold",
+                                    "source": self.name}, source=self.name).get("delivered"):
+                    self._hold = el
+                    self._tested_legs.add(li)
+        elif el >= self._hold + 215.0:
+            h0, self._hold = self._hold, None
+            other = [c for c in ep.sink.log if c.get("elapsed_s") is not None
+                     and h0 + 5.0 < c["elapsed_s"] <= h0 + 210.0]
+            from .coach import measure_windows
+            res = measure_windows(st, leg, [{"start_race_s": h0 + 60.0, "end_race_s": h0 + 210.0}])
+            w = (res.get("windows") or [{}])[0]
+            tr, pw = w.get("heart_rate_trend_bpm_per_min"), w.get("pod_power_w")
+            entry = {"race_s": round(el), "test": "heart_rate", "trend": tr, "pod_w": pw, "contaminated": bool(other)}
+            if tr and pw and not other and st.athlete_shaft is not None:
+                slope, se = tr
+                P, cp = pw[0], st.cp_shaft_w
+                new = None
+                if slope > self.hr_rise and slope > 2.0 * se and cp > 0.98 * P:
+                    new = 0.97 * P
+                elif slope < 0.5 * self.hr_rise and cp < P:
+                    new = P
+                if new is not None:
+                    base = st.athlete_shaft.cp_w
+                    new = min(1.4 * base, max(0.7 * base, new))
+                    st.recalibrate(cp_shaft_w=new, recompute=True)
+                    entry["cp_shaft_w"] = round(new, 1)
+            self.log.append(entry)
+        # the pod against GPS: out leg against back leg, after each turn from the third leg
+        if li >= 2 and into >= 60.0 and li not in self._fit_legs:
+            self._fit_legs.add(li)
+            wins = []
+            for k in (li - 2, li - 1):
+                rows = [h for h in st.history if h.get("distance_m") is not None and h.get("elapsed_s") is not None
+                        and int(h["distance_m"] // leg) == k]
+                if rows:
+                    wins.append({"start_race_s": rows[0]["elapsed_s"], "end_race_s": rows[-1]["elapsed_s"]})
+            from .coach import measure_windows
+            fit = measure_windows(st, leg, wins).get("hull_fit", {}) if len(wins) == 2 else {}
+            share = (fit.get("share_of_pod_power_reaching_boat") or [None])[0]
+            entry = {"race_s": round(el), "test": "pod_vs_gps", "share": share}
+            if share is not None:
+                if self._k0 is None:
+                    self._k0 = share
+                else:
+                    ratio = share / self._k0
+                    entry["ratio_to_reference"] = round(ratio, 3)
+                    if abs(ratio - 1.0) > self.k_change:
+                        if not self._cleared_for_k:
+                            self._off_since_leg = li - 1
+                            if self._say(ep, "Clear the rudder. One back-stroke.", "clear_rudder"):
+                                self._cleared_for_k = True
+                                self._last_clear = el
+                        else:
+                            # still off after a clear: the pod's gain (reading / true) = reference share / share
+                            gain = (st.pod_gain or 1.0) * self._k0 / share
+                            since_rows = [h for h in st.history if h.get("distance_m") is not None
+                                          and int(h["distance_m"] // leg) == (self._off_since_leg or li - 1)]
+                            since = since_rows[0]["elapsed_s"] if since_rows else None
+                            if 0.5 <= gain <= 2.0:
+                                st.set_pod_gain(gain, since)
+                                entry["pod_gain"] = round(gain, 3)
+                            self._cleared_for_k = False
+                    else:
+                        self._cleared_for_k = False
+            self.log.append(entry)
+
+    def summary(self) -> Dict[str, Any]:
+        return {"tests": self.log}
 
 
 def _count(xs) -> Dict[str, int]:

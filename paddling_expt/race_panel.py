@@ -67,6 +67,8 @@ RACE_CATALOG = (
     _m("push_known", 1.0, "1 once headings cover enough directions to fit the push, else 0."),
     _m("pct_best_at_rate", 30.0, "Power as % of the paddler's best at this rate (needs a rate envelope from past sessions)."),
     _m("shaft_power_w", 30.0, "The paddler's own power at the paddle shaft from the paddle pod (W, 30-s mean): effort, independent of how efficiently the blade moves the boat.", "effort, fatigue"),
+    _m("shaft_power_raw_w", 30.0, "The pod's own reading (W, 30-s mean) before any correction of its gain; present once a correction is set.", "effort, instruments"),
+    _m("heart_rate_bpm", 15.0, "Heart rate from a chest strap (beats per minute, 15-s mean), when the paddler wears one.", "effort, physiology"),
     _m("cp_shaft_w", 1.0, "Critical power at the shaft from the same pre-race test, measured by the pod (W)."),
     _m("w_bal_pod_frac", 1.0, "Reserve above critical power left, 0-1, from the pod's shaft power (does not drift when the blade work gets less efficient, unlike w_bal_frac).", "pacing"),
     _m("empties_in_m_pod", 1.0, "Distance until the pod's reserve runs out at the current shaft power (m); absent at or below critical power.", "pacing"),
