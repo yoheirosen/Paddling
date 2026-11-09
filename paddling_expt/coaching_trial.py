@@ -624,6 +624,8 @@ class AgentArm(Arm):
         if self.coach_version >= 9:
             ep.panel.leg_m = ep.prep.setup.leg_m
             ep.twin.rich_answers = True
+        if self.coach_version >= 11:
+            self.coach.ask_finish_fn = ep.twin.answer_finish
         self._leg = None
 
     def on_messages(self, ep: "Episode", msgs: List[Dict[str, Any]]) -> None:

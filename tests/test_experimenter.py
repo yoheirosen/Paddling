@@ -284,3 +284,26 @@ def test_the_analyst_cannot_cue_effort_and_sees_the_pacer():
     assert arm.coach.system.startswith("You are the analyst")
     rules = ct.run_episode(prep, ct.IncidentRules(drop_mps=0.06), heart_rate=True)
     assert r["race_time_s"] == rules["race_time_s"]          # an analyst who does nothing = the pacer alone
+
+
+def test_the_analyst_asks_where_the_finish_is_ramps_a_pod_correction_and_writes_valid_metrics(prep):
+    tw, st, c = _coach(prep, version=11)
+    c.ask_finish_fn = tw.answer_finish
+    c.ask_fn = tw.answer
+    _until(tw, 700.0, st)
+    a = c.ask_paddler(question="finish")
+    assert a["ok"] and a["thinks_finish_in_m"] % 50 == 0
+    r = c.set_belief("pod_gain", 1.2, since_race_s=300, ramp_s=200)
+    assert r["ok"] and st.gain_at(300) == 1.0 and abs(st.gain_at(400) - 1.1) < 1e-9 and st.gain_at(600) == 1.2
+    for i in range(9):
+        c.take_note(f"note {i}")
+    pk = c._open_packet([], "periodic")
+    assert len(pk["your_notes"]) == 6 and pk["older_notes_not_shown"] == 3
+
+
+def test_the_analyst_is_refused_a_metric_whose_last_line_is_an_assignment():
+    from paddling_expt.coach import _last_line_checked
+    f = _last_line_checked(lambda **kw: {"ok": True})
+    assert not f(name="a", source="w = window('x', 60)\nslope_v = slope(w)")["ok"]
+    assert f(name="a", source="w = window('x', 60)\nslope(w) * 60")["ok"]
+    assert f(name="a", source="mean(window('x', 60)) == 3")["ok"]

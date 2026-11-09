@@ -633,6 +633,14 @@ class PaddlerTwin:
         self._note("asked", rpe=rpe, says=says)
         return {"effort_out_of_10": rpe, "says": says}
 
+    def answer_finish(self) -> Dict[str, Any]:
+        """The paddler's answer to "how far do you think the finish is?" (what they believe,
+        to the nearest 50 m)."""
+        left = max(0.0, self.believed_m - self.race_m)
+        m = int(round(left / 50.0) * 50)
+        self._note("asked_finish", believed_left_m=m, true_left_m=round(self.su.distance_m - self.race_m))
+        return {"says": f"About {m} metres to go, I think.", "thinks_finish_in_m": m}
+
     def _apply(self, ask: str, pace_s500: Optional[float], e_now: float, line_m: Optional[float] = None,
                distance_left_m: Optional[float] = None, segments: Optional[List[Dict[str, Any]]] = None) -> None:
         tr, t = self.tr, self.t

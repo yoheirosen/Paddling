@@ -619,6 +619,16 @@ OPEN_COACH_SYSTEM_V11 = (OPEN_COACH_SYSTEM_V10
              "- A paddler who runs the reserve empty is forced well below critical power until part of it "
              "comes back.\n- Heart rate has a ceiling: near an empty reserve it sits close to its maximum and "
              "looks flat, as it does at a steady effort below critical power.")
+    .replace("The beliefs critical_power_pod_w, reserve_size_pod_kj, critical_power_boat_w, reserve_size_boat_kj "
+             "and pod_gain (the pod's reading divided by the true effort, from a race second you give) set the "
+             "boat computer, which then recomputes both reserves over the race so far. Any other name (how honest "
+             "the paddler is, their best stroke rate, how they take cues, ...) is for you.",
+             "The belief pod_gain (the pod's reading divided by the true effort, from a race second you give; "
+             "with ramp_s it grows to that value over that many seconds) sets the boat computer, which the "
+             "pacer reads, and both reserves are recomputed over the race so far. Critical power and the "
+             "reserve size stay as the pre-race test set them. Any other name (how honest the paddler is, "
+             "their best stroke rate, how they take cues, ...) is for you. ask_paddler with question='finish' "
+             "asks where they think the finish is.")
     .replace("- A pace target is chased by feel within about -15 % to +12 % of the effort when it was given; "
              "ease or push adds to it; hold or a new target replaces it.\n", ""))
 
@@ -805,6 +815,23 @@ def hull_fit(state: RaceState, rows: List[tuple]) -> Dict[str, Any]:
     return out
 
 
+def _last_line_checked(define: Callable[..., Any]) -> Callable[..., Any]:
+    """The platform's define_program_metric, refusing a program whose last line is an
+    assignment (the platform admits it but it never produces a value)."""
+    import functools
+    import re
+
+    @functools.wraps(define)
+    def wrapped(*args: Any, **kw: Any) -> Any:
+        src = str(kw.get("source", args[1] if len(args) > 1 else "") or "")
+        lines = [ln for ln in src.strip().splitlines() if ln.strip() and not ln.strip().startswith("#")]
+        if lines and re.match(r"^\s*[A-Za-z_]\w*\s*=(?!=)", lines[-1]):
+            return {"ok": False, "error": "the last line must be the metric's value as an expression "
+                                          "(for example slope(w) * 60), not an assignment"}
+        return define(*args, **kw)
+    return wrapped
+
+
 class RaceCoach:
     """The reasoning tier: one consultation per wake-up, through ``run_tool_loop``.
 
@@ -856,7 +883,9 @@ class RaceCoach:
         self.timers: List[Dict[str, Any]] = []
         if self.version >= 8:
             reg.register(self.ask_paddler, name="ask_paddler",
-                         description="Ask the paddler how they feel; they answer with an effort out of 10 and a few words.")
+                         description=("Ask the paddler how they feel; they answer with an effort out of 10 and a few words."
+                                      + (" With question='finish' they say how far they think the finish is."
+                                         if self.version >= 11 else "")))
             reg.register(self.take_note, name="take_note", writes=True,
                          description="Write a note to yourself (up to 800 characters); every later wake-up "
                                      "shows your last 15 notes.")
@@ -867,7 +896,12 @@ class RaceCoach:
             for name, tool in panel.tools().items():
                 if self.version >= 9 and name in ("get_metric_series", "get_alerts", "list_available_metrics"):
                     continue                      # summarised, race-time versions below
-                reg.register(tool.func, name=name, description=tool.description,
+                func, desc = tool.func, tool.description
+                if self.version >= 11 and name == "define_program_metric":
+                    func = _last_line_checked(tool.func)
+                    desc = (desc + " The last line is the metric's value: an expression (e.g. slope(w) * 60), "
+                                   "not an assignment.")
+                reg.register(func, name=name, description=desc,
                              input_schema=tool.input_schema, writes=tool.writes)
                 allowed.append(name)
             if self.version >= 9:
@@ -1146,7 +1180,7 @@ class RaceCoach:
         return out
 
     def set_belief(self, name: str, value: Any, low: Any = None, high: Any = None, evidence: str = "",
-                   since_race_s: Optional[float] = None) -> Dict[str, Any]:
+                   since_race_s: Optional[float] = None, ramp_s: Optional[float] = None) -> Dict[str, Any]:
         st = self.state
         name = str(name).strip()[:40]
         if not name:
@@ -1168,7 +1202,10 @@ class RaceCoach:
                 if not 0.5 <= v <= 2.0:
                     return {"ok": False, "error": "pod_gain must be 0.5-2.0"}
                 since = None if since_race_s is None else max(0.0, float(since_race_s))
-                res["computer"] = st.set_pod_gain(v, since)
+                ramp = float(ramp_s) if (ramp_s is not None and self.version >= 11) else 0.0
+                if not 0.0 <= ramp <= 1800.0:
+                    return {"ok": False, "error": "ramp_s must be 0-1800"}
+                res["computer"] = st.set_pod_gain(v, since, ramp) if ramp else st.set_pod_gain(v, since)
             else:
                 base = {"critical_power_pod_w": sh.cp_w if sh else None, "critical_power_boat_w": st.athlete.cp_w,
                         "reserve_size_pod_kj": sh.w_prime_j / 1000.0 if sh else None,
@@ -1184,6 +1221,8 @@ class RaceCoach:
              "set_at_race_s": round(el)}
         if since_race_s is not None:
             b["since_race_s"] = since_race_s
+        if ramp_s:
+            b["ramp_s"] = ramp_s
         self.beliefs[name] = b
         self.belief_log.append({"name": name, **b})
         record.emit("revision", target="belief", name=name, value=value, race_s=round(el))
@@ -1282,13 +1321,17 @@ class RaceCoach:
         c["_seen"] = res
         return res
 
-    def ask_paddler(self) -> Dict[str, Any]:
+    def ask_paddler(self, question: str = "feel") -> Dict[str, Any]:
         if self.ask_fn is None:
             return {"ok": False, "error": "no paddler on the link"}
         t = self.state.last.get("t") or 0.0
         if self._asked_t is not None and t - self._asked_t < 30.0:
             return {"ok": False, "error": "asked less than 30 s ago; let them paddle"}
         self._asked_t = t
+        if self.version >= 11 and str(question) == "finish":
+            if getattr(self, "ask_finish_fn", None) is None:
+                return {"ok": False, "error": "no paddler on the link"}
+            return {"ok": True, **self.ask_finish_fn()}
         return {"ok": True, **self.ask_fn()}
 
     def take_note(self, text: str) -> Dict[str, Any]:
@@ -1538,7 +1581,12 @@ class RaceCoach:
             v = state.get(k)
             if v is not None and rem is not None and v > rem:
                 state[k] = "lasts past the finish"
-        msg["your_notes"] = self.notes[-15:]
+        if self.version >= 11:
+            msg["your_notes"] = self.notes[-6:]
+            if len(self.notes) > 6:
+                msg["older_notes_not_shown"] = len(self.notes) - 6
+        else:
+            msg["your_notes"] = self.notes[-15:]
         if not self.consultations:
             info = getattr(self, "race_info", {}) or {}
             msg["race"] = {"distance_m": s.distance_m,
