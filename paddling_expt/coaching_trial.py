@@ -601,6 +601,7 @@ class AgentArm(Arm):
                  max_tokens: int = 4000, label: str = "agent", coach_version: int = 1) -> None:
         self.coach_version = int(coach_version)
         self.heart_rate = self.coach_version >= 10          # the experimenting coach's paddler wears a strap
+        self.hr_profiles = self.coach_version >= 12         # ... whose heart rate may not follow the textbook
         self.provider, self.periodic_s = provider, float(periodic_s)
         self.max_tool_rounds, self.max_tokens = int(max_tool_rounds), int(max_tokens)
         self.name = label
@@ -626,6 +627,10 @@ class AgentArm(Arm):
             ep.twin.rich_answers = True
         if self.coach_version >= 11:
             self.coach.ask_finish_fn = ep.twin.answer_finish
+        if self.coach_version >= 12:
+            rows, _ = twin_cp_test(ep.prep.traits, seed=ep.prep.seed, heart_rate=True,
+                                   hr_profiles=bool(ep.twin._hr_par and "shape" in ep.twin._hr_par))
+            self.coach.test_rows = rows
         self._leg = None
 
     def on_messages(self, ep: "Episode", msgs: List[Dict[str, Any]]) -> None:
@@ -896,7 +901,8 @@ class Episode:
 
 def run_episode(prep: Preparation, arm: Arm, *, latency_s: Optional[float] = 6.0,
                 record_path: Optional[str] = None, series_every_s: float = 15.0,
-                max_race_s: float = 3 * 3600.0, heart_rate: bool = False) -> Dict[str, Any]:
+                max_race_s: float = 3 * 3600.0, heart_rate: bool = False,
+                hr_profiles: bool = False) -> Dict[str, Any]:
     """Race ``arm`` on this preparation; returns the scored episode.  ``latency_s``:
     race time per model call (``None`` = its measured wall-clock time).  ``heart_rate``
     (or an arm with ``heart_rate = True``): the paddler wears a heart-rate strap, and the
@@ -912,7 +918,7 @@ def run_episode(prep: Preparation, arm: Arm, *, latency_s: Optional[float] = 6.0
     sink = CueSink(state, act=lambda a: twin.cue(a.get("ask", "none"), a.get("pace_s500"), a.get("line_m"),
                                                  a.get("distance_left_m"), a.get("segments")))
     if heart_rate or getattr(arm, "heart_rate", False):
-        twin.enable_heart_rate()
+        twin.enable_heart_rate(profiles=bool(hr_profiles or getattr(arm, "hr_profiles", False)))
     gate = make_cue_gate(sink, state, max_words=g["max_words"], quiet_start_s=g["quiet_start_s"],
                          quiet_finish_m=g["quiet_finish_m"], cooldown_s=g["cooldown_s"],
                          max_cues=g["max_cues"])

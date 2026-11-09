@@ -632,6 +632,25 @@ OPEN_COACH_SYSTEM_V11 = (OPEN_COACH_SYSTEM_V10
     .replace("- A pace target is chased by feel within about -15 % to +12 % of the effort when it was given; "
              "ease or push adds to it; hold or a new target replaces it.\n", ""))
 
+OPEN_COACH_SYSTEM_V12 = (OPEN_COACH_SYSTEM_V10
+    .replace("and pod_gain (the pod's reading divided by the true effort, from a race second you give) set the "
+             "boat computer, which then recomputes both reserves over the race so far.",
+             "and pod_gain (the pod's reading divided by the true effort, from a race second you give; with "
+             "ramp_s it grows to that value over that many seconds) set the boat computer, which then "
+             "recomputes both reserves over the race so far.")
+    .replace("- Memory: you remember nothing between wake-ups.",
+             "- The paddler's pre-race test: pre_race_test shows their pod power and heart rate minute by "
+             "minute through the 3- and 12-minute test pieces and the rest between them. ask_paddler with "
+             "question='finish' asks where they think the finish is.\n- Memory: you remember nothing between "
+             "wake-ups.")
+    .replace("- A paddler who runs the reserve empty is forced well below critical power until part of it "
+             "comes back.",
+             "- A paddler who runs the reserve empty is forced well below critical power until part of it "
+             "comes back.\n- Heart rate has a ceiling: near an empty reserve it sits close to its maximum and "
+             "looks flat, as it does at a steady effort below critical power.\n- How heart rate answers "
+             "effort differs between paddlers: for some it is already high at moderate effort, close to its "
+             "maximum near critical power, and rises little above it, even with a low resting rate."))
+
 _CUE_SCHEMA_V10 = {
     "type": "object",
     "properties": {
@@ -851,8 +870,10 @@ class RaceCoach:
             system = OPEN_COACH_SYSTEM_V9
         if system is None and self.version == 10:
             system = OPEN_COACH_SYSTEM_V10
-        if system is None and self.version >= 11:
+        if system is None and self.version == 11:
             system = OPEN_COACH_SYSTEM_V11
+        if system is None and self.version >= 12:
+            system = OPEN_COACH_SYSTEM_V12
         if system is None and panel is not None and 2 <= self.version < 8:
             system = (COACH_PANEL_SYSTEM_V2 + (DRAFT_SECTION if self.version == 7 else "")
                       + (WATER_SECTION if 3 <= self.version < 7 else "")
@@ -869,7 +890,7 @@ class RaceCoach:
                      description="Recent race history: 30-second means of speed through the water, "
                                  "power, reserve, stroke rate, fade and the push of current and wind.")
         reg.register(self.cue, name="cue", writes=True,
-                     input_schema=(_CUE_SCHEMA_V11 if self.version >= 11 else
+                     input_schema=(_CUE_SCHEMA_V11 if self.version == 11 else
                                    _CUE_SCHEMA_V10 if self.version >= 10 else
                                    _CUE_SCHEMA_OPEN if self.version >= 8 else _CUE_SCHEMA),
                      description="Speak one short cue (at most 12 words) to the paddler now.")
@@ -968,6 +989,11 @@ class RaceCoach:
                                      "reserve_size_pod_kj, critical_power_boat_w, reserve_size_boat_kj and pod_gain "
                                      "(with since_race_s) also set the boat computer; other names are for you.")
             allowed += ["measure", "test_cost", "set_belief"]
+            if self.version >= 12:
+                reg.register(self.pre_race_test, name="pre_race_test",
+                             description="The paddler's pre-race 3- and 12-minute test: pod power and heart rate "
+                                         "minute by minute, with the critical power and reserve it gave.")
+                allowed.append("pre_race_test")
         elif self.version >= 9:
             reg.register(self.set_calibration, name="set_critical_power", writes=True,
                          description="Correct critical power (boat cp_w and/or pod cp_shaft_w, W) and/or the "
@@ -1321,6 +1347,31 @@ class RaceCoach:
         c["_seen"] = res
         return res
 
+    def pre_race_test(self) -> Dict[str, Any]:
+        rows = getattr(self, "test_rows", None)
+        if not rows:
+            return {"ok": False, "error": "no pre-race test recorded"}
+        segs = [("warm-up", 0, 300), ("3-minute piece", 300, 480), ("rest", 480, 2280),
+                ("12-minute piece", 2280, 3000), ("cool-down", 3000, 3120)]
+        out = []
+        for nm, a, b in segs:
+            mins = []
+            for m0 in range(int(a), int(b), 60):
+                xs = [r for r in rows if m0 <= r["t"] < min(b, m0 + 60)]
+                if not xs:
+                    continue
+                pw = [r["shaft_power_w"] for r in xs if r.get("shaft_power_w") is not None]
+                hr = [r["heart_rate_bpm"] for r in xs if r.get("heart_rate_bpm") is not None]
+                mins.append({"minute": round((m0 - a) / 60.0) + 1, "pod_w": round(sum(pw) / len(pw)) if pw else None,
+                             "hr_bpm": round(sum(hr) / len(hr)) if hr else None})
+            if nm == "rest" and len(mins) > 8:          # the long rest, shortened
+                mins = mins[:3] + mins[-2:]
+            out.append({"part": nm, "per_minute": mins})
+        sh = self.state.athlete_shaft
+        return {"ok": True, "test": out,
+                "gave": {"critical_power_pod_w": round(sh.cp_w) if sh else None,
+                         "reserve_size_pod_kj": round(sh.w_prime_j / 1000.0, 1) if sh else None}}
+
     def ask_paddler(self, question: str = "feel") -> Dict[str, Any]:
         if self.ask_fn is None:
             return {"ok": False, "error": "no paddler on the link"}
@@ -1372,7 +1423,7 @@ class RaceCoach:
     def cue(self, text: str, ask: str = "none", pace_s500: Optional[float] = None,
             line_m: Optional[float] = None, distance_left_m: Optional[float] = None,
             segments: Optional[List[Dict[str, Any]]] = None) -> Dict[str, Any]:
-        if self.version >= 11 and ask in _PACER_ASKS:
+        if self.version == 11 and ask in _PACER_ASKS:
             return {"spoken": False, "blocked": True,
                     "reason": "effort cues (ease, push, hold, rate, finish) are the pacer's"}
         act = {"text": text, "ask": ask, "pace_s500": pace_s500, "line_m": line_m,
