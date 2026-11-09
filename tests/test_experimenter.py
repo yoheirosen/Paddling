@@ -257,3 +257,30 @@ def test_a_new_piece_replaces_a_running_one_from_the_effort_being_held(prep):
     e2 = float(L["effort"][-20:].mean())
     assert e2 / e1 == pytest.approx(1.06, abs=0.03)
     assert "piece_replaced" in [e["event"] for e in tw.incident_log]
+
+
+def test_the_analyst_cannot_cue_effort_and_sees_the_pacer():
+    prep = ct.draw_preparation(22, incidents="development")
+    seen = {}
+
+    def answer(system, messages, tools):
+        import json as _j
+        if len(messages) == 1:
+            pk = _j.loads(messages[0].text)
+            if "pacer_recent_cues" in pk:
+                seen["pacer"] = pk["pacer_recent_cues"]
+            if "first" not in seen:
+                seen["first"] = True
+                return {"tool_calls": [{"name": "cue", "arguments": {"text": "Ease off.", "ask": "ease"}},
+                                       {"name": "set_belief", "arguments": {"name": "critical_power_pod_w",
+                                                                            "value": 220}}]}
+            return "no cue"
+        seen.setdefault("results", [str(x.content) for x in messages[-1].tool_results])
+        return "no cue"
+    arm = ct.AnalystArm(FakeProvider(answer, model="t"), periodic_s=180.0)
+    r = ct.run_episode(prep, arm, latency_s=5.0)
+    assert "pacer's" in seen["results"][0] and "pacer keeps" in seen["results"][1]
+    assert r["pacer_cues"] >= 1 and "pacer" in seen
+    assert arm.coach.system.startswith("You are the analyst")
+    rules = ct.run_episode(prep, ct.IncidentRules(drop_mps=0.06), heart_rate=True)
+    assert r["race_time_s"] == rules["race_time_s"]          # an analyst who does nothing = the pacer alone

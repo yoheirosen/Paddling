@@ -598,6 +598,30 @@ minute or the last 100 m, and at most 20 cues per race (a piece counts as one cu
 
 End each wake-up with one line: what you did and why, or "no cue: <reason>"."""
 
+_V11_OPEN = (
+    "You are the analyst on the radio for one paddler in an outrigger canoe (OC1) race. A pacer "
+    "(fixed rules on the boat computer) sets the paddler's effort; you do everything else so that they "
+    "finish as fast as possible: find out what is happening to the boat, the instruments, the water and "
+    "the course; correct the boat computer, which the pacer reads; and tell the paddler what they need "
+    "to know.")
+OPEN_COACH_SYSTEM_V11 = (OPEN_COACH_SYSTEM_V10
+    .replace("You are coaching one paddler through an outrigger canoe (OC1) race, speaking into their ear "
+             "over a radio link. What you are there for: their fastest finish.", _V11_OPEN)
+    .replace("They hear your words but act on the request attached to them: ease, push, hold, rate_up, "
+             "rate_down, finish (start the final sprint), clear_rudder",
+             "They hear your words but act on the request attached to them. Effort is the pacer's: ease, "
+             "push, hold, rate and finish cues are its, and you see its recent cues. Yours are clear_rudder")
+    .replace("or none. With ease, push or hold you may add a target pace over the ground; they chase it by "
+             "feel, through turns too, until the change fades.",
+             "or none.")
+    .replace("- A paddler who runs the reserve empty is forced well below critical power until part of it "
+             "comes back.",
+             "- A paddler who runs the reserve empty is forced well below critical power until part of it "
+             "comes back.\n- Heart rate has a ceiling: near an empty reserve it sits close to its maximum and "
+             "looks flat, as it does at a steady effort below critical power.")
+    .replace("- A pace target is chased by feel within about -15 % to +12 % of the effort when it was given; "
+             "ease or push adds to it; hold or a new target replaces it.\n", ""))
+
 _CUE_SCHEMA_V10 = {
     "type": "object",
     "properties": {
@@ -614,6 +638,12 @@ _CUE_SCHEMA_V10 = {
     },
     "required": ["text"],
 }
+
+_CUE_SCHEMA_V11 = {**_CUE_SCHEMA_V10, "properties": {
+    **{k: v for k, v in _CUE_SCHEMA_V10["properties"].items() if k != "pace_s500"},
+    "ask": {"type": "string", "enum": ["clear_rudder", "reassure", "tell", "piece", "none"],
+            "description": "what the paddler should do (effort cues are the pacer's)"}}}
+_PACER_ASKS = ("ease", "push", "hold", "rate_up", "rate_down", "finish")
 
 _MEASURE_SCHEMA = {
     "type": "object",
@@ -792,8 +822,10 @@ class RaceCoach:
             system = OPEN_COACH_SYSTEM
         if system is None and self.version == 9:
             system = OPEN_COACH_SYSTEM_V9
-        if system is None and self.version >= 10:
+        if system is None and self.version == 10:
             system = OPEN_COACH_SYSTEM_V10
+        if system is None and self.version >= 11:
+            system = OPEN_COACH_SYSTEM_V11
         if system is None and panel is not None and 2 <= self.version < 8:
             system = (COACH_PANEL_SYSTEM_V2 + (DRAFT_SECTION if self.version == 7 else "")
                       + (WATER_SECTION if 3 <= self.version < 7 else "")
@@ -810,7 +842,8 @@ class RaceCoach:
                      description="Recent race history: 30-second means of speed through the water, "
                                  "power, reserve, stroke rate, fade and the push of current and wind.")
         reg.register(self.cue, name="cue", writes=True,
-                     input_schema=(_CUE_SCHEMA_V10 if self.version >= 10 else
+                     input_schema=(_CUE_SCHEMA_V11 if self.version >= 11 else
+                                   _CUE_SCHEMA_V10 if self.version >= 10 else
                                    _CUE_SCHEMA_OPEN if self.version >= 8 else _CUE_SCHEMA),
                      description="Speak one short cue (at most 12 words) to the paddler now.")
         allowed = ["race_history", "cue"]
@@ -1122,7 +1155,10 @@ class RaceCoach:
             return {"ok": False, "error": "at most 12 beliefs; reuse a name"}
         el = st.last.get("elapsed_s") or 0.0
         res: Dict[str, Any] = {"ok": True}
-        if name in _BELIEF_COMPUTER:
+        if name in _BELIEF_COMPUTER and name != "pod_gain" and self.version >= 11 \
+                and not getattr(self, "allow_cp_beliefs", True):
+            res["note"] = "recorded for you; the pacer keeps the pre-race critical power and reserve"
+        elif name in _BELIEF_COMPUTER:
             try:
                 v = float(value)
             except (TypeError, ValueError):
@@ -1293,6 +1329,9 @@ class RaceCoach:
     def cue(self, text: str, ask: str = "none", pace_s500: Optional[float] = None,
             line_m: Optional[float] = None, distance_left_m: Optional[float] = None,
             segments: Optional[List[Dict[str, Any]]] = None) -> Dict[str, Any]:
+        if self.version >= 11 and ask in _PACER_ASKS:
+            return {"spoken": False, "blocked": True,
+                    "reason": "effort cues (ease, push, hold, rate, finish) are the pacer's"}
         act = {"text": text, "ask": ask, "pace_s500": pace_s500, "line_m": line_m,
                "events": [e["kind"] for e in self._events], "source": self.caller}
         if distance_left_m is not None:
@@ -1485,6 +1524,8 @@ class RaceCoach:
             recent = [{k: v for k, v in c.items() if not k.startswith("_")} for c in self.cue_attempts[-5:]]
         spoken = [c for c in self.cue_attempts if c["spoken"]]
         msg["your_recent_cues"] = recent
+        if self.version >= 11 and getattr(self, "pacer_log", None) is not None:
+            msg["pacer_recent_cues"] = self.pacer_log[-4:]
         if spoken and self.version >= 10:
             nxt = (spoken[-1]["_el"] or 0.0) + 60.0
             el_now = last.get("elapsed_s") or 0.0

@@ -684,6 +684,66 @@ class AgentArm(Arm):
         return out
 
 
+class _PacerGate:
+    """The pacer's cues go through the race's gate; each delivered one is logged for the
+    analyst coach to see."""
+
+    def __init__(self, gate: Any, log: List[Dict[str, Any]], ep: "Episode") -> None:
+        self.gate, self.log, self.ep = gate, log, ep
+
+    def deliver(self, action: Dict[str, Any], *, source: str = "", now: Optional[float] = None) -> Dict[str, Any]:
+        res = self.gate.deliver(action, source=source or "pacer", now=now)
+        if res.get("delivered"):
+            s = self.ep.state.last
+            self.log.append({"race_s": round(s.get("elapsed_s") or 0.0), "ask": action.get("ask"),
+                             "text": action.get("text")})
+        return res
+
+    def status(self) -> Dict[str, Any]:
+        return self.gate.status()
+
+
+class AnalystArm(AgentArm):
+    """Division of labour: the incident rules (drop 0.06 m/s) pace the paddler and answer
+    what they say; the reasoning coach (version 11) is the analyst on the radio. It cannot
+    cue effort; it diagnoses the boat, the instruments, the water and the course, corrects the
+    boat computer the pacer reads, tells the paddler what they need to know, clears the
+    rudder and runs test pieces."""
+
+    def __init__(self, provider: Any, *, label: str = "agent_analyst", allow_cp: bool = False, **kw: Any) -> None:
+        kw.setdefault("coach_version", 11)
+        super().__init__(provider, label=label, **kw)
+        self.pacer = IncidentRules(drop_mps=0.06)
+        self.allow_cp = bool(allow_cp)
+        self.setting["allow_cp"] = self.allow_cp
+        self.pacer_log: List[Dict[str, Any]] = []
+
+    def watches(self) -> List[Dict[str, Any]]:
+        return self.pacer.watches()
+
+    def setup(self, ep: "Episode") -> None:
+        super().setup(ep)
+        self._pacer_ep = Episode(ep.prep, ep.twin, ep.state, ep.panel, ep.sink,
+                                 _PacerGate(ep.gate, self.pacer_log, ep), ep.sched)
+        self.pacer.setup(self._pacer_ep)
+        self.coach.pacer_log = self.pacer_log
+        self.coach.allow_cp_beliefs = self.allow_cp
+
+    def on_messages(self, ep: "Episode", msgs: List[Dict[str, Any]]) -> None:
+        self.pacer.on_messages(self._pacer_ep, msgs)
+        super().on_messages(ep, msgs)
+
+    def on_tick(self, ep: "Episode", t: float, alerts: List[Dict[str, Any]]) -> None:
+        pacer_ids = {w["watch_id"] for w in self.pacer.watches()}
+        self.pacer.on_tick(self._pacer_ep, t, [a for a in alerts if a["watch_id"] in pacer_ids])
+        super().on_tick(ep, t, [a for a in alerts if a["watch_id"] not in pacer_ids])
+
+    def summary(self) -> Dict[str, Any]:
+        out = super().summary()
+        out["pacer_cues"] = len(self.pacer_log)
+        return out
+
+
 class _RuleGate:
     """What the rule layer delivers through: the race's gate, unless the coach has muted
     that lever; every rule action is logged for the coach to review."""
