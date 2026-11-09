@@ -307,3 +307,14 @@ def test_the_analyst_is_refused_a_metric_whose_last_line_is_an_assignment():
     assert not f(name="a", source="w = window('x', 60)\nslope_v = slope(w)")["ok"]
     assert f(name="a", source="w = window('x', 60)\nslope(w) * 60")["ok"]
     assert f(name="a", source="mean(window('x', 60)) == 3")["ok"]
+
+
+def test_the_role_play_driver_races_the_analyst_with_the_pacer(tmp_path):
+    import argparse
+    here = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    sys.path.insert(0, os.path.join(here, "experiments"))
+    import roleplay_race as rr
+    a = argparse.Namespace(coach_version=11, label="x", periodic_s=180.0)
+    assert isinstance(rr._arm(a, FakeProvider(lambda *x: "no cue", model="t")), ct.AnalystArm)
+    a.coach_version = 10
+    assert type(rr._arm(a, FakeProvider(lambda *x: "no cue", model="t"))) is ct.AgentArm

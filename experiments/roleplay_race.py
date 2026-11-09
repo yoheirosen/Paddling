@@ -67,6 +67,13 @@ def _prep(a: argparse.Namespace) -> ct.Preparation:
     return prep
 
 
+def _arm(a: argparse.Namespace, prov: Any) -> Any:
+    """The coach's arm: the analyst (version 11) works alongside the rule pacer."""
+    if a.coach_version == 11:
+        return ct.AnalystArm(prov, label=a.label, periodic_s=a.periodic_s)
+    return ct.AgentArm(prov, label=a.label, coach_version=a.coach_version, periodic_s=a.periodic_s)
+
+
 def _tool_line(t: Dict[str, Any]) -> str:
     """One tool as a compact line: name(param: type [one of ...], ...): description."""
     sch = t.get("input_schema", {}) or {}
@@ -141,7 +148,7 @@ def _run(a: argparse.Namespace) -> None:
         os._exit(3)                      # paused: waiting for the role-player's answer
 
     prov = FakeProvider(answer, model=a.model_label)
-    arm = ct.AgentArm(prov, label=a.label, coach_version=a.coach_version, periodic_s=a.periodic_s)
+    arm = _arm(a, prov)
     r = ct.run_episode(_prep(a), arm, latency_s=a.latency_s)
     r["roleplay"] = {"answers": len(answers), "latency_s": a.latency_s, "stand_in": a.model_label}
     with open(os.path.join(d, "result.json"), "w") as f:
@@ -159,8 +166,7 @@ def _replay(a: argparse.Namespace, answers: List[Any]) -> Dict[str, Any]:
             return v
         return str(v.get("text", "") if isinstance(v, dict) else v)
 
-    arm = ct.AgentArm(FakeProvider(answer, model=a.model_label), label=a.label, coach_version=a.coach_version,
-                      periodic_s=a.periodic_s)
+    arm = _arm(a, FakeProvider(answer, model=a.model_label))
     return ct.run_episode(_prep(a), arm, latency_s=a.latency_s)
 
 
@@ -186,8 +192,8 @@ def main(argv=None) -> int:
     if a.periodic_s is None:
         a.periodic_s = 180.0 if a.coach_version >= 8 else 300.0
     if a.label is None:
-        a.label = {8: "agent_open_roleplay", 9: "agent_open_v9_roleplay",
-                   10: "agent_experimenter_roleplay"}.get(a.coach_version, "agent_v7_roleplay")
+        a.label = {8: "agent_open_roleplay", 9: "agent_open_v9_roleplay", 10: "agent_experimenter_roleplay",
+                   11: "agent_analyst_roleplay", 12: "agent_heart_rate_roleplay"}.get(a.coach_version, "agent_v7_roleplay")
     if a.cmd == "collect":
         base = os.path.join(OUT, "roleplay", a.tag)
         done = []
