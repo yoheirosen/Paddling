@@ -97,8 +97,8 @@ def _figure(tag, rp, sched, rules, nc, S, out):
         "ci95": {k: out["race_time"][k]["ci95"] for k in ("incident_rules", "scheduled_tests")},
         "pieces": [bool(rp[s].get("pieces")) for s in S],
         "pod_gain_error": {nm: [x for x in (d[s].get("learning", {}).get("pod_gain_error") for s in S) if x is not None]
-                           for nm, d in (("no coach", nc), ("incident rules", rules), ("scheduled tests", sched),
-                                         ("analyst", rp))},
+                           for nm, d in (("no coach", nc), ("the pacer alone", rules), ("scheduled tests", sched),
+                                         ("analyst + pacer", rp))},
     }
     return emit(f"coaching_{tag}", data=data, plot_func=plot_analyst, artifacts_dir=os.path.join(ROOT, "artifacts"))
 

@@ -5,6 +5,17 @@ Dated entries, newest first. Entries before the move refer to paths under
 
 ---
 
+### The analyst beside the rule pacer: held-out result (2026-11-09)
+
+* 30 role-played held-out races (`coaching_trial.HELDOUT_ANALYST`, seeds 5090-5119):
+  the analyst with the pacer finished 13.6 s ahead of the pacer alone and 9.6 s ahead of
+  the scheduled tests (both registered comparisons, Holm p 0.002 and 0.004). Written up in
+  the plan; figure `coaching_heldout_analyst`; summary script `experiments/analyst_race.py`.
+* Process fault: for 17 s during the races the platform checkout they import was merged
+  with a newer main and restored. Each running race was replayed under both versions; one
+  race (5097) may have seen up to three inputs from the newer version. The result without
+  it is the same. Platform changes now wait until no race is running.
+
 ### A personal heart-rate model, and an analyst coach that works beside the rules (2026-11-09)
 
 The owner, and several paddlers they know, have heart rates that do not follow the textbook:

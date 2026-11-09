@@ -1,0 +1,441 @@
+{
+ "tag": "heldout_analyst",
+ "n": 30,
+ "seeds": [
+  5090,
+  5091,
+  5092,
+  5093,
+  5094,
+  5095,
+  5096,
+  5097,
+  5098,
+  5099,
+  5100,
+  5101,
+  5102,
+  5103,
+  5104,
+  5105,
+  5106,
+  5107,
+  5108,
+  5109,
+  5110,
+  5111,
+  5112,
+  5113,
+  5114,
+  5115,
+  5116,
+  5117,
+  5118,
+  5119
+ ],
+ "not_finished": [],
+ "race_time": {
+  "incident_rules": {
+   "n": 30,
+   "mean_d": -13.562621327052518,
+   "median_d": -8.909161694584782,
+   "n_a_faster": 22,
+   "n_b_faster": 7,
+   "ci95": [
+    -23.283273864685814,
+    -3.3869696629103334
+   ],
+   "wilcoxon_p": 0.0008354201527308503,
+   "holm_p": 0.0016708403054617007
+  },
+  "scheduled_tests": {
+   "n": 30,
+   "mean_d": -9.560231143772603,
+   "median_d": -12.88349747301595,
+   "n_a_faster": 23,
+   "n_b_faster": 7,
+   "ci95": [
+    -17.238741314601548,
+    -0.314209806452378
+   ],
+   "wilcoxon_p": 0.004031794145703316,
+   "holm_p": 0.004031794145703316
+  },
+  "no_coach": {
+   "n": 30,
+   "mean_d": -22.094455603472543,
+   "median_d": -13.20959225425031,
+   "n_a_faster": 25,
+   "n_b_faster": 5,
+   "ci95": [
+    -31.79239273048892,
+    -12.751268645428395
+   ],
+   "wilcoxon_p": 1.3966113328933716e-05
+  }
+ },
+ "secondary": {
+  "analyst": {
+   "pod_gain_error_drift_races": 0.033,
+   "n_drift_races": 23,
+   "reserve_error_pts": 31.67,
+   "blown_s": 92.5
+  },
+  "scheduled_tests": {
+   "pod_gain_error_drift_races": 0.1758,
+   "n_drift_races": 23,
+   "reserve_error_pts": 33.65,
+   "blown_s": 117.5
+  },
+  "incident_rules": {
+   "pod_gain_error_drift_races": 0.2477,
+   "n_drift_races": 23,
+   "reserve_error_pts": 32.11,
+   "blown_s": 115.1
+  },
+  "no_coach": {
+   "pod_gain_error_drift_races": 0.2477,
+   "n_drift_races": 23,
+   "reserve_error_pts": 33.12,
+   "blown_s": 117.9
+  }
+ },
+ "races_with_course_change": {
+  "n": 23,
+  "vs_incident_rules": {
+   "n": 23,
+   "mean_d": -14.933980929935673,
+   "median_d": -9.2723729557556,
+   "n_a_faster": 17,
+   "n_b_faster": 6,
+   "ci95": [
+    -27.122334721551756,
+    -2.081521173794597
+   ],
+   "wilcoxon_p": 0.0021359920501708984
+  },
+  "vs_scheduled_tests": {
+   "n": 23,
+   "mean_d": -9.036871977112133,
+   "median_d": -9.832781384280679,
+   "n_a_faster": 17,
+   "n_b_faster": 6,
+   "ci95": [
+    -19.02815285673075,
+    2.589919528424472
+   ],
+   "wilcoxon_p": 0.021372318267822266
+  }
+ },
+ "races_with_pod_drift": {
+  "n": 23,
+  "vs_incident_rules": {
+   "n": 23,
+   "mean_d": -17.661874361001725,
+   "median_d": -9.2723729557556,
+   "n_a_faster": 17,
+   "n_b_faster": 5,
+   "ci95": [
+    -27.940108308628055,
+    -9.039354011896021
+   ],
+   "wilcoxon_p": 0.0011031818027374479
+  },
+  "vs_scheduled_tests": {
+   "n": 23,
+   "mean_d": -11.54200898135934,
+   "median_d": -15.934213561751221,
+   "n_a_faster": 17,
+   "n_b_faster": 6,
+   "ci95": [
+    -18.61642922182517,
+    -4.349913503677406
+   ],
+   "wilcoxon_p": 0.00914621353149414
+  }
+ },
+ "races_with_weed": {
+  "n": 25,
+  "vs_incident_rules": {
+   "n": 25,
+   "mean_d": -15.860254037790947,
+   "median_d": -9.656465801579543,
+   "n_a_faster": 19,
+   "n_b_faster": 6,
+   "ci95": [
+    -27.014490837913705,
+    -4.224727634911766
+   ],
+   "wilcoxon_p": 0.0007149577140808105
+  },
+  "vs_scheduled_tests": {
+   "n": 25,
+   "mean_d": -10.04352643189909,
+   "median_d": -18.069564163509767,
+   "n_a_faster": 19,
+   "n_b_faster": 6,
+   "ci95": [
+    -19.40542362374704,
+    0.7122330248220137
+   ],
+   "wilcoxon_p": 0.012466490268707275
+  }
+ },
+ "races_with_wind_shift": {
+  "n": 20,
+  "vs_incident_rules": {
+   "n": 20,
+   "mean_d": -13.56300695481475,
+   "median_d": -9.189738799181214,
+   "n_a_faster": 14,
+   "n_b_faster": 5,
+   "ci95": [
+    -27.600005864617852,
+    1.179091709613164
+   ],
+   "wilcoxon_p": 0.015755486091547432
+  },
+  "vs_scheduled_tests": {
+   "n": 20,
+   "mean_d": -7.769146930172542,
+   "median_d": -6.603875943266303,
+   "n_a_faster": 14,
+   "n_b_faster": 6,
+   "ci95": [
+    -18.62904884750743,
+    5.3404478155892345
+   ],
+   "wilcoxon_p": 0.04844093322753906
+  }
+ },
+ "analyst_use": {
+  "pieces_per_race": 4.27,
+  "races_with_pieces": 25,
+  "beliefs_set_per_race": 5.57,
+  "model_calls_per_race": 63.2,
+  "minus_incident_rules_with_pieces_s": -10.5,
+  "minus_incident_rules_without_pieces_s": -29.0
+ },
+ "incidents": {
+  "analyst": {
+   "weed": {
+    "n": 25,
+    "mean_seconds_with_weed": 334.0,
+    "cleared_by_cue": 18,
+    "cleared_by_paddler": 4,
+    "never_cleared": 3,
+    "median_first_clear_cue_after_s": 118.44999999999999,
+    "false_clears": 15
+   },
+   "pod_drift": {
+    "n": 23,
+    "cues_as_faulty_pod_suggests": 5,
+    "cues_against_it": 0
+   },
+   "course_change": {
+    "n": 23,
+    "paddler_told": 21,
+    "overran_believed_finish": 1,
+    "sprint_start_m_from_true_finish": [
+     604,
+     401,
+     337,
+     504,
+     344,
+     552,
+     496,
+     478,
+     1713,
+     643,
+     322,
+     null,
+     null,
+     326,
+     649,
+     519,
+     592,
+     311,
+     743,
+     245,
+     528,
+     484,
+     481
+    ]
+   },
+   "talk": {
+    "self_ease": 8,
+    "self_push": 3,
+    "reassured_in_time": 5,
+    "reassured_late": 1,
+    "held_in_time": 1,
+    "held_late": 0
+   },
+   "questions_asked": 71
+  },
+  "scheduled_tests": {
+   "weed": {
+    "n": 25,
+    "mean_seconds_with_weed": 489.0,
+    "cleared_by_cue": 15,
+    "cleared_by_paddler": 6,
+    "never_cleared": 4,
+    "median_first_clear_cue_after_s": 271.7,
+    "false_clears": 25
+   },
+   "pod_drift": {
+    "n": 23,
+    "cues_as_faulty_pod_suggests": 2,
+    "cues_against_it": 1
+   },
+   "course_change": {
+    "n": 23,
+    "paddler_told": 0,
+    "overran_believed_finish": 10,
+    "sprint_start_m_from_true_finish": [
+     1631,
+     1438,
+     null,
+     1778,
+     null,
+     1837,
+     null,
+     null,
+     1714,
+     1938,
+     null,
+     null,
+     null,
+     1800,
+     1928,
+     null,
+     null,
+     null,
+     1985,
+     null,
+     null,
+     1523,
+     null
+    ]
+   },
+   "talk": {
+    "self_ease": 10,
+    "self_push": 1,
+    "reassured_in_time": 2,
+    "reassured_late": 0,
+    "held_in_time": 1,
+    "held_late": 1
+   },
+   "questions_asked": 0
+  },
+  "incident_rules": {
+   "weed": {
+    "n": 25,
+    "mean_seconds_with_weed": 761.1,
+    "cleared_by_cue": 8,
+    "cleared_by_paddler": 6,
+    "never_cleared": 11,
+    "median_first_clear_cue_after_s": 63.900000000000006,
+    "false_clears": 5
+   },
+   "pod_drift": {
+    "n": 23,
+    "cues_as_faulty_pod_suggests": 2,
+    "cues_against_it": 0
+   },
+   "course_change": {
+    "n": 23,
+    "paddler_told": 0,
+    "overran_believed_finish": 10,
+    "sprint_start_m_from_true_finish": [
+     1630,
+     1437,
+     null,
+     1779,
+     null,
+     1836,
+     null,
+     null,
+     1756,
+     1937,
+     null,
+     null,
+     null,
+     1605,
+     1928,
+     null,
+     null,
+     null,
+     1626,
+     null,
+     null,
+     1525,
+     null
+    ]
+   },
+   "talk": {
+    "self_ease": 7,
+    "self_push": 3,
+    "reassured_in_time": 4,
+    "reassured_late": 0,
+    "held_in_time": 1,
+    "held_late": 0
+   },
+   "questions_asked": 0
+  },
+  "no_coach": {
+   "weed": {
+    "n": 25,
+    "mean_seconds_with_weed": 1029.1,
+    "cleared_by_cue": 0,
+    "cleared_by_paddler": 10,
+    "never_cleared": 15,
+    "median_first_clear_cue_after_s": null,
+    "false_clears": 0
+   },
+   "pod_drift": {
+    "n": 23,
+    "cues_as_faulty_pod_suggests": 0,
+    "cues_against_it": 0
+   },
+   "course_change": {
+    "n": 23,
+    "paddler_told": 0,
+    "overran_believed_finish": 10,
+    "sprint_start_m_from_true_finish": [
+     1632,
+     1439,
+     null,
+     1778,
+     null,
+     1836,
+     null,
+     null,
+     1711,
+     1937,
+     null,
+     null,
+     null,
+     1607,
+     1928,
+     null,
+     null,
+     null,
+     1624,
+     null,
+     null,
+     1524,
+     null
+    ]
+   },
+   "talk": {
+    "self_ease": 12,
+    "self_push": 4,
+    "reassured_in_time": 0,
+    "reassured_late": 0,
+    "held_in_time": 0,
+    "held_late": 0
+   },
+   "questions_asked": 0
+  }
+ }
+}

@@ -1050,6 +1050,74 @@ divides the labour that way:
 * A race the driver cannot finish is reported and excluded. No race is re-run with
   other answers.
 
+**Result (30 held-out races, 2026-11-09; the analyst role-played by Claude subagents).**
+
+| Analyst with the pacer, minus … | Mean difference (95 % interval) | Paired test, Holm | Analyst faster in |
+|---|---|---|---|
+| the pacer alone (primary) | −13.6 s (−23.3 to −3.4) | p 0.0008, Holm 0.002 | 22 of 30 |
+| the scheduled tests (primary) | −9.6 s (−17.2 to −0.3) | p 0.004, Holm 0.004 | 23 of 30 |
+| no coach | −22.1 s (−31.8 to −12.8) | p < 0.0001 | 25 of 30 |
+
+* Both registered comparisons favour the analyst working beside the pacer.
+* The size matches the counterfactual estimate (−13.7 s), which was computed from the
+  experimenting coach's findings on other seeds. The experimenting coach, pacing the
+  paddler itself, had been level with the rules.
+* Where the time came from:
+  * **Weed:** the analyst cleared it sooner. The boat carried weed for 334 s on average,
+    against 489 s with the scheduled tests, 761 s with the pacer alone and 1,029 s with
+    no coach. The price was 15 back-strokes where there was no weed (the scheduled
+    tests made 25, the pacer alone 5).
+  * **Course changes by radio:** the analyst told the paddler in 21 of 23 races. Only
+    once did a paddler overrun the finish they believed in, against 10 times with each
+    rule arm. Paddlers often took in the new distance only on the second or third
+    telling; the analysts found this out by asking.
+  * **The paddle sensor drifting:** in the 23 races where it drifted, the analyst's
+    correction was off by 3 % of effort on average, against 18 % with the scheduled
+    tests and 25 % with no correction. This kept the pacer's reserve honest.
+  * Seconds spent blown up: 93 a race, against 115–118 for the rule arms.
+* Test pieces: the analyst used them in 25 of 30 races (4.3 a race), mostly to steer
+  effort, since the pacer eases only in the first 35 % of the race and pushes the finish
+  only above 40 % of reserve. The five races without pieces were faster against the
+  pacer alone (−29.0 s) than the 25 with them (−10.5 s). This is not a controlled
+  comparison.
+* The worst race (seed 5111) was 82 s slower than the pacer alone. The analyst took a
+  heart rate stuck at its ceiling for "below the limit", then sized a finishing piece
+  too hot, and the paddler blew up twice.
+* In one race (seed 5110) the analyst set the sensor correction lower than it believed
+  true. That kept the computer's reserve under 40 %, so the pacer would not call an
+  all-out finish after two blow-ups. It used the one setting it controls to steer the
+  pacer, not to fix the sensor.
+* **Process fault, and its check.** For 17 seconds during these races the platform
+  checkout the races run on was merged with a newer version and then restored (my
+  error). Each race was replayed from its answers under both versions:
+  * In six of the seven races running then, every input shown in that window was
+    identical under both versions.
+  * In one (seed 5097) up to three inputs may have come from the newer version.
+  * Without that race the result is the same: −13.7 s against the pacer alone and
+    −9.9 s against the scheduled tests.
+  * One driver call crashed in the window and was retried with the same answer.
+* What the analysts found confusing (inputs for the next version):
+  * the 60-second gap between cues also counts the pacer's cues, while "next cue
+    allowed" ignores them;
+  * the pacer's ease rule fires once while its condition holds, and none of its rules
+    can spend a reserve below 40 % at the finish;
+  * a sensor correction holds one gain and one ramp, and a new one resets the earlier
+    stretch;
+  * the boat computer's current estimate lags a change in the water, which misleads the
+    pacer's fade rule into false "rate down" cues;
+  * nothing shows the maximum heart rate, so a heart rate at its ceiling looks like a
+    steady effort below critical power;
+  * there is no direct sign that a piece or a message was taken up;
+  * a fit with all its windows in one direction returns a meaningless answer instead
+    of refusing;
+  * in the platform: derived metrics reject `deg2rad` and `power`, although the tool
+    says they share the program-metric functions.
+* Limits: the role-player stands in for the deployed model. The incidents, the heart
+  rate and the paddler are planted. The pacer's rules are the baseline's rules, so the
+  comparison is fair but the pacer is weaker than a good human pacer.
+* Figure `artifacts/coaching_heldout_analyst`; summary
+  `results/coaching_trial/summary_heldout_analyst.json`.
+
 ### A personal heart-rate model instead of the textbook zones (2026-11-09; simulated paddlers)
 
 Heart-rate zones are usually set as a share of the maximum heart rate, or of the heart
@@ -1421,6 +1489,12 @@ connectivity.
      * shorter inputs: the notes repeated in full at every wake-up crowd out the latest
        cue results;
      * whether a cue or piece was taken up, sooner than the 30-second means show it.
+   * from the analyst's held-out races (listed in its result above): show the pacer's cues in
+     "next cue allowed"; a pacer that keeps easing an over-paced paddler and can spend a
+     reserve below 40 % at the finish; a sensor correction made of several steps; a way to
+     correct the current estimate; the maximum heart rate; whether a piece or message was
+     taken up; refuse a one-direction fit. The analyst should not be able to steer the
+     pacer through the sensor correction (one race did).
    * in agentic_experiments: `maximum()` in an agent-defined metric was taken for a
      missing stream name, so the metric never computed. Fixed in that repository's pull
      request #234, which waits for the owner.
