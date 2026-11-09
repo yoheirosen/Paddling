@@ -603,7 +603,19 @@ _V11_OPEN = (
     "(fixed rules on the boat computer) sets the paddler's effort; you do everything else so that they "
     "finish as fast as possible: find out what is happening to the boat, the instruments, the water and "
     "the course; correct the boat computer, which the pacer reads; and tell the paddler what they need "
-    "to know.")
+    "to know.\n\nThe pacer's rules (each fires once its condition has held for the time shown; every reserve "
+    "it reads is the paddle pod's, never the boat-power one):\n"
+    "- ease: in the first 35 % of the race, when at this power the pod reserve would run out more than "
+    "150 m or 10 % of the distance left (whichever is more) before the finish (20 s);\n"
+    "- rate_down: speed through the water at this stroke rate 3 % or more below early in the race (60 s);\n"
+    "- hold: the pod reserve below 5 % while the speed holds (120 s);\n"
+    "- finish: under 800 m to go, the pod reserve above 40 % and the speed holding (10 s). It has no other "
+    "push: a reserve below 40 % near the finish goes unspent;\n"
+    "- clear_rudder: the local push falls more than 0.06 m/s within a leg (last 20 s against the 2 minutes "
+    "before), at most every 4 minutes; or the paddler says heavy, rudder or dragging;\n"
+    "- reassure when the paddler says they are cooked and the pod reserve is above 35 %; hold when they say "
+    "they feel strong and it is below 45 %.\n"
+    "It reads no radio messages and has no rule for anything else.")
 OPEN_COACH_SYSTEM_V11 = (OPEN_COACH_SYSTEM_V10
     .replace("You are coaching one paddler through an outrigger canoe (OC1) race, speaking into their ear "
              "over a radio link. What you are there for: their fastest finish.", _V11_OPEN)
@@ -987,9 +999,14 @@ class RaceCoach:
                                      "lasts, reserve spent, and the net seconds at the finish once the reserve is "
                                      "repaid (with critical power 10 % lower or higher too).")
             reg.register(self.set_belief, name="set_belief", writes=True,
-                         description="Record a belief: name, value, low, high, evidence. critical_power_pod_w, "
-                                     "reserve_size_pod_kj, critical_power_boat_w, reserve_size_boat_kj and pod_gain "
-                                     "(with since_race_s) also set the boat computer; other names are for you.")
+                         description=("Record a belief: name, value, low, high, evidence. pod_gain (with "
+                                      "since_race_s, and ramp_s) also sets the boat computer the pacer reads; "
+                                      "critical power and reserve beliefs are recorded for you only (the pacer "
+                                      "keeps the pre-race test's); other names are for you."
+                                      if self.version == 11 else
+                                      "Record a belief: name, value, low, high, evidence. critical_power_pod_w, "
+                                      "reserve_size_pod_kj, critical_power_boat_w, reserve_size_boat_kj and pod_gain "
+                                      "(with since_race_s) also set the boat computer; other names are for you."))
             allowed += ["measure", "test_cost", "set_belief"]
             if self.version >= 12:
                 reg.register(self.pre_race_test, name="pre_race_test",
@@ -1212,7 +1229,28 @@ class RaceCoach:
             else:
                 lost_s = 0.0
             gained_s = (v1 - v0) * secs / max(0.3, v0)
+            if self.version >= 11:
+                # the reserve left at the finish if the effort is held: only the part of the piece's
+                # extra spend that this does not cover has to be repaid later
+                w_end = wa
+                for _ in range(int(max(0.0, T_rem - secs))):
+                    w_end = w_balance_step(w_end, Ps, 1.0, cp, st.athlete_shaft.w_prime_j)
+                deficit = min(dW, max(0.0, dW - max(0.0, w_end)))
+                if T_rem > 0 and dW > 0:
+                    dP = deficit / T_rem
+                    v_low = _speed_for(st.craft, st.total_kg, k * max(1.0, Ps - dP), st.ama_kg)
+                    lost_s = T_rem * (v0 / max(0.3, v_low) - 1.0)
+                out[nm] = {"extra_reserve_spent_kj": round(dW / 1000.0, 2),
+                           "reserve_left_at_finish_if_effort_held_kj": round(max(0.0, w_end) / 1000.0, 2),
+                           "net_seconds_at_finish": round(lost_s - gained_s, 1)}
+                continue
             out[nm] = {"extra_reserve_spent_kj": round(dW / 1000.0, 2), "net_seconds_at_finish": round(lost_s - gained_s, 1)}
+        if self.version >= 11:
+            out["note"] = ("net_seconds_at_finish > 0 costs time: extra reserve spent that the finish would not "
+                           "have used anyway is repaid later as lower power. By the pod's numbers"
+                           + ("; a rate change's cost depends on blade efficiency, which only a measurement shows."
+                              if rate_spm else "."))
+            return out
         out["note"] = ("net_seconds_at_finish > 0 costs time. By the boat computer's numbers; a rate change's cost "
                        "depends on blade efficiency, which only a measurement shows" if rate_spm else
                        "net_seconds_at_finish > 0 costs time. By the boat computer's numbers.")
@@ -1245,6 +1283,16 @@ class RaceCoach:
                 if not 0.0 <= ramp <= 1800.0:
                     return {"ok": False, "error": "ramp_s must be 0-1800"}
                 res["computer"] = st.set_pod_gain(v, since, ramp) if ramp else st.set_pod_gain(v, since)
+                if self.version >= 11:
+                    t0 = el - 60.0 if since is None else max(since, el - 60.0)
+                    win = [h for h in st.history if h.get("elapsed_s") is not None and h["elapsed_s"] >= t0
+                           and h.get("shaft_power_w") is not None]
+                    if win:
+                        res["computer"]["pod_w_last_minute_corrected"] = round(
+                            sum(h["shaft_power_w"] for h in win) / len(win))
+                        raw = [h["shaft_power_raw_w"] for h in win if h.get("shaft_power_raw_w") is not None]
+                        if raw:
+                            res["computer"]["pod_w_last_minute_raw"] = round(sum(raw) / len(raw))
             else:
                 base = {"critical_power_pod_w": sh.cp_w if sh else None, "critical_power_boat_w": st.athlete.cp_w,
                         "reserve_size_pod_kj": sh.w_prime_j / 1000.0 if sh else None,

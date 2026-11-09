@@ -341,3 +341,44 @@ def test_the_heart_rate_coach_gets_this_paddlers_own_heart_rate_model(prep):
     near_cp = m["hr_at_share_of_cp"]["100%"]
     r = c.heart_rate_model(hr_bpm=near_cp, race_min=0.0)["reading"]
     assert r["zone"] is None and "cannot tell" in r["note"]
+
+
+def test_the_analyst_knows_the_pacers_rules_and_its_belief_tool_says_what_reaches_the_pacer(prep):
+    tw, st, c = _coach(prep, version=11)
+    assert "every reserve it reads is the paddle pod's" in c.system and "under 800 m to go" in c.system
+    desc = c.policy.registry.get("set_belief").description
+    assert "recorded for you only" in desc and "pod_gain" in desc
+
+
+def test_the_analysts_cost_tool_sees_reserve_the_finish_would_leave(prep):
+    tw, st, c = _coach(prep, version=11)
+    _until(tw, 900.0, st)
+    r = c.test_cost(6.0, 240.0)
+    assert r["ok"]
+    for k in ("as_calibrated", "cp_10pct_lower", "cp_10pct_higher"):
+        assert "reserve_left_at_finish_if_effort_held_kj" in r[k]
+    hi = r["cp_10pct_higher"]            # more reserve left at the finish: the piece is paid for by it
+    assert hi["reserve_left_at_finish_if_effort_held_kj"] >= r["as_calibrated"]["reserve_left_at_finish_if_effort_held_kj"]
+    if hi["reserve_left_at_finish_if_effort_held_kj"] >= hi["extra_reserve_spent_kj"]:
+        assert hi["net_seconds_at_finish"] < 0
+
+
+def test_an_analyst_wake_up_due_while_it_is_awake_waits_and_can_be_cancelled(prep):
+    tw, st, c = _coach(prep, version=11)
+    _until(tw, 300.0, st)
+    arm = ct.AnalystArm(FakeProvider(lambda *a: "no cue", model="t"))
+    arm.coach, arm._busy, arm._pending, arm._last_wake = c, True, [], 0.0
+    woke = []
+    arm._wake = lambda ep, ev, why: woke.append((why, ev))
+    c.wake_me(in_s=10, reason="check the turn")
+    _until(tw, 320.0, st)
+    from types import SimpleNamespace
+    ep = SimpleNamespace(state=st)
+    ct.AgentArm.on_tick(arm, ep, 0.0, [])
+    assert not woke and len(c.timers) == 1          # still pending while the coach is awake
+    assert c.wake_me(cancel="the turn")["cancelled"] == 1
+    c.wake_me(in_s=10, reason="again")
+    _until(tw, 340.0, st)
+    arm._busy = False
+    ct.AgentArm.on_tick(arm, ep, 0.0, [])
+    assert woke and woke[0][0] == "your_wake_up"

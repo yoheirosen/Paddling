@@ -319,6 +319,30 @@ HELDOUT_EXPERIMENTER: Dict[str, Any] = {
     "limits": "the role-player stands in for the deployed model; incidents, heart rate and the paddler are planted",
 }
 
+HELDOUT_ANALYST: Dict[str, Any] = {
+    "written": "2026-11-09, before any held-out race of the analyst coach",
+    "seeds": list(range(5090, 5120)),
+    "pool": "held_out",
+    "coach": ("the analyst (RaceCoach version 11, OPEN_COACH_SYSTEM_V11) beside the rule pacer (AnalystArm: "
+              "incident rules, drop 0.06, set the effort; the analyst cannot cue ease, push, hold, rate or finish; "
+              "its critical-power and reserve beliefs are recorded only; pod_gain reaches the computer; test "
+              "pieces stay available), role-played by Claude subagents, 5 s per model call"),
+    "practice": {"seeds": [34, 35], "pool": "development",
+                 "analyst_minus_incident_rules_s": [-48.0, -0.6],
+                 "then": "inputs fixed: the pacer's rules in the instructions, the belief tool's text, the cost "
+                         "tool counts reserve the finish would leave, wake-ups due while awake wait"},
+    "arms": ["no_coach", "incident_rules (drop 0.06) = the pacer alone", "scheduled_tests (primary setting)",
+             "the analyst with the pacer"],
+    "primary": {"race_time": ["analyst minus incident_rules", "analyst minus scheduled_tests"],
+                "test": "paired Wilcoxon signed-rank, bootstrap 95 % interval; Holm across the two"},
+    "secondary": ["analyst minus no_coach", "pod gain error in pod-drift races", "reserve_error_pts",
+                  "races with each incident kind", "the incident table",
+                  "how test pieces were used, and race time in races with and without them",
+                  "descriptive only (other seeds): the experimenting coach's held-out result and the counterfactual"],
+    "failures": "a race the driver cannot finish is reported and excluded; no race is re-run with other answers",
+    "limits": "the role-player stands in for the deployed model; incidents, heart rate and the paddler are planted",
+}
+
 # ── preparations ────────────────────────────────────────────────────────────
 
 @dataclass
@@ -671,13 +695,17 @@ class AgentArm(Arm):
                           if self.coach_version >= 5 else
                           "; plan this leg: the line to hold (give line_m) and the pace" if self.coach_version >= 4 else ""))
                 alerts = list(alerts) + [{"watch_id": "new_leg", "message": msg, "values": {}}]
-        if self.coach_version >= 9 and self.coach is not None:
+        # from the analyst on, a wake-up that comes due while the coach is awake waits until that
+        # wake-up ends (so it can still be cancelled)
+        if self.coach_version >= 9 and self.coach is not None and not (self.coach_version >= 11 and self._busy):
             for w in self.coach.due_timers():
                 alerts = list(alerts) + [{"watch_id": "wake_me", "message": "your wake-up: " + (w.get("reason") or ""),
                                           "values": {}}]
         if alerts:
             fmt = (lambda a: _alert_detail_race(a, ep.state.start_t)) if self.coach_version >= 9 else _alert_detail
-            self._wake(ep, [{"kind": a["watch_id"], "detail": fmt(a)} for a in alerts], "alerts")
+            why = ("your_wake_up" if self.coach_version >= 11 and all(a["watch_id"] == "wake_me" for a in alerts)
+                   else "alerts")
+            self._wake(ep, [{"kind": a["watch_id"], "detail": fmt(a)} for a in alerts], why)
         elif (self.periodic_s and s.get("elapsed_s", 0.0) > 60.0
               and (self._last_wake is None or t - self._last_wake >= self.periodic_s)):
             self._wake(ep, [], "periodic")

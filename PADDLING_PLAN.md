@@ -1000,6 +1000,56 @@ Limits:
 * Its critical-power beliefs added nothing.
 * This motivated the next check: an analyst coach that diagnoses, with the rules pacing.
 
+### An analyst beside the rules, and its held-out check (written down 2026-11-09, before any held-out race)
+
+The counterfactual above found that the experimenting coach's diagnosis was worth about
+14 s a race when the rules paced, while its own pacing lost that and more. This check
+divides the labour that way:
+
+* **The pacer**: the rules written for the practice incidents (`IncidentRules`, the
+  same rules as the baseline arm) set the paddler's effort. Its rules are now written
+  out in the analyst's instructions.
+* **The analyst** (`RaceCoach(version=11)` in `AnalystArm`):
+  * does everything else: finds out what is happening to the boat, the instruments,
+    the water and the course; corrects the paddle sensor's gain (`pod_gain`, which the
+    pacer reads); tells the paddler about course changes; clears the rudder;
+  * cannot cue ease, push, hold, rate or finish. Its critical-power and reserve beliefs
+    are recorded for itself only. Test pieces stay available.
+* **Practice** (development seeds 34 and 35):
+  * Race 34: the analyst used test pieces to raise the effort, which the pacer had held
+    too low. It finished 48 s ahead of the pacer alone and 16 s ahead of the scheduled
+    tests, despite 39 s blown up.
+  * Race 35: 0.6 s ahead of the pacer alone.
+  * The practice races found these confusing inputs, fixed before registration:
+    * the pacer's rules were not described;
+    * the belief tool said critical-power beliefs set the computer;
+    * the cost tool always answered "neutral", because it did not count reserve the
+      finish would leave unspent;
+    * a wake-up that came due while the analyst was thinking fired anyway and could
+      not be cancelled. Wake-ups it set itself also arrived labelled "alerts".
+  * The first three practice races had run without the pacer (a driver fault), so they
+    are set aside.
+
+**Held-out check** (`coaching_trial.HELDOUT_ANALYST`):
+* 30 fresh races, seeds 5090–5119, held-out incident kinds, every arm with the
+  heart-rate strap.
+* Arms: no coach; the incident rules (the pacer alone); the scheduled tests (primary
+  setting); the analyst with the pacer, role-played by Claude subagents at 5 s per
+  model call.
+* Primary: race time of the analyst minus the pacer alone, and minus the scheduled
+  tests. Paired Wilcoxon signed-rank test with a bootstrap 95 % interval, Holm across
+  the two.
+* Secondary:
+  * the analyst minus no coach;
+  * the sensor-gain error in races where the sensor drifts;
+  * the reserve error;
+  * races with each incident kind, and the incident table;
+  * how test pieces were used, and race time in races with and without them;
+  * descriptive only, on other seeds: the experimenting coach's held-out result and
+    the counterfactual.
+* A race the driver cannot finish is reported and excluded. No race is re-run with
+  other answers.
+
 ### A personal heart-rate model instead of the textbook zones (2026-11-09; simulated paddlers)
 
 Heart-rate zones are usually set as a share of the maximum heart rate, or of the heart
