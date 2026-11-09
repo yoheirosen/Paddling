@@ -640,9 +640,11 @@ OPEN_COACH_SYSTEM_V12 = (OPEN_COACH_SYSTEM_V10
              "recomputes both reserves over the race so far.")
     .replace("- Memory: you remember nothing between wake-ups.",
              "- The paddler's pre-race test: pre_race_test shows their pod power and heart rate minute by "
-             "minute through the 3- and 12-minute test pieces and the rest between them. ask_paddler with "
-             "question='finish' asks where they think the finish is.\n- Memory: you remember nothing between "
-             "wake-ups.")
+             "minute through the 3- and 12-minute test pieces and the rest between them. heart_rate_model "
+             "gives this paddler's own heart rate at each effort, fitted from a step test in training, the "
+             "effort above which their heart rate cannot tell efforts apart, and what a heart rate means now. "
+             "ask_paddler with question='finish' asks where they think the finish is.\n- Memory: you remember "
+             "nothing between wake-ups.")
     .replace("- A paddler who runs the reserve empty is forced well below critical power until part of it "
              "comes back.",
              "- A paddler who runs the reserve empty is forced well below critical power until part of it "
@@ -994,6 +996,17 @@ class RaceCoach:
                              description="The paddler's pre-race 3- and 12-minute test: pod power and heart rate "
                                          "minute by minute, with the critical power and reserve it gave.")
                 allowed.append("pre_race_test")
+                reg.register(self.heart_rate_model, name="heart_rate_model",
+                             input_schema={"type": "object", "properties": {
+                                 "hr_bpm": {"type": "number", "description": "a settled heart rate to read"},
+                                 "race_min": {"type": "number", "description": "minutes into the race "
+                                                                               "(default: now)"}}},
+                             description="This paddler's own heart-rate model, fitted from a step test in "
+                                         "training: their heart rate at each share of the pre-race critical "
+                                         "power, their zones with whether heart rate can hold each, the effort "
+                                         "above which heart rate cannot tell efforts apart, and (with hr_bpm) "
+                                         "what a settled heart rate means now.")
+                allowed.append("heart_rate_model")
         elif self.version >= 9:
             reg.register(self.set_calibration, name="set_critical_power", writes=True,
                          description="Correct critical power (boat cp_w and/or pod cp_shaft_w, W) and/or the "
@@ -1371,6 +1384,28 @@ class RaceCoach:
         return {"ok": True, "test": out,
                 "gave": {"critical_power_pod_w": round(sh.cp_w) if sh else None,
                          "reserve_size_pod_kj": round(sh.w_prime_j / 1000.0, 1) if sh else None}}
+
+    def heart_rate_model(self, hr_bpm: Optional[float] = None, race_min: Optional[float] = None) -> Dict[str, Any]:
+        m = getattr(self, "hr_model", None)
+        cp = getattr(self, "hr_model_cp_w", None)
+        if m is None or not cp:
+            return {"ok": False, "error": "no heart-rate model for this paddler"}
+        from .heart_rate import zones as _zones
+        sm = m.summary(cp_w=cp)
+        out = {"ok": True, "fitted_from": "a step test in training: 5-minute steps at 55-100 % of critical power",
+               "critical_power_pod_w_used": round(cp),
+               "hr_at_share_of_cp": sm["hr_at_share_of_cp"],
+               "heart_rate_separates_efforts_up_to_share_of_cp": sm["heart_rate_separates_efforts_up_to_share_of_cp"],
+               "creep_bpm_per_10min": sm["creep_per_10min"], "lag_s": sm["lag_s"],
+               "highest_30s_hr_in_test": sm["ceiling_bpm"], "notes": sm["notes"],
+               "zones": [{k: d[k] for k in ("zone", "power_w", "hr_bpm", "heart_rate_can_hold_it")}
+                         for d in _zones(m, cp)]}
+        if hr_bpm is not None:
+            if race_min is None:
+                race_min = (self.state.last.get("elapsed_s") or 0.0) / 60.0
+            out["reading"] = {"hr_bpm": float(hr_bpm), "race_min": round(float(race_min), 1),
+                              **m.read(float(hr_bpm), cp, minutes_in=float(race_min))}
+        return out
 
     def ask_paddler(self, question: str = "feel") -> Dict[str, Any]:
         if self.ask_fn is None:

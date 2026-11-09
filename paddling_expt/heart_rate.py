@@ -32,11 +32,20 @@ from typing import Any, Dict, List, Optional, Sequence
 
 import numpy as np
 
-__all__ = ["PersonalHeartRate", "fit_personal_model", "zones", "textbook_zones", "TEXTBOOK_ZONES"]
+__all__ = ["PersonalHeartRate", "fit_personal_model", "zones", "textbook_zones", "zone_of_share",
+           "TEXTBOOK_ZONES", "EFFORT_ZONES"]
 
 # Share-of-maximum zones as commonly taught (five zones).
 TEXTBOOK_ZONES = [("recovery", 0.50, 0.60), ("endurance", 0.60, 0.70), ("tempo", 0.70, 0.80),
                   ("threshold", 0.80, 0.90), ("above threshold", 0.90, 1.00)]
+# Effort zones as a share of the person's critical power (the zones the personal model names).
+EFFORT_ZONES = [("recovery", 0.0, 0.55), ("endurance", 0.55, 0.75), ("tempo", 0.75, 0.90),
+                ("threshold", 0.90, 1.05), ("above threshold", 1.05, 9.0)]
+
+
+def zone_of_share(share: float) -> int:
+    """The effort zone (an index into :data:`EFFORT_ZONES`) for a share of critical power."""
+    return next(i for i, (_, lo, hi) in enumerate(EFFORT_ZONES) if lo <= max(0.0, share) < hi)
 
 
 @dataclass
@@ -78,6 +87,24 @@ class PersonalHeartRate:
         if y >= 1:
             return None
         return -self.scale_w * math.log(1.0 - y)
+
+    def read(self, hr_bpm: float, cp_w: float, minutes_in: float = 0.0, margin: float = 0.05) -> Dict[str, Any]:
+        """What a settled heart rate means ``minutes_in`` into a session: the effort, its share
+        of critical power and its zone, or that heart rate cannot tell efforts apart there
+        (above :meth:`separates_up_to` plus ``margin``; the effort is then only a lower bound)."""
+        e = self.effort_at(hr_bpm, minutes_in=minutes_in)
+        sep = self.separates_up_to(cp_w)
+        if e is None:
+            return {"effort_w": None, "share_of_cp": None, "zone": None,
+                    "note": f"above anything this heart rate curve reaches: an effort above {sep:.2f} of "
+                            "critical power, which heart rate cannot tell apart; use power, pace or feel"}
+        share = e / cp_w
+        if share > sep + margin:
+            return {"effort_w": None, "at_least_w": round(sep * cp_w), "share_of_cp": None, "zone": None,
+                    "note": f"an effort above about {sep:.2f} of critical power; heart rate cannot tell efforts "
+                            "apart there (a few beats span a large range of power); use power, pace or feel"}
+        return {"effort_w": round(e), "share_of_cp": round(share, 2),
+                "zone": EFFORT_ZONES[zone_of_share(share)][0]}
 
     def summary(self, cp_w: Optional[float] = None) -> Dict[str, Any]:
         out = {"rest_bpm": round(self.rest), "lag_s": round(self.lag_s), "creep_per_10min": round(self.creep_per_10min, 1),
@@ -168,12 +195,13 @@ def zones(model: PersonalHeartRate, cp_w: float) -> List[Dict[str, Any]]:
     """Personal zones from the person's own critical power, each with the heart rate the
     model expects and whether heart rate can tell it from its neighbours (a zone narrower
     than 3 beats cannot be held by heart rate)."""
-    bands = [("recovery", 0.0, 0.55), ("endurance", 0.55, 0.75), ("tempo", 0.75, 0.90),
-             ("threshold", 0.90, 1.05), ("above threshold", 1.05, 1.30)]
+    bands = EFFORT_ZONES[:-1] + [(EFFORT_ZONES[-1][0], EFFORT_ZONES[-1][1], 1.30)]
     out = []
     for nm, lo, hi in bands:
         h_lo, h_hi = model.hr_at(lo * cp_w), model.hr_at(hi * cp_w)
-        out.append({"zone": nm, "power_w": [round(lo * cp_w), round(hi * cp_w)], "hr_bpm": [round(h_lo), round(h_hi)],
+        # the bottom zone has no lower heart rate: the curve is not fitted down to no effort
+        out.append({"zone": nm, "power_w": [round(lo * cp_w), round(hi * cp_w)],
+                    "hr_bpm": [None if lo <= 0.0 else round(h_lo), round(h_hi)],
                     "heart_rate_can_hold_it": bool(h_hi - h_lo >= 3.0)})
     return out
 

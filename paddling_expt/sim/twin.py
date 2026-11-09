@@ -1057,6 +1057,25 @@ def oracle_effort(traits: Traits, setup: RaceSetup) -> Dict[str, float]:
     return {"effort": e, "race_time_s": tw.race_time_s, "reserve_left": tw.w / traits.paddler.w_prime_j}
 
 
+STEP_TEST_SHARES = (0.70, 0.55, 0.90, 0.80, 1.00)   # out of order: a slow creep cannot pass for a rise with effort
+
+
+def twin_step_test(traits: Traits, *, seed: int = 0, shares: Tuple[float, ...] = STEP_TEST_SHARES,
+                   step_s: float = 300.0, hr_par: Optional[Dict[str, Any]] = None,
+                   craft: str = "oc1") -> Tuple[List[Dict[str, Any]], "PaddlerTwin"]:
+    """A heart-rate step test on flat water: 5 minutes easy, then steady steps at these shares
+    of critical power, out of order.  The paddler wears the strap with a heart-rate profile;
+    ``hr_par`` gives a known person's physiology (``PaddlerTwin._hr_par``; the seed then only
+    sets the measurement noise), else it is drawn from the seed."""
+    plan = [(300.0, 56.0, 0.5)] + [(float(step_s), traits.habit_rate, float(x)) for x in shares]
+    tw = PaddlerTwin(traits, RaceSetup(current_mps=0.0, plan=plan, craft=craft), seed=seed)
+    tw.enable_heart_rate(profiles=True)
+    if hr_par is not None:
+        tw._hr_par = dict(hr_par)
+        tw.hr = hr_par.get("rest", hr_par["low"]) if hr_par.get("shape") == "compressed" else hr_par["low"]
+    return tw.run_alone(step_s=10.0), tw
+
+
 def twin_cp_test(traits: Traits, *, seed: int = 0, short_s: float = 180.0, long_s: float = 720.0,
                  rest_s: float = 1800.0, drain: float = 0.95, craft: str = "oc1",
                  heart_rate: bool = False, hr_profiles: bool = False) -> Tuple[List[Dict[str, Any]], "PaddlerTwin"]:

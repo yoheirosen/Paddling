@@ -1000,6 +1000,70 @@ Limits:
 * Its critical-power beliefs added nothing.
 * This motivated the next check: an analyst coach that diagnoses, with the rules pacing.
 
+### A personal heart-rate model instead of the textbook zones (2026-11-09; simulated paddlers)
+
+Heart-rate zones are usually set as a share of the maximum heart rate, or of the heart
+rate at threshold. Both assume that heart rate rises in a straight line with effort.
+For many people it does not. Some paddlers have a low resting rate, yet sit high already
+at moderate effort and rise only a few beats above that near race pace. Here that is
+called a **compressed response**. For them a share of the maximum says almost nothing
+about effort near race pace.
+
+**The model** (`paddling_expt/heart_rate.py`) is fitted from one session of the person's
+own data: time, effort (pod power, or any measure of effort) and heart rate. It fits:
+
+* the lag of heart rate behind effort;
+* the level heart rate settles at for each effort, as a curve that bends. The curve
+  covers both the textbook straight line and the compressed response;
+* the slow upward creep over a session.
+
+From the fit it gives:
+
+* the effort a heart rate means;
+* this person's zones, as shares of their critical power (the highest power they can
+  hold for a long time);
+* where heart rate stops telling efforts apart: above the effort at which 3 beats span
+  more than 5 % of critical power. There it says "heart rate cannot tell; use power,
+  pace or feel" instead of naming a zone.
+
+**The test** (`experiments/heart_rate_model.py`): 60 simulated paddlers.
+
+* Physiology is planted: 2 in 5 have a compressed response (resting 40–50,
+  150–162 at half of critical power, 3–6 beats below the maximum at critical power).
+  The rest have the textbook line.
+* Each does one step test: 5 minutes easy, then five 5-minute steps at 55–100 % of
+  critical power, out of order so the slow creep cannot pass for a rise with effort.
+  The model is fitted from that session alone.
+* It is then scored on another day's steady efforts at 50–95 % of critical power, which
+  it was not fitted on.
+* Two baselines name a zone from the same heart rate:
+  * the textbook bands as a share of the maximum. They get the person's true maximum,
+    their best case;
+  * bands as a share of the heart rate at threshold (Friel's cycling bands). The
+    threshold heart rate is taken from the step at critical power.
+
+| Effort zone named from heart rate | Typical response (35 paddlers) | Compressed response (25) |
+|---|---|---|
+| Textbook (share of maximum) | 29 % right | 0 % right |
+| Share of the heart rate at threshold | 53 % right | 20 % right |
+| Personal model | 99 % right, 1 % wrong | 40 % right, 0 % wrong, 60 % "heart rate cannot tell" |
+| Personal model, effort error where it answers (median) | 2.3 % of critical power | 3.3 % |
+| Heart rate separates efforts up to (median) | 1.2 × critical power | 0.59 × critical power |
+
+* For a typical response the personal model reads effort from heart rate almost
+  exactly. Both rules of thumb misplace most efforts by a zone.
+* For a compressed response no reading of heart rate can tell tempo from threshold.
+  The personal model says so, from the person's own data, and still names the easy
+  zones correctly. Both rules of thumb name a zone every time and are wrong 80–100 %
+  of the time.
+* Limits: the physiology, and the clean flat-water steps, are planted. Real heart rate
+  also moves with heat, sleep, hydration and nerves from day to day. Real paddlers
+  will not fall into two clean shapes.
+* Figure `artifacts/heart_rate_personal_model`.
+* The heart-rate-learning coach has a `heart_rate_model` tool fitted from such a step
+  test. With a SpeedCoach and a strap, the same fit can use the hull model's power at
+  the measured speed as the effort.
+
 ## Results so far
 
 **Simulated 37-minute OC1 training session** (`demos/demo_oc1_training.py`,
@@ -1209,7 +1273,9 @@ the other eight sessions: critical power 93 W, reserve 6.4 kJ; stand-in coach):
   30-50 s, levels off below critical power, and above it climbs with the share of the
   reserve spent (reaching the maximum as it empties). It also creeps up 1-3 beats per 10
   minutes and reads with 1.5 beats of noise. This is the textbook shape, not measured on
-  the paddler. Real heart rate also moves with heat, hydration and nerves, which the twin
+  the paddler. Races and tests with heart-rate profiles give about 2 in 5 paddlers a
+  compressed response instead: resting 40-50, already 150-162 at half of critical power,
+  and only 3-6 beats below the maximum at critical power. Real heart rate also moves with heat, hydration and nerves, which the twin
   leaves out, so a heart-rate test in the twin is cleaner than on the water.
 * **Role-played coaching is a stand-in, not the deployed model.** In the drafting
   check (above), Claude subagents answered every model call, with the same prompt,

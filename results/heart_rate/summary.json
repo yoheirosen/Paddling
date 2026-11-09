@@ -1,24 +1,26 @@
 {
  "typical": {
   "paddlers": 35,
-  "textbook_zone_right": 0.211,
-  "personal_zone_right": 0.537,
+  "textbook_zone_right": 0.291,
+  "personal_zone_right": 0.989,
   "personal_says_cannot_tell": 0.0,
-  "personal_zone_wrong": 0.463,
-  "textbook_zone_wrong": 0.789,
-  "textbook_within_one_zone": 0.663,
-  "personal_effort_error_pct_median": 7.1,
+  "personal_zone_wrong": 0.011,
+  "textbook_zone_wrong": 0.709,
+  "threshold_zone_right": 0.526,
+  "textbook_within_one_zone": 1.0,
+  "personal_effort_error_pct_median": 2.3,
   "hr_separates_up_to_share_of_cp_median": 1.2
  },
  "compressed": {
   "paddlers": 25,
-  "textbook_zone_right": 0.112,
-  "personal_zone_right": 0.224,
-  "personal_says_cannot_tell": 0.136,
-  "personal_zone_wrong": 0.64,
-  "textbook_zone_wrong": 0.888,
-  "textbook_within_one_zone": 0.776,
-  "personal_effort_error_pct_median": 28.5,
+  "textbook_zone_right": 0.0,
+  "personal_zone_right": 0.4,
+  "personal_says_cannot_tell": 0.6,
+  "personal_zone_wrong": 0.0,
+  "textbook_zone_wrong": 1.0,
+  "threshold_zone_right": 0.2,
+  "textbook_within_one_zone": 0.2,
+  "personal_effort_error_pct_median": 3.3,
   "hr_separates_up_to_share_of_cp_median": 0.59
  }
 }

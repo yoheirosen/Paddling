@@ -318,3 +318,26 @@ def test_the_role_play_driver_races_the_analyst_with_the_pacer(tmp_path):
     assert isinstance(rr._arm(a, FakeProvider(lambda *x: "no cue", model="t")), ct.AnalystArm)
     a.coach_version = 10
     assert type(rr._arm(a, FakeProvider(lambda *x: "no cue", model="t"))) is ct.AgentArm
+
+
+def test_the_heart_rate_coach_gets_this_paddlers_own_heart_rate_model(prep):
+    from types import SimpleNamespace
+    from paddling_expt.sim.twin import heart_rate_profile
+    seed = next(s for s in range(1, 200) if heart_rate_profile(s).get("shape") == "compressed")
+    p = ct.draw_preparation(seed, incidents="development")
+    tw = PaddlerTwin(p.traits, p.setup, seed=p.seed, even=p.even)
+    tw.enable_heart_rate(profiles=True)
+    st = RaceState(tw.craft, tw.total_kg, p.athlete, distance_m=p.setup.distance_m, start_t=tw.start_t,
+                   athlete_shaft=p.athlete_shaft)
+    sink = CueSink(st, act=lambda a: None)
+    arm = ct.AgentArm(FakeProvider(lambda *a: "no cue", model="t"), coach_version=12)
+    from paddling_expt.race_panel import RacePanel
+    ep = SimpleNamespace(prep=p, twin=tw, state=st, gate=make_cue_gate(sink, st), panel=RacePanel(st))
+    arm.setup(ep)
+    c = arm.coach
+    m = c.heart_rate_model()
+    assert m["ok"] and m["heart_rate_separates_efforts_up_to_share_of_cp"] < 0.75
+    assert any(not z["heart_rate_can_hold_it"] for z in m["zones"])
+    near_cp = m["hr_at_share_of_cp"]["100%"]
+    r = c.heart_rate_model(hr_bpm=near_cp, race_min=0.0)["reading"]
+    assert r["zone"] is None and "cannot tell" in r["note"]

@@ -5,6 +5,28 @@ Dated entries, newest first. Entries before the move refer to paths under
 
 ---
 
+### A personal heart-rate model, and an analyst coach that works beside the rules (2026-11-09)
+
+The owner, and several paddlers they know, have heart rates that do not follow the textbook:
+high at moderate load, little rise at high load, with a low resting rate.
+
+* `paddling_expt/heart_rate.py`: a personal heart-rate model fitted from one session (lag,
+  a bending settled-level curve, a bounded slow creep). It reads a heart rate as an effort
+  and a zone, and says where heart rate cannot tell efforts apart.
+* `sim/twin.py`: `heart_rate_profile` (about 2 in 5 paddlers compressed) and
+  `twin_step_test` (a step test out of order; can reuse a known person's physiology).
+* `experiments/heart_rate_model.py`: 60 simulated paddlers, scored on held-out steady efforts
+  against the textbook bands and against bands from the heart rate at threshold. Figure
+  `heart_rate_personal_model`.
+  * A first version gave the held-out day a different person's heart rate (the test
+    session's own seed drew it); fixed by passing the same physiology.
+  * Each held-out point is now plotted with the slow creep taken off.
+* The heart-rate-learning coach (`RaceCoach(version=12)`) gets a `heart_rate_model` tool.
+* The analyst coach (`RaceCoach(version=11)`, `AnalystArm`): the role-play driver had built
+  the plain coach arm for it, so the first three practice races ran without the rule pacer.
+  Those races moved to `roleplay/analyst_dev_without_pacer/`; new practice races use the
+  right arm.
+
 ### A coach that runs experiments, and its held-out check (2026-11-07)
 
 At the owner's direction ("what does an agent unlock if we give it the abilities it needs?";
