@@ -1117,6 +1117,11 @@ divides the labour that way:
   comparison is fair but the pacer is weaker than a good human pacer.
 * Figure `artifacts/coaching_heldout_analyst`; summary
   `results/coaching_trial/summary_heldout_analyst.json`.
+* Reproducing it: the 30 races replay exactly on the platform (agentic_experiments) at
+  commit `2550e12f`, the branch that carries the `maximum()` fix. On the platform's main of
+  2026-11-09 with that fix merged in, 28 of 30 replay exactly. There, race 5092 finishes
+  7.4 s sooner and race 5119 0.2 s later, because main changed how agent-defined metrics
+  are admitted and how often they update. The mean differences move by about 0.2 s.
 
 ### A personal heart-rate model instead of the textbook zones (2026-11-09; simulated paddlers)
 
