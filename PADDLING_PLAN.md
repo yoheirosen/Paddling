@@ -1106,7 +1106,10 @@ From the fit it gives:
   The personal model says so, from the person's own data, and still names the easy
   zones correctly. Both rules of thumb name a zone every time and are wrong 80–100 %
   of the time.
-* Limits: the physiology, and the clean flat-water steps, are planted. Real heart rate
+* Limits: the physiology, and the clean flat-water steps, are planted. Here the steps are
+  shares of each paddler's true critical power, and the zones are read against it. In the
+  race coach the steps are shares of the pre-race test's estimate, so the model carries
+  no hidden truth. Real heart rate
   also moves with heat, sleep, hydration and nerves from day to day. Real paddlers
   will not fall into two clean shapes.
 * Figure `artifacts/heart_rate_personal_model`.
