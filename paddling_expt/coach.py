@@ -1440,7 +1440,7 @@ class RaceCoach:
             return {"ok": False, "error": "no heart-rate model for this paddler"}
         from .heart_rate import zones as _zones
         sm = m.summary(cp_w=cp)
-        out = {"ok": True, "fitted_from": "a step test in training: 5-minute steps at 55-100 % of critical power",
+        out = {"ok": True, "fitted_from": "a step test in training: 5-minute steps at 55-100 % of the pre-race critical power",
                "critical_power_pod_w_used": round(cp),
                "hr_at_share_of_cp": sm["hr_at_share_of_cp"],
                "heart_rate_separates_efforts_up_to_share_of_cp": sm["heart_rate_separates_efforts_up_to_share_of_cp"],

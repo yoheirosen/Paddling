@@ -50,7 +50,8 @@ from .race import Athlete, RaceState, calibrate, sustainable_power
 from .race_panel import SCREEN_PROGRAMS, SCREEN_WATCHES, RacePanel
 from .sim.paddler import PaddlerParams
 from .sim.twin import (CoastalWater, Incident, Pack, PaddlerTwin, RaceSetup, Traits, draw_setup, draw_traits,
-                       even_effort, oracle_effort, twin_cp_test, twin_step_test, water_forecast)
+                       even_effort, oracle_effort, twin_cp_test, twin_step_test, water_forecast,
+                       STEP_TEST_SHARES)
 from .heart_rate import fit_personal_model
 
 __all__ = ["PREREGISTERED", "HELDOUT_ROUND3", "HELDOUT_ROUND3_EXTENSION", "HELDOUT_TIERED", "HELDOUT_PACK", "HELDOUT_PACK_ROLEPLAY", "Preparation", "draw_preparation", "Arm", "NoCoach", "FixedPlan",
@@ -656,11 +657,16 @@ class AgentArm(Arm):
             rows, _ = twin_cp_test(ep.prep.traits, seed=ep.prep.seed, heart_rate=True,
                                    hr_profiles=bool(ep.twin._hr_par and "shape" in ep.twin._hr_par))
             self.coach.test_rows = rows
-            if ep.twin._hr_par:            # a step test in training, the same person; its own noise
-                srows, _ = twin_step_test(ep.prep.traits, seed=ep.prep.seed + 50_000, hr_par=ep.twin._hr_par)
+            sh = ep.state.athlete_shaft
+            if ep.twin._hr_par and sh is not None:
+                # a step test in training, the same person, its own noise; the steps are set as
+                # shares of the critical power the pre-race test gave (as a paddler would set
+                # them), not of the true one, so the model carries no hidden truth
+                f = sh.cp_w / ep.prep.traits.paddler.critical_power_w
+                srows, _ = twin_step_test(ep.prep.traits, seed=ep.prep.seed + 50_000, hr_par=ep.twin._hr_par,
+                                          shares=tuple(x * f for x in STEP_TEST_SHARES))
                 self.coach.hr_model = fit_personal_model(srows)
-                sh = ep.state.athlete_shaft
-                self.coach.hr_model_cp_w = sh.cp_w if sh else None
+                self.coach.hr_model_cp_w = sh.cp_w
         self._leg = None
 
     def on_messages(self, ep: "Episode", msgs: List[Dict[str, Any]]) -> None:
