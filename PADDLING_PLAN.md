@@ -978,6 +978,28 @@ Limits:
 * the incidents, the heart rate and the paddler are planted;
 * the rules do not read the radio, as registered.
 
+**Exploratory, at no model cost: the coach's findings with the rules pacing**
+(`experiments/findings_counterfactual.py`).
+* Method: the coach's findings were read from its recorded race of each seed and applied at
+  the same race seconds to a race the incident rules paced. The findings were:
+  * its sensor corrections;
+  * the race distance it set, and its messages telling the paddler;
+  * its rudder clears;
+  * optionally, its critical-power and reserve beliefs.
+* Same 30 races. Not registered: the timings are the coach's from its own races.
+
+| Rules pacing, plus the coach's … | Minus the incident rules alone | Minus the coach pacing itself |
+|---|---|---|
+| sensor corrections | −1.5 s (−7.1 to +1.9) | −4.6 s |
+| + course corrections and messages | −6.1 s (−10.8 to −2.1), p 0.04 | −9.2 s |
+| + rudder clears | −13.7 s (−23.9 to −5.2), p 0.02, faster in 18 of 30 | −16.8 s (−31.5 to −2.6), p 0.04 |
+| + critical-power beliefs | −11.6 s (−18.4 to −5.3), p 0.004, faster in 20 of 30 | −14.7 s |
+
+* The coach's diagnosis is worth about 14 s a race when the rules pace.
+* Its own pacing lost that and more.
+* Its critical-power beliefs added nothing.
+* This motivated the next check: an analyst coach that diagnoses, with the rules pacing.
+
 ## Results so far
 
 **Simulated 37-minute OC1 training session** (`demos/demo_oc1_training.py`,
