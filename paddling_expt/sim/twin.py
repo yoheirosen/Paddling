@@ -250,6 +250,28 @@ class RaceSetup:
     incidents: List[Incident] = field(default_factory=list)   # open races: things that happen
 
 
+def heart_rate_profile(seed: int, p_compressed: float = 0.4) -> Dict[str, Any]:
+    """How this paddler's heart rate answers effort (races with heart-rate profiles; its own
+    random stream).  Typical: the textbook line from about 100-115 at half of critical power
+    to 158-176 at it.  Compressed (about 2 in 5 paddlers): a low resting rate, yet already
+    150-162 at half of critical power, only 3-6 beats below the maximum at critical power, so
+    the climb above critical power is small (as some endurance athletes report).  Planted."""
+    rng = np.random.default_rng([seed, 23])
+    if float(rng.random()) >= p_compressed:
+        return {"shape": "typical"}
+    rest = float(rng.uniform(40.0, 50.0))
+    hr_max = float(rng.uniform(172.0, 182.0))
+    hr_cp = hr_max - float(rng.uniform(3.0, 6.0))
+    hr50 = float(rng.uniform(150.0, 162.0))
+    target = (hr50 - rest) / (hr_cp - rest)           # the share of the rise reached at half of critical power
+    lo, hi = 0.01, 40.0                               # solve (1 - e^-k/2) / (1 - e^-k) = target for k
+    for _ in range(60):
+        k = 0.5 * (lo + hi)
+        g = (1.0 - math.exp(-0.5 * k)) / (1.0 - math.exp(-k))
+        lo, hi = (k, hi) if g < target else (lo, k)
+    return {"shape": "compressed", "rest": rest, "max": hr_max, "cp": hr_cp, "low": hr50, "k": 0.5 * (lo + hi)}
+
+
 def draw_traits(seed: int) -> Traits:
     """A random paddler (the pre-registered ranges; ``PADDLING_PLAN.md``)."""
     rng = np.random.default_rng([seed, 17])
@@ -377,7 +399,7 @@ class PaddlerTwin:
             "t", "race_s", "race_m", "effort", "p_shaft", "p_boat", "eta", "rate", "rate_best",
             "fatigue", "w_bal", "v_water", "v_ground", "current_along", "coached")}
 
-    def enable_heart_rate(self) -> None:
+    def enable_heart_rate(self, profiles: bool = False) -> None:
         """Give the paddler a heart-rate strap: rows carry ``heart_rate_bpm``.  Drawn on its own
         random streams, so nothing else in the race changes.  Planted physiology (textbook
         shape): heart rate follows effort with a lag of about a minute; at a steady effort below
@@ -391,14 +413,20 @@ class PaddlerTwin:
                         "drift_per_10min": float(rng.uniform(1.0, 3.0)), "noise_bpm": 1.5}
         self.rng_hr = np.random.default_rng([self._seed, 7])
         self.heart_rate = True
-        self.hr = self._hr_par["low"]
+        if profiles:
+            self._hr_par.update(heart_rate_profile(self._seed))
+        self.hr = self._hr_par.get("rest", self._hr_par["low"]) if self._hr_par.get("shape") == "compressed" \
+            else self._hr_par["low"]
 
     def _hr_step(self, P: float, T: float) -> float:
         hp = self._hr_par
         cp = self._cp_eff()
         x = P / max(1e-6, cp)
         x_c = min(1.0, x)
-        if x_c >= 0.5:
+        if hp.get("shape") == "compressed":       # high at moderate effort, little rise above it
+            k = hp["k"]
+            ss = hp["rest"] + (hp["cp"] - hp["rest"]) * (1.0 - math.exp(-k * max(0.0, x_c))) / (1.0 - math.exp(-k))
+        elif x_c >= 0.5:
             ss = hp["low"] + (hp["cp"] - hp["low"]) * (x_c - 0.5) / 0.5
         else:
             ss = hp["low"] - 60.0 * (0.5 - x_c)
@@ -604,6 +632,14 @@ class PaddlerTwin:
             says = "Close to my limit." if wf < 0.25 else "Hard but holding." if wf < 0.6 else "Steady, feels fine."
         self._note("asked", rpe=rpe, says=says)
         return {"effort_out_of_10": rpe, "says": says}
+
+    def answer_finish(self) -> Dict[str, Any]:
+        """The paddler's answer to "how far do you think the finish is?" (what they believe,
+        to the nearest 50 m)."""
+        left = max(0.0, self.believed_m - self.race_m)
+        m = int(round(left / 50.0) * 50)
+        self._note("asked_finish", believed_left_m=m, true_left_m=round(self.su.distance_m - self.race_m))
+        return {"says": f"About {m} metres to go, I think.", "thinks_finish_in_m": m}
 
     def _apply(self, ask: str, pace_s500: Optional[float], e_now: float, line_m: Optional[float] = None,
                distance_left_m: Optional[float] = None, segments: Optional[List[Dict[str, Any]]] = None) -> None:
@@ -1021,14 +1057,37 @@ def oracle_effort(traits: Traits, setup: RaceSetup) -> Dict[str, float]:
     return {"effort": e, "race_time_s": tw.race_time_s, "reserve_left": tw.w / traits.paddler.w_prime_j}
 
 
+STEP_TEST_SHARES = (0.70, 0.55, 0.90, 0.80, 1.00)   # out of order: a slow creep cannot pass for a rise with effort
+
+
+def twin_step_test(traits: Traits, *, seed: int = 0, shares: Tuple[float, ...] = STEP_TEST_SHARES,
+                   step_s: float = 300.0, hr_par: Optional[Dict[str, Any]] = None,
+                   craft: str = "oc1") -> Tuple[List[Dict[str, Any]], "PaddlerTwin"]:
+    """A heart-rate step test on flat water: 5 minutes easy, then steady steps at these shares
+    of critical power, out of order.  The paddler wears the strap with a heart-rate profile;
+    ``hr_par`` gives a known person's physiology (``PaddlerTwin._hr_par``; the seed then only
+    sets the measurement noise), else it is drawn from the seed."""
+    plan = [(300.0, 56.0, 0.5)] + [(float(step_s), traits.habit_rate, float(x)) for x in shares]
+    tw = PaddlerTwin(traits, RaceSetup(current_mps=0.0, plan=plan, craft=craft), seed=seed)
+    tw.enable_heart_rate(profiles=True)
+    if hr_par is not None:
+        tw._hr_par = dict(hr_par)
+        tw.hr = hr_par.get("rest", hr_par["low"]) if hr_par.get("shape") == "compressed" else hr_par["low"]
+    return tw.run_alone(step_s=10.0), tw
+
+
 def twin_cp_test(traits: Traits, *, seed: int = 0, short_s: float = 180.0, long_s: float = 720.0,
-                 rest_s: float = 1800.0, drain: float = 0.95, craft: str = "oc1") -> Tuple[List[Dict[str, Any]], "PaddlerTwin"]:
+                 rest_s: float = 1800.0, drain: float = 0.95, craft: str = "oc1",
+                 heart_rate: bool = False, hr_profiles: bool = False) -> Tuple[List[Dict[str, Any]], "PaddlerTwin"]:
     """The critical-power test on this paddler, flat water: an all-out 3- and 12-minute
-    piece each paced to spend ``drain`` of the reserve (as :func:`.scenarios.cp_test`)."""
+    piece each paced to spend ``drain`` of the reserve (as :func:`.scenarios.cp_test`).
+    ``heart_rate``: the paddler wears the strap (rows carry ``heart_rate_bpm``)."""
     p, h = traits.paddler, traits.habit_rate
     e_s = 1.0 + drain * p.w_prime_j / (p.critical_power_w * short_s)
     e_l = 1.0 + drain * p.w_prime_j / (p.critical_power_w * long_s)
     plan = [(300.0, 56.0, 0.6), (short_s, h + 4.0, e_s), (rest_s, 48.0, 0.4),
             (long_s, h + 1.0, e_l), (120.0, 50.0, 0.4)]
     tw = PaddlerTwin(traits, RaceSetup(current_mps=0.0, plan=plan, craft=craft), seed=seed)
+    if heart_rate:
+        tw.enable_heart_rate(profiles=hr_profiles)
     return tw.run_alone(), tw

@@ -978,6 +978,213 @@ Limits:
 * the incidents, the heart rate and the paddler are planted;
 * the rules do not read the radio, as registered.
 
+**Exploratory, at no model cost: the coach's findings with the rules pacing**
+(`experiments/findings_counterfactual.py`).
+* Method: the coach's findings were read from its recorded race of each seed and applied at
+  the same race seconds to a race the incident rules paced. The findings were:
+  * its sensor corrections;
+  * the race distance it set, and its messages telling the paddler;
+  * its rudder clears;
+  * optionally, its critical-power and reserve beliefs.
+* Same 30 races. Not registered: the timings are the coach's from its own races.
+
+| Rules pacing, plus the coach's … | Minus the incident rules alone | Minus the coach pacing itself |
+|---|---|---|
+| sensor corrections | −1.5 s (−7.1 to +1.9) | −4.6 s |
+| + course corrections and messages | −6.1 s (−10.8 to −2.1), p 0.04 | −9.2 s |
+| + rudder clears | −13.7 s (−23.9 to −5.2), p 0.02, faster in 18 of 30 | −16.8 s (−31.5 to −2.6), p 0.04 |
+| + critical-power beliefs | −11.6 s (−18.4 to −5.3), p 0.004, faster in 20 of 30 | −14.7 s |
+
+* The coach's diagnosis is worth about 14 s a race when the rules pace.
+* Its own pacing lost that and more.
+* Its critical-power beliefs added nothing.
+* This motivated the next check: an analyst coach that diagnoses, with the rules pacing.
+
+### An analyst beside the rules, and its held-out check (written down 2026-11-09, before any held-out race)
+
+The counterfactual above found that the experimenting coach's diagnosis was worth about
+14 s a race when the rules paced, while its own pacing lost that and more. This check
+divides the labour that way:
+
+* **The pacer**: the rules written for the practice incidents (`IncidentRules`, the
+  same rules as the baseline arm) set the paddler's effort. Its rules are now written
+  out in the analyst's instructions.
+* **The analyst** (`RaceCoach(version=11)` in `AnalystArm`):
+  * does everything else: finds out what is happening to the boat, the instruments,
+    the water and the course; corrects the paddle sensor's gain (`pod_gain`, which the
+    pacer reads); tells the paddler about course changes; clears the rudder;
+  * cannot cue ease, push, hold, rate or finish. Its critical-power and reserve beliefs
+    are recorded for itself only. Test pieces stay available.
+* **Practice** (development seeds 34 and 35):
+  * Race 34: the analyst used test pieces to raise the effort, which the pacer had held
+    too low. It finished 48 s ahead of the pacer alone and 16 s ahead of the scheduled
+    tests, despite 39 s blown up.
+  * Race 35: 0.6 s ahead of the pacer alone.
+  * The practice races found these confusing inputs, fixed before registration:
+    * the pacer's rules were not described;
+    * the belief tool said critical-power beliefs set the computer;
+    * the cost tool always answered "neutral", because it did not count reserve the
+      finish would leave unspent;
+    * a wake-up that came due while the analyst was thinking fired anyway and could
+      not be cancelled. Wake-ups it set itself also arrived labelled "alerts".
+  * The first three practice races had run without the pacer (a driver fault), so they
+    are set aside.
+
+**Held-out check** (`coaching_trial.HELDOUT_ANALYST`):
+* 30 fresh races, seeds 5090–5119, held-out incident kinds, every arm with the
+  heart-rate strap.
+* Arms: no coach; the incident rules (the pacer alone); the scheduled tests (primary
+  setting); the analyst with the pacer, role-played by Claude subagents at 5 s per
+  model call.
+* Primary: race time of the analyst minus the pacer alone, and minus the scheduled
+  tests. Paired Wilcoxon signed-rank test with a bootstrap 95 % interval, Holm across
+  the two.
+* Secondary:
+  * the analyst minus no coach;
+  * the sensor-gain error in races where the sensor drifts;
+  * the reserve error;
+  * races with each incident kind, and the incident table;
+  * how test pieces were used, and race time in races with and without them;
+  * descriptive only, on other seeds: the experimenting coach's held-out result and
+    the counterfactual.
+* A race the driver cannot finish is reported and excluded. No race is re-run with
+  other answers.
+
+**Result (30 held-out races, 2026-11-09; the analyst role-played by Claude subagents).**
+
+| Analyst with the pacer, minus … | Mean difference (95 % interval) | Paired test, Holm | Analyst faster in |
+|---|---|---|---|
+| the pacer alone (primary) | −13.6 s (−23.3 to −3.4) | p 0.0008, Holm 0.002 | 22 of 30 |
+| the scheduled tests (primary) | −9.6 s (−17.2 to −0.3) | p 0.004, Holm 0.004 | 23 of 30 |
+| no coach | −22.1 s (−31.8 to −12.8) | p < 0.0001 | 25 of 30 |
+
+* Both registered comparisons favour the analyst working beside the pacer.
+* The size matches the counterfactual estimate (−13.7 s), which was computed from the
+  experimenting coach's findings on other seeds. The experimenting coach, pacing the
+  paddler itself, had been level with the rules.
+* Where the time came from:
+  * **Weed:** the analyst cleared it sooner. The boat carried weed for 334 s on average,
+    against 489 s with the scheduled tests, 761 s with the pacer alone and 1,029 s with
+    no coach. The price was 15 back-strokes where there was no weed (the scheduled
+    tests made 25, the pacer alone 5).
+  * **Course changes by radio:** the analyst told the paddler in 21 of 23 races. Only
+    once did a paddler overrun the finish they believed in, against 10 times with each
+    rule arm. Paddlers often took in the new distance only on the second or third
+    telling; the analysts found this out by asking.
+  * **The paddle sensor drifting:** in the 23 races where it drifted, the analyst's
+    correction was off by 3 % of effort on average, against 18 % with the scheduled
+    tests and 25 % with no correction. This kept the pacer's reserve honest.
+  * Seconds spent blown up: 93 a race, against 115–118 for the rule arms.
+* Test pieces: the analyst used them in 25 of 30 races (4.3 a race), mostly to steer
+  effort, since the pacer eases only in the first 35 % of the race and pushes the finish
+  only above 40 % of reserve. The five races without pieces were faster against the
+  pacer alone (−29.0 s) than the 25 with them (−10.5 s). This is not a controlled
+  comparison.
+* The worst race (seed 5111) was 82 s slower than the pacer alone. The analyst took a
+  heart rate stuck at its ceiling for "below the limit", then sized a finishing piece
+  too hot, and the paddler blew up twice.
+* In one race (seed 5110) the analyst set the sensor correction lower than it believed
+  true. That kept the computer's reserve under 40 %, so the pacer would not call an
+  all-out finish after two blow-ups. It used the one setting it controls to steer the
+  pacer, not to fix the sensor.
+* **Process fault, and its check.** For 17 seconds during these races the platform
+  checkout the races run on was merged with a newer version and then restored (my
+  error). Each race was replayed from its answers under both versions:
+  * In six of the seven races running then, every input shown in that window was
+    identical under both versions.
+  * In one (seed 5097) up to three inputs may have come from the newer version.
+  * Without that race the result is the same: −13.7 s against the pacer alone and
+    −9.9 s against the scheduled tests.
+  * One driver call crashed in the window and was retried with the same answer.
+* What the analysts found confusing (inputs for the next version):
+  * the 60-second gap between cues also counts the pacer's cues, while "next cue
+    allowed" ignores them;
+  * the pacer's ease rule fires once while its condition holds, and none of its rules
+    can spend a reserve below 40 % at the finish;
+  * a sensor correction holds one gain and one ramp, and a new one resets the earlier
+    stretch;
+  * the boat computer's current estimate lags a change in the water, which misleads the
+    pacer's fade rule into false "rate down" cues;
+  * nothing shows the maximum heart rate, so a heart rate at its ceiling looks like a
+    steady effort below critical power;
+  * there is no direct sign that a piece or a message was taken up;
+  * a fit with all its windows in one direction returns a meaningless answer instead
+    of refusing;
+  * in the platform: derived metrics reject `deg2rad` and `power`, although the tool
+    says they share the program-metric functions.
+* Limits: the role-player stands in for the deployed model. The incidents, the heart
+  rate and the paddler are planted. The pacer's rules are the baseline's rules, so the
+  comparison is fair but the pacer is weaker than a good human pacer.
+* Figure `artifacts/coaching_heldout_analyst`; summary
+  `results/coaching_trial/summary_heldout_analyst.json`.
+
+### A personal heart-rate model instead of the textbook zones (2026-11-09; simulated paddlers)
+
+Heart-rate zones are usually set as a share of the maximum heart rate, or of the heart
+rate at threshold. Both assume that heart rate rises in a straight line with effort.
+For many people it does not. Some paddlers have a low resting rate, yet sit high already
+at moderate effort and rise only a few beats above that near race pace. Here that is
+called a **compressed response**. For them a share of the maximum says almost nothing
+about effort near race pace.
+
+**The model** (`paddling_expt/heart_rate.py`) is fitted from one session of the person's
+own data: time, effort (pod power, or any measure of effort) and heart rate. It fits:
+
+* the lag of heart rate behind effort;
+* the level heart rate settles at for each effort, as a curve that bends. The curve
+  covers both the textbook straight line and the compressed response;
+* the slow upward creep over a session.
+
+From the fit it gives:
+
+* the effort a heart rate means;
+* this person's zones, as shares of their critical power (the highest power they can
+  hold for a long time);
+* where heart rate stops telling efforts apart: above the effort at which 3 beats span
+  more than 5 % of critical power. There it says "heart rate cannot tell; use power,
+  pace or feel" instead of naming a zone.
+
+**The test** (`experiments/heart_rate_model.py`): 60 simulated paddlers.
+
+* Physiology is planted: 2 in 5 have a compressed response (resting 40–50,
+  150–162 at half of critical power, 3–6 beats below the maximum at critical power).
+  The rest have the textbook line.
+* Each does one step test: 5 minutes easy, then five 5-minute steps at 55–100 % of
+  critical power, out of order so the slow creep cannot pass for a rise with effort.
+  The model is fitted from that session alone.
+* It is then scored on another day's steady efforts at 50–95 % of critical power, which
+  it was not fitted on.
+* Two baselines name a zone from the same heart rate:
+  * the textbook bands as a share of the maximum. They get the person's true maximum,
+    their best case;
+  * bands as a share of the heart rate at threshold (Friel's cycling bands). The
+    threshold heart rate is taken from the step at critical power.
+
+| Effort zone named from heart rate | Typical response (35 paddlers) | Compressed response (25) |
+|---|---|---|
+| Textbook (share of maximum) | 29 % right | 0 % right |
+| Share of the heart rate at threshold | 53 % right | 20 % right |
+| Personal model | 99 % right, 1 % wrong | 40 % right, 0 % wrong, 60 % "heart rate cannot tell" |
+| Personal model, effort error where it answers (median) | 2.3 % of critical power | 3.3 % |
+| Heart rate separates efforts up to (median) | 1.2 × critical power | 0.59 × critical power |
+
+* For a typical response the personal model reads effort from heart rate almost
+  exactly. Both rules of thumb misplace most efforts by a zone.
+* For a compressed response no reading of heart rate can tell tempo from threshold.
+  The personal model says so, from the person's own data, and still names the easy
+  zones correctly. Both rules of thumb name a zone every time and are wrong 80–100 %
+  of the time.
+* Limits: the physiology, and the clean flat-water steps, are planted. Here the steps are
+  shares of each paddler's true critical power, and the zones are read against it. In the
+  race coach the steps are shares of the pre-race test's estimate, so the model carries
+  no hidden truth. Real heart rate
+  also moves with heat, sleep, hydration and nerves from day to day. Real paddlers
+  will not fall into two clean shapes.
+* Figure `artifacts/heart_rate_personal_model`.
+* The heart-rate-learning coach has a `heart_rate_model` tool fitted from such a step
+  test. With a SpeedCoach and a strap, the same fit can use the hull model's power at
+  the measured speed as the effort.
+
 ## Results so far
 
 **Simulated 37-minute OC1 training session** (`demos/demo_oc1_training.py`,
@@ -1187,7 +1394,9 @@ the other eight sessions: critical power 93 W, reserve 6.4 kJ; stand-in coach):
   30-50 s, levels off below critical power, and above it climbs with the share of the
   reserve spent (reaching the maximum as it empties). It also creeps up 1-3 beats per 10
   minutes and reads with 1.5 beats of noise. This is the textbook shape, not measured on
-  the paddler. Real heart rate also moves with heat, hydration and nerves, which the twin
+  the paddler. Races and tests with heart-rate profiles give about 2 in 5 paddlers a
+  compressed response instead: resting 40-50, already 150-162 at half of critical power,
+  and only 3-6 beats below the maximum at critical power. Real heart rate also moves with heat, hydration and nerves, which the twin
   leaves out, so a heart-rate test in the twin is cleaner than on the water.
 * **Role-played coaching is a stand-in, not the deployed model.** In the drafting
   check (above), Claude subagents answered every model call, with the same prompt,
@@ -1280,6 +1489,12 @@ connectivity.
      * shorter inputs: the notes repeated in full at every wake-up crowd out the latest
        cue results;
      * whether a cue or piece was taken up, sooner than the 30-second means show it.
+   * from the analyst's held-out races (listed in its result above): show the pacer's cues in
+     "next cue allowed"; a pacer that keeps easing an over-paced paddler and can spend a
+     reserve below 40 % at the finish; a sensor correction made of several steps; a way to
+     correct the current estimate; the maximum heart rate; whether a piece or message was
+     taken up; refuse a one-direction fit. The analyst should not be able to steer the
+     pacer through the sensor correction (one race did).
    * in agentic_experiments: `maximum()` in an agent-defined metric was taken for a
      missing stream name, so the metric never computed. Fixed in that repository's pull
      request #234, which waits for the owner.

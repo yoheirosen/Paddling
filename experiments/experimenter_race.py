@@ -55,7 +55,7 @@ def _slim(r: Dict[str, Any]) -> Dict[str, Any]:
     return r
 
 
-def _run(pool: str, seeds: List[int], tag: str, arms_fn) -> None:
+def _run(pool: str, seeds: List[int], tag: str, arms_fn, hr_profiles: bool = False) -> None:
     path = os.path.join(OUT, f"episodes_{tag}.jsonl")
     done = set()
     if os.path.exists(path):
@@ -67,7 +67,7 @@ def _run(pool: str, seeds: List[int], tag: str, arms_fn) -> None:
                 key = (s, arm.name, json.dumps(arm.setting, sort_keys=True))
                 if key in done:
                     continue
-                r = ct.run_episode(prep, arm, heart_rate=True)
+                r = ct.run_episode(prep, arm, heart_rate=True, hr_profiles=hr_profiles)
                 f.write(json.dumps(_slim(r)) + "\n")
                 f.flush()
             print(f"seed {s}: done", flush=True)
@@ -296,6 +296,8 @@ def main(argv=None) -> int:
     ap.add_argument("--pool", default="development")
     ap.add_argument("--tag", default="tune_scheduled")
     ap.add_argument("--figure", action="store_true")
+    ap.add_argument("--hr-profiles", action="store_true",
+                    help="paddlers' heart rate may not follow the textbook (about 2 in 5 compressed)")
     a = ap.parse_args(argv)
     if a.cmd == "tune":
         _run("development", _seeds(a.seeds), a.tag, tune_arms)
@@ -303,7 +305,7 @@ def main(argv=None) -> int:
     elif a.cmd == "tune-summary":
         tune_summary(a.tag)
     elif a.cmd == "baselines":
-        _run(a.pool, _seeds(a.seeds), a.tag, heldout_arms)
+        _run(a.pool, _seeds(a.seeds), a.tag, heldout_arms, hr_profiles=a.hr_profiles)
     else:
         summary(a.tag, a.figure)
     return 0

@@ -50,7 +50,9 @@ from .race import Athlete, RaceState, calibrate, sustainable_power
 from .race_panel import SCREEN_PROGRAMS, SCREEN_WATCHES, RacePanel
 from .sim.paddler import PaddlerParams
 from .sim.twin import (CoastalWater, Incident, Pack, PaddlerTwin, RaceSetup, Traits, draw_setup, draw_traits,
-                       even_effort, oracle_effort, twin_cp_test, water_forecast)
+                       even_effort, oracle_effort, twin_cp_test, twin_step_test, water_forecast,
+                       STEP_TEST_SHARES)
+from .heart_rate import fit_personal_model
 
 __all__ = ["PREREGISTERED", "HELDOUT_ROUND3", "HELDOUT_ROUND3_EXTENSION", "HELDOUT_TIERED", "HELDOUT_PACK", "HELDOUT_PACK_ROLEPLAY", "Preparation", "draw_preparation", "Arm", "NoCoach", "FixedPlan",
            "Autopilot", "PodAutopilot", "LineRule", "PackRule", "AgentArm", "TieredAgentArm", "shaft_athlete", "run_episode", "baseline_arms", "paired", "holm",
@@ -314,6 +316,30 @@ HELDOUT_EXPERIMENTER: Dict[str, Any] = {
     "secondary": ["coach minus no_coach", "reserve_error_pts", "critical power error at halfway and three quarters",
                   "pod gain error in pod-drift races", "races with each incident kind", "the incident table",
                   "scheduled tests at the other heart-rate thresholds"],
+    "failures": "a race the driver cannot finish is reported and excluded; no race is re-run with other answers",
+    "limits": "the role-player stands in for the deployed model; incidents, heart rate and the paddler are planted",
+}
+
+HELDOUT_ANALYST: Dict[str, Any] = {
+    "written": "2026-11-09, before any held-out race of the analyst coach",
+    "seeds": list(range(5090, 5120)),
+    "pool": "held_out",
+    "coach": ("the analyst (RaceCoach version 11, OPEN_COACH_SYSTEM_V11) beside the rule pacer (AnalystArm: "
+              "incident rules, drop 0.06, set the effort; the analyst cannot cue ease, push, hold, rate or finish; "
+              "its critical-power and reserve beliefs are recorded only; pod_gain reaches the computer; test "
+              "pieces stay available), role-played by Claude subagents, 5 s per model call"),
+    "practice": {"seeds": [34, 35], "pool": "development",
+                 "analyst_minus_incident_rules_s": [-48.0, -0.6],
+                 "then": "inputs fixed: the pacer's rules in the instructions, the belief tool's text, the cost "
+                         "tool counts reserve the finish would leave, wake-ups due while awake wait"},
+    "arms": ["no_coach", "incident_rules (drop 0.06) = the pacer alone", "scheduled_tests (primary setting)",
+             "the analyst with the pacer"],
+    "primary": {"race_time": ["analyst minus incident_rules", "analyst minus scheduled_tests"],
+                "test": "paired Wilcoxon signed-rank, bootstrap 95 % interval; Holm across the two"},
+    "secondary": ["analyst minus no_coach", "pod gain error in pod-drift races", "reserve_error_pts",
+                  "races with each incident kind", "the incident table",
+                  "how test pieces were used, and race time in races with and without them",
+                  "descriptive only (other seeds): the experimenting coach's held-out result and the counterfactual"],
     "failures": "a race the driver cannot finish is reported and excluded; no race is re-run with other answers",
     "limits": "the role-player stands in for the deployed model; incidents, heart rate and the paddler are planted",
 }
@@ -601,6 +627,7 @@ class AgentArm(Arm):
                  max_tokens: int = 4000, label: str = "agent", coach_version: int = 1) -> None:
         self.coach_version = int(coach_version)
         self.heart_rate = self.coach_version >= 10          # the experimenting coach's paddler wears a strap
+        self.hr_profiles = self.coach_version >= 12         # ... whose heart rate may not follow the textbook
         self.provider, self.periodic_s = provider, float(periodic_s)
         self.max_tool_rounds, self.max_tokens = int(max_tool_rounds), int(max_tokens)
         self.name = label
@@ -624,6 +651,22 @@ class AgentArm(Arm):
         if self.coach_version >= 9:
             ep.panel.leg_m = ep.prep.setup.leg_m
             ep.twin.rich_answers = True
+        if self.coach_version >= 11:
+            self.coach.ask_finish_fn = ep.twin.answer_finish
+        if self.coach_version >= 12:
+            rows, _ = twin_cp_test(ep.prep.traits, seed=ep.prep.seed, heart_rate=True,
+                                   hr_profiles=bool(ep.twin._hr_par and "shape" in ep.twin._hr_par))
+            self.coach.test_rows = rows
+            sh = ep.state.athlete_shaft
+            if ep.twin._hr_par and sh is not None:
+                # a step test in training, the same person, its own noise; the steps are set as
+                # shares of the critical power the pre-race test gave (as a paddler would set
+                # them), not of the true one, so the model carries no hidden truth
+                f = sh.cp_w / ep.prep.traits.paddler.critical_power_w
+                srows, _ = twin_step_test(ep.prep.traits, seed=ep.prep.seed + 50_000, hr_par=ep.twin._hr_par,
+                                          shares=tuple(x * f for x in STEP_TEST_SHARES))
+                self.coach.hr_model = fit_personal_model(srows)
+                self.coach.hr_model_cp_w = sh.cp_w
         self._leg = None
 
     def on_messages(self, ep: "Episode", msgs: List[Dict[str, Any]]) -> None:
@@ -658,13 +701,17 @@ class AgentArm(Arm):
                           if self.coach_version >= 5 else
                           "; plan this leg: the line to hold (give line_m) and the pace" if self.coach_version >= 4 else ""))
                 alerts = list(alerts) + [{"watch_id": "new_leg", "message": msg, "values": {}}]
-        if self.coach_version >= 9 and self.coach is not None:
+        # from the analyst on, a wake-up that comes due while the coach is awake waits until that
+        # wake-up ends (so it can still be cancelled)
+        if self.coach_version >= 9 and self.coach is not None and not (self.coach_version >= 11 and self._busy):
             for w in self.coach.due_timers():
                 alerts = list(alerts) + [{"watch_id": "wake_me", "message": "your wake-up: " + (w.get("reason") or ""),
                                           "values": {}}]
         if alerts:
             fmt = (lambda a: _alert_detail_race(a, ep.state.start_t)) if self.coach_version >= 9 else _alert_detail
-            self._wake(ep, [{"kind": a["watch_id"], "detail": fmt(a)} for a in alerts], "alerts")
+            why = ("your_wake_up" if self.coach_version >= 11 and all(a["watch_id"] == "wake_me" for a in alerts)
+                   else "alerts")
+            self._wake(ep, [{"kind": a["watch_id"], "detail": fmt(a)} for a in alerts], why)
         elif (self.periodic_s and s.get("elapsed_s", 0.0) > 60.0
               and (self._last_wake is None or t - self._last_wake >= self.periodic_s)):
             self._wake(ep, [], "periodic")
@@ -681,6 +728,66 @@ class AgentArm(Arm):
             out["belief_log"] = c.belief_log
             out["pieces"] = [{k: v for k, v in x.items() if not k.startswith("_")}
                              for x in c.cue_attempts if x.get("ask") == "piece"]
+        return out
+
+
+class _PacerGate:
+    """The pacer's cues go through the race's gate; each delivered one is logged for the
+    analyst coach to see."""
+
+    def __init__(self, gate: Any, log: List[Dict[str, Any]], ep: "Episode") -> None:
+        self.gate, self.log, self.ep = gate, log, ep
+
+    def deliver(self, action: Dict[str, Any], *, source: str = "", now: Optional[float] = None) -> Dict[str, Any]:
+        res = self.gate.deliver(action, source=source or "pacer", now=now)
+        if res.get("delivered"):
+            s = self.ep.state.last
+            self.log.append({"race_s": round(s.get("elapsed_s") or 0.0), "ask": action.get("ask"),
+                             "text": action.get("text")})
+        return res
+
+    def status(self) -> Dict[str, Any]:
+        return self.gate.status()
+
+
+class AnalystArm(AgentArm):
+    """Division of labour: the incident rules (drop 0.06 m/s) pace the paddler and answer
+    what they say; the reasoning coach (version 11) is the analyst on the radio. It cannot
+    cue effort; it diagnoses the boat, the instruments, the water and the course, corrects the
+    boat computer the pacer reads, tells the paddler what they need to know, clears the
+    rudder and runs test pieces."""
+
+    def __init__(self, provider: Any, *, label: str = "agent_analyst", allow_cp: bool = False, **kw: Any) -> None:
+        kw.setdefault("coach_version", 11)
+        super().__init__(provider, label=label, **kw)
+        self.pacer = IncidentRules(drop_mps=0.06)
+        self.allow_cp = bool(allow_cp)
+        self.setting["allow_cp"] = self.allow_cp
+        self.pacer_log: List[Dict[str, Any]] = []
+
+    def watches(self) -> List[Dict[str, Any]]:
+        return self.pacer.watches()
+
+    def setup(self, ep: "Episode") -> None:
+        super().setup(ep)
+        self._pacer_ep = Episode(ep.prep, ep.twin, ep.state, ep.panel, ep.sink,
+                                 _PacerGate(ep.gate, self.pacer_log, ep), ep.sched)
+        self.pacer.setup(self._pacer_ep)
+        self.coach.pacer_log = self.pacer_log
+        self.coach.allow_cp_beliefs = self.allow_cp
+
+    def on_messages(self, ep: "Episode", msgs: List[Dict[str, Any]]) -> None:
+        self.pacer.on_messages(self._pacer_ep, msgs)
+        super().on_messages(ep, msgs)
+
+    def on_tick(self, ep: "Episode", t: float, alerts: List[Dict[str, Any]]) -> None:
+        pacer_ids = {w["watch_id"] for w in self.pacer.watches()}
+        self.pacer.on_tick(self._pacer_ep, t, [a for a in alerts if a["watch_id"] in pacer_ids])
+        super().on_tick(ep, t, [a for a in alerts if a["watch_id"] not in pacer_ids])
+
+    def summary(self) -> Dict[str, Any]:
+        out = super().summary()
+        out["pacer_cues"] = len(self.pacer_log)
         return out
 
 
@@ -834,7 +941,8 @@ class Episode:
 
 def run_episode(prep: Preparation, arm: Arm, *, latency_s: Optional[float] = 6.0,
                 record_path: Optional[str] = None, series_every_s: float = 15.0,
-                max_race_s: float = 3 * 3600.0, heart_rate: bool = False) -> Dict[str, Any]:
+                max_race_s: float = 3 * 3600.0, heart_rate: bool = False,
+                hr_profiles: bool = False) -> Dict[str, Any]:
     """Race ``arm`` on this preparation; returns the scored episode.  ``latency_s``:
     race time per model call (``None`` = its measured wall-clock time).  ``heart_rate``
     (or an arm with ``heart_rate = True``): the paddler wears a heart-rate strap, and the
@@ -850,7 +958,7 @@ def run_episode(prep: Preparation, arm: Arm, *, latency_s: Optional[float] = 6.0
     sink = CueSink(state, act=lambda a: twin.cue(a.get("ask", "none"), a.get("pace_s500"), a.get("line_m"),
                                                  a.get("distance_left_m"), a.get("segments")))
     if heart_rate or getattr(arm, "heart_rate", False):
-        twin.enable_heart_rate()
+        twin.enable_heart_rate(profiles=bool(hr_profiles or getattr(arm, "hr_profiles", False)))
     gate = make_cue_gate(sink, state, max_words=g["max_words"], quiet_start_s=g["quiet_start_s"],
                          quiet_finish_m=g["quiet_finish_m"], cooldown_s=g["cooldown_s"],
                          max_cues=g["max_cues"])

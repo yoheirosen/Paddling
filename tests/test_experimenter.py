@@ -257,3 +257,128 @@ def test_a_new_piece_replaces_a_running_one_from_the_effort_being_held(prep):
     e2 = float(L["effort"][-20:].mean())
     assert e2 / e1 == pytest.approx(1.06, abs=0.03)
     assert "piece_replaced" in [e["event"] for e in tw.incident_log]
+
+
+def test_the_analyst_cannot_cue_effort_and_sees_the_pacer():
+    prep = ct.draw_preparation(22, incidents="development")
+    seen = {}
+
+    def answer(system, messages, tools):
+        import json as _j
+        if len(messages) == 1:
+            pk = _j.loads(messages[0].text)
+            if "pacer_recent_cues" in pk:
+                seen["pacer"] = pk["pacer_recent_cues"]
+            if "first" not in seen:
+                seen["first"] = True
+                return {"tool_calls": [{"name": "cue", "arguments": {"text": "Ease off.", "ask": "ease"}},
+                                       {"name": "set_belief", "arguments": {"name": "critical_power_pod_w",
+                                                                            "value": 220}}]}
+            return "no cue"
+        seen.setdefault("results", [str(x.content) for x in messages[-1].tool_results])
+        return "no cue"
+    arm = ct.AnalystArm(FakeProvider(answer, model="t"), periodic_s=180.0)
+    r = ct.run_episode(prep, arm, latency_s=5.0)
+    assert "pacer's" in seen["results"][0] and "pacer keeps" in seen["results"][1]
+    assert r["pacer_cues"] >= 1 and "pacer" in seen
+    assert arm.coach.system.startswith("You are the analyst")
+    rules = ct.run_episode(prep, ct.IncidentRules(drop_mps=0.06), heart_rate=True)
+    assert r["race_time_s"] == rules["race_time_s"]          # an analyst who does nothing = the pacer alone
+
+
+def test_the_analyst_asks_where_the_finish_is_ramps_a_pod_correction_and_writes_valid_metrics(prep):
+    tw, st, c = _coach(prep, version=11)
+    c.ask_finish_fn = tw.answer_finish
+    c.ask_fn = tw.answer
+    _until(tw, 700.0, st)
+    a = c.ask_paddler(question="finish")
+    assert a["ok"] and a["thinks_finish_in_m"] % 50 == 0
+    r = c.set_belief("pod_gain", 1.2, since_race_s=300, ramp_s=200)
+    assert r["ok"] and st.gain_at(300) == 1.0 and abs(st.gain_at(400) - 1.1) < 1e-9 and st.gain_at(600) == 1.2
+    for i in range(9):
+        c.take_note(f"note {i}")
+    pk = c._open_packet([], "periodic")
+    assert len(pk["your_notes"]) == 6 and pk["older_notes_not_shown"] == 3
+
+
+def test_the_analyst_is_refused_a_metric_whose_last_line_is_an_assignment():
+    from paddling_expt.coach import _last_line_checked
+    f = _last_line_checked(lambda **kw: {"ok": True})
+    assert not f(name="a", source="w = window('x', 60)\nslope_v = slope(w)")["ok"]
+    assert f(name="a", source="w = window('x', 60)\nslope(w) * 60")["ok"]
+    assert f(name="a", source="mean(window('x', 60)) == 3")["ok"]
+
+
+def test_the_role_play_driver_races_the_analyst_with_the_pacer(tmp_path):
+    import argparse
+    here = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    sys.path.insert(0, os.path.join(here, "experiments"))
+    import roleplay_race as rr
+    a = argparse.Namespace(coach_version=11, label="x", periodic_s=180.0)
+    assert isinstance(rr._arm(a, FakeProvider(lambda *x: "no cue", model="t")), ct.AnalystArm)
+    a.coach_version = 10
+    assert type(rr._arm(a, FakeProvider(lambda *x: "no cue", model="t"))) is ct.AgentArm
+
+
+def test_the_heart_rate_coach_gets_this_paddlers_own_heart_rate_model(prep):
+    from types import SimpleNamespace
+    from paddling_expt.sim.twin import heart_rate_profile
+    seed = next(s for s in range(1, 200) if heart_rate_profile(s).get("shape") == "compressed")
+    p = ct.draw_preparation(seed, incidents="development")
+    tw = PaddlerTwin(p.traits, p.setup, seed=p.seed, even=p.even)
+    tw.enable_heart_rate(profiles=True)
+    st = RaceState(tw.craft, tw.total_kg, p.athlete, distance_m=p.setup.distance_m, start_t=tw.start_t,
+                   athlete_shaft=p.athlete_shaft)
+    sink = CueSink(st, act=lambda a: None)
+    arm = ct.AgentArm(FakeProvider(lambda *a: "no cue", model="t"), coach_version=12)
+    from paddling_expt.race_panel import RacePanel
+    ep = SimpleNamespace(prep=p, twin=tw, state=st, gate=make_cue_gate(sink, st), panel=RacePanel(st))
+    arm.setup(ep)
+    c = arm.coach
+    m = c.heart_rate_model()
+    assert m["ok"] and m["heart_rate_separates_efforts_up_to_share_of_cp"] < 0.75
+    assert any(not z["heart_rate_can_hold_it"] for z in m["zones"])
+    near_cp = m["hr_at_share_of_cp"]["100%"]
+    r = c.heart_rate_model(hr_bpm=near_cp, race_min=0.0)["reading"]
+    assert r["zone"] is None and "cannot tell" in r["note"]
+
+
+def test_the_analyst_knows_the_pacers_rules_and_its_belief_tool_says_what_reaches_the_pacer(prep):
+    tw, st, c = _coach(prep, version=11)
+    assert "every reserve it reads is the paddle pod's" in c.system and "under 800 m to go" in c.system
+    desc = c.policy.registry.get("set_belief").description
+    assert "recorded for you only" in desc and "pod_gain" in desc
+
+
+def test_the_analysts_cost_tool_sees_reserve_the_finish_would_leave(prep):
+    tw, st, c = _coach(prep, version=11)
+    _until(tw, 900.0, st)
+    r = c.test_cost(6.0, 240.0)
+    assert r["ok"]
+    for k in ("as_calibrated", "cp_10pct_lower", "cp_10pct_higher"):
+        assert "reserve_left_at_finish_if_effort_held_kj" in r[k]
+    hi = r["cp_10pct_higher"]            # more reserve left at the finish: the piece is paid for by it
+    assert hi["reserve_left_at_finish_if_effort_held_kj"] >= r["as_calibrated"]["reserve_left_at_finish_if_effort_held_kj"]
+    if hi["reserve_left_at_finish_if_effort_held_kj"] >= hi["extra_reserve_spent_kj"]:
+        assert hi["net_seconds_at_finish"] < 0
+
+
+def test_an_analyst_wake_up_due_while_it_is_awake_waits_and_can_be_cancelled(prep):
+    tw, st, c = _coach(prep, version=11)
+    _until(tw, 300.0, st)
+    arm = ct.AnalystArm(FakeProvider(lambda *a: "no cue", model="t"))
+    arm.coach, arm._busy, arm._pending, arm._last_wake = c, True, [], 0.0
+    woke = []
+    arm._wake = lambda ep, ev, why: woke.append((why, ev))
+    c.wake_me(in_s=10, reason="check the turn")
+    _until(tw, 320.0, st)
+    from types import SimpleNamespace
+    ep = SimpleNamespace(state=st)
+    ct.AgentArm.on_tick(arm, ep, 0.0, [])
+    assert not woke and len(c.timers) == 1          # still pending while the coach is awake
+    assert c.wake_me(cancel="the turn")["cancelled"] == 1
+    c.wake_me(in_s=10, reason="again")
+    _until(tw, 340.0, st)
+    arm._busy = False
+    ct.AgentArm.on_tick(arm, ep, 0.0, [])
+    assert woke and woke[0][0] == "your_wake_up"

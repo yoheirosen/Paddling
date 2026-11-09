@@ -219,6 +219,7 @@ class RaceState:
         self.recent_hr: Deque[tuple] = deque()       # (t, bpm) over 15 s
         self.pod_gain = 1.0                          # the pod's reading / the true shaft power
         self.pod_gain_since: Optional[float] = None  # elapsed_s from which the correction applies
+        self.pod_gain_ramp_s: float = 0.0            # the gain grows from 1 to pod_gain over this long
 
     # ── per stroke ───────────────────────────────────────────────────────
     def update(self, row: Dict[str, Any]) -> Dict[str, Any]:
@@ -259,9 +260,10 @@ class RaceState:
         self.w_bal = max(0.0, w_balance_step(self.w_bal, P, dt, self.cp_w, a.w_prime_j))
         Ps = row.get("shaft_power_w")
         Ps_raw = Ps
-        if Ps is not None and self.pod_gain != 1.0 and self.t0 is not None and (
-                self.pod_gain_since is None or t - self.t0 >= self.pod_gain_since):
-            Ps = float(Ps) / self.pod_gain
+        if Ps is not None and self.pod_gain != 1.0 and self.t0 is not None:
+            g = self.gain_at(t - self.t0)
+            if g != 1.0:
+                Ps = float(Ps) / g
         hr = row.get("heart_rate_bpm")
         if hr is not None:
             self.recent_hr.append((t, float(hr)))
@@ -415,12 +417,26 @@ class RaceState:
                                             if self.athlete_shaft and self.w_bal_shaft is not None else None)})
         return out
 
-    def set_pod_gain(self, gain: float, since_elapsed_s: Optional[float] = None) -> Dict[str, Any]:
+    def gain_at(self, el: float) -> float:
+        """The pod gain correction in force at race second ``el``."""
+        if self.pod_gain == 1.0:
+            return 1.0
+        if self.pod_gain_since is not None and el < self.pod_gain_since:
+            return 1.0
+        if self.pod_gain_ramp_s > 0 and self.pod_gain_since is not None:
+            f = min(1.0, (el - self.pod_gain_since) / self.pod_gain_ramp_s)
+            return 1.0 + (self.pod_gain - 1.0) * f
+        return self.pod_gain
+
+    def set_pod_gain(self, gain: float, since_elapsed_s: Optional[float] = None,
+                     ramp_s: float = 0.0) -> Dict[str, Any]:
         """Correct the paddle pod's reading: from ``since_elapsed_s`` (race seconds; None = the
-        whole race) shaft power is the reading divided by ``gain``.  The 5-second record and
-        both reserves are recomputed, so the reserve already counted uses corrected power."""
+        whole race) shaft power is the reading divided by the gain, which grows from 1 to
+        ``gain`` over ``ramp_s`` (0 = a step).  The 5-second record and both reserves are
+        recomputed, so the reserve already counted uses corrected power."""
         out = {"pod_gain_before": self.pod_gain, "since_before": self.pod_gain_since}
         self.pod_gain, self.pod_gain_since = float(gain), (None if since_elapsed_s is None else float(since_elapsed_s))
+        self.pod_gain_ramp_s = max(0.0, float(ramp_s or 0.0))
         for h in self.history:
             raw = h.get("shaft_power_raw_w")
             if raw is None:
@@ -428,15 +444,12 @@ class RaceState:
                 h["shaft_power_raw_w"] = raw
             if raw is None or h.get("elapsed_s") is None:
                 continue
-            on = self.pod_gain_since is None or h["elapsed_s"] >= self.pod_gain_since
-            h["shaft_power_w"] = raw / self.pod_gain if on else raw
+            h["shaft_power_w"] = raw / self.gain_at(h["elapsed_s"])
         t_now = self.last.get("t")
         if t_now is not None and self.t0 is not None:
-            self.recent_shaft = deque((tt, (raw / self.pod_gain if (self.pod_gain_since is None
-                                                                    or tt - self.t0 >= self.pod_gain_since) else raw), raw)
-                                      for tt, _, raw in self.recent_shaft)
+            self.recent_shaft = deque((tt, raw / self.gain_at(tt - self.t0), raw) for tt, _, raw in self.recent_shaft)
         self._recompute_reserves()
-        out.update({"pod_gain": self.pod_gain, "since_race_s": self.pod_gain_since,
+        out.update({"pod_gain": self.pod_gain, "since_race_s": self.pod_gain_since, "ramp_s": self.pod_gain_ramp_s,
                     "reserve_pod_pct_now": (round(100.0 * self.w_bal_shaft / self.athlete_shaft.w_prime_j)
                                             if self.athlete_shaft and self.w_bal_shaft is not None else None)})
         return out
