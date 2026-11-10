@@ -20,7 +20,7 @@ from agent_lib.runtime.tool_loop import run_tool_loop
 from agent_lib.tool_registry import ToolPolicy, ToolRegistry
 
 from .heart_rate import EFFORT_ZONES
-from .hr_training import (Calibration, GuideArm, Guide, READ_EVERY_S, SessionCtx, read_zone)
+from .hr_training import (Calibration, GuideArm, Guide, READ_EVERY_S, SessionCtx, pace_paddle_w, read_zone)
 
 __all__ = ["TRAINING_ANALYST_SYSTEM", "TrainingAnalyst", "AgentGuideArm"]
 
@@ -78,7 +78,8 @@ The guide stays until you change it, also into the next session. Both routes are
 shown to you, whatever the guide uses.
 
 Scoring: checkpoints every 30 seconds, from two minutes into each stretch of steady planned effort \
-after the warm-up (so heart rate's lag after a change of effort is not scored). Nobody sees the right \
+after the warm-up (so heart rate's lag after a change of effort is not scored); stretches of two minutes \
+or less, such as short rests between intervals, are never scored. Nobody sees the right \
 answers, you included; you judge from the data, the paddler and the calibration.
 
 Before each session the paddler checks the tide table and the wind forecast; you see them at the warm-up \
@@ -153,10 +154,12 @@ class TrainingAnalyst:
         reg = ToolRegistry()
         reg.register(self.session_data, name="session_data", input_schema=_DATA_SCHEMA,
                      description="Today's session minute by minute (default: the last 8 minutes; at most 20): "
-                                 "leg (out/back), GPS speed, speed through the water and the current the computer "
-                                 "estimates (null until the course first turns: before that it cannot tell current "
-                                 "from speed), stroke rate, paddle power estimated from pace (the pace route's "
-                                 "power), the heart rate the strap reads, the heart rate the model expects at that "
+                                 "leg (out, back, or turning: a turn falls in that minute), GPS speed, speed through "
+                                 "the water, the current the computer estimates (+ flows with the boat on the way out, "
+                                 "as in the forecast and the guide; null until the course first turns: before that it "
+                                 "cannot tell current from speed), stroke rate, paddle power estimated from pace with "
+                                 "the computer's own current (the reader's share_pace uses the guide's assumed current "
+                                 "before the first turn), the heart rate the strap reads, the heart rate the model expects at that "
                                  "power and minute (with the slow creep) and the gap, the share of implausible "
                                  "heart-rate readings, and what the reader said by each route.")
         reg.register(self.history, name="history",
@@ -180,12 +183,13 @@ class TrainingAnalyst:
         reg.register(self.wake_me, name="wake_me", writes=True, input_schema=_WAKE_SCHEMA,
                      description="Be woken again in this session: after this many minutes (1-30), or one minute "
                                  "after the next turn. One pending request at a time (a new one replaces it); at "
-                                 "most 3 a session.")
+                                 "most 4 a session.")
         reg.register(self.route_gap, name="route_gap", input_schema=_GAP_SCHEMA,
-                     description="How the two routes compare over a stretch of today's session (default: since the "
-                                 "warm-up; whole minutes only where the heart-rate readings are plausible, the "
-                                 "computer knows the current, the course is not turning, and the heart-rate route "
-                                 "can tell efforts apart), with no day adjustment: per minute both shares, and the "
+                     description="How the two routes compare over a stretch of today's session (default: the "
+                                 "whole session so far; whole minutes only where the heart-rate readings are "
+                                 "plausible, the course is not turning, the heart-rate route can tell efforts apart, "
+                                 "and the current is known: the computer's, or before the first turn your assumed "
+                                 "current if you set one), with no day adjustment: per minute both shares, and the "
                                  "medians of two ways to close the gap: if heart rate is right, the cp_scale pace "
                                  "would need; if pace is right, the heart-rate offset (bpm) heart rate would need.")
         reg.register(self.take_note, name="take_note", writes=True,
@@ -218,6 +222,8 @@ class TrainingAnalyst:
                 leg = "out" if s > 0.5 else "back" if s < -0.5 else "turning"
             pw, hr = mean("paddle_w"), mean("heart_rate_bpm")
             known = all(r.get("push_known") for r in W)
+            cur = [r["push_along_mps"] * (1.0 if math.cos(math.radians(r["heading_deg"])) >= 0 else -1.0)
+                   for r in W if r.get("push_along_mps") is not None and r.get("heading_deg") is not None]
             bad = [r for r in W if r.get("heart_rate_bpm") is not None]
             implaus = (sum(1 for r in bad if r["heart_rate_bpm"] < 75.0 or abs(r["heart_rate_bpm"] - (r.get("rate_spm") or 0.0)) < 3.0)
                        / len(bad)) if bad else None
@@ -227,7 +233,7 @@ class TrainingAnalyst:
             nm = lambda z: None if z is None else EFFORT_ZONES[z][0]       # noqa: E731
             out.append({"minute": m, "leg": leg, "speed_gps": _r(mean("speed_gps"), 2),
                         "speed_water": _r(mean("speed_water"), 2),
-                        "current_est": _r(mean("push_along_mps"), 2) if known else None,
+                        "current_mps": _r(sum(cur) / len(cur), 2) if known and cur else None,
                         "rate_spm": _r(mean("rate_spm")), "paddle_power_est_w": _r(pw, 0), "heart_rate": _r(hr),
                         "model_heart_rate_at_power_and_minute": _r(mhr),
                         "gap_bpm": _r(None if hr is None or mhr is None else hr - mhr),
@@ -307,13 +313,14 @@ class TrainingAnalyst:
 
     def route_gap(self, from_min: Optional[float] = None, to_min: Optional[float] = None) -> Dict[str, Any]:
         c = self.ctx
-        a = c.spec.warmup_s if from_min is None else float(from_min) * 60.0
+        a = 0.0 if from_min is None else float(from_min) * 60.0
         b = c.twin.t if to_min is None else min(c.twin.t, float(to_min) * 60.0)
         cal, cp = c.cal, c.cal.athlete.cp_w
         out, ratios, offs = [], [], []
         for m in range(int(a // 60), int(b // 60) + 1):
             W = [r for r in c.rows if m * 60.0 <= r["t"] < (m + 1) * 60.0 and r["t"] <= b]
-            if len(W) < 30 or not all(r.get("push_known") for r in W):
+            assumed = not all(r.get("push_known") for r in W)
+            if len(W) < 30 or (assumed and c.guide.current_before_first_turn_mps is None):
                 continue
             if any(abs(t - (m + 0.5) * 60.0) < 60.0 for t in c.turns):
                 continue
@@ -322,16 +329,16 @@ class TrainingAnalyst:
             if len(ok) < 0.8 * len(W):
                 continue
             hr = sum(r["heart_rate_bpm"] for r in ok) / len(ok)
-            P = [r["paddle_w"] for r in W if r.get("paddle_w") is not None]
-            if not P:
+            pw = pace_paddle_w(W, c.guide, cal, c.boat_power)
+            if pw is None:
                 continue
-            pw = sum(P) / len(P)
             e = cal.model.effort_at(hr, minutes_in=m + 0.5)
             if e is None or e / cp > cal.separates_up_to:
                 continue
             sh, sp = e / cp, pw / cp
             off = hr - (cal.model.hr_at(pw) + cal.model.creep_per_10min * (m + 0.5) / 10.0)
-            out.append({"minute": m, "share_hr": round(sh, 3), "share_pace": round(sp, 3), "hr_minus_model_bpm": round(off, 1)})
+            out.append({"minute": m, "share_hr": round(sh, 3), "share_pace": round(sp, 3), "hr_minus_model_bpm": round(off, 1),
+                        **({"with_your_assumed_current": True} if assumed else {})})
             if sh > 0.2:
                 ratios.append(sp / sh)
             offs.append(off)
@@ -361,10 +368,18 @@ class TrainingAnalyst:
                    if why == "warm-up done" else {}),
                 "now_min": round(c.twin.t / 60.0, 1), "guide": c.guide.to_dict(),
                 "reader_now": self._reader_now(),
+                "calibration_digest": self._digest(),
                 "course": {"turns_every_m": 1500, "turns_at_min": [round(t / 60.0, 1) for t in c.turns],
                            "m_to_next_turn": round(max(0.0, 1500.0 - (c.twin.total_m - c.twin._wu_leg_start)))},
                 "your_notes": self.notes[-12:], "older_notes_not_shown": max(0, len(self.notes) - 12),
                 "last_minutes": self.session_data()["minutes"][-5:]}
+
+    def _digest(self) -> Dict[str, Any]:
+        cal = self.ctx.cal
+        m = cal.model.summary(cp_w=cal.athlete.cp_w)
+        return {"critical_power_paddle_w": round(cal.athlete.cp_w), "heart_rate_can_tell_up_to_share": cal.separates_up_to,
+                "heart_rate_at_share_of_cp": m.get("hr_at_share_of_cp"), "creep_per_10min": m.get("creep_per_10min"),
+                "model_fitted_over_paddle_w": [round(x) for x in cal.model.effort_range_w]}
 
     def _reader_now(self) -> Optional[Dict[str, Any]]:
         if not self.ctx.reads:
@@ -390,7 +405,7 @@ class TrainingAnalyst:
 
 class AgentGuideArm(GuideArm):
     """The reasoning agent as an arm: woken at the end of each warm-up, when it asked to be
-    (``wake_me``: at most 3 a session, after some minutes or a minute after the next turn) and by
+    (``wake_me``: at most 4 a session, after some minutes or a minute after the next turn) and by
     the anomaly checks (at most 2 a session, 5 minutes apart; the gap check settles afresh at
     each planned change of effort and after the first turn): the gap between the heart-rate and pace routes moving more than 0.15 of critical
     power from where it settled early in the same stretch of planned effort (or after the last
@@ -400,7 +415,7 @@ class AgentGuideArm(GuideArm):
     name = "agent"
 
     def __init__(self, provider: Any, *, label: str = "agent", max_anomaly_wakes: int = 2,
-                 max_requested_wakes: int = 3) -> None:
+                 max_requested_wakes: int = 4) -> None:
         self.analyst = TrainingAnalyst(provider)
         self.analyst.request_wake = self._request_wake
         self.name = label
@@ -474,8 +489,8 @@ class AgentGuideArm(GuideArm):
         bad = (rd.get("hr_implausible_frac") or 0.0) >= 0.5
         if rd.get("segment") != self._seg:         # a planned change of effort: the gap settles afresh
             self._seg, self._gaps, self._gap_ref, self._dis = rd.get("segment"), [], None, 0
-        if sh is not None and sp is not None and not bad:   # the gap between the routes, against where
-            self._gaps.append(sh - sp)                       # it settled in this stretch
+        if sh is not None and sp is not None and not bad and rd.get("steady"):   # the gap between the routes,
+            self._gaps.append(sh - sp)          # against where it settled in this stretch once effort was steady
             if self._gap_ref is None and len(self._gaps) >= 4:
                 self._gap_ref = sorted(self._gaps[:4])[2]
             self._dis = self._dis + 1 if (self._gap_ref is not None and abs(sh - sp - self._gap_ref) > 0.15) else 0

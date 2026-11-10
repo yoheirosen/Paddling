@@ -81,6 +81,8 @@ def _tool_line(t: Dict[str, Any]) -> str:
     parts = []
     for name, spec in (sch.get("properties") or {}).items():
         typ = spec.get("type", "any")
+        if isinstance(typ, list):
+            typ = " or ".join(map(str, typ))
         if spec.get("enum"):
             typ += " one of " + "|".join(map(str, spec["enum"]))
         if spec.get("description"):

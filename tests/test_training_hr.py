@@ -172,7 +172,7 @@ def test_agent_can_ask_each_session_and_schedule_its_own_wake_up(block, cal):
     wakes = [p["wake"] for p in log if isinstance(p, dict)]
     assert wakes.count("you asked to be woken") == 2
     data = next(r for x in log if isinstance(x, list) for r in x if "minutes" in r)
-    assert data["minutes"][0]["current_est"] is None                            # no turn yet at the warm-up's end
+    assert data["minutes"][0]["current_mps"] is None                            # no turn yet at the warm-up's end
 
 
 def test_turn_wake_route_gap_and_the_new_guide_levers(block, cal):
@@ -199,7 +199,9 @@ def test_turn_wake_route_gap_and_the_new_guide_levers(block, cal):
     turn_wake = next(p for p in log if isinstance(p, dict) and p["wake"] == "you asked to be woken")
     assert turn_wake["course"]["turns_at_min"] and turn_wake["now_min"] - turn_wake["course"]["turns_at_min"][0] < 1.5
     gap = next(r for x in log if isinstance(x, list) for r in x if "if_heart_rate_is_right_cp_scale" in r)
-    assert gap["ok"] and gap["minutes_used"] == 0        # a minute after the first turn nothing qualifies yet
+    # a minute after the first turn, only minutes read with the assumed current qualify
+    assert gap["ok"] and gap["minutes_used"] >= 1
+    assert all(x.get("with_your_assumed_current") for x in gap["per_minute"])
     whole = arm.analyst.route_gap()                      # over the finished session
     assert whole["minutes_used"] >= 10 and 0.7 < whole["if_heart_rate_is_right_cp_scale"] < 1.4
     assert ctx.guide.current_before_first_turn_mps is None and ctx.guide.hr_extra_creep_per_10min == 1.0

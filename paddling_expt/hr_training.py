@@ -44,7 +44,7 @@ from .sim.training import (KT_PER_MPS_PUSH, SESSION_DISTANCE_M, SessionSpec, Str
 from .sim.twin import PaddlerTwin, RaceSetup, STEP_TEST_SHARES
 
 __all__ = ["Calibration", "calibrate_block", "Guide", "read_zone", "SessionCtx", "run_session", "run_block",
-           "GuideArm", "TextbookArm", "HrModelArm", "PaceArm", "PaceForecastArm", "WarmupRuleArm", "RefitArm", "OracleDayArm", "score_session", "STEADY_S",
+           "pace_paddle_w", "GuideArm", "TextbookArm", "HrModelArm", "PaceArm", "PaceForecastArm", "WarmupRuleArm", "RefitArm", "OracleDayArm", "score_session", "STEADY_S",
            "READ_EVERY_S"]
 
 READ_EVERY_S = 30.0
@@ -189,6 +189,23 @@ def _mean(rows: List[Dict[str, Any]], key: str) -> Optional[float]:
     return float(sum(xs) / len(xs)) if xs else None
 
 
+def pace_paddle_w(rows: List[Dict[str, Any]], guide: Guide, cal: Calibration,
+                  boat_power: Optional[Callable[[float], float]] = None) -> Optional[float]:
+    """The pace route's mean paddle power over ``rows``: the boat computer's, except that
+    while the computer has no estimate of the current the guide's assumed current is used."""
+    c0 = guide.current_before_first_turn_mps
+    if c0 is None or boat_power is None or all(r.get("push_known") for r in rows):
+        return _mean(rows, "paddle_w")
+    P = []
+    for r in rows:
+        if not r.get("push_known") and r.get("speed_gps") is not None and r.get("heading_deg") is not None:
+            vw = r["speed_gps"] - float(c0) * math.cos(math.radians(r["heading_deg"]))
+            P.append(cal.paddle_w(boat_power(vw), r.get("rate_spm")))
+        elif r.get("paddle_w") is not None:
+            P.append(r["paddle_w"])
+    return float(sum(P) / len(P)) if P else None
+
+
 def _plausible_hr(hr: Optional[float], rate: Optional[float]) -> bool:
     return hr is not None and hr >= 75.0 and abs(hr - (rate or 0.0)) >= 3.0
 
@@ -203,17 +220,8 @@ def read_zone(guide: Guide, recent: List[Dict[str, Any]], cal: Calibration, minu
     watch them.  With the plausibility check, heart-rate readings below 75 or within 3 of the
     stroke rate are dropped one by one; if fewer than half of the minute's readings are left,
     the heart-rate route cannot tell."""
-    hr_raw, rate, pw = _mean(recent, "heart_rate_bpm"), _mean(recent, "rate_spm"), _mean(recent, "paddle_w")
-    c0 = guide.current_before_first_turn_mps
-    if c0 is not None and boat_power is not None and any(not r.get("push_known") for r in recent):
-        P = []                              # the guide's current, while the computer has none of its own
-        for r in recent:
-            if not r.get("push_known") and r.get("speed_gps") is not None and r.get("heading_deg") is not None:
-                vw = r["speed_gps"] - float(c0) * math.cos(math.radians(r["heading_deg"]))
-                P.append(cal.paddle_w(boat_power(vw), r.get("rate_spm")))
-            elif r.get("paddle_w") is not None:
-                P.append(r["paddle_w"])
-        pw = float(sum(P) / len(P)) if P else None
+    hr_raw, rate = _mean(recent, "heart_rate_bpm"), _mean(recent, "rate_spm")
+    pw = pace_paddle_w(recent, guide, cal, boat_power)
     H = [r for r in recent if r.get("heart_rate_bpm") is not None]
     ok = [r for r in H if _plausible_hr(r["heart_rate_bpm"], r.get("rate_spm"))]
     implaus = 1.0 - len(ok) / len(H) if H else 0.0
@@ -238,7 +246,7 @@ def read_zone(guide: Guide, recent: List[Dict[str, Any]], cal: Calibration, minu
         if e is not None:
             s = e / cp
             out["share_hr"] = round(s, 3)
-            if s <= top + 0.05:
+            if s <= top:
                 out["zone_hr"] = zone_of_share(s)
     if pw is not None:
         s = pw / (cp * max(0.3, guide.cp_scale))
