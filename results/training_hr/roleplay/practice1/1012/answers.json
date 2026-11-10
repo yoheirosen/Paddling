@@ -1,0 +1,1 @@
+[{"tool_calls": [{"name": "calibration", "arguments": {}}, {"name": "history", "arguments": {}}, {"name": "ask_paddler", "arguments": {"ask": "feel"}}]}]
