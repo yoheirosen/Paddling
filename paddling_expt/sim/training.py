@@ -3,11 +3,14 @@ on heart rate, so that reading effort from heart rate has known right answers.
 
 The paddler (:func:`.twin.draw_traits`, heart-rate shape from :func:`.twin.heart_rate_profile`)
 has a calibration day (a heart-rate step test and the 3- and 12-minute critical-power test, on
-flat water), then ``n_sessions`` training sessions on an out-and-back course with a current.
+flat water), then ``n_sessions`` training sessions on an out-and-back course with a tidal
+stream that changes through the session (it can turn; the boat computer's estimate of it lags).
 Every session carries a planted day state:
 
 * fitness changes over the block (critical power ends 2 % lower to 7 % higher);
-* development kinds: ``normal``; ``hot`` (heart rate 5-10 beats higher at every effort, twice
+* development kinds: ``normal``; ``breezy`` (a breeze that builds along the course, with gusts:
+  GPS cannot tell wind from current, and gusts change faster than the boat computer's estimate
+  of the current); ``hot`` (heart rate 5-10 beats higher at every effort, twice
   the slow creep; 30-34 °C); ``tired`` (critical power up to 5 % lower, heart rate a few beats
   higher at easy effort and held down at hard effort, maximum lower); ``cadence_lock`` (for
   6-12 minutes the strap reads the stroke rate instead of the heart rate);
@@ -28,12 +31,12 @@ from typing import Any, Dict, List, Optional, Tuple
 
 import numpy as np
 
-from .twin import PaddlerTwin, RaceSetup, Traits, draw_traits, heart_rate_profile
+from .twin import CoastalWater, PaddlerTwin, RaceSetup, Traits, draw_traits, heart_rate_profile
 
 __all__ = ["DEVELOPMENT_DAY_KINDS", "HELD_OUT_DAY_KINDS", "SESSION_KINDS", "DayState", "SessionSpec",
            "TrainingBlock", "draw_block", "executed_plan", "session_twin", "StrapFault", "answer"]
 
-DEVELOPMENT_DAY_KINDS = ("normal", "hot", "tired", "cadence_lock")
+DEVELOPMENT_DAY_KINDS = ("normal", "hot", "tired", "cadence_lock", "breezy")
 HELD_OUT_DAY_KINDS = ("poor_contact", "coming_down", "humid_drift")
 SESSION_KINDS = ("steady", "intervals", "tempo", "easy_long", "mixed")
 SESSION_DISTANCE_M = 1e6            # a session ends with its plan, not at a finish line
@@ -49,7 +52,9 @@ class DayState:
     drift_scale: float = 1.0        # x the slow creep
     strap: Optional[Dict[str, float]] = None   # {"kind", "start_s", "end_s", "factor"}
     air_c: float = 20.0
-    current_mps: float = 0.0        # + flows north (with the first leg)
+    current_mps: float = 0.0        # the tidal stream at the start, + flows north (with the first leg)
+    current_change_mps: float = 0.0  # how much it changes by the end of the session (it can turn)
+    wind: Optional[Dict[str, float]] = None   # {"start", "end", "gust_sd", "gust_tau_s"}: along the course, as water speed
 
 
 @dataclass
@@ -101,7 +106,8 @@ def _plan(kind: str, rng: np.random.Generator, h: float) -> Tuple[List[Tuple[flo
 
 def _day(kind: str, rng: np.random.Generator, cp_scale: float, plan_s: float) -> DayState:
     u = lambda a, b: float(rng.uniform(a, b))      # noqa: E731
-    d = DayState(kind=kind, cp_scale=cp_scale, air_c=u(16.0, 24.0), current_mps=u(-0.30, 0.30))
+    d = DayState(kind=kind, cp_scale=cp_scale, air_c=u(16.0, 24.0), current_mps=u(-0.30, 0.30),
+                 current_change_mps=u(-0.40, 0.40))
     if kind == "hot":
         d.hr_offset_bpm, d.drift_scale, d.air_c = u(5.0, 10.0), 2.0, u(30.0, 34.0)
     elif kind == "tired":
@@ -116,6 +122,10 @@ def _day(kind: str, rng: np.random.Generator, cp_scale: float, plan_s: float) ->
     elif kind == "coming_down":
         d.cp_scale *= 0.92
         d.hr_offset_bpm, d.fatigue_suppress_bpm = u(6.0, 10.0), 4.0
+    elif kind == "breezy":                 # a breeze that builds, with gusts (along the course)
+        sgn = 1.0 if float(rng.random()) < 0.5 else -1.0
+        d.wind = {"start": sgn * u(0.0, 0.08), "end": sgn * u(0.15, 0.30), "gust_sd": u(0.08, 0.14),
+                  "gust_tau_s": u(60.0, 150.0)}
     elif kind == "humid_drift":
         d.hr_offset_bpm, d.drift_scale, d.air_c = 3.0, 4.0, u(26.0, 29.0)
     return d
@@ -174,6 +184,36 @@ class StrapFault:
         return hr
 
 
+class TrainingWater(CoastalWater):
+    """The tidal stream plus, on a breezy day, wind along the course as an equivalent water
+    speed: a mean that builds through the session and gusts (an Ornstein-Uhlenbeck process
+    with its own random stream).  GPS cannot tell it from current; gusts change faster than
+    the boat computer's estimate of the current."""
+
+    _wind: Optional[Dict[str, float]] = None
+    _gust: Optional[np.ndarray] = None
+
+    def set_wind(self, wind: Dict[str, float], seed: int, dt: float = 5.0) -> None:
+        self._wind = dict(wind)
+        rng = np.random.default_rng([seed, 59])
+        n = int(self.trend_s / dt) + 2
+        a = math.exp(-dt / wind["gust_tau_s"])
+        g = np.zeros(n)
+        for i in range(1, n):
+            g[i] = a * g[i - 1] + wind["gust_sd"] * math.sqrt(1.0 - a * a) * float(rng.normal())
+        self._gust, self._dt = g, dt
+
+    def wind_at(self, t: float) -> float:
+        if not self._wind:
+            return 0.0
+        f = min(1.0, max(0.0, t / self.trend_s))
+        i = min(len(self._gust) - 1, max(0, int(t / self._dt)))
+        return self._wind["start"] + (self._wind["end"] - self._wind["start"]) * f + float(self._gust[i])
+
+    def at(self, y: float, s: float, t: float) -> float:
+        return super().at(y, s, t) + self.wind_at(t)
+
+
 def executed_plan(block: TrainingBlock, spec: SessionSpec) -> List[Tuple[float, float, float]]:
     """The plan as the paddler paddles it by feel: each stretch of work off its planned
     effort by a few percent (planted; its own random stream)."""
@@ -188,8 +228,12 @@ def session_twin(block: TrainingBlock, spec: SessionSpec) -> PaddlerTwin:
     d = spec.day
     p = block.traits.paddler
     tr = replace(block.traits, paddler=replace(p, critical_power_w=p.critical_power_w * d.cp_scale))
-    su = RaceSetup(distance_m=SESSION_DISTANCE_M, leg_m=LEG_M, current_mps=d.current_mps,
-                   plan=executed_plan(block, spec))
+    plan = executed_plan(block, spec)
+    water = TrainingWater(c0=d.current_mps, c1=d.current_change_mps, trend_s=sum(p[0] for p in plan),
+                          inshore_floor=1.0, eddies=[])            # a tidal stream that changes, even across the course
+    if d.wind:
+        water.set_wind(d.wind, seed=block.seed * 100 + spec.index)
+    su = RaceSetup(distance_m=SESSION_DISTANCE_M, leg_m=LEG_M, current_mps=d.current_mps, plan=plan, water=water)
     tw = PaddlerTwin(tr, su, seed=block.seed * 100 + spec.index)
     tw.enable_heart_rate(profiles=True)
     hp = dict(block.hr_par)
@@ -213,9 +257,23 @@ def answer(block: TrainingBlock, spec: SessionSpec, ask: str, t: float, asked_be
                 "coming_down": "A bit off today, scratchy throat." if r < 0.6 else "Alright.",
                 "humid_drift": "It's muggy." if r < 0.6 else "Fine."}.get(d.kind, "Good." if r < 0.5 else "Fine.")
     elif ask == "conditions":
-        flow = "with" if d.current_mps > 0.08 else "against" if d.current_mps < -0.08 else "hardly any"
-        says = (f"About {d.air_c:.0f} degrees. The water is moving: {flow} us on the way out." if flow != "hardly any"
-                else f"About {d.air_c:.0f} degrees. Flat, not much current.")
+        frac = min(1.0, t / max(1.0, sum(p[0] for p in spec.plan)))
+        now = d.current_mps + d.current_change_mps * frac
+        flow = "with" if now > 0.08 else "against" if now < -0.08 else "hardly any"
+        says = (f"About {d.air_c:.0f} degrees. The water is moving {flow} us on the way out." if flow != "hardly any"
+                else f"About {d.air_c:.0f} degrees. Not much current right now.")
+        if d.wind:
+            w_now = d.wind["start"] + (d.wind["end"] - d.wind["start"]) * frac
+            says += (f" The breeze is {'up' if abs(w_now) > 0.12 else 'coming up'}, gusty, "
+                     f"{'behind' if w_now > 0 else 'on the nose'} on the way out.")
+        c0, end = d.current_mps, d.current_mps + d.current_change_mps
+        if r < 0.75:                       # the tide table, as the paddler remembers it
+            if c0 * end < 0 and min(abs(c0), abs(end)) > 0.05:
+                says += " The tide table has it turning during the session."
+            elif abs(end) > abs(c0) + 0.12:
+                says += " The tide table has it building through the session."
+            elif abs(end) < abs(c0) - 0.12:
+                says += " The tide table has it easing through the session."
     elif ask == "strap":
         if d.strap and d.strap["kind"] == "poor_contact" and t < d.strap["end_s"]:
             says = "It felt dry when I put it on." if r < 0.5 else "Seems fine?"

@@ -15,7 +15,8 @@ from two routes, following a **guide** that each arm sets:
   75 or locked to the stroke rate).
 
 Arms: ``textbook`` (share of the maximum heart rate), ``hr_model`` (the personal model, no day
-adjustment), ``pace`` (pace only), ``warmup_rule`` (the strongest fixed rule: the day's offset
+adjustment), ``refit`` (the personal model refitted after every session on everything so far),
+``pace`` (pace only), ``warmup_rule`` (the strongest fixed rule: the day's offset
 from the warm-up, the plausibility check, and both routes must agree within a zone), and the
 reasoning agent (:mod:`.hr_agent`).  Scored against the simulator's truth: the share of today's
 critical power over the last 30 s, at checkpoints where the planned effort has been steady for
@@ -24,7 +25,7 @@ two minutes.
 from __future__ import annotations
 
 import math
-from dataclasses import asdict, dataclass, field
+from dataclasses import asdict, dataclass, field, replace
 from typing import Any, Callable, Dict, List, Optional, Tuple
 
 import numpy as np
@@ -40,7 +41,7 @@ from .sim.training import SESSION_DISTANCE_M, SessionSpec, StrapFault, TrainingB
 from .sim.twin import PaddlerTwin, RaceSetup, STEP_TEST_SHARES
 
 __all__ = ["Calibration", "calibrate_block", "Guide", "read_zone", "SessionCtx", "run_session", "run_block",
-           "GuideArm", "TextbookArm", "HrModelArm", "PaceArm", "WarmupRuleArm", "score_session", "STEADY_S",
+           "GuideArm", "TextbookArm", "HrModelArm", "PaceArm", "WarmupRuleArm", "RefitArm", "OracleDayArm", "score_session", "STEADY_S",
            "READ_EVERY_S"]
 
 READ_EVERY_S = 30.0
@@ -52,11 +53,29 @@ ZONE_NAMES = [z[0] for z in EFFORT_ZONES]
 
 @dataclass
 class Calibration:
-    model: PersonalHeartRate        # effort axis: power reaching the boat (W)
-    athlete: Athlete                # critical power and reserve, power reaching the boat
+    model: PersonalHeartRate        # effort axis: paddle power (W), from the borrowed power paddle
+    athlete: Athlete                # critical power and reserve, paddle power
+    athlete_boat: Athlete           # the same test as power reaching the boat (the boat computer's reserve)
+    eta_coef: Tuple[float, float, float]   # log(boat / paddle power) = a + b r + c r^2 (r: stroke rate)
+    rate_range: Tuple[float, float]
     hr_max_seen: float
     separates_up_to: float
     summary: Dict[str, Any] = field(default_factory=dict)
+    rows: List[Dict[str, Any]] = field(default_factory=list, repr=False)   # the step test: t, paddle_w, heart rate
+
+    def efficiency(self, rate: Optional[float]) -> float:
+        """The share of paddle power reaching the boat at this stroke rate (calibration day)."""
+        a, b, c = self.eta_coef
+        lo, hi = self.rate_range
+        r = 0.5 * (lo + hi) if rate is None or not math.isfinite(rate) else min(max(rate, lo), hi)
+        return float(math.exp(a + b * r + c * r * r))
+
+    def paddle_w(self, boat_w: Optional[float], rate: Optional[float]) -> Optional[float]:
+        """Paddle power from the power reaching the boat, through this paddler's efficiency
+        by stroke rate."""
+        if boat_w is None or not math.isfinite(boat_w):
+            return None
+        return boat_w / max(0.2, self.efficiency(rate))
 
 
 def _test_twin(block: TrainingBlock, plan, seed: int) -> PaddlerTwin:
@@ -82,16 +101,32 @@ def _max30(rows: List[Dict[str, Any]]) -> float:
     return best
 
 
+def _stretches(rows: List[Dict[str, Any]], plan) -> List[Tuple[float, float, float]]:
+    """(boat power, paddle power, stroke rate) over the settled part of each stretch of a test."""
+    t = np.array([r["t"] for r in rows], float)
+    out, acc = [], 0.0
+    for dur, _, _ in plan:
+        m = (t > acc + min(90.0, dur / 3.0)) & (t < acc + dur)
+        acc += dur
+        R = [rows[i] for i in np.flatnonzero(m)
+             if rows[i].get("boat_power_w") is not None and rows[i].get("shaft_power_w") is not None]
+        if len(R) >= 20:
+            out.append(tuple(float(np.mean([r[k] for r in R])) for k in ("boat_power_w", "shaft_power_w", "rate_spm")))
+    return out
+
+
 def calibrate_block(block: TrainingBlock) -> Calibration:
-    """The calibration day, on flat water: a heart-rate step test (5-minute steps at 55-100 %
-    of critical power, out of order) and the 3- and 12-minute critical-power test, both read
-    from GPS through the hull model (no paddle sensor)."""
+    """The calibration day, on flat water, with a borrowed power paddle: a heart-rate step test
+    (5-minute steps at 55-100 % of critical power, out of order) and the 3- and 12-minute
+    critical-power test.  The paddle measures paddle power; GPS through the hull model gives
+    the power reaching the boat; their ratio by stroke rate (blade efficiency) is what the pace
+    route uses on later days, when the paddler trains without the power paddle."""
     tr, h = block.traits, block.traits.habit_rate
     step_plan = [(300.0, 56.0, 0.5)] + [(300.0, h, x) for x in STEP_TEST_SHARES]
     tw = _test_twin(block, step_plan, block.seed * 100 + 90)
     rows = tw.run_alone(step_s=10.0)
     prep = ss.prepare_rows(rows, tw.craft, tw.total_kg)
-    model = fit_personal_model(prep["all_rows"], effort_key="boat_power_w")
+    model = fit_personal_model(prep["all_rows"], effort_key="shaft_power_w")
     p = tr.paddler
     e_s = 1.0 + 0.95 * p.w_prime_j / (p.critical_power_w * 180.0)
     e_l = 1.0 + 0.95 * p.w_prime_j / (p.critical_power_w * 720.0)
@@ -99,12 +134,26 @@ def calibrate_block(block: TrainingBlock) -> Calibration:
     tw2 = _test_twin(block, cp_plan, block.seed * 100 + 91)
     rows2 = tw2.run_alone(step_s=10.0)
     prep2 = ss.prepare_rows(rows2, tw2.craft, tw2.total_kg)
-    best = ss.best_efforts(prep2["all_rows"], (180, 720))
-    ath = calibrate(best, source="3- and 12-minute test on the calibration day, GPS through the hull model")
-    cal = Calibration(model=model, athlete=ath, hr_max_seen=max(_max30(rows), _max30(rows2)),
-                      separates_up_to=model.separates_up_to(ath.cp_w))
-    cal.summary = {"critical_power_boat_w": round(ath.cp_w), "reserve_boat_kj": round(ath.w_prime_j / 1000.0, 1),
+    best_boat = ss.best_efforts(prep2["all_rows"], (180, 720))
+    best = ss.best_efforts([{**r, "boat_power_w": r.get("shaft_power_w")} for r in prep2["all_rows"]], (180, 720))
+    ath = calibrate(best, source="3- and 12-minute test on the calibration day, power paddle")
+    ath_boat = calibrate(best_boat, source="3- and 12-minute test on the calibration day, GPS through the hull model")
+    pts = _stretches(prep["all_rows"], step_plan) + _stretches(prep2["all_rows"], cp_plan)
+    r = np.array([x[2] for x in pts])
+    le = np.log(np.array([x[0] / x[1] for x in pts]))
+    c2, c1, c0 = np.polyfit(r, le, 2)
+    if c2 >= 0.0:                          # no hill seen: a straight line in the stroke rate
+        c1, c0 = np.polyfit(r, le, 1)
+        c2 = 0.0
+    cal = Calibration(model=model, athlete=ath, athlete_boat=ath_boat, eta_coef=(float(c0), float(c1), float(c2)),
+                      rate_range=(float(r.min()) - 2.0, float(r.max()) + 2.0),
+                      hr_max_seen=max(_max30(rows), _max30(rows2)), separates_up_to=model.separates_up_to(ath.cp_w))
+    cal.rows = [{"t": q["t"], "paddle_w": q.get("shaft_power_w"), "heart_rate_bpm": q.get("heart_rate_bpm"),
+                 "rate_spm": q.get("rate_spm"), "session": 0} for q in prep["all_rows"]]
+    rates = sorted({int(round(x)) for x in r})
+    cal.summary = {"critical_power_paddle_w": round(ath.cp_w), "reserve_kj": round(ath.w_prime_j / 1000.0, 1),
                    "highest_30s_heart_rate": round(cal.hr_max_seen),
+                   "blade_efficiency_by_stroke_rate": {str(q): round(cal.efficiency(q), 3) for q in rates},
                    "heart_rate_model": model.summary(cp_w=ath.cp_w)}
     return cal
 
@@ -135,10 +184,11 @@ def _mean(rows: List[Dict[str, Any]], key: str) -> Optional[float]:
 
 def read_zone(guide: Guide, recent: List[Dict[str, Any]], cal: Calibration, minutes_in: float) -> Dict[str, Any]:
     """The zone of the last minute (``recent``: rows with ``heart_rate_bpm``, ``rate_spm``,
-    ``power_w``): ``zone`` (an index into the effort zones) or None for "cannot tell", with
-    each route's reading."""
-    hr, rate, pw = _mean(recent, "heart_rate_bpm"), _mean(recent, "rate_spm"), _mean(recent, "power_w")
-    out: Dict[str, Any] = {"hr": hr, "rate": rate, "power_w": pw, "share_hr": None, "share_pace": None,
+    ``paddle_w``: paddle power estimated from GPS, the hull model and the paddler's blade
+    efficiency by stroke rate): ``zone`` (an index into the effort zones) or None for "cannot
+    tell", with each route's reading."""
+    hr, rate, pw = _mean(recent, "heart_rate_bpm"), _mean(recent, "rate_spm"), _mean(recent, "paddle_w")
+    out: Dict[str, Any] = {"hr": hr, "rate": rate, "paddle_w": pw, "share_hr": None, "share_pace": None,
                            "zone_hr": None, "zone_pace": None, "zone": None}
     cp = cal.athlete.cp_w
     if guide.mode == "textbook":
@@ -271,15 +321,73 @@ class WarmupRuleArm(GuideArm):
 
     def after_warmup(self, ctx):
         t1 = ctx.twin.t
-        W = [r for r in ctx.rows if t1 - 240.0 <= r["t"] <= t1 and r.get("power_w") is not None
+        W = [r for r in ctx.rows if t1 - 240.0 <= r["t"] <= t1 and r.get("paddle_w") is not None
              and r.get("heart_rate_bpm") is not None]
-        gaps = [r["heart_rate_bpm"] - ctx.cal.model.hr_at(r["power_w"]) for r in W
+        gaps = [r["heart_rate_bpm"] - ctx.cal.model.hr_at(r["paddle_w"]) for r in W
                 if r["heart_rate_bpm"] >= 75.0 and abs(r["heart_rate_bpm"] - (r.get("rate_spm") or 0.0)) >= 3.0]
         g = ctx.guide
         off = float(np.median(gaps)) if len(gaps) >= 20 else 0.0
         ctx.set_guide(Guide(mode="combined", combine="agree", plausibility_check=True,
                             hr_trust_up_to_share=g.hr_trust_up_to_share, hr_offset_bpm=round(off, 1)),
                       why="warm-up offset")
+
+
+def _plausible(r: Dict[str, Any]) -> bool:
+    hr = r.get("heart_rate_bpm")
+    return hr is not None and hr >= 75.0 and abs(hr - (r.get("rate_spm") or 0.0)) >= 3.0
+
+
+class RefitArm(GuideArm):
+    """The personal model refitted after every session on everything so far: the calibration
+    step test and every session (paddle power from pace; heart rates that cannot be real
+    dropped), each session with its own clock.  Read as the warm-up rule reads, without a
+    day offset: both routes must agree within a zone."""
+
+    name = "refit"
+
+    def start_block(self, block, cal):
+        super().start_block(block, cal)
+        self.pool = [dict(r) for r in cal.rows if _plausible(r)]
+        self.cal_now = cal
+        self.refits: List[Dict[str, Any]] = []
+
+    def initial_guide(self, ctx):
+        ctx.cal = self.cal_now
+        return Guide(mode="combined", combine="agree", plausibility_check=True,
+                     hr_trust_up_to_share=self.cal_now.separates_up_to)
+
+    def end_session(self, ctx, score):
+        k = ctx.spec.index
+        self.pool += [{"t": r["t"], "paddle_w": r["paddle_w"], "heart_rate_bpm": r["heart_rate_bpm"], "session": k}
+                      for r in ctx.rows if r.get("paddle_w") is not None and _plausible(r)]
+        m = fit_personal_model(self.pool, effort_key="paddle_w", segment_key="session")
+        if m is not None:
+            self.cal_now = replace(self.cal, model=m, separates_up_to=m.separates_up_to(self.cal.athlete.cp_w))
+            self.refits.append({"after_session": k, "rest": round(m.rest, 1), "rise": round(m.rise, 1),
+                                "separates_up_to": round(self.cal_now.separates_up_to, 2)})
+
+    def summary(self):
+        return {"refits": self.refits}
+
+
+class OracleDayArm(GuideArm):
+    """A reference, not a competitor: told the planted day (its heart-rate offset, today's
+    critical power, a strap fault and when it ends), with the warm-up rule's combination.
+    It shows how much a guide can gain from knowing the day; it does not know how blade
+    efficiency bends the pace route."""
+
+    name = "oracle_day"
+
+    def initial_guide(self, ctx):
+        d = ctx.spec.day
+        return Guide(mode="combined", combine="agree", plausibility_check=True,
+                     hr_trust_up_to_share=ctx.cal.separates_up_to, hr_offset_bpm=d.hr_offset_bpm,
+                     cp_scale=d.cp_scale)
+
+    def on_read(self, ctx, rd):
+        on = ctx.strap.active(rd["t"])
+        if on == ctx.guide.hr_trusted:
+            ctx.set_guide(Guide(**{**ctx.guide.to_dict(), "hr_trusted": not on}), why="strap")
 
 
 def _segment_at(plan, t: float) -> Tuple[int, float, float]:
@@ -297,7 +405,7 @@ def run_session(block: TrainingBlock, cal: Calibration, spec: SessionSpec, arm: 
     """One training session with ``arm`` deciding the guide (simulated time; a model call
     takes ``latency_s`` of session time)."""
     tw = session_twin(block, spec)
-    st = RaceState(tw.craft, tw.total_kg, cal.athlete, distance_m=None, start_t=0.0)
+    st = RaceState(tw.craft, tw.total_kg, cal.athlete_boat, distance_m=None, start_t=0.0)
     sched = Scheduler(VirtualClock(0.0), latency=fixed({}, default=latency_s))
     ctx = SessionCtx(block=block, cal=cal, spec=spec, twin=tw, state=st, strap=StrapFault(spec.day.strap, block.seed * 100 + spec.index),
                      sched=sched, guide=Guide(), history=list(history or []))
@@ -312,15 +420,16 @@ def run_session(block: TrainingBlock, cal: Calibration, spec: SessionSpec, arm: 
             if hr_true is not None:
                 r["heart_rate_bpm"] = ctx.strap.read(r["t"], hr_true, r.get("rate_spm") or 0.0)
             snap = st.update(r)
+            bp = snap.get("power_w") if snap.get("power_w") and math.isfinite(snap["power_w"]) else None
             ctx.rows.append({"t": r["t"], "heading_deg": r.get("heading_deg"), "speed_gps": r.get("v_mean"),
                              "rate_spm": r.get("rate_spm"), "heart_rate_bpm": r.get("heart_rate_bpm"),
-                             "power_w": snap.get("power_w") if snap.get("power_w") and math.isfinite(snap["power_w"]) else None,
+                             "boat_power_w": bp, "paddle_w": cal.paddle_w(bp, r.get("rate_spm")),
                              "speed_water": snap.get("speed_water"), "push_along_mps": snap.get("push_along_mps")})
         if not nxt["warm"] and now >= spec.warmup_s:
             nxt["warm"] = True
             arm.after_warmup(ctx)
         if now >= nxt["read"]:
-            rd = read_zone(ctx.guide, ctx.recent(60.0), cal, minutes_in=now / 60.0)
+            rd = read_zone(ctx.guide, ctx.recent(60.0), ctx.cal, minutes_in=now / 60.0)
             L = tw.log
             w = [p for p, tt in zip(L["p_shaft"][-200:], L["t"][-200:]) if tt > now - READ_EVERY_S]
             seg, into, eff = _segment_at(spec.plan, now)
@@ -359,12 +468,12 @@ def session_summary(ctx: SessionCtx) -> Dict[str, Any]:
         W = [r for r in ctx.rows if t0 + STEADY_S <= r["t"] < t0 + dur]
         if len(W) < 30:
             continue
-        pw, hr = _mean(W, "power_w"), _mean(W, "heart_rate_bpm")
+        pw, hr = _mean(W, "paddle_w"), _mean(W, "heart_rate_bpm")
         segs.append({"minutes": [round(t0 / 60.0, 1), round((t0 + dur) / 60.0, 1)],
-                     "boat_power_w": None if pw is None else round(pw), "rate_spm": round(_mean(W, "rate_spm") or 0, 1),
+                     "paddle_power_est_w": None if pw is None else round(pw), "rate_spm": round(_mean(W, "rate_spm") or 0, 1),
                      "heart_rate_bpm": None if hr is None else round(hr, 1),
                      "model_heart_rate_at_this_power": None if pw is None else round(ctx.cal.model.hr_at(pw), 1)})
-    return {"session": ctx.spec.index, "description": ctx.spec.description, "air_c": round(ctx.spec.day.air_c),
+    return {"session": ctx.spec.index, "air_c": round(ctx.spec.day.air_c),
             "stretches": segs, "paddler_said": [a["says"] for a in ctx.answers],
             "guide_used": ctx.guide.to_dict()}
 

@@ -28,7 +28,7 @@ from __future__ import annotations
 
 import math
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Sequence
+from typing import Any, Dict, List, Optional, Sequence, Tuple
 
 import numpy as np
 
@@ -143,30 +143,42 @@ def _lagged(t: np.ndarray, x: np.ndarray, tau: float) -> np.ndarray:
 def fit_personal_model(rows: Sequence[Dict[str, Any]], *, effort_key: str = "shaft_power_w",
                        hr_key: str = "heart_rate_bpm", ref_w: Optional[float] = None,
                        resample_s: float = 5.0,
-                       creep_grid: Sequence[float] = (0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 4.0)) -> Optional[PersonalHeartRate]:
+                       creep_grid: Sequence[float] = (0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 4.0),
+                       segment_key: Optional[str] = None) -> Optional[PersonalHeartRate]:
     """Fit a :class:`PersonalHeartRate` from rows carrying ``t`` (s), an effort and a heart rate.
-    ``ref_w``: the effort the rise is measured to (default: the 90th percentile effort)."""
-    pts = [(float(r["t"]), float(r[effort_key]), float(r[hr_key])) for r in rows
-           if r.get(effort_key) is not None and r.get(hr_key) is not None and r.get("t") is not None]
-    if len(pts) < 50:
+    ``ref_w``: the effort the rise is measured to (default: the 90th percentile effort).
+    ``segment_key``: rows from several recordings (sessions), each with its own clock; the lag
+    and the slow creep start afresh in each."""
+    segs: Dict[Any, List[Tuple[float, float, float]]] = {}
+    for r in rows:
+        if r.get(effort_key) is not None and r.get(hr_key) is not None and r.get("t") is not None:
+            segs.setdefault(r.get(segment_key) if segment_key else 0, []).append(
+                (float(r["t"]), float(r[effort_key]), float(r[hr_key])))
+    if sum(len(v) for v in segs.values()) < 50:
         return None
-    a = np.array(sorted(pts))
-    t0 = a[0, 0]
-    grid = np.arange(a[0, 0], a[-1, 0], resample_s)
-    if len(grid) < 30:
-        return None
-    P = np.interp(grid, a[:, 0], a[:, 1])
-    H = np.interp(grid, a[:, 0], a[:, 2])
-    # 30-s means of power, then the first-order lag on those
     k = max(1, int(round(30.0 / resample_s)))
-    P = np.convolve(P, np.ones(k) / k, mode="same")
-    ref = float(ref_w) if ref_w else float(np.percentile(P, 90))
-    tt = (grid - t0) / 600.0
+    parts = []
+    for pts in segs.values():
+        a = np.array(sorted(pts))
+        grid = np.arange(a[0, 0], a[-1, 0], resample_s)
+        if len(grid) < 30:
+            continue
+        P = np.interp(grid, a[:, 0], a[:, 1])
+        H = np.interp(grid, a[:, 0], a[:, 2])
+        # 30-s means of power, then the first-order lag on those
+        P = np.convolve(P, np.ones(k) / k, mode="same")
+        parts.append((grid, P, H, (grid - a[0, 0]) / 600.0))
+    if not parts:
+        return None
+    H = np.concatenate([q[2] for q in parts])
+    tt = np.concatenate([q[3] for q in parts])
+    P_all = np.concatenate([q[1] for q in parts])
+    ref = float(ref_w) if ref_w else float(np.percentile(P_all, 90))
     best = None
     # the creep is held to a realistic 0-4 bpm per 10 min: a session whose effort rises with
     # time (a plain step test) cannot otherwise tell a creep from a rise with effort
     for tau in (15.0, 20.0, 30.0, 40.0, 50.0, 65.0, 80.0):
-        Pl = _lagged(grid, P, tau)
+        Pl = np.concatenate([_lagged(q[0], q[1], tau) for q in parts])
         for scale in np.geomspace(0.08 * ref, 8.0 * ref, 40):
             g = (1.0 - np.exp(-np.maximum(Pl, 0.0) / scale)) / (1.0 - math.exp(-ref / scale))
             X = np.vstack([np.ones_like(g), g]).T
@@ -180,11 +192,11 @@ def fit_personal_model(rows: Sequence[Dict[str, Any]], *, effort_key: str = "sha
     if best is None:
         return None
     sse, tau, scale, coef = best
-    H30 = np.convolve(H, np.ones(k) / k, mode="valid")
+    H30 = np.concatenate([np.convolve(q[2], np.ones(k) / k, mode="valid") for q in parts])
     m = PersonalHeartRate(rest=float(coef[0]), rise=float(coef[1]), scale_w=scale, ref_w=ref, lag_s=tau,
                           creep_per_10min=float(coef[2]), ceiling=float(H30.max()) if H30.size else float(H.max()),
                           rms_bpm=math.sqrt(sse / len(H)), n=int(len(H)),
-                          effort_range_w=[float(np.percentile(P, 5)), float(np.percentile(P, 95))])
+                          effort_range_w=[float(np.percentile(P_all, 5)), float(np.percentile(P_all, 95))])
     if scale < 0.6 * ref:
         m.notes.append("compressed response: heart rate is already high at moderate effort and rises little "
                        "near the top of the range; it tells hard efforts apart poorly")

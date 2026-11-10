@@ -21,3 +21,8 @@ dist/
 results/coaching_trial/roleplay/**
 !results/coaching_trial/roleplay/**/
 !results/coaching_trial/roleplay/**/answers.json
+
+# role-played training blocks: only the answers are tracked (experiments/roleplay_training.py verify)
+results/training_hr/roleplay/**
+!results/training_hr/roleplay/**/
+!results/training_hr/roleplay/**/answers.json

@@ -27,7 +27,7 @@ __all__ = ["TRAINING_ANALYST_SYSTEM", "TrainingAnalyst", "AgentGuideArm"]
 TRAINING_ANALYST_SYSTEM = """\
 You look after one paddler's heart-rate and effort display through a block of training sessions in an \
 outrigger canoe (OC1). The paddler has a GPS speed coach (speed over the ground, heading, stroke rate) and \
-a heart-rate strap; there is no power meter. What you are there for: that the display tells them the \
+a heart-rate strap; they train without a power meter. What you are there for: that the display tells them the \
 effort zone they are really in, so they can train in the zone they mean to.
 
 The display: every 30 seconds a fast reader names the zone of the last minute, as a share of the \
@@ -36,14 +36,16 @@ endurance 55-75 %, tempo 75-90 %, threshold 90-105 %, above threshold over 105 %
 guide that you set; you do not name zones yourself. It is scored on stretches of steady effort: the right \
 zone is useful, "cannot tell" is safe but leaves the paddler without a reading, a wrong zone misleads.
 
-The reader has two routes:
-- Heart rate, through this paddler's own model, fitted on a calibration day from a step test: the heart \
+The calibration day was paddled with a borrowed power paddle (it measures paddle power); the paddler now \
+trains without it. The reader has two routes:
+- Heart rate, through this paddler's own model, fitted on the calibration day from a step test: the heart \
 rate this person settles at for each power, the slow upward creep over a session, and the effort above \
 which their heart rate no longer tells efforts apart (for some people that is well below critical power). \
 The guide's hr_offset_bpm is subtracted first.
 - Pace: GPS speed with the boat computer's live estimate of the current removed, turned into power \
-reaching the boat by the hull model, as a share of the calibrated critical power times the guide's \
-cp_scale (today's critical power against the calibration day's).
+reaching the boat by the hull model, then into paddle power by this paddler's blade efficiency at the \
+stroke rate (measured on the calibration day), as a share of the calibrated critical power times the \
+guide's cp_scale (today's critical power against the calibration day's).
 
 What is known to go wrong (none of it is announced; you have to find it):
 - Heart rate lags effort by about a minute and creeps up slowly over a session. Heat and humidity raise \
@@ -53,8 +55,8 @@ at hard effort and lower the maximum, and lowers what the paddler can sustain th
 read far too low and erratically while dry. Asking the paddler to wet and re-seat the strap \
 (ask_paddler with ask='fix_strap') usually ends it within a minute.
 - Pace: the current changes and the computer's estimate of it lags, especially after a change and \
-before the first turn; turns cut the reading for a few seconds. Blade efficiency changes with stroke \
-rate and tiredness, so the same speed is not always the same effort. Fitness changes over weeks.
+before the first turn; turns cut the reading for a few seconds. Blade efficiency also falls as the paddler tires within a \
+session, so the same speed later costs more effort. Fitness changes over weeks.
 - The calibration itself is one day's measurement.
 
 The guide (set_guide): mode (hr, pace, combined), combine (agree: both routes must be within a zone of \
@@ -115,16 +117,17 @@ class TrainingAnalyst:
         reg.register(self.session_data, name="session_data", input_schema=_DATA_SCHEMA,
                      description="Today's session minute by minute (default: the last 8 minutes; at most 20): "
                                  "leg (out/back), GPS speed, speed through the water and the current the computer "
-                                 "estimates, stroke rate, power reaching the boat, the heart rate the strap reads, "
-                                 "the heart rate the model expects at that power and the gap, and what the reader "
-                                 "said by each route.")
+                                 "estimates, stroke rate, paddle power estimated from pace (the pace route's power), "
+                                 "the heart rate the strap reads, the heart rate the model expects at that power and "
+                                 "the gap, and what the reader said by each route.")
         reg.register(self.history, name="history",
                      description="Earlier sessions of the block as the devices recorded them: each steady stretch's "
-                                 "power, stroke rate, heart rate and the model's heart rate at that power; what the "
-                                 "paddler said; the guide used.")
+                                 "paddle power estimated from pace, stroke rate, heart rate and the model's heart rate "
+                                 "at that power; what the paddler said; the guide used at the end.")
         reg.register(self.calibration, name="calibration",
-                     description="The calibration day: critical power and reserve (power reaching the boat), the "
-                                 "highest heart rate seen, and the paddler's heart-rate model.")
+                     description="The calibration day (with a borrowed power paddle): critical power and reserve "
+                                 "(paddle power), the highest heart rate seen, blade efficiency by stroke rate, and "
+                                 "the paddler's heart-rate model.")
         reg.register(self.ask_paddler, name="ask_paddler", writes=True, input_schema=_ASK_SCHEMA,
                      description="Ask the paddler (at most once a minute).")
         reg.register(self.set_guide, name="set_guide", writes=True, input_schema=_GUIDE_SCHEMA,
@@ -158,14 +161,14 @@ class TrainingAnalyst:
             if hds:
                 s = sum(math.cos(math.radians(h)) for h in hds) / len(hds)
                 leg = "out" if s > 0.5 else "back" if s < -0.5 else "turning"
-            pw, hr = mean("power_w"), mean("heart_rate_bpm")
+            pw, hr = mean("paddle_w"), mean("heart_rate_bpm")
             mhr = c.cal.model.hr_at(pw) + c.cal.model.creep_per_10min * (m + 0.5) / 10.0 if pw else None
             R = [x for x in c.reads if m * 60.0 < x["t"] <= (m + 1) * 60.0]
             last = R[-1] if R else {}
             nm = lambda z: None if z is None else EFFORT_ZONES[z][0]       # noqa: E731
             out.append({"minute": m, "leg": leg, "speed_gps": _r(mean("speed_gps"), 2),
                         "speed_water": _r(mean("speed_water"), 2), "current_est": _r(mean("push_along_mps"), 2),
-                        "rate_spm": _r(mean("rate_spm")), "boat_power_w": _r(pw, 0), "heart_rate": _r(hr),
+                        "rate_spm": _r(mean("rate_spm")), "paddle_power_est_w": _r(pw, 0), "heart_rate": _r(hr),
                         "model_heart_rate_at_power": _r(mhr), "gap_bpm": _r(None if hr is None or mhr is None else hr - mhr),
                         "reader": {"zone": nm(last.get("zone")), "by_heart_rate": nm(last.get("zone_hr")),
                                    "by_pace": nm(last.get("zone_pace")), "share_hr": last.get("share_hr"),
