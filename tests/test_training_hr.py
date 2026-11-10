@@ -246,3 +246,19 @@ def test_tide_table_and_wind_forecast(block, cal):
     assert "tide_table" in seen[0]["forecast"] and "forecast" in ht.session_summary(ctx)
     g = ht.PaceForecastArm().initial_guide(ctx)
     assert g.mode == "pace" and g.current_before_first_turn_mps is not None
+
+
+def test_the_assumed_current_does_not_carry_into_the_next_session(block, cal):
+    def brain(system, messages, tools):
+        pk = json.loads(messages[0].text)
+        if len(messages) == 1 and pk["wake"] == "warm-up done" and pk["session"]["number"] == 1:
+            return {"tool_calls": [{"name": "set_guide", "arguments": {"current_before_first_turn_mps": 0.2,
+                                                                       "cp_scale": 1.03}}]}
+        return "ok"
+
+    arm = AgentGuideArm(FakeProvider(brain, model="scripted"))
+    arm.start_block(block, cal)
+    ctx = ht.run_session(block, cal, block.sessions[0], arm)
+    arm.end_session(ctx, ht.score_session(ctx))
+    nxt = arm.initial_guide(ctx)
+    assert nxt.current_before_first_turn_mps is None and nxt.cp_scale == 1.03

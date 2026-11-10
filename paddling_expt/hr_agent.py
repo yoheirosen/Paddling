@@ -60,7 +60,9 @@ at hard effort and lower the maximum, and lowers what the paddler can sustain th
 read far too low and erratically while dry. Asking the paddler to wet and re-seat the strap \
 (ask_paddler with ask='fix_strap') usually ends it within a minute.
 - Pace: the current changes and the computer's estimate of it lags, especially after a change; before \
-the first turn it has no estimate at all (it needs both directions). GPS cannot tell wind from current: \
+the first turn it has no estimate at all (it needs both directions). It learns mostly from the difference \
+between the legs, so it moves at the turns, is unsettled for about a minute after each, and changes \
+little within a leg. GPS cannot tell wind from current: \
 the estimate includes the wind's push and cannot follow gusts. Turns cut the reading for a few seconds. \
 The course turns every 1500 m. Blade efficiency also falls as the paddler tires within a \
 session, so the same speed later costs more effort. Fitness changes over weeks.
@@ -74,7 +76,10 @@ hr_trust_up_to_share (above this share the heart-rate route cannot tell); hr_ext
 current_before_first_turn_mps (+ with the boat on the way out; null removes it); plausibility_check (heart-rate \
 readings below 75 or within 3 of the stroke rate are dropped one by one; if fewer than half of the \
 minute's readings are left, the heart-rate route cannot tell); cp_scale; and a note to the paddler. \
-The guide stays until you change it, also into the next session. Both routes are always computed and \
+The guide stays until you change it, also into the next session, except current_before_first_turn_mps, \
+which is cleared at the start of each session. hr_extra_creep_per_10min may be negative. Above the top of \
+the heart-rate model's curve (its ceiling, which the slow creep brings closer over a session) the \
+heart-rate route cannot tell. Both routes are always computed and \
 shown to you, whatever the guide uses.
 
 Scoring: checkpoints every 30 seconds, from two minutes into each stretch of steady planned effort \
@@ -343,7 +348,11 @@ class TrainingAnalyst:
                 ratios.append(sp / sh)
             offs.append(off)
         med = lambda xs: None if not xs else round(float(sorted(xs)[len(xs) // 2]), 3)   # noqa: E731
-        return {"ok": True, "minutes_used": len(out), "per_minute": out[-20:],
+        why = None if out else (f"no whole minute qualified: heart rate tells efforts apart only up to "
+                                f"{cal.separates_up_to:.2f} of critical power for this paddler, so the comparison "
+                                f"works on easy minutes (warm-up, rests, cool-down, easy stretches) with the current "
+                                f"known or assumed")
+        return {"ok": True, "minutes_used": len(out), **({"why_none": why} if why else {}), "per_minute": out[-20:],
                 "if_heart_rate_is_right_cp_scale": med(ratios), "if_pace_is_right_hr_offset_bpm": med(offs),
                 "heart_rate_can_tell_up_to_share": cal.separates_up_to}
 
@@ -433,6 +442,7 @@ class AgentGuideArm(GuideArm):
 
     def initial_guide(self, ctx):
         self._ctx = ctx
+        self._last_guide.current_before_first_turn_mps = None     # a new session: the assumed current is cleared
         self._busy, self._pending, self._wakes, self._last_wake_t = False, [], 0, -1e9
         self._dis, self._implaus, self._good, self._strap_was_bad = 0, 0, 0, False
         self._gaps, self._gap_ref, self._seg = [], None, None
