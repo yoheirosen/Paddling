@@ -36,6 +36,7 @@ from agent_lib.runtime.scheduler import Scheduler, fixed
 
 from . import sessions as ss
 from .heart_rate import EFFORT_ZONES, TEXTBOOK_ZONES, PersonalHeartRate, fit_personal_model, zone_of_share
+from .boatspeed import power_at_speed
 from .race import Athlete, RaceState, calibrate
 from .sim.training import SESSION_DISTANCE_M, SessionSpec, StrapFault, TrainingBlock, session_twin
 from .sim.twin import PaddlerTwin, RaceSetup, STEP_TEST_SHARES
@@ -173,6 +174,8 @@ class Guide:
     hr_trust_up_to_share: Optional[float] = None   # above this the heart-rate route cannot tell
     plausibility_check: bool = False       # drop heart rates below 75 or within 3 of the stroke rate
     cp_scale: float = 1.0                  # today's critical power / the calibrated one (pace route)
+    hr_extra_creep_per_10min: float = 0.0  # added to the model's slow creep today (heart-rate route)
+    current_before_first_turn_mps: Optional[float] = None   # pace route, until the computer knows the current
     note: str = ""
 
     def to_dict(self) -> Dict[str, Any]:
@@ -188,7 +191,8 @@ def _plausible_hr(hr: Optional[float], rate: Optional[float]) -> bool:
     return hr is not None and hr >= 75.0 and abs(hr - (rate or 0.0)) >= 3.0
 
 
-def read_zone(guide: Guide, recent: List[Dict[str, Any]], cal: Calibration, minutes_in: float) -> Dict[str, Any]:
+def read_zone(guide: Guide, recent: List[Dict[str, Any]], cal: Calibration, minutes_in: float,
+              boat_power: Optional[Callable[[float], float]] = None) -> Dict[str, Any]:
     """The zone of the last minute (``recent``: rows with ``heart_rate_bpm``, ``rate_spm``,
     ``paddle_w``: paddle power estimated from GPS, the hull model and the paddler's blade
     efficiency by stroke rate): ``zone`` (an index into the effort zones) or None for "cannot
@@ -198,6 +202,16 @@ def read_zone(guide: Guide, recent: List[Dict[str, Any]], cal: Calibration, minu
     stroke rate are dropped one by one; if fewer than half of the minute's readings are left,
     the heart-rate route cannot tell."""
     hr_raw, rate, pw = _mean(recent, "heart_rate_bpm"), _mean(recent, "rate_spm"), _mean(recent, "paddle_w")
+    c0 = guide.current_before_first_turn_mps
+    if c0 is not None and boat_power is not None and any(not r.get("push_known") for r in recent):
+        P = []                              # the guide's current, while the computer has none of its own
+        for r in recent:
+            if not r.get("push_known") and r.get("speed_gps") is not None and r.get("heading_deg") is not None:
+                vw = r["speed_gps"] - float(c0) * math.cos(math.radians(r["heading_deg"]))
+                P.append(cal.paddle_w(boat_power(vw), r.get("rate_spm")))
+            elif r.get("paddle_w") is not None:
+                P.append(r["paddle_w"])
+        pw = float(sum(P) / len(P)) if P else None
     H = [r for r in recent if r.get("heart_rate_bpm") is not None]
     ok = [r for r in H if _plausible_hr(r["heart_rate_bpm"], r.get("rate_spm"))]
     implaus = 1.0 - len(ok) / len(H) if H else 0.0
@@ -216,7 +230,8 @@ def read_zone(guide: Guide, recent: List[Dict[str, Any]], cal: Calibration, minu
         hr = _mean(ok, "heart_rate_bpm") if len(ok) >= 0.5 * len(H) else None
         out["hr_dropped"] = hr is None
     if hr is not None:
-        e = cal.model.effort_at(hr - guide.hr_offset_bpm, minutes_in=minutes_in)
+        e = cal.model.effort_at(hr - guide.hr_offset_bpm - guide.hr_extra_creep_per_10min * minutes_in / 10.0,
+                                minutes_in=minutes_in)
         top = guide.hr_trust_up_to_share if guide.hr_trust_up_to_share is not None else 9.0
         if e is not None:
             s = e / cp
@@ -262,6 +277,8 @@ class SessionCtx:
     history: List[Dict[str, Any]] = field(default_factory=list)    # earlier sessions, as the paddler's devices saw them
     answers: List[Dict[str, Any]] = field(default_factory=list)
     guide_log: List[Dict[str, Any]] = field(default_factory=list)
+    turns: List[float] = field(default_factory=list)               # session times of the course's turns
+    boat_power: Optional[Callable[[float], float]] = None          # hull model: speed through the water -> W
 
     def recent(self, seconds: float = 60.0) -> List[Dict[str, Any]]:
         t = self.twin.t
@@ -288,6 +305,9 @@ class GuideArm:
         pass
 
     def on_read(self, ctx: SessionCtx, read: Dict[str, Any]) -> None:
+        pass
+
+    def on_turn(self, ctx: SessionCtx) -> None:
         pass
 
     def end_session(self, ctx: SessionCtx, score: Dict[str, Any]) -> None:
@@ -423,9 +443,10 @@ def run_session(block: TrainingBlock, cal: Calibration, spec: SessionSpec, arm: 
     sched = Scheduler(VirtualClock(0.0), latency=fixed({}, default=latency_s))
     ctx = SessionCtx(block=block, cal=cal, spec=spec, twin=tw, state=st, strap=StrapFault(spec.day.strap, block.seed * 100 + spec.index),
                      sched=sched, guide=Guide(), history=list(history or []))
+    ctx.boat_power = lambda v: float(power_at_speed(tw.craft, tw.total_kg, max(0.0, v), st.ama_kg)) if v > 0.3 else 0.0
     ctx.set_guide(arm.initial_guide(ctx), why="start")
     end_t = sum(p[0] for p in spec.plan)
-    nxt = {"read": READ_EVERY_S, "warm": False}
+    nxt = {"read": READ_EVERY_S, "warm": False, "leg0": tw._wu_leg_start}
 
     def tick():
         now = sched.now()
@@ -440,11 +461,15 @@ def run_session(block: TrainingBlock, cal: Calibration, spec: SessionSpec, arm: 
                              "boat_power_w": bp, "paddle_w": cal.paddle_w(bp, r.get("rate_spm")),
                              "speed_water": snap.get("speed_water"), "push_along_mps": snap.get("push_along_mps"),
                              "push_known": bool(snap.get("push_known"))})
+        if tw._wu_leg_start != nxt["leg0"]:           # the course turned
+            nxt["leg0"] = tw._wu_leg_start
+            ctx.turns.append(round(now, 1))
+            arm.on_turn(ctx)
         if not nxt["warm"] and now >= spec.warmup_s:
             nxt["warm"] = True
             arm.after_warmup(ctx)
         if now >= nxt["read"]:
-            rd = read_zone(ctx.guide, ctx.recent(60.0), ctx.cal, minutes_in=now / 60.0)
+            rd = read_zone(ctx.guide, ctx.recent(60.0), ctx.cal, minutes_in=now / 60.0, boat_power=ctx.boat_power)
             L = tw.log
             w = [p for p, tt in zip(L["p_shaft"][-200:], L["t"][-200:]) if tt > now - READ_EVERY_S]
             seg, into, eff = _segment_at(spec.plan, now)
@@ -475,6 +500,14 @@ def score_session(ctx: SessionCtx) -> Dict[str, Any]:
             "right_frac": round(right / n, 3) if n else None, "wrong_frac": round(wrong / n, 3) if n else None}
 
 
+def _share_hr(cal: Calibration, hr: Optional[float], minutes_in: float) -> Optional[float]:
+    """The heart-rate route's share with no day adjustment (None where heart rate cannot tell)."""
+    if hr is None:
+        return None
+    e = cal.model.effort_at(hr, minutes_in=minutes_in)
+    return None if e is None else round(e / cal.athlete.cp_w, 3)
+
+
 def session_summary(ctx: SessionCtx) -> Dict[str, Any]:
     """What the paddler's devices recorded, per steady stretch (no truth): for later sessions."""
     segs = []
@@ -491,7 +524,9 @@ def session_summary(ctx: SessionCtx) -> Dict[str, Any]:
                      "paddle_power_est_w": None if pw is None else round(pw), "rate_spm": round(_mean(W, "rate_spm") or 0, 1),
                      "heart_rate_bpm": None if hr is None else round(hr, 1),
                      "model_heart_rate_at_this_power_and_minute": None if pw is None else
-                     round(ctx.cal.model.hr_at(pw) + ctx.cal.model.creep_per_10min * mid / 10.0, 1)})
+                     round(ctx.cal.model.hr_at(pw) + ctx.cal.model.creep_per_10min * mid / 10.0, 1),
+                     "share_by_pace_uncorrected": None if pw is None else round(pw / ctx.cal.athlete.cp_w, 3),
+                     "share_by_heart_rate_uncorrected": _share_hr(ctx.cal, hr, mid)})
     return {"session": ctx.spec.index, "air_c": round(ctx.spec.day.air_c),
             "stretches": segs, "paddler_said": [a["says"] for a in ctx.answers],
             "guide_used": ctx.guide.to_dict()}

@@ -172,3 +172,42 @@ def test_agent_can_ask_each_session_and_schedule_its_own_wake_up(block, cal):
     assert wakes.count("you asked to be woken") == 2
     data = next(r for x in log if isinstance(x, list) for r in x if "minutes" in r)
     assert data["minutes"][0]["current_est"] is None                            # no turn yet at the warm-up's end
+
+
+def test_turn_wake_route_gap_and_the_new_guide_levers(block, cal):
+    log = []
+
+    def brain(system, messages, tools):
+        pk = json.loads(messages[0].text)
+        if len(messages) == 1:
+            log.append(pk)
+            if pk["wake"] == "warm-up done":
+                return {"tool_calls": [{"name": "wake_me", "arguments": {"after_next_turn": True, "why": "current"}},
+                                       {"name": "set_guide", "arguments": {"current_before_first_turn_mps": 0.2}}]}
+            if pk["wake"] == "you asked to be woken":
+                return {"tool_calls": [{"name": "route_gap", "arguments": {}},
+                                       {"name": "set_guide", "arguments": {"current_before_first_turn_mps": None,
+                                                                           "hr_extra_creep_per_10min": 1.0}}]}
+            return "ok"
+        log.append([json.loads(r.content) for r in messages[-1].tool_results])
+        return "ok"
+
+    arm = AgentGuideArm(FakeProvider(brain, model="scripted"))
+    arm.start_block(block, cal)
+    ctx = ht.run_session(block, cal, block.sessions[1], arm)
+    turn_wake = next(p for p in log if isinstance(p, dict) and p["wake"] == "you asked to be woken")
+    assert turn_wake["course"]["turns_at_min"] and turn_wake["now_min"] - turn_wake["course"]["turns_at_min"][0] < 1.5
+    gap = next(r for x in log if isinstance(x, list) for r in x if "if_heart_rate_is_right_cp_scale" in r)
+    assert gap["ok"] and gap["minutes_used"] == 0        # a minute after the first turn nothing qualifies yet
+    whole = arm.analyst.route_gap()                      # over the finished session
+    assert whole["minutes_used"] >= 10 and 0.7 < whole["if_heart_rate_is_right_cp_scale"] < 1.4
+    assert ctx.guide.current_before_first_turn_mps is None and ctx.guide.hr_extra_creep_per_10min == 1.0
+    # the assumed current moves the pace route only before the computer knows the current
+    rows = [r for r in ctx.rows if not r["push_known"] and r["t"] > 120.0][:60]
+    g0, g1 = ht.Guide(mode="pace"), ht.Guide(mode="pace", current_before_first_turn_mps=0.3)
+    a = ht.read_zone(g0, rows, cal, 3.0, boat_power=ctx.boat_power)["share_pace"]
+    b = ht.read_zone(g1, rows, cal, 3.0, boat_power=ctx.boat_power)["share_pace"]
+    assert b < a                       # water flowing with the boat on the way out: less effort for the speed
+    later = [r for r in ctx.rows if r["push_known"]][-60:]
+    assert ht.read_zone(g0, later, cal, 30.0, boat_power=ctx.boat_power)["share_pace"] == \
+        ht.read_zone(g1, later, cal, 30.0, boat_power=ctx.boat_power)["share_pace"]
