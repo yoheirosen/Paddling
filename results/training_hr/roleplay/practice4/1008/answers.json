@@ -1,0 +1,1 @@
+[{"tool_calls": [{"name": "calibration", "arguments": {}}, {"name": "session_data", "arguments": {"from_min": 0, "to_min": 8}}]}]
