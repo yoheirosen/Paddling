@@ -16,7 +16,8 @@ from two routes, following a **guide** that each arm sets:
 
 Arms: ``textbook`` (share of the maximum heart rate), ``hr_model`` (the personal model, no day
 adjustment), ``refit`` (the personal model refitted after every session on everything so far),
-``pace`` (pace only), ``warmup_rule`` (the strongest fixed rule: the day's offset
+``pace`` (pace only), ``pace_forecast`` (pace, with the tide table and wind forecast used for the
+current until the boat computer has its own estimate), ``warmup_rule`` (the strongest fixed rule: the day's offset
 from the warm-up, the plausibility check, and both routes must agree within a zone), and the
 reasoning agent (:mod:`.hr_agent`).  Scored against the simulator's truth: the share of today's
 critical power over the last 30 s, at checkpoints where the planned effort has been steady for
@@ -38,11 +39,12 @@ from . import sessions as ss
 from .heart_rate import EFFORT_ZONES, TEXTBOOK_ZONES, PersonalHeartRate, fit_personal_model, zone_of_share
 from .boatspeed import power_at_speed
 from .race import Athlete, RaceState, calibrate
-from .sim.training import SESSION_DISTANCE_M, SessionSpec, StrapFault, TrainingBlock, session_twin
+from .sim.training import (KT_PER_MPS_PUSH, SESSION_DISTANCE_M, SessionSpec, StrapFault, TrainingBlock,
+                           session_forecast, session_twin)
 from .sim.twin import PaddlerTwin, RaceSetup, STEP_TEST_SHARES
 
 __all__ = ["Calibration", "calibrate_block", "Guide", "read_zone", "SessionCtx", "run_session", "run_block",
-           "GuideArm", "TextbookArm", "HrModelArm", "PaceArm", "WarmupRuleArm", "RefitArm", "OracleDayArm", "score_session", "STEADY_S",
+           "GuideArm", "TextbookArm", "HrModelArm", "PaceArm", "PaceForecastArm", "WarmupRuleArm", "RefitArm", "OracleDayArm", "score_session", "STEADY_S",
            "READ_EVERY_S"]
 
 READ_EVERY_S = 30.0
@@ -342,6 +344,23 @@ class PaceArm(GuideArm):
         return Guide(mode="pace")
 
 
+class PaceForecastArm(GuideArm):
+    """Pace only, with the forecast applied mechanically: until the boat computer knows the
+    current, the pace route assumes the tide table's stream plus the forecast wind's push at
+    the start of the session (5 kt along the course ~ 0.1 m/s)."""
+
+    name = "pace_forecast"
+
+    def initial_guide(self, ctx):
+        f = session_forecast(ctx.block, ctx.spec)
+        w = f["wind_forecast"]
+        push = 0.0
+        if w.get("direction"):
+            sgn = 1.0 if w["direction"].startswith("behind") else -1.0
+            push = sgn * w["kt_at_start"] / KT_PER_MPS_PUSH
+        return Guide(mode="pace", current_before_first_turn_mps=round(f["tide_table"]["stream_at_start_mps"] + push, 3))
+
+
 class WarmupRuleArm(GuideArm):
     """The strongest fixed rule: from the last four minutes of the warm-up, the day's offset
     is the median gap between the heart rate and what the model expects at the boat's power;
@@ -528,6 +547,7 @@ def session_summary(ctx: SessionCtx) -> Dict[str, Any]:
                      "share_by_pace_uncorrected": None if pw is None else round(pw / ctx.cal.athlete.cp_w, 3),
                      "share_by_heart_rate_uncorrected": _share_hr(ctx.cal, hr, mid)})
     return {"session": ctx.spec.index, "air_c": round(ctx.spec.day.air_c),
+            "forecast": {k: session_forecast(ctx.block, ctx.spec)[k] for k in ("tide_table", "wind_forecast")},
             "stretches": segs, "paddler_said": [a["says"] for a in ctx.answers],
             "guide_used": ctx.guide.to_dict()}
 

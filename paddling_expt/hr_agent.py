@@ -81,6 +81,9 @@ Scoring: checkpoints every 30 seconds, from two minutes into each stretch of ste
 after the warm-up (so heart rate's lag after a change of effort is not scored). Nobody sees the right \
 answers, you included; you judge from the data, the paddler and the calibration.
 
+Before each session the paddler checks the tide table and the wind forecast; you see them at the warm-up \
+and with the forecast tool, and history keeps each session's forecast. Forecasts can be wrong.
+
 When you are woken: at the end of each warm-up (you see the session's timing, not what it asks for); \
 when an anomaly check fires (the gap between the two routes moves by more than 0.15 of critical power \
 from where it settled in the same stretch, for three minutes; most heart-rate readings implausible for a \
@@ -157,8 +160,8 @@ class TrainingAnalyst:
                                  "power and minute (with the slow creep) and the gap, the share of implausible "
                                  "heart-rate readings, and what the reader said by each route.")
         reg.register(self.history, name="history",
-                     description="Earlier sessions of the block as the devices recorded them: each steady stretch "
-                                 "from two minutes in: paddle power estimated from pace, stroke rate, heart rate "
+                     description="Earlier sessions of the block as the devices recorded them, with each "
+                                 "session's forecast: each steady stretch from two minutes in: paddle power estimated from pace, stroke rate, heart rate "
                                  "(plausible readings only) and the model's heart rate at that power and minute (with "
                                  "the slow creep); what the paddler said; the guide used at the end.")
         reg.register(self.calibration, name="calibration",
@@ -166,6 +169,9 @@ class TrainingAnalyst:
                                  "(paddle power), the highest heart rate seen, blade efficiency by stroke rate (the "
                                  "fitted curve and the stretches it was fitted on), and the paddler's heart-rate model "
                                  "with the range of paddle power it was fitted over.")
+        reg.register(self.forecast, name="forecast",
+                     description="Today's tide table and wind forecast, as the paddler checked them before the "
+                                 "session (with how far they are usually off).")
         reg.register(self.ask_paddler, name="ask_paddler", writes=True, input_schema=_ASK_SCHEMA,
                      description="Ask the paddler (at most once a minute).")
         reg.register(self.set_guide, name="set_guide", writes=True, input_schema=_GUIDE_SCHEMA,
@@ -185,7 +191,7 @@ class TrainingAnalyst:
         reg.register(self.take_note, name="take_note", writes=True,
                      description="A note to yourself (up to 600 characters); every wake-up shows your last 12 notes, "
                                  "across sessions; history shows them all.")
-        self.policy = ToolPolicy(reg, ["session_data", "history", "calibration", "ask_paddler", "set_guide",
+        self.policy = ToolPolicy(reg, ["session_data", "history", "calibration", "forecast", "ask_paddler", "set_guide",
                                        "wake_me", "route_gap", "take_note"], max_iterations=max_iterations)
 
     # ── tools ───────────────────────────────────────────────────────────
@@ -241,6 +247,10 @@ class TrainingAnalyst:
                 "blade_efficiency_measured": c.eff_points,
                 "heart_rate_model_fitted_over_paddle_w": [round(lo), round(hi)],
                 "note": f"outside {round(lo)}-{round(hi)} W the heart-rate model is extrapolated"}
+
+    def forecast(self) -> Dict[str, Any]:
+        from .sim.training import session_forecast
+        return {"ok": True, **session_forecast(self.ctx.block, self.ctx.spec)}
 
     def ask_paddler(self, ask: str) -> Dict[str, Any]:
         from .sim.training import answer
@@ -347,6 +357,8 @@ class TrainingAnalyst:
                 "session": {"number": spec.index, "of": len(c.block.sessions),
                             "minutes": round(sum(p[0] for p in spec.plan) / 60.0),
                             "planned_changes_of_effort_at_min": cuts, "air_temperature_c": round(spec.day.air_c)},
+                **({"forecast": {k: v for k, v in self.forecast().items() if k != "ok"}}
+                   if why == "warm-up done" else {}),
                 "now_min": round(c.twin.t / 60.0, 1), "guide": c.guide.to_dict(),
                 "reader_now": self._reader_now(),
                 "course": {"turns_every_m": 1500, "turns_at_min": [round(t / 60.0, 1) for t in c.turns],

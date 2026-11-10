@@ -34,9 +34,9 @@ from paddling_expt.coaching_trial import holm, paired              # noqa: E402
 from paddling_expt.sim.training import draw_block                  # noqa: E402
 
 OUT = os.path.join(ROOT, "results", "training_hr")
-ARMS = {"textbook": ht.TextbookArm, "hr_model": ht.HrModelArm, "pace": ht.PaceArm,
+ARMS = {"textbook": ht.TextbookArm, "hr_model": ht.HrModelArm, "pace": ht.PaceArm, "pace_forecast": ht.PaceForecastArm,
         "warmup_rule": ht.WarmupRuleArm, "refit": ht.RefitArm, "oracle_day": ht.OracleDayArm}
-FIXED = ["textbook", "hr_model", "refit", "pace", "warmup_rule"]
+FIXED = ["textbook", "hr_model", "refit", "pace", "pace_forecast", "warmup_rule"]
 
 
 def _seeds(s: str) -> List[int]:
@@ -167,6 +167,7 @@ def plot_training_hr(data):
 
 LABELS = {"textbook": "textbook zones (max heart rate)", "hr_model": "personal model, as calibrated",
           "refit": "personal model, refitted each session",
+          "pace_forecast": "GPS pace + forecast current",
           "pace": "GPS pace only", "warmup_rule": "warm-up offset rule", "oracle_day": "told the day (reference)"}
 
 

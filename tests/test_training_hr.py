@@ -2,6 +2,7 @@
 import json
 import math
 
+import numpy as np
 import pytest
 
 from agent_lib.providers.fake_provider import FakeProvider
@@ -211,3 +212,35 @@ def test_turn_wake_route_gap_and_the_new_guide_levers(block, cal):
     later = [r for r in ctx.rows if r["push_known"]][-60:]
     assert ht.read_zone(g0, later, cal, 30.0, boat_power=ctx.boat_power)["share_pace"] == \
         ht.read_zone(g1, later, cal, 30.0, boat_power=ctx.boat_power)["share_pace"]
+
+
+def test_tide_table_and_wind_forecast(block, cal):
+    from paddling_expt.sim.training import session_forecast
+    errs, hit, false_breeze, n_calm = [], 0, 0, 0
+    for seed in range(1001, 1021):
+        b = draw_block(seed)
+        for s in b.sessions:
+            f = session_forecast(b, s)
+            assert f == session_forecast(b, s)                                 # reproducible
+            errs.append(f["tide_table"]["stream_at_start_mps"] - s.day.current_mps)
+            if s.day.wind:
+                hit += f["wind_forecast"]["direction"] is not None
+            else:
+                n_calm += 1
+                false_breeze += f["wind_forecast"]["direction"] is not None
+    assert 0.04 < float(np.std(errs)) < 0.13                                   # about 0.1 m/s off
+    assert hit >= 1 and false_breeze < 0.3 * n_calm
+    # the assistant sees the forecast at the warm-up; history keeps it; the forecast arm uses it
+    seen = []
+
+    def brain(system, messages, tools):
+        if len(messages) == 1:
+            seen.append(json.loads(messages[0].text))
+        return "ok"
+
+    arm = AgentGuideArm(FakeProvider(brain, model="scripted"))
+    arm.start_block(block, cal)
+    ctx = ht.run_session(block, cal, block.sessions[0], arm)
+    assert "tide_table" in seen[0]["forecast"] and "forecast" in ht.session_summary(ctx)
+    g = ht.PaceForecastArm().initial_guide(ctx)
+    assert g.mode == "pace" and g.current_before_first_turn_mps is not None
