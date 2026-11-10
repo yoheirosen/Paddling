@@ -433,7 +433,12 @@ class PaddlerTwin:
         ss += (hp["max"] - hp["cp"]) * (1.0 - self.w / self.p.w_prime_j)
         if self.t >= self.start_t:
             ss += hp["drift_per_10min"] * (self.t - self.start_t) / 600.0
-        ss = min(ss, hp["max"])
+        top = hp["max"]
+        if "day_offset" in hp or "fatigue_suppress" in hp:   # the day's state (training blocks only)
+            sup = hp.get("fatigue_suppress", 0.0)
+            ss += hp.get("day_offset", 0.0) - sup * x_c       # heat raises it; tiredness holds the top end down
+            top -= sup
+        ss = min(ss, top)
         self.hr += (ss - self.hr) * (1.0 - math.exp(-T / hp["tau_s"]))
         return self.hr
 
