@@ -18,7 +18,8 @@ Every session carries a planted day state:
   erratically for the first 8-14 minutes); ``coming_down`` (heart rate about 8 beats higher,
   critical power 8 % lower); ``humid_drift`` (four times the slow creep, 26-29 °C).
 
-The paddler answers questions about how they feel, the conditions and the strap
+Before each session the paddler checks the tide table and the wind forecast
+(:func:`session_forecast`, with planted errors).  The paddler answers questions about how they feel, the conditions and the strap
 (:func:`answer`), and can wet or move the strap when asked (which ends a strap fault a minute
 later).  All of this is planted: it says what the simulator does, not how real bodies or straps
 behave.
@@ -34,7 +35,7 @@ import numpy as np
 from .twin import CoastalWater, PaddlerTwin, RaceSetup, Traits, draw_traits, heart_rate_profile
 
 __all__ = ["DEVELOPMENT_DAY_KINDS", "HELD_OUT_DAY_KINDS", "SESSION_KINDS", "DayState", "SessionSpec",
-           "TrainingBlock", "draw_block", "executed_plan", "session_twin", "StrapFault", "answer"]
+           "TrainingBlock", "draw_block", "executed_plan", "session_twin", "session_forecast", "StrapFault", "answer"]
 
 DEVELOPMENT_DAY_KINDS = ("normal", "hot", "tired", "cadence_lock", "breezy")
 HELD_OUT_DAY_KINDS = ("poor_contact", "coming_down", "humid_drift")
@@ -212,6 +213,48 @@ class TrainingWater(CoastalWater):
 
     def at(self, y: float, s: float, t: float) -> float:
         return super().at(y, s, t) + self.wind_at(t)
+
+
+KT_PER_MPS_PUSH = 50.0      # planted rule of thumb: 5 kt of wind along the course pushes like 0.1 m/s of current
+
+
+def session_forecast(block: TrainingBlock, spec: SessionSpec) -> Dict[str, Any]:
+    """The tide table and the wind forecast the paddler checks before the session (planted,
+    with errors; its own random stream).  The tide table has the timing right but the strength
+    at this spot off by about 0.1 m/s; the wind forecast misses some breezes (about 1 in 5) and
+    forecasts one that never comes on about 1 day in 7, and is off in strength and timing."""
+    d = spec.day
+    rng = np.random.default_rng([block.seed, spec.index, 61])
+    dur = sum(p[0] for p in spec.plan)
+    c0 = d.current_mps + float(rng.normal(0.0, 0.08))
+    c1 = d.current_change_mps + float(rng.normal(0.0, 0.08))
+    tide: Dict[str, Any] = {"stream_at_start_mps": round(c0, 2), "stream_at_end_mps": round(c0 + c1, 2),
+                            "changes_steadily_over_min": round(dur / 60.0)}
+    if c0 * (c0 + c1) < 0 and abs(c1) > 1e-6:
+        tide["stream_turns_at_about_min"] = round(dur / 60.0 * (-c0 / c1))
+    kt = lambda w: int(round(abs(w) * KT_PER_MPS_PUSH))          # noqa: E731
+    side = lambda w: "behind you on the way out" if w > 0 else "on the nose on the way out"   # noqa: E731
+    r = float(rng.random())
+    if d.wind and r < 0.8:
+        f0 = d.wind["start"] * float(rng.uniform(0.6, 1.4))
+        f1 = d.wind["end"] * float(rng.uniform(0.7, 1.3))
+        wind = {"summary": f"breeze building from about {kt(f0)} to {kt(f1)} kt over the session, {side(f1)}, gusty",
+                "kt_at_start": kt(f0), "kt_at_end": kt(f1), "direction": side(f1), "gusty": True}
+    elif not d.wind and r < 0.14:
+        sgn = 1.0 if float(rng.random()) < 0.5 else -1.0
+        f1 = sgn * float(rng.uniform(0.15, 0.28))
+        wind = {"summary": f"sea breeze filling in to about {kt(f1)} kt during the session, {side(f1)}",
+                "kt_at_start": 3, "kt_at_end": kt(f1), "direction": side(f1), "gusty": False}
+    else:
+        wind = {"summary": "light and variable, under 6 kt", "kt_at_start": 3, "kt_at_end": 4, "direction": None,
+                "gusty": False}
+    return {"tide_table": tide, "wind_forecast": wind,
+            "convention": "stream + flows with you on the way out (the first leg)",
+            "rule_of_thumb": f"in this boat, wind along the course pushes about like current: 5 kt ~ 0.1 m/s "
+                             f"(GPS cannot tell them apart)",
+            "reliability": "tide tables get the timing right but the strength at this spot is often 0.1 m/s off; "
+                           "wind forecasts miss some breezes, forecast some that never come, and are often off "
+                           "in strength and timing"}
 
 
 def executed_plan(block: TrainingBlock, spec: SessionSpec) -> List[Tuple[float, float, float]]:
