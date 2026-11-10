@@ -59,16 +59,26 @@ before the first turn; turns cut the reading for a few seconds. Blade efficiency
 session, so the same speed later costs more effort. Fitness changes over weeks.
 - The calibration itself is one day's measurement.
 
-The guide (set_guide): mode (hr, pace, combined), combine (agree: both routes must be within a zone of \
-each other, else "cannot tell"; hr_first or pace_first: use the other route only when the first cannot \
-tell), hr_offset_bpm, hr_trusted (False ignores heart rate), hr_trust_up_to_share (above this share the \
-heart-rate route says it cannot tell), plausibility_check (drop heart rates below 75 or within 3 of the \
-stroke rate), cp_scale, and a note to the paddler. The guide stays until you change it, also into the \
-next session.
+The guide (set_guide): mode (hr, pace, combined); combine, for combined: agree (if the two routes' zones \
+are within one zone of each other, the zone of the average of the two shares; further apart, "cannot \
+tell"; if one route cannot tell, the other route's zone), hr_first or pace_first (that route's zone; the \
+other route's only when the first cannot tell); hr_offset_bpm; hr_trusted (False ignores heart rate); \
+hr_trust_up_to_share (above this share the heart-rate route cannot tell); plausibility_check (heart-rate \
+readings below 75 or within 3 of the stroke rate are dropped one by one; if fewer than half of the \
+minute's readings are left, the heart-rate route cannot tell); cp_scale; and a note to the paddler. \
+The guide stays until you change it, also into the next session. Both routes are always computed and \
+shown to you, whatever the guide uses.
 
-When you are woken: at the end of each warm-up (you see the session's timing, not what it asks for) and \
-when an anomaly check fires. Each wake-up allows a few rounds of tool calls; a reply of plain text ends \
-it. Your notes (take_note) are shown at every wake-up and carry across the block; history shows earlier \
+Scoring: checkpoints every 30 seconds, from two minutes into each stretch of steady planned effort \
+after the warm-up (so heart rate's lag after a change of effort is not scored). Nobody sees the right \
+answers, you included; you judge from the data, the paddler and the calibration.
+
+When you are woken: at the end of each warm-up (you see the session's timing, not what it asks for); \
+when an anomaly check fires (the gap between the two routes moves by more than 0.15 of critical power \
+from where it settled in the same stretch, for three minutes; most heart-rate readings implausible for a \
+minute; the strap reading plausibly again for two minutes after that; at most 3 a session, 5 minutes \
+apart); and when you asked to be (wake_me). Each wake-up allows a few rounds of tool calls; a reply of \
+plain text ends it. Your notes (take_note) are shown at every wake-up and carry across the block; history shows earlier \
 sessions as the devices recorded them; calibration shows the calibration day.
 """
 
@@ -92,6 +102,11 @@ _ASK_SCHEMA = {
                                           "the strap seem right; fix_strap: ask them to wet and re-seat it"}},
     "required": ["ask"],
 }
+_WAKE_SCHEMA = {
+    "type": "object",
+    "properties": {"minutes": {"type": "number"}, "why": {"type": "string"}},
+    "required": ["minutes"],
+}
 _DATA_SCHEMA = {
     "type": "object",
     "properties": {"from_min": {"type": "number"}, "to_min": {"type": "number"}},
@@ -112,32 +127,40 @@ class TrainingAnalyst:
         self.notes: List[Dict[str, Any]] = []
         self.ctx: Optional[SessionCtx] = None
         self.consultations: List[Dict[str, Any]] = []
-        self._asked_t: Optional[float] = None
+        self._asked: Optional[tuple] = None                   # (session, t) of the last question
+        self.request_wake = None                               # set by the arm: (minutes, why) -> result
         reg = ToolRegistry()
         reg.register(self.session_data, name="session_data", input_schema=_DATA_SCHEMA,
                      description="Today's session minute by minute (default: the last 8 minutes; at most 20): "
                                  "leg (out/back), GPS speed, speed through the water and the current the computer "
-                                 "estimates, stroke rate, paddle power estimated from pace (the pace route's power), "
-                                 "the heart rate the strap reads, the heart rate the model expects at that power and "
-                                 "the gap, and what the reader said by each route.")
+                                 "estimates (null until the course first turns: before that it cannot tell current "
+                                 "from speed), stroke rate, paddle power estimated from pace (the pace route's "
+                                 "power), the heart rate the strap reads, the heart rate the model expects at that "
+                                 "power and minute (with the slow creep) and the gap, the share of implausible "
+                                 "heart-rate readings, and what the reader said by each route.")
         reg.register(self.history, name="history",
-                     description="Earlier sessions of the block as the devices recorded them: each steady stretch's "
-                                 "paddle power estimated from pace, stroke rate, heart rate and the model's heart rate "
-                                 "at that power; what the paddler said; the guide used at the end.")
+                     description="Earlier sessions of the block as the devices recorded them: each steady stretch "
+                                 "from two minutes in: paddle power estimated from pace, stroke rate, heart rate "
+                                 "(plausible readings only) and the model's heart rate at that power and minute (with "
+                                 "the slow creep); what the paddler said; the guide used at the end.")
         reg.register(self.calibration, name="calibration",
                      description="The calibration day (with a borrowed power paddle): critical power and reserve "
-                                 "(paddle power), the highest heart rate seen, blade efficiency by stroke rate, and "
-                                 "the paddler's heart-rate model.")
+                                 "(paddle power), the highest heart rate seen, blade efficiency by stroke rate (the "
+                                 "fitted curve and the stretches it was fitted on), and the paddler's heart-rate model "
+                                 "with the range of paddle power it was fitted over.")
         reg.register(self.ask_paddler, name="ask_paddler", writes=True, input_schema=_ASK_SCHEMA,
                      description="Ask the paddler (at most once a minute).")
         reg.register(self.set_guide, name="set_guide", writes=True, input_schema=_GUIDE_SCHEMA,
                      description="Set the reader's guide (fields left out keep their value). Returns what the "
                                  "reader says now with the old and the new guide.")
+        reg.register(self.wake_me, name="wake_me", writes=True, input_schema=_WAKE_SCHEMA,
+                     description="Be woken again in this session after this many minutes (1-30; one pending "
+                                 "request at a time, a new one replaces it; at most 4 a session).")
         reg.register(self.take_note, name="take_note", writes=True,
                      description="A note to yourself (up to 600 characters); every wake-up shows your last 8 notes, "
                                  "across sessions.")
         self.policy = ToolPolicy(reg, ["session_data", "history", "calibration", "ask_paddler", "set_guide",
-                                       "take_note"], max_iterations=max_iterations)
+                                       "wake_me", "take_note"], max_iterations=max_iterations)
 
     # ── tools ───────────────────────────────────────────────────────────
     def session_data(self, from_min: Optional[float] = None, to_min: Optional[float] = None) -> Dict[str, Any]:
@@ -162,14 +185,21 @@ class TrainingAnalyst:
                 s = sum(math.cos(math.radians(h)) for h in hds) / len(hds)
                 leg = "out" if s > 0.5 else "back" if s < -0.5 else "turning"
             pw, hr = mean("paddle_w"), mean("heart_rate_bpm")
+            known = all(r.get("push_known") for r in W)
+            bad = [r for r in W if r.get("heart_rate_bpm") is not None]
+            implaus = (sum(1 for r in bad if r["heart_rate_bpm"] < 75.0 or abs(r["heart_rate_bpm"] - (r.get("rate_spm") or 0.0)) < 3.0)
+                       / len(bad)) if bad else None
             mhr = c.cal.model.hr_at(pw) + c.cal.model.creep_per_10min * (m + 0.5) / 10.0 if pw else None
             R = [x for x in c.reads if m * 60.0 < x["t"] <= (m + 1) * 60.0]
             last = R[-1] if R else {}
             nm = lambda z: None if z is None else EFFORT_ZONES[z][0]       # noqa: E731
             out.append({"minute": m, "leg": leg, "speed_gps": _r(mean("speed_gps"), 2),
-                        "speed_water": _r(mean("speed_water"), 2), "current_est": _r(mean("push_along_mps"), 2),
+                        "speed_water": _r(mean("speed_water"), 2),
+                        "current_est": _r(mean("push_along_mps"), 2) if known else None,
                         "rate_spm": _r(mean("rate_spm")), "paddle_power_est_w": _r(pw, 0), "heart_rate": _r(hr),
-                        "model_heart_rate_at_power": _r(mhr), "gap_bpm": _r(None if hr is None or mhr is None else hr - mhr),
+                        "model_heart_rate_at_power_and_minute": _r(mhr),
+                        "gap_bpm": _r(None if hr is None or mhr is None else hr - mhr),
+                        "implausible_hr_share": _r(implaus, 2),
                         "reader": {"zone": nm(last.get("zone")), "by_heart_rate": nm(last.get("zone_hr")),
                                    "by_pace": nm(last.get("zone_pace")), "share_hr": last.get("share_hr"),
                                    "share_pace": last.get("share_pace")} if last else None})
@@ -180,15 +210,19 @@ class TrainingAnalyst:
 
     def calibration(self) -> Dict[str, Any]:
         c = self.ctx.cal
-        return {"ok": True, **c.summary, "heart_rate_separates_efforts_up_to_share": c.separates_up_to}
+        lo, hi = c.model.effort_range_w
+        return {"ok": True, **c.summary, "heart_rate_separates_efforts_up_to_share": c.separates_up_to,
+                "blade_efficiency_measured": c.eff_points,
+                "heart_rate_model_fitted_over_paddle_w": [round(lo), round(hi)],
+                "note": f"outside {round(lo)}-{round(hi)} W the heart-rate model is extrapolated"}
 
     def ask_paddler(self, ask: str) -> Dict[str, Any]:
         from .sim.training import answer
         c = self.ctx
         t = c.twin.t
-        if self._asked_t is not None and t - self._asked_t < 60.0:
+        if self._asked is not None and self._asked[0] == c.spec.index and t - self._asked[1] < 60.0:
             return {"ok": False, "error": "asked less than a minute ago"}
-        self._asked_t = t
+        self._asked = (c.spec.index, t)
         a = answer(c.block, c.spec, str(ask), t, asked_before=len(c.answers))
         if ask == "fix_strap":
             c.strap.fix(t)
@@ -220,6 +254,11 @@ class TrainingAnalyst:
         return {"ok": True, "guide": new.to_dict(),
                 "reader_now": {"old_guide": nm(old_r["zone"]), "new_guide": nm(new_r["zone"]),
                                "share_hr": new_r["share_hr"], "share_pace": new_r["share_pace"]}}
+
+    def wake_me(self, minutes: float, why: str = "") -> Dict[str, Any]:
+        if self.request_wake is None:
+            return {"ok": False, "error": "not available"}
+        return self.request_wake(float(minutes), str(why)[:200])
 
     def take_note(self, text: str) -> Dict[str, Any]:
         c = self.ctx
@@ -256,20 +295,26 @@ class TrainingAnalyst:
 
 
 class AgentGuideArm(GuideArm):
-    """The reasoning agent as an arm: woken at the end of each warm-up and by the anomaly checks
-    (at most 2 a session, 5 minutes apart): the gap between the heart-rate and pace routes moving
-    more than 0.15 of critical power from where it settled early in the same stretch of planned
-    effort (or after the last look), for 3 minutes; a
-    heart rate below 75 or locked to the stroke rate for a minute."""
+    """The reasoning agent as an arm: woken at the end of each warm-up, when it asked to be
+    (``wake_me``: at most 4 a session) and by the anomaly checks (at most 3 a session, 5 minutes
+    apart): the gap between the heart-rate and pace routes moving more than 0.15 of critical
+    power from where it settled early in the same stretch of planned effort (or after the last
+    look), for 3 minutes; most heart-rate readings implausible (below 75 or on the stroke rate)
+    for a minute; and, after that, the strap reading plausibly again for two minutes."""
 
     name = "agent"
 
-    def __init__(self, provider: Any, *, label: str = "agent", max_anomaly_wakes: int = 2) -> None:
+    def __init__(self, provider: Any, *, label: str = "agent", max_anomaly_wakes: int = 3,
+                 max_requested_wakes: int = 4) -> None:
         self.analyst = TrainingAnalyst(provider)
+        self.analyst.request_wake = self._request_wake
         self.name = label
-        self.setting = {"model": getattr(provider, "model", "?"), "max_anomaly_wakes": max_anomaly_wakes}
+        self.setting = {"model": getattr(provider, "model", "?"), "max_anomaly_wakes": max_anomaly_wakes,
+                        "max_requested_wakes": max_requested_wakes}
         self.max_wakes = max_anomaly_wakes
+        self.max_requested = max_requested_wakes
         self._last_guide: Optional[Guide] = None
+        self._ctx: Optional[SessionCtx] = None
 
     def start_block(self, block, cal):
         super().start_block(block, cal)
@@ -277,10 +322,34 @@ class AgentGuideArm(GuideArm):
                                  hr_trust_up_to_share=cal.separates_up_to)
 
     def initial_guide(self, ctx):
+        self._ctx = ctx
         self._busy, self._pending, self._wakes, self._last_wake_t = False, [], 0, -1e9
-        self._dis, self._implaus = 0, 0
+        self._dis, self._implaus, self._good, self._strap_was_bad = 0, 0, 0, False
         self._gaps, self._gap_ref, self._seg = [], None, None
+        self._requested, self._wake_req = 0, None
         return Guide(**self._last_guide.to_dict())
+
+    def _request_wake(self, minutes: float, why: str) -> Dict[str, Any]:
+        ctx = self._ctx
+        if not 1.0 <= minutes <= 30.0:
+            return {"ok": False, "error": "minutes must be 1-30"}
+        if self._requested >= self.max_requested:
+            return {"ok": False, "error": f"at most {self.max_requested} requested wake-ups a session"}
+        end = sum(p[0] for p in ctx.spec.plan)
+        at = ctx.twin.t + 60.0 * minutes
+        if at >= end - 30.0:
+            return {"ok": False, "error": f"the session ends at minute {end / 60.0:.1f}"}
+        self._requested += 1
+        token = object()
+        self._wake_req = token
+
+        def fire():
+            if self._wake_req is token and self._ctx is ctx:
+                self._wake_req = None
+                self._wake(ctx, "you asked to be woken", [f"your wake-up: {why}" if why else "your wake-up"])
+        ctx.sched.at(at, fire)
+        return {"ok": True, "wake_at_min": round(at / 60.0, 1),
+                "requests_left_this_session": self.max_requested - self._requested}
 
     def _wake(self, ctx: SessionCtx, why: str, events: List[str]) -> None:
         if self._busy:
@@ -302,24 +371,32 @@ class AgentGuideArm(GuideArm):
         if not rd.get("t") or rd["t"] < ctx.spec.warmup_s:
             return
         sh, sp, hr, rate = rd.get("share_hr"), rd.get("share_pace"), rd.get("hr"), rd.get("rate")
+        bad = (rd.get("hr_implausible_frac") or 0.0) >= 0.5
         if rd.get("segment") != self._seg:         # a planned change of effort: the gap settles afresh
             self._seg, self._gaps, self._gap_ref, self._dis = rd.get("segment"), [], None, 0
-        if sh is not None and sp is not None:      # the gap between the routes, against where it settled
-            self._gaps.append(sh - sp)             # in this stretch (a steady gap is not news)
+        if sh is not None and sp is not None and not bad:   # the gap between the routes, against where
+            self._gaps.append(sh - sp)                       # it settled in this stretch
             if self._gap_ref is None and len(self._gaps) >= 4:
                 self._gap_ref = sorted(self._gaps[:4])[2]
             self._dis = self._dis + 1 if (self._gap_ref is not None and abs(sh - sp - self._gap_ref) > 0.15) else 0
-        bad = hr is not None and (hr < 75.0 or (rate is not None and abs(hr - rate) < 3.0))
         self._implaus = self._implaus + 1 if bad else 0
+        self._good = 0 if bad else self._good + 1
         events = []
         if self._dis >= 6:
             events.append(f"for three minutes the gap between the routes has moved: heart rate reads {sh:.2f} of "
                           f"critical power and pace {sp:.2f}, against a gap of {self._gap_ref:+.2f} early in this stretch")
         if self._implaus >= 2:
-            events.append(f"for a minute the strap has read {hr:.0f} with the stroke rate at {rate:.0f}")
+            self._strap_was_bad = True
+            events.append(f"for a minute most heart-rate readings have been implausible: the strap's minute "
+                          f"average {hr:.0f} with the stroke rate at {rate:.0f}")
+        recovered = self._strap_was_bad and self._good >= 4
+        if recovered:
+            events.append(f"the strap has read plausibly for two minutes again ({hr:.0f} with the stroke rate at {rate:.0f})")
         if events and self._wakes < self.max_wakes and rd["t"] - self._last_wake_t >= 300.0 and not self._busy:
             self._wakes += 1
             self._last_wake_t = rd["t"]
+            if recovered:
+                self._strap_was_bad = False
             self._dis = self._implaus = 0
             self._gaps, self._gap_ref = [], None
             self._wake(ctx, "anomaly", events)
@@ -330,6 +407,7 @@ class AgentGuideArm(GuideArm):
 
     def end_session(self, ctx, score):
         self._last_guide = Guide(**ctx.guide.to_dict())
+        self._wake_req = None
 
     def summary(self):
         a = self.analyst

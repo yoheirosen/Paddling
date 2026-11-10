@@ -132,3 +132,43 @@ def test_breezy_days_gust_and_the_refit_pools_sessions(block, cal):
     ctx = ht.run_session(block, cal, block.sessions[1], arm)
     arm.end_session(ctx, ht.score_session(ctx))
     assert arm.refits and arm.cal_now is not cal and arm.cal.model is cal.model     # the shared calibration is untouched
+
+
+def test_both_routes_are_read_and_bad_readings_dropped_one_by_one(cal):
+    cp = cal.athlete.cp_w
+    hr = cal.model.hr_at(0.65 * cp)
+    rows = [{"t": float(i), "heart_rate_bpm": hr, "rate_spm": 58.0, "paddle_w": 0.65 * cp} for i in range(60)]
+    rd = ht.read_zone(ht.Guide(mode="pace"), rows, cal, 0.0)
+    assert rd["share_hr"] is not None and rd["zone"] == rd["zone_pace"]        # heart rate still watched
+    mixed = [dict(r, heart_rate_bpm=58.5) if i < 20 else r for i, r in enumerate(rows)]   # a third on the stroke rate
+    rd = ht.read_zone(ht.Guide(mode="hr", plausibility_check=True), mixed, cal, 0.0)
+    assert rd["hr_implausible_frac"] == pytest.approx(0.33, abs=0.01)
+    assert rd["zone"] == zone_of_share(0.65)                                   # the good two thirds read
+    mostly = [dict(r, heart_rate_bpm=58.5) if i < 40 else r for i, r in enumerate(rows)]
+    assert ht.read_zone(ht.Guide(mode="hr", plausibility_check=True), mostly, cal, 0.0)["zone"] is None
+
+
+def test_agent_can_ask_each_session_and_schedule_its_own_wake_up(block, cal):
+    log = []
+
+    def brain(system, messages, tools):
+        pk = json.loads(messages[0].text)
+        if len(messages) == 1:
+            log.append(pk)
+            calls = [{"name": "ask_paddler", "arguments": {"ask": "feel"}}]
+            if pk["wake"] == "warm-up done":
+                calls.append({"name": "wake_me", "arguments": {"minutes": 3, "why": "check the current"}})
+                calls.append({"name": "session_data", "arguments": {}})
+            return {"tool_calls": calls}
+        log.append([json.loads(r.content) for r in messages[-1].tool_results])
+        return "ok"
+
+    arm = AgentGuideArm(FakeProvider(brain, model="scripted"))
+    arm.start_block(block, cal)
+    for spec in block.sessions[:2]:
+        ctx = ht.run_session(block, cal, spec, arm)
+        assert ctx.answers and ctx.answers[0]["t"] < spec.warmup_s + 60.0   # not blocked by the last session
+    wakes = [p["wake"] for p in log if isinstance(p, dict)]
+    assert wakes.count("you asked to be woken") == 2
+    data = next(r for x in log if isinstance(x, list) for r in x if "minutes" in r)
+    assert data["minutes"][0]["current_est"] is None                            # no turn yet at the warm-up's end

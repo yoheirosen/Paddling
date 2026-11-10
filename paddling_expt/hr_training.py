@@ -62,6 +62,7 @@ class Calibration:
     separates_up_to: float
     summary: Dict[str, Any] = field(default_factory=dict)
     rows: List[Dict[str, Any]] = field(default_factory=list, repr=False)   # the step test: t, paddle_w, heart rate
+    eff_points: List[Dict[str, float]] = field(default_factory=list)      # measured blade efficiency per test stretch
 
     def efficiency(self, rate: Optional[float]) -> float:
         """The share of paddle power reaching the boat at this stroke rate (calibration day)."""
@@ -148,6 +149,7 @@ def calibrate_block(block: TrainingBlock) -> Calibration:
     cal = Calibration(model=model, athlete=ath, athlete_boat=ath_boat, eta_coef=(float(c0), float(c1), float(c2)),
                       rate_range=(float(r.min()) - 2.0, float(r.max()) + 2.0),
                       hr_max_seen=max(_max30(rows), _max30(rows2)), separates_up_to=model.separates_up_to(ath.cp_w))
+    cal.eff_points = [{"stroke_rate": round(x[2], 1), "efficiency": round(x[0] / x[1], 3)} for x in sorted(pts, key=lambda x: x[2])]
     cal.rows = [{"t": q["t"], "paddle_w": q.get("shaft_power_w"), "heart_rate_bpm": q.get("heart_rate_bpm"),
                  "rate_spm": q.get("rate_spm"), "session": 0} for q in prep["all_rows"]]
     rates = sorted({int(round(x)) for x in r})
@@ -182,27 +184,38 @@ def _mean(rows: List[Dict[str, Any]], key: str) -> Optional[float]:
     return float(sum(xs) / len(xs)) if xs else None
 
 
+def _plausible_hr(hr: Optional[float], rate: Optional[float]) -> bool:
+    return hr is not None and hr >= 75.0 and abs(hr - (rate or 0.0)) >= 3.0
+
+
 def read_zone(guide: Guide, recent: List[Dict[str, Any]], cal: Calibration, minutes_in: float) -> Dict[str, Any]:
     """The zone of the last minute (``recent``: rows with ``heart_rate_bpm``, ``rate_spm``,
     ``paddle_w``: paddle power estimated from GPS, the hull model and the paddler's blade
     efficiency by stroke rate): ``zone`` (an index into the effort zones) or None for "cannot
-    tell", with each route's reading."""
-    hr, rate, pw = _mean(recent, "heart_rate_bpm"), _mean(recent, "rate_spm"), _mean(recent, "paddle_w")
-    out: Dict[str, Any] = {"hr": hr, "rate": rate, "paddle_w": pw, "share_hr": None, "share_pace": None,
-                           "zone_hr": None, "zone_pace": None, "zone": None}
+    tell", with each route's reading.  Both routes are always read (``share_hr``,
+    ``share_pace``, ``zone_hr``, ``zone_pace``), whatever the guide uses: the anomaly checks
+    watch them.  With the plausibility check, heart-rate readings below 75 or within 3 of the
+    stroke rate are dropped one by one; if fewer than half of the minute's readings are left,
+    the heart-rate route cannot tell."""
+    hr_raw, rate, pw = _mean(recent, "heart_rate_bpm"), _mean(recent, "rate_spm"), _mean(recent, "paddle_w")
+    H = [r for r in recent if r.get("heart_rate_bpm") is not None]
+    ok = [r for r in H if _plausible_hr(r["heart_rate_bpm"], r.get("rate_spm"))]
+    implaus = 1.0 - len(ok) / len(H) if H else 0.0
+    out: Dict[str, Any] = {"hr": hr_raw, "rate": rate, "paddle_w": pw, "hr_implausible_frac": round(implaus, 2),
+                           "share_hr": None, "share_pace": None, "zone_hr": None, "zone_pace": None, "zone": None}
     cp = cal.athlete.cp_w
     if guide.mode == "textbook":
-        if hr is not None and cal.hr_max_seen > 0:
-            f = hr / cal.hr_max_seen
+        if hr_raw is not None and cal.hr_max_seen > 0:
+            f = hr_raw / cal.hr_max_seen
             z = next((j for j, (_, lo, hi) in enumerate(TEXTBOOK_ZONES) if lo <= f < hi),
                      0 if f < TEXTBOOK_ZONES[0][1] else len(TEXTBOOK_ZONES) - 1)
             out["zone"] = out["zone_hr"] = z
         return out
-    hr_ok = guide.hr_trusted and hr is not None
-    if hr_ok and guide.plausibility_check and (hr < 75.0 or (rate is not None and abs(hr - rate) < 3.0)):
-        hr_ok = False
-        out["hr_dropped"] = True
-    if hr_ok and guide.mode in ("hr", "combined"):
+    hr = hr_raw
+    if guide.plausibility_check and H:
+        hr = _mean(ok, "heart_rate_bpm") if len(ok) >= 0.5 * len(H) else None
+        out["hr_dropped"] = hr is None
+    if hr is not None:
         e = cal.model.effort_at(hr - guide.hr_offset_bpm, minutes_in=minutes_in)
         top = guide.hr_trust_up_to_share if guide.hr_trust_up_to_share is not None else 9.0
         if e is not None:
@@ -210,11 +223,12 @@ def read_zone(guide: Guide, recent: List[Dict[str, Any]], cal: Calibration, minu
             out["share_hr"] = round(s, 3)
             if s <= top + 0.05:
                 out["zone_hr"] = zone_of_share(s)
-    if pw is not None and guide.mode in ("pace", "combined"):
+    if pw is not None:
         s = pw / (cp * max(0.3, guide.cp_scale))
         out["share_pace"] = round(s, 3)
         out["zone_pace"] = zone_of_share(s)
-    zh, zp = out["zone_hr"], out["zone_pace"]
+    zh = out["zone_hr"] if guide.hr_trusted and guide.mode in ("hr", "combined") else None
+    zp = out["zone_pace"] if guide.mode in ("pace", "combined") else None
     if guide.mode == "hr":
         out["zone"] = zh
     elif guide.mode == "pace":
@@ -424,7 +438,8 @@ def run_session(block: TrainingBlock, cal: Calibration, spec: SessionSpec, arm: 
             ctx.rows.append({"t": r["t"], "heading_deg": r.get("heading_deg"), "speed_gps": r.get("v_mean"),
                              "rate_spm": r.get("rate_spm"), "heart_rate_bpm": r.get("heart_rate_bpm"),
                              "boat_power_w": bp, "paddle_w": cal.paddle_w(bp, r.get("rate_spm")),
-                             "speed_water": snap.get("speed_water"), "push_along_mps": snap.get("push_along_mps")})
+                             "speed_water": snap.get("speed_water"), "push_along_mps": snap.get("push_along_mps"),
+                             "push_known": bool(snap.get("push_known"))})
         if not nxt["warm"] and now >= spec.warmup_s:
             nxt["warm"] = True
             arm.after_warmup(ctx)
@@ -468,11 +483,15 @@ def session_summary(ctx: SessionCtx) -> Dict[str, Any]:
         W = [r for r in ctx.rows if t0 + STEADY_S <= r["t"] < t0 + dur]
         if len(W) < 30:
             continue
-        pw, hr = _mean(W, "paddle_w"), _mean(W, "heart_rate_bpm")
+        pw = _mean(W, "paddle_w")
+        Hp = [r for r in W if _plausible_hr(r.get("heart_rate_bpm"), r.get("rate_spm"))]
+        hr = _mean(Hp, "heart_rate_bpm") if len(Hp) >= 0.5 * len(W) else None
+        mid = (t0 + STEADY_S + t0 + dur) / 2.0 / 60.0
         segs.append({"minutes": [round(t0 / 60.0, 1), round((t0 + dur) / 60.0, 1)],
                      "paddle_power_est_w": None if pw is None else round(pw), "rate_spm": round(_mean(W, "rate_spm") or 0, 1),
                      "heart_rate_bpm": None if hr is None else round(hr, 1),
-                     "model_heart_rate_at_this_power": None if pw is None else round(ctx.cal.model.hr_at(pw), 1)})
+                     "model_heart_rate_at_this_power_and_minute": None if pw is None else
+                     round(ctx.cal.model.hr_at(pw) + ctx.cal.model.creep_per_10min * mid / 10.0, 1)})
     return {"session": ctx.spec.index, "air_c": round(ctx.spec.day.air_c),
             "stretches": segs, "paddler_said": [a["says"] for a in ctx.answers],
             "guide_used": ctx.guide.to_dict()}
